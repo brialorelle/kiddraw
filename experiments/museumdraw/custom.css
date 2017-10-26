@@ -62,4 +62,18 @@ button[disabled] {
     border: solid 5px #999;
 }
 
+<<<<<<< HEAD
 
+=======
+#submit {
+    font-size:20;
+}
+
+#cue {
+    font-size:20;
+}
+
+#ready {
+    font-size:20;
+}
+>>>>>>> cb459fb86c05092bbae7e57211aa54db66d1dc58
