@@ -1,10 +1,14 @@
-window.onload = function() {
+paper.install(window);
 
+window.onload = function() {
+  
   paper.setup('sketchpad');
   // Create a simple drawing tool:
   var tool = new Tool();
   tool.minDistance = 10;
-  var path, path2;      
+  var path, path2;     
+
+  console.log('inside window onload') 
 
   // Define a mousedown and mousedrag handler
   tool.onMouseDown = function(event) {
@@ -33,12 +37,6 @@ window.onload = function() {
   }
 }
 
-function showSlide(id) {
-  // Hide all slides
-  $(".slide").hide();
-  // Show just the slide we want to show
-  $("#"+id).show();
-}
 
 // Get random integers.
 // When called with no arguments, it returns either 0 or 1. When called with one argument, *a*, it returns a number in {*0, 1, ..., a-1*}. When called with two arguments, *a* and *b*, returns a random value in {*a*, *a + 1*, ... , *b*}.
