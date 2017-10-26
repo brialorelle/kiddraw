@@ -1,3 +1,8 @@
+body {
+  font-size: 3em;
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; }
+}
+
 button {
   background: url(images/button-gradient.png);
   border: 1px solid #999;
@@ -69,7 +74,6 @@ button[disabled] {
 }
 
 #cue {
-    left:0; right:0; top:10%; bottom: 0;
     font-size:40;
     position:absolute;
     float:center;
@@ -77,10 +81,8 @@ button[disabled] {
 }
 
 #ready {
-   left:0; right:0; top:10%; bottom: 0; 
-    font-size:40;
+    font-size:80;
     position:absolute;
     float:center;
     margin: 0 auto;
-
 }
