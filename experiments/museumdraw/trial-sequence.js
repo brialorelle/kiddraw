@@ -5,13 +5,30 @@ Oct 26 2017
 
 */
 
-function showCue() {
-	$('#cue').fadeIn('fast');
-}
+$(document).ready(function() {
 
-function showSubmit() {
-	$('#submit').fadeIn('fast');
-}
+	$('#ready').click(function(){	
+
+        setTimeout(function() {showCue();},1000); 
+        setTimeout(function() {hideCue();},2000); 
+		timestamp_cueOnset = new Date().getTime();
+	})
+
+	function showCue() {
+		$('#ready').fadeOut('fast');
+		$('#cue').fadeIn('fast');
+	}
+
+	function hideCue() {
+		$('#cue').fadeOut('fast');
+		$('#ready').fadeIn('fast');	
+	}
+
+	function showSubmit() {
+		$('#submit').fadeIn('fast');
+	}
+
+});
 
 
 

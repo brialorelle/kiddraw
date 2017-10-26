@@ -7,14 +7,17 @@
     	<script type="text/javascript" src="./node_modules/paper/dist/paper-full.js"></script>
         <script type="text/javascript"> paper.install(window); </script>
     	<script src="drawing.js"></script>
-        <script src="stimList.js"></script>  
+        <script src="trial-sequence.js"></script>
+        <script src="stimList.js"></script>         
     </head>
     <body>
-    <div id= "main">
-        <div id="ready"> ready? </div>
-    	<div id="cue" style="visibility:hidden"> cat </div>
-		<canvas id="sketchpad" width = 800 height= 800></canvas>
-        <div id="submit" style="visibility:hidden"> submit </div> 
+        <div id= "main">
+        <div id="instructions">            
+            <div id="ready"> ready? </div>
+    	    <div id="cue" style="display:none"> cat </div>
+        </div>
+		<canvas id="sketchpad"></canvas>
+        <div id="submit" style="display:none"> submit </div> 
 	</div>
     </body>  
 </html>
