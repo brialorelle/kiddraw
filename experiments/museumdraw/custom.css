@@ -69,15 +69,36 @@ button[disabled] {
     border: solid 5px #999;
 }
 
+#instructions {
+    position:fixed;
+    width: 500px;
+    height: 64px;
+    position: absolute;
+    top: 1vh;
+    right:0;left:0;
+    float: top;
+    margin: auto;    
+}
+
 
 #submit {
     font-size:20;
+    position:absolute;
+    float:center;
+    margin: 0 auto;
 }
 
 #cue {
     font-size:20;
+    position:absolute;
+    float:center;
+    margin: 0 auto;
 }
 
 #ready {
     font-size:20;
+    position:absolute;
+    float:center;
+    margin: 0 auto;
+
 }
