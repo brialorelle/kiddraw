@@ -3,16 +3,47 @@
     <head>
         <title>Draw Something!</title>
         <link href="custom.css" media="screen" rel="stylesheet" type="text/css">
+        <link href="http://vjs.zencdn.net/6.2.8/video-js.css" rel="stylesheet">  <!--  video display package -->
+
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
     	<script type="text/javascript" src="../node_modules/paper/dist/paper-full.js"></script>
         <script type="text/javascript"> paper.install(window); </script>
     	<script src="drawing.js"></script>
         <script src="stimList.js"></script>  
     </head>
-    <body>
-    <div id= "main">
-    	<div id = "cue"> CAT </div>
-		<canvas id="sketchpad" width = 800 height= 800></canvas>
+
+<body>
+ <!-- The instructions slide. -->
+<div class="slide" id="Welcome">
+    <br>
+    <img src="images/stanford.png" alt="Stanford University">
+    <p id='logo-text'>Stanford Language and Cognition Lab</p>
+    <br>
+    <br>
+     <video id="my-video" class="video-js" controls preload="auto" width="640" height="264"
+  poster="cattest.jpg" data-setup="{}">
+    <source src="videos/videoTest.mov" type='video/mov'>
+<!--     <source src="MY_VIDEO.webm" type='video/webm'>
+    <p class="vjs-no-js">
+      To view this video please enable JavaScript, and consider upgrading to a web browser that
+      <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+    </p> -->
+  </video>
+    <
+    <!-- <button type="button" onclick="this.blur(); experiment.next();"> LET'S DRAW !</button> -->
+
+</div>
+
+
+
+<!-- <div id= "main">
+    <div id = "cue"> CAT </div>
+	<canvas id="sketchpad" width = 800 height= 800></canvas>
 	</div>
     </body>  
-</html>
+</html> -->
+
+
+ <script src="http://vjs.zencdn.net/6.2.8/video.js"></script>
+</body>
