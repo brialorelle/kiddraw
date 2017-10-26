@@ -39,6 +39,13 @@ button[disabled] {
   text-align: center;
 }
 
+#welcomeVideo {
+    position: absolute;
+    right:25%;left:25%; top:25%; bottom: 25%;
+    background: #ffffff;
+    border: solid 5px #999;
+}
+
 #main {
 	height: auto;
 	width: auto;
@@ -62,9 +69,7 @@ button[disabled] {
     border: solid 5px #999;
 }
 
-<<<<<<< HEAD
 
-=======
 #submit {
     font-size:20;
 }
@@ -76,4 +81,3 @@ button[disabled] {
 #ready {
     font-size:20;
 }
->>>>>>> cb459fb86c05092bbae7e57211aa54db66d1dc58
