@@ -1,5 +1,6 @@
 experiments/.DS_Store
 *.DS_Store
 experiments/node_modules/*
+node_modules/*
 *.csv
 *.npy
