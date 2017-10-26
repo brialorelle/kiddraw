@@ -20,3 +20,15 @@
     background: #ffffff;
     border: solid 5px #999;
 }
+
+#submit {
+    font-size:20;
+}
+
+#cue {
+    font-size:20;
+}
+
+#ready {
+    font-size:20;
+}
