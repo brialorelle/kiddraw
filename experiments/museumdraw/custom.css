@@ -2,7 +2,6 @@ body {
   padding: 0;
   margin: 0;
   font-family: Palatino Linotype, Bookman Antiqua, Palatino, serif;
-  font-size: 14px;
   line-height: 20px;
 }
 
@@ -41,7 +40,7 @@ button[disabled] {
 
 #welcomeVideo {
     position: absolute;
-    right:25%;left:25%; top:25%; bottom: 25%;
+    right:25%;left:0%; top:25%; bottom: 25%;
     background: #ffffff;
     border: solid 5px #999;
     bottom:6vh;
@@ -80,14 +79,16 @@ button[disabled] {
 }
 
 #cue {
-    font-size:20;
+    left:0; right:0; top:10%; bottom: 0;
+    font-size:40;
     position:absolute;
     float:center;
     margin: 0 auto;
 }
 
 #ready {
-    font-size:20;
+   left:0; right:0; top:10%; bottom: 0; 
+    font-size:40;
     position:absolute;
     float:center;
     margin: 0 auto;
