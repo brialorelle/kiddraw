@@ -1,14 +1,12 @@
 paper.install(window);
 
-window.onload = function() {
-  
+window.onload = function() {  
+
   paper.setup('sketchpad');
   // Create a simple drawing tool:
   var tool = new Tool();
   tool.minDistance = 10;
   var path, path2;     
-
-  console.log('inside window onload') 
 
   // Define a mousedown and mousedrag handler
   tool.onMouseDown = function(event) {
@@ -36,6 +34,8 @@ window.onload = function() {
 
   }
 }
+
+
 
 
 // Get random integers.

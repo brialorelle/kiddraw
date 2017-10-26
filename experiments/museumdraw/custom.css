@@ -44,6 +44,9 @@ button[disabled] {
     right:25%;left:25%; top:25%; bottom: 25%;
     background: #ffffff;
     border: solid 5px #999;
+    bottom:6vh;
+    float:center;
+    z-index:4;
 }
 
 #main {
@@ -61,7 +64,7 @@ button[disabled] {
     height: 500px;
     width: 500px;
     position: absolute;
-    top: 6vh;
+    top: 8vh;
     right:0;left:0;
     float: top;
     margin: auto;

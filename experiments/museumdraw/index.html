@@ -6,7 +6,6 @@
         <link href="http://vjs.zencdn.net/6.2.8/video-js.css" rel="stylesheet">  <!--  video display package -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     	<script type="text/javascript" src="./node_modules/paper/dist/paper-full.js"></script>
-        <!-- <script type="text/javascript"> paper.install(window); </script>         -->
         <script src="http://vjs.zencdn.net/6.2.8/video.js"></script>        
     	<script src="drawing.js"></script>
         <script src="trial-sequence.js"></script>
@@ -15,7 +14,7 @@
 
 <body>
  <!-- The instructions slide. -->
- 
+
 <div class="slide" id="Welcome">
     <br>
     <img src="images/stanford.png" alt="Stanford University">
@@ -34,20 +33,13 @@
     <button type="button" onclick="this.blur(); experiment.next();"> LET'S DRAW !</button>
 
 </div>
-
-<div id= "main">
-    <div id = "cue"> CAT </div>
-	<canvas id="sketchpad"></canvas>
-    <body>
-        <div id= "main">
-        <div id="instructions">            
-            <div id="ready"> ready? </div>
-    	    <div id="cue" style="display:none"> cat </div>
-        </div>
-        <div id="submit" style="display:none"> submit </div> 
-	</div>
-    </body>  
+    <div id="ready"> ready? </div>
+    <div id = "cue" style="display:none"> cat </div>
+    <div id="submit" style="display:none"> submit </div> 
+    <div id= "main"> </div>
+    <canvas id="sketchpad"></canvas>
+    <div id="instructions"></div>
+</body>  
 </html>
 
 
-</body>
