@@ -39,6 +39,13 @@ button[disabled] {
   text-align: center;
 }
 
+#welcomeVideo {
+    position: absolute;
+    right:25%;left:25%; top:25%; bottom: 25%;
+    background: #ffffff;
+    border: solid 5px #999;
+}
+
 #main {
 	height: auto;
 	width: auto;
