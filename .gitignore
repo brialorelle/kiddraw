@@ -1,0 +1,4 @@
+*.DS_Store
+experiments/node_modules/*
+*.csv
+*.npy
