@@ -32,12 +32,10 @@
         </p> 
     </video>
 
-
-
     <div>
-        <video id="cueVideo" class="video-js" controls preload="auto" width="200" height="200" data-setup="{}">
-            <source src="videos/videoTest.mp4" type='video/mp4'>
-            <source src="videos/videoTest.webm" type='video/webm'>
+        <video id="cueVideo" class="video-js" controls preload="auto" width="200" height="200" data-setup="{}" style="display:none">
+            <source src="videos/videoTest.mp4" type='video/mp4' style="display:none">
+            <source src="videos/videoTest.webm" type='video/webm' style="display:none">
             <p class="vjs-no-js">
                 To view this video please enable JavaScript, and consider upgrading to a web browser that
             <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
@@ -45,7 +43,6 @@
         </video>
     </div>
 
-    <button type="button" > LET'S DRAW !</button>
     <button type="button" onclick="this.blur(); experiment.next();"> LET'S DRAW !</button>
 
     </div>
