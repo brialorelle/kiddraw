@@ -1,9 +1,6 @@
 body {
-  padding: 0;
-  margin: 0;
-  font-family: Palatino Linotype, Bookman Antiqua, Palatino, serif;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 3em;
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; }
 }
 
 button {
@@ -35,18 +32,15 @@ button[disabled] {
 #logo-text {
   font-weight: bold;
 }
-#Welcome {
-  text-align: center;
-}
 
-#welcomeVideo {
+#cueVideo {
     position: absolute;
-    right:25%;left:25%; top:25%; bottom: 25%;
+    top: 12vh;
+    right:0;left:0;
+    float: top;
     background: #ffffff;
     border: solid 5px #999;
-    bottom:6vh;
     float:center;
-    z-index:4;
 }
 
 #main {
@@ -64,7 +58,7 @@ button[disabled] {
     height: 500px;
     width: 500px;
     position: absolute;
-    top: 8vh;
+    top: 12vh;
     right:0;left:0;
     float: top;
     margin: auto;
@@ -80,16 +74,25 @@ button[disabled] {
 }
 
 #cue {
-    font-size:20;
+    font-size:40;
     position:absolute;
     float:center;
     margin: 0 auto;
 }
 
 #ready {
-    font-size:20;
+    font-size:80;
     position:absolute;
     float:center;
     margin: 0 auto;
-
 }
+
+.video-js .vjs-control-bar {
+ display:none!important; 
+}
+
+.video-js .vjs-big-play-button {
+    display: none;
+}
+
+

@@ -1,5 +1,6 @@
 <!doctype html>
 <html>
+
     <head>
         <title>Draw Something!</title>
         <link href="custom.css" media="screen" rel="stylesheet" type="text/css">
@@ -21,25 +22,45 @@
     <p id='logo-text'>Stanford Language and Cognition Lab</p>
     <br>
     <br>
+
      <video id="welcomeVideo" class="video-js" controls preload="auto" width="400" height="264" poster="images/cattest.jpg" data-setup="{}" style="display:none">
         <source src="videos/videoTest.mp4" type='video/mp4' style="display:none">
         <source src="videos/videoTest.webm" type='video/webm' style="display:none">
         <p class="vjs-no-js">
             To view this video please enable JavaScript, and consider upgrading to a web browser that
-        <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
-    </p> 
-  </video>
+            <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+        </p> 
+    </video>
+
+
+
+    <div>
+        <video id="cueVideo" class="video-js" controls preload="auto" width="200" height="200" data-setup="{}">
+            <source src="videos/videoTest.mp4" type='video/mp4'>
+            <source src="videos/videoTest.webm" type='video/webm'>
+            <p class="vjs-no-js">
+                To view this video please enable JavaScript, and consider upgrading to a web browser that
+            <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+            </p> 
+        </video>
+    </div>
+
     <button type="button" > LET'S DRAW !</button>
     <button type="button" onclick="this.blur(); experiment.next();"> LET'S DRAW !</button>
 
-</div>
-    <div id="ready"> ready? </div>
-    <div id = "cue" style="display:none"> cat </div>
-    <div id="submit" style="display:none"> submit </div> 
+    </div>
+    <div id="ready"> Ready? </div>
+    <div id ="cue" style="display:none"> Can you draw a CAT ? </div>
+    <div id="submit" style="display:none"> 
+    <button onclick="nextTrial()">DONE!</button>
+    </div> 
+
     <div id= "main"> </div>
     <canvas id="sketchpad"></canvas>
     <div id="instructions"></div>
+
 </body>  
+
 </html>
 
 
