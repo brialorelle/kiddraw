@@ -14,10 +14,28 @@
     </head>
 
 <body>
+ <!-- The instructions slide. -->
+
+<!-- <div class="slide" id="Welcome">
+    <br>
+    <img src="images/stanford.png" alt="Stanford University">
+    <p id='logo-text'>Stanford Language and Cognition Lab</p>
+    <br>
+    <br>
+
+     <video id="welcomeVideo" class="video-js" controls preload="auto" width="400" height="264" poster="images/cattest.jpg" data-setup="{}" style="display:none">
+        <source src="videos/videoTest.mp4" type='video/mp4' style="display:none">
+        <source src="videos/videoTest.webm" type='video/webm' style="display:none">
+        <p class="vjs-no-js">
+            To view this video please enable JavaScript, and consider upgrading to a web browser that
+            <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+        </p> 
+    </video>
+    </div>  -->
     <div>
-        <video id="cueVideo" class="video-js" controls preload="auto" width="200" height="200" data-setup="{}">
-            <source src="videos/videoTest.mp4" type='video/mp4'>
-            <source src="videos/videoTest.webm" type='video/webm'>
+        <video id="cueVideo" class="video-js" controls preload="auto" width="200" height="200" data-setup="{}" style="display:none">
+            <source src="videos/videoTest.mp4" type='video/mp4' style="display:none">
+            <source src="videos/videoTest.webm" type='video/webm' style="display:none">
             <p class="vjs-no-js">
                 To view this video please enable JavaScript, and consider upgrading to a web browser that
             <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
@@ -28,12 +46,12 @@
     <div id ="cue" style="display:none"> Can you draw a CAT ? </div>
     <div id="submit" style="display:none"> 
     <button class=button onclick="nextTrial()">DONE!</button>
-    </div> 
+    
+
     <div id= "main"> </div>
     <canvas id="sketchpad"></canvas>
     <div id="instructions"></div>
 
-     <script src="trial-sequence.js"></script>
 </body>  
 
 </html>
