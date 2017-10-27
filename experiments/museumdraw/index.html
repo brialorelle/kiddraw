@@ -5,7 +5,6 @@
         <title>Draw Something!</title>
         <link href="custom.css" media="screen" rel="stylesheet" type="text/css">
         <link href="http://vjs.zencdn.net/6.2.8/video-js.css" rel="stylesheet">  <!--  video display package -->
-        <script src="videojs-resolution-switcher.js"></script>
         <link href="http://vjs.zencdn.net/c/video-js.css" rel="stylesheet">  <!--  video display package css -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     	<script type="text/javascript" src="./node_modules/paper/dist/paper-full.js"></script>
@@ -17,17 +16,59 @@
 
 <body>
 
-    <div>
-        <video id="cueVideo" class="video-js" preload="auto" width="200" height="200" >
-           <source src="videos/videoTest.mp4" type="video/mp4">
-        </video>
+    <div class=bufferSlides id="Welcome">
+        <br>
+        <img src="images/stanford.png" alt="Stanford University">
+        <p id='logo-text'>Stanford Language and Cognition Lab</p>
+        <br>
+        <br>
+      <button class="button" onclick="startExp()"> I'd like to participate!</button>
     </div>
-    <div id="ready"> <button class=button> Ready? </button> </div>   
-    <div id ="cue" style="display:none"> Can you draw a CAT ? </div>
-    <div id="submit" style="display:none"> 
-        <button class=button onclick="nextTrial()">DONE!</button>
+
+    <div id="getAge" class=bufferSlides style="display:none" >
+        <br>
+        <img src="images/stanford.png" alt="Stanford University">
+        <p id='logo-text'>Stanford Language and Cognition Lab</p>
+        <div> First, we need to know your age! </div>
+        <br>
+        <select name="age" id="age" form="demographics">
+         <option value="">How old are you?</option>
+                <option value="10">10 years or older</option>
+                <option value="9">9 years old</option>
+                <option value="8">8 years old</option>
+                <option value="7">7 years old</option>
+                <option value="6">6 years old</option>
+                <option value="5">5 years old</option>
+                <option value="4">4 years old</option>
+                <option value="3">3 years old</option>
+                <option value="2">2 years old</option>
+        </select>
+        <br>
+      <button class="button" onclick="startDrawing()"> LET'S DRAW !</button>
     </div>
-    <canvas id="sketchpad" style="display:none" width=500px height=500px></canvas>
+
+    <div id="mainExp" style="display:none">
+        <div style="display:none" id="videoDiv">
+            <video id="cueVideo" class="video-js" preload="auto" width="200" height="200" >
+               <source src="videos/videoTest.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div id="ready" style="display:none"> <button class=button style="font-size: 1em"> Touch here if you're ready to draw! </button> </div> 
+        <div id="allDone" style="display:none"> <button class=button style="font-size: 1em"> Touch here if you'd like to stop drawing. </button>  </div>   
+        <div id ="cue" style="display:none"> Can you draw a CAT ? </div>
+        <div id="submit" style="display:none"> 
+            <button class=button style="font-size: 1em" onclick="nextTrial()">I'm done!</button>
+        </div>
+        <canvas id="sketchpad" style="display:none" width=500px height=500px></canvas>
+    </div>
+
+    <div id="Thanks" class=bufferSlides style="display:none" >
+    <br>
+        <img src="images/stanford.png" alt="Stanford University">
+        <p id='logo-text'>Stanford Language and Cognition Lab</p>
+        <div> Thanks for participating!! To learn more, go to langcog.stanford.edu </div>
+    </div>
+
     <script src="trial-sequence.js"></script>
 
 </body>  

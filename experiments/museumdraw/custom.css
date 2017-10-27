@@ -1,9 +1,9 @@
 body {
-  font-size: 3em;
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; }
 }
 
 .button {
+  font-family: "HelveticaNeue-Light";
   background: url(images/button-gradient.png);
   border: 1px solid #999;
   border-top: 1px solid #e0e0e0;
@@ -13,7 +13,6 @@ body {
   padding-right: 5px;
   height: 50px;
   min-width: 70px;
-  font-size: 30px;
 }
 
 .button:active {
@@ -45,7 +44,7 @@ body {
     float:center;
 }
 
-#main {
+.bufferSlides {
 	height: auto;
 	width: auto;
 	text-align: center;
@@ -53,6 +52,7 @@ body {
 	margin-right: auto;
 	margin-bottom: auto ;
 	left:0; right:0; top:10%; bottom: 0;
+  font-size: 1em;
 	position: absolute;
 }
 
@@ -69,24 +69,29 @@ body {
 }
 
 #submit {
-    font-size:20;
-    position:absolute;
-    float:center;
-    margin: 0 auto;
+    margin: auto;
+    text-align:center
 }
 
 #cue {
-    font-size:40;
-    position:absolute;
-    float:center;
-    margin: 0 auto;
+    margin: auto;
+    text-align:center
 }
 
 #ready {
-    font-size:80;
-    position:absolute;
-    float:center;
-    margin: 0 auto;
+   position:absolute;
+   left:0;
+}
+
+#allDone {
+   position:absolute;
+   right:0;
+}
+
+#mainExp {
+  position:relative;
+  width: 1000px;
+  height: 800px;
 }
 
 .video-js .vjs-control-bar {
