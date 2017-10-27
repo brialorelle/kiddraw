@@ -4,7 +4,14 @@ Handles dynamic elements of museumdraw task
 Oct 26 2017
 
 */
-curTrial=0 // global variable
+
+// To integrate:
+// HTML divs: Starting welcome page, age page (push age data), thank you page
+// JS: ifthen: Do you want to draw more? If no, thank you page, If yes, check curTrial relative to maxTrials.
+// JS: clear and save sketchpad data (and push to online database after each trial)
+// and much more...
+
+curTrial=0 // global variable, trial counter
 
 $(document).ready(function() {	
 	console.log('document ready');
@@ -12,17 +19,16 @@ $(document).ready(function() {
 
 $('#ready').click(function(){
 		console.log('clicked ready button');
-        setTimeout(function() {showCue();},1000);
-        setTimeout(function() {hideCue();},4000); 
-        setTimeout(function() {showSubmit();},8000);
+        setTimeout(function() {showCue();},1000); 
+        setTimeout(function() {hideCue();},4000);  // Take cues away after 4s?
+        setTimeout(function() {showSubmit();},8000); // some minimum amount of time before "I'm done button"
 		timestamp_cueOnset = new Date().getTime();
 })
  
-
 function showCue() {
 	$('#ready').fadeOut('fast');
 	$('#cue').fadeIn('fast'); //text cue associated with trial
-	$('#cueVideo').show(); //show video html - this can be a variable later?
+	$('#cueVideo').show(); //show video div 
 	playVideo();
 }
 
@@ -38,12 +44,11 @@ function showSubmit() {
 
 // video player functions
 function playVideo(){
-  videojs("cueVideo").ready(function(){
-  var myPlayer = this;
-  myPlayer.play();
+  videojs("cueVideo").ready(function(){ // need to wait until video is ready
+  var player = this;
+  player.play();
 	});
 }
-
 
 function loadNextVideo(){
   var player=videojs('cueVideo');
@@ -53,14 +58,16 @@ function loadNextVideo(){
   player.load();
 }
 
-
 function nextTrial() {
 	curTrial++
 	console.log('clicked submit');
 	loadNextVideo(curTrial)
 	document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[curTrial].category;
-
-	// CLEAR SKETCHPAD AND LOAD DATA //
+	// data.sketchData = GET SKETCHPAD DATA
+	// data.category = category
+	// data.video = video
+	// data.submitTime?
+	// CLEAR SKETCHPAD 
 	$('#submit').fadeOut('fast'); // fade out submit button
 	$('#ready').fadeIn('fast'); // fade in ready
 	// GET NEXT CUE AND VIDEO //
