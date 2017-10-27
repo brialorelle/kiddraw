@@ -34,14 +34,22 @@ body {
   font-weight: bold;
 }
 
-#cueVideo {
+.slideButton {
+   position: absolute;
+   margin: auto;
+   right:0;left:0;
+   top: 45vh;
+}
+
+.videoDiv {
+    margin: auto;
     position: absolute;
-    top: 12vh;
+    top: 16vh;
     right:0;left:0;
-    float: top;
     background: #ffffff;
     border: solid 5px #999;
-    float:center;
+    width: 300px;
+    height: 150px;
 }
 
 .bufferSlides {
@@ -74,18 +82,24 @@ body {
 }
 
 #cue {
+    font-size: 3em;
     margin: auto;
     text-align:center
 }
 
 #ready {
+  font-size: 1em;
    position:absolute;
-   left:0;
+   left:10px;
+   top: 30vh;
 }
 
 #allDone {
+  font-size: 1em;
    position:absolute;
-   right:0;
+   right:10px;
+   top: 30vh;
+
 }
 
 #mainExp {
@@ -95,11 +109,15 @@ body {
 }
 
 .video-js .vjs-control-bar {
- display:none!important; 
+  display:none!important; 
 }
 
 .video-js .vjs-big-play-button {
     display: none;
 }
 
+.video-js {
+    width: 300px;
+    height: 150px;
+}
 

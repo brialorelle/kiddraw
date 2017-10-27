@@ -55,13 +55,13 @@ $('#allDone').click(function(){
 function showCue() {
 	
 	$('#cue').fadeIn('fast'); //text cue associated with trial
-	$('#videoDiv').show(); //show video div 
+	$('#cueVideoDiv').show(); //show video div 
 	playVideo();
 }
 
 function hideCue() {
 	$('#cue').fadeOut('fast'); // fade out cue
-	$('#videoDiv').hide(); //show video html - this can be a variable later?
+	$('#cueVideoDiv').hide(); //show video html - this can be a variable later?
 	$('#sketchpad').fadeIn('fast'); // fade in sketchpad  here?
 }
 
@@ -88,6 +88,7 @@ function loadNextVideo(){
 function nextTrial() {
 	curTrial++
 	console.log('clicked submit');
+	$('#sketchpad').fadeOut('fast'); // fade out sketchpas before choice buttons
 	if (curTrial<maxTrials){
 		loadNextVideo(curTrial)
 		document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[curTrial].category;
