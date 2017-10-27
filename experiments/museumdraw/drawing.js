@@ -29,13 +29,3 @@ window.onload = function() {
 }
 
 
-// Get random integers.
-// When called with no arguments, it returns either 0 or 1. When called with one argument, *a*, it returns a number in {*0, 1, ..., a-1*}. When called with two arguments, *a* and *b*, returns a random value in {*a*, *a + 1*, ... , *b*}.
-function random(a,b) {
-  if (typeof b == "undefined") {
-    a = a || 2;
-    return Math.floor(Math.random()*a);
-  } else {
-    return Math.floor(Math.random()*(b-a+1)) + a;
-  }
-}
