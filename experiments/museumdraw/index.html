@@ -5,24 +5,21 @@
         <title>Draw Something!</title>
         <link href="custom.css" media="screen" rel="stylesheet" type="text/css">
         <link href="http://vjs.zencdn.net/6.2.8/video-js.css" rel="stylesheet">  <!--  video display package -->
+        <script src="videojs-resolution-switcher.js"></script>
+        <link href="http://vjs.zencdn.net/c/video-js.css" rel="stylesheet">  <!--  video display package css -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     	<script type="text/javascript" src="./node_modules/paper/dist/paper-full.js"></script>
         <script src="http://vjs.zencdn.net/6.2.8/video.js"></script>        
     	<script src="drawing.js"></script>
         <script src="trial-sequence.js"></script>
-        <script src="stimList.js"></script>         
+        <script src="stimListTest.js"></script>         
     </head>
 
 <body>
 
     <div>
-        <video id="cueVideo" class="video-js" controls preload="auto" width="200" height="200" data-setup="{}">
-            <source src="videos/videoTest.mp4" type='video/mp4'>
-            <source src="videos/videoTest.webm" type='video/webm'>
-            <p class="vjs-no-js">
-                To view this video please enable JavaScript, and consider upgrading to a web browser that
-            <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
-            </p> 
+        <video id="cueVideo" class="video-js" preload="auto" width="200" height="200" >
+           <source src="videos/videoTest.mp4" type="video/mp4">
         </video>
     </div>
     <div id="ready"> <button class=button> Ready? </button> </div>   
