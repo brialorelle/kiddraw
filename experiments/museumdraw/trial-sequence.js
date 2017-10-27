@@ -26,6 +26,7 @@ function showCue() {
 
 function hideCue() {
 	$('#cue').fadeOut('fast'); // fade out cue
+	$('#sketchpad').fadeIn('fast'); // fade in sketchpad 
 }
 
 function showSubmit() {
@@ -37,7 +38,6 @@ function nextTrial() {
 	// CLEAR SKETCHPAD AND LOAD DATA //
 	$('#submit').fadeOut('fast'); // fade out submit button
 	$('#ready').fadeIn('fast'); // fade in ready
-	// LOG DATA SOMEHOW //
 	// GET NEXT CUE AND VIDEO //
 }
 
