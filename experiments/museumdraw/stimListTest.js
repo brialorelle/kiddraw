@@ -1,5 +1,5 @@
-stimListTest = [{"category": "cat", "video": "videoTest.mp4"},
-			{"category": "apple","video": "videoTest2.mp4"},
-			{"category": "dog","video": "videoTest.mp4"},
-			{"category": "ball","video": "videoTest2.mp4"},
+stimListTest = [{"category": "rabbit", "video": "rabbit.mp4"},
+			{"category": "banana","video": "banana.mp4"},
+			{"category": "boat","video": "boat.mp4"},
+			{"category": "cup","video": "cup.mp4"},
 			]

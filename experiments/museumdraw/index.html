@@ -6,8 +6,8 @@
         <link href="custom.css" media="screen" rel="stylesheet" type="text/css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     	<script type="text/javascript" src="./node_modules/paper/dist/paper-full.js"></script>
-        <link href="http://vjs.zencdn.net/6.2.8/video-js.css" rel="stylesheet"> 
-        <script src="http://vjs.zencdn.net/6.2.8/video.js"></script>        
+        <link href="https://vjs.zencdn.net/6.2.8/video-js.css" rel="stylesheet"> 
+        <script src="https://vjs.zencdn.net/6.2.8/video.js"></script>        
     	<script src="drawing.js"></script>
         <script src="trial-sequence.js"></script>
         <script src="stimListTest.js"></script>         
@@ -22,7 +22,7 @@
         <br>
          <div id="welcomeVideoDiv" class="videoDiv" >
             <video id="welcomeVideo" class="video-js" preload="auto" controls=TRUE>
-            <source src="videos/videoTest.mp4" type="video/mp4">
+            <source src="videos/instructions.mp4" type="video/mp4">
             </video>
         </div>
 
@@ -67,23 +67,25 @@
         </select>
 
        
-        <br>
-      <button onclick="startDrawing()"> LET'S DRAW !</button>
+        <br></br>
+        <br></br>
+        <br></br>
+      <button id="start" style="font-size: 1em" onclick="startDrawing()"> LET'S DRAW !</button>
     </div>
 
     <div id="mainExp" style="display:none">
         <div style="display:none" class="videoDiv" id="cueVideoDiv">
             <video id="cueVideo" class="video-js" preload="auto" >
-               <source src="videos/videoTest.mp4" type="video/mp4">
+               <source src="videos/rabbit.mp4" type="video/mp4">
             </video>
         </div>
-        <div id="ready" style="display:none"> <button style="font-size: 1em"> Touch here if you're ready to draw! </button> </div> 
-        <div id="allDone" style="display:none"> <button style="font-size: 1em"> Touch here if you'd like to stop drawing. </button>  </div>   
-        <div id ="cue" style="display:none"> Can you draw a CAT ? </div>
+        <div id="ready" style="display:none"> <button style="font-size: 1em"> LET'S KEEP DRAWING ! </button> </div> 
+        <div id="allDone" style="display:none"> <button style="font-size: 1em"> I'M ALL DONE ! </button>  </div>   
+        <div id ="cue" style="display:none"></div>
         <div id="submit" style="display:none"> 
-            <button style="font-size: 1em" onclick="nextTrial()">I'm done!</button>
+            <button style="font-size: 1em" onclick="nextTrial()"> NEXT !</button>
         </div>
-        <canvas id="sketchpad" style="display:none" width=500px height=500px></canvas>
+        <canvas id="sketchpad" style="display:none" width=800px height=1000px></canvas>
     </div>
 
     <div id="Thanks" class=bufferSlides style="display:none" >

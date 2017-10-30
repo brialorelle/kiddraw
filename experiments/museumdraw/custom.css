@@ -38,8 +38,9 @@ button[disabled] {
    position: absolute;
    margin: auto;
    right:0;left:0;
-   top: 35vh;
+   top: 40vh;
    text-align: center;
+   float:bottom;
 }
 
 #consent {
@@ -83,13 +84,10 @@ button[disabled] {
 }
 
 #sketchpad {
-    height: 500px;
-    width: 500px;
     position: absolute;
     top: 12vh;
-    right:0;left:0;
-    float: top;
-    margin: auto;
+    left: 7%;
+    right: 7%;
     background: #ffffff;
     border: solid 5px #999;
 }
@@ -122,8 +120,6 @@ button[disabled] {
 
 #mainExp {
   position:relative;
-  width: 1000px;
-  height: 800px;
 }
 
 /*.video-js .vjs-control-bar {

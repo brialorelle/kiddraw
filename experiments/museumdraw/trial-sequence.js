@@ -12,12 +12,39 @@ Oct 26 2017
 // CSS: Make sure sizing works well on an iPad
 // and much more...
 
-curTrial=0 // global variable, trial counter
-maxTrials=4 // could come from settings file of some kind, hard coded for now.
+
 
 $(document).ready(function() {	
 	console.log('document ready');
 })
+
+// 1. Setup trial order and randomize it!
+var curTrial=0 // global variable, trial counter
+var maxTrials=stimListTest.length; // 
+var trialOrder = [];
+for (var i = 1; i <= maxTrials; i++) {
+   trialOrder.push(i);
+}
+
+//helpfuls
+function shuffle (a) 
+{ 
+    var o = [];
+    for (var i=0; i < a.length; i++) {
+		o[i] = a[i];
+    } 
+    for (var j, x, i = o.length;
+	 i;
+	 j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);	
+    return o;
+}
+//global variables here
+var trialOrder=shuffle(trialOrder)
+var thisTrialIndex=trialOrder[curTrial] 
+
+////
+
+
 
 function startExp(){
 	$('#Welcome').fadeOut('fast'); // hide intro screen
@@ -29,24 +56,34 @@ function endExp(){
 	$('#Thanks').fadeIn('fast'); // hide intro screen
 }
 
+// for the first time we start the experiment
 function startDrawing(){
-	$('#getAge').fadeOut('fast'); // fade in ready button
-	$('#mainExp').fadeIn('fast'); // fade in ready button
-	$('#ready').fadeIn('fast'); // fade in ready button
+		loadNextVideo(thisTrialIndex)
+		document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[thisTrialIndex].category;
+
+	 	$('#getAge').fadeOut('fast'); // fade out age screen
+	    $('#mainExp').fadeIn('fast'); // fade in exp
+
+        setTimeout(function() {showCue();},1000); 
+        setTimeout(function() {hideCue();},5000);  // Take cues away after 5 - after video ends
+        setTimeout(function() {showSubmit();},10000); // some minimum amount of time before "I'm done button"
+		timestamp_cueOnset = new Date().getTime();
 }
 
-$('#ready').click(function(){
-		console.log('clicked ready button');
+// for other trials
+$('#ready').on('touchstart click',function(){
+		console.log('touched ready button');
 		$('#ready').fadeOut('fast');
 		$('#allDone').fadeOut('fast');
         setTimeout(function() {showCue();},1000); 
-        setTimeout(function() {hideCue();},4000);  // Take cues away after 4s?
-        setTimeout(function() {showSubmit();},8000); // some minimum amount of time before "I'm done button"
+        setTimeout(function() {hideCue();},5000);  // Take cues away after 4s?
+        setTimeout(function() {showSubmit();},10000); // some minimum amount of time before "I'm done button"
 		timestamp_cueOnset = new Date().getTime();
 })
 
-$('#allDone').click(function(){
-		console.log('clicked all done');
+
+$('#allDone').on('touchstart click',function(){
+		console.log('touched all done');
 		$('#ready').fadeOut('fast');
 		$('#allDone').fadeOut('fast');
         endExp();
@@ -80,18 +117,21 @@ function playVideo(){
 function loadNextVideo(){
   var player=videojs('cueVideo');
   player.pause();
-  console.log(stimListTest[curTrial].video)
-  player.src({ type: "video/mp4", src: "videos/" + stimListTest[curTrial].video });
+  var thisTrialIndex=trialOrder[curTrial] 
+  console.log(stimListTest[thisTrialIndex].video)
+  player.src({ type: "video/mp4", src: "videos/" + stimListTest[thisTrialIndex].video });
   player.load();
 }
 
 function nextTrial() {
 	curTrial++
 	console.log('clicked submit');
+	project.activeLayer.removeChildren(); // clear sketchpad hack?
 	$('#sketchpad').fadeOut('fast'); // fade out sketchpas before choice buttons
 	if (curTrial<maxTrials){
-		loadNextVideo(curTrial)
-		document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[curTrial].category;
+		var thisTrialIndex=trialOrder[curTrial] 
+		loadNextVideo(thisTrialIndex)
+		document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[thisTrialIndex].category;
 		// data.sketchData = GET SKETCHPAD DATA
 		// data.category = category
 		// data.video = video
@@ -107,6 +147,7 @@ function nextTrial() {
 	}
 
 }
+
 
 
 
