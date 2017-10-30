@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 
     <head>
@@ -21,24 +21,40 @@
         <p id='logo-text'>Stanford Language and Cognition Lab</p>
         <br>
          <div id="welcomeVideoDiv" class="videoDiv" >
-            <video id="welcomeVideo" class="video-js" preload="auto" width="200" height="200" >
+            <video id="welcomeVideo" class="video-js" preload="auto" controls=TRUE>
             <source src="videos/videoTest.mp4" type="video/mp4">
-        </video>
+            </video>
         </div>
-        <br>
-        <div class="slideButton">
-        <button class="button" onclick="startExp()"> I'd like to participate!</button>
+
+        <div id="consent">
+        <p> We are interested in how children learn to draw. We will ask you to report to your child’s age and your child will be asked to draw pictures on this tablet. No audio/video taping will occur. Your child’s participation will take approximately 30 seconds – 5 minutes, depending on how long they choose to draw.  <br></br>
+
+        The drawing data collected here will be used for research purposes by the Stanford Language and Cognition Lab and the San Jose Children's Discovery Museum, and will be displayed on the Museum's website on a future date. There are no risks or benefits to participating: no identifying information will be collected, so you and your child’s identity will remain anonymous. Your child can stop drawing at any time or choose not to answer any question without penalty.  <br></br>
+
+        Questions:  For more information, email the Stanford lab at langcoglab@stanford.edu, or call 650-721-9270. <br></br>
+
+        Independent Contact:  If you are not satisfied with how this study is being conducted, or if you have any concerns, complaints, or general questions about the research or your rights as a participant, please contact the Stanford Institutional Review Board (IRB) to speak to someone independent of the research team at (650)-723-2480 or toll free at 1-866-680-2906.  You can also write to the Stanford IRB, Stanford University, 3000 El Camino Real, Five Palo Alto Square, 4th Floor, Palo Alto, CA 94306. <br></br>
+
+        If you agree to participate in this research, please click the button below to continue.  <br></br>
+        </p>
+
+       <div class="slideButton">
+        <button style="font-size: 1em" onclick="startExp()"> I'd like to participate!</button>
         </div>
+        </div>
+
+
+
     </div>
 
     <div id="getAge" class=bufferSlides style="display:none" >
         <br>
         <img src="images/stanford.png" alt="Stanford University">
         <p id='logo-text'>Stanford Language and Cognition Lab</p>
-        <div> First, we need to know your age! </div>
+        <div> First, we need to know your child's age. </div>
         <br>
-        <select name="age" id="age" form="demographics">
-         <option value="">How old are you?</option>
+        <select name="age" id="years" form="demographics">
+         <option value="">Years</option>
                 <option value="10">10 years or older</option>
                 <option value="9">9 years old</option>
                 <option value="8">8 years old</option>
@@ -49,8 +65,10 @@
                 <option value="3">3 years old</option>
                 <option value="2">2 years old</option>
         </select>
+
+       
         <br>
-      <button class="button" onclick="startDrawing()"> LET'S DRAW !</button>
+      <button onclick="startDrawing()"> LET'S DRAW !</button>
     </div>
 
     <div id="mainExp" style="display:none">
@@ -59,11 +77,11 @@
                <source src="videos/videoTest.mp4" type="video/mp4">
             </video>
         </div>
-        <div id="ready" style="display:none"> <button class=button style="font-size: 1em"> Touch here if you're ready to draw! </button> </div> 
-        <div id="allDone" style="display:none"> <button class=button style="font-size: 1em"> Touch here if you'd like to stop drawing. </button>  </div>   
+        <div id="ready" style="display:none"> <button style="font-size: 1em"> Touch here if you're ready to draw! </button> </div> 
+        <div id="allDone" style="display:none"> <button style="font-size: 1em"> Touch here if you'd like to stop drawing. </button>  </div>   
         <div id ="cue" style="display:none"> Can you draw a CAT ? </div>
         <div id="submit" style="display:none"> 
-            <button class=button style="font-size: 1em" onclick="nextTrial()">I'm done!</button>
+            <button style="font-size: 1em" onclick="nextTrial()">I'm done!</button>
         </div>
         <canvas id="sketchpad" style="display:none" width=500px height=500px></canvas>
     </div>

@@ -2,7 +2,7 @@ body {
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; }
 }
 
-.button {
+button {
   font-family: "HelveticaNeue-Light";
   background: url(images/button-gradient.png);
   border: 1px solid #999;
@@ -15,14 +15,14 @@ body {
   min-width: 70px;
 }
 
-.button:active {
+button:active {
   border-left: 1px solid #c9c9c9;
   border-top: 1px solid #c9c9c9;
   background: none;
   background-color: #c9c9c9;
 }
 
-.button[disabled] {
+button[disabled] {
   background: url(zen-button.png);
   border: 1px solid #999;
   border-top: 1px solid #e0e0e0;
@@ -38,19 +38,37 @@ body {
    position: absolute;
    margin: auto;
    right:0;left:0;
-   top: 45vh;
+   top: 35vh;
+   text-align: center;
+}
+
+#consent {
+  text-align: left;
+  height: 420px;
+  width: 700px;
+  position: relative;
+  margin: auto;
+  float:top;
+  top: 20vh;
+  border: solid 5px #999;
 }
 
 .videoDiv {
     margin: auto;
     position: absolute;
-    top: 16vh;
+    top: 12vh;
     right:0;left:0;
     background: #ffffff;
     border: solid 5px #999;
     width: 300px;
-    height: 150px;
+    height: 200px;
 }
+
+.video-js {
+    width: 300px;
+    height: 200px;
+}
+
 
 .bufferSlides {
 	height: auto;
@@ -108,16 +126,13 @@ body {
   height: 800px;
 }
 
-.video-js .vjs-control-bar {
+/*.video-js .vjs-control-bar {
   display:none!important; 
-}
+}*/
 
-.video-js .vjs-big-play-button {
+/*.video-js .vjs-big-play-button {
     display: none;
-}
+}*/
 
-.video-js {
-    width: 300px;
-    height: 150px;
-}
+
 
