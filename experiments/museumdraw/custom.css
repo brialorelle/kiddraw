@@ -104,22 +104,28 @@ button[disabled] {
 }
 
 #ready {
-  font-size: 1em;
+   font-size: 1em;
    position:absolute;
-   left:10px;
-   top: 30vh;
+   left:50%;
+   top: 25%;
 }
 
 #allDone {
-  font-size: 1em;
+   font-size: 1em;
    position:absolute;
-   right:10px;
-   top: 30vh;
+   left:50%;
+   top: 75%;
+}
 
+#goodJob{
+  position:absolute;
+  top: 50%;
 }
 
 #mainExp {
-  position:relative;
+  position:absolute;
+  height: 1024px;
+  width: 768px;
 }
 
 /*.video-js .vjs-control-bar {

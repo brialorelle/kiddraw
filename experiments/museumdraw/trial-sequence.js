@@ -16,13 +16,20 @@ Oct 26 2017
 
 $(document).ready(function() {	
 	console.log('document ready');
+
 })
 
 // 1. Setup trial order and randomize it!
+
+var stimListTest = [{"category": "rabbit", "video": "rabbit.mp4"},
+			{"category": "banana","video": "banana.mp4"},
+			{"category": "boat","video": "boat.mp4"},
+			{"category": "cup","video": "cup.mp4"},
+			]
 var curTrial=0 // global variable, trial counter
-var maxTrials=stimListTest.length; // 
+var maxTrials = stimListTest.length-1; // 
 var trialOrder = [];
-for (var i = 1; i <= maxTrials; i++) {
+for (var i = 0; i <= maxTrials; i++) {
    trialOrder.push(i);
 }
 
@@ -73,6 +80,7 @@ function startDrawing(){
 // for other trials
 $('#ready').on('touchstart click',function(){
 		console.log('touched ready button');
+		('#goodJob').fadeOut('fast'); 
 		$('#ready').fadeOut('fast');
 		$('#allDone').fadeOut('fast');
         setTimeout(function() {showCue();},1000); 
@@ -139,11 +147,12 @@ function nextTrial() {
 		// CLEAR SKETCHPAD 
 		$('#submit').fadeOut('fast'); // fade out submit button
 		$('#ready').fadeIn('fast'); // fade in ready
+		$('#goodJob').fadeIn('fast'); 
 		$('#allDone').fadeIn('fast'); 
 		// GET NEXT CUE AND VIDEO //
 	}
 	else {
-		endExperiment();
+		endExp();
 	}
 
 }

@@ -9,8 +9,7 @@
         <link href="https://vjs.zencdn.net/6.2.8/video-js.css" rel="stylesheet"> 
         <script src="https://vjs.zencdn.net/6.2.8/video.js"></script>        
     	<script src="drawing.js"></script>
-        <script src="trial-sequence.js"></script>
-        <script src="stimListTest.js"></script>         
+        <script src="trial-sequence.js"></script>     
     </head>
 
 <body>
@@ -79,8 +78,9 @@
                <source src="videos/rabbit.mp4" type="video/mp4">
             </video>
         </div>
-        <div id="ready" style="display:none"> <button style="font-size: 1em"> LET'S KEEP DRAWING ! </button> </div> 
-        <div id="allDone" style="display:none"> <button style="font-size: 1em"> I'M ALL DONE ! </button>  </div>   
+        <div id="ready" style="display:none"> <button style="font-size: 2em; background-color: #4CAF50;"> Let's keep drawing! </button> </div> 
+        <div id="allDone" style="display:none"> <button style="font-size: 2em; background-color: #f44336;"> I'm all done! </button>  </div>   
+        <div id ="goodJob" style="display:none"> <img src="images/thankyou.jpg" style="height: 300px; width: 300px"></div>
         <div id ="cue" style="display:none"></div>
         <div id="submit" style="display:none"> 
             <button style="font-size: 1em" onclick="nextTrial()"> NEXT !</button>
