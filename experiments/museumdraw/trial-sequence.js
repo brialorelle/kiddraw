@@ -80,7 +80,7 @@ function startDrawing(){
 // for other trials
 $('#ready').on('touchstart click',function(){
 		console.log('touched ready button');
-		('#goodJob').fadeOut('fast'); 
+		$('#goodJob').fadeOut('fast'); 
 		$('#ready').fadeOut('fast');
 		$('#allDone').fadeOut('fast');
         setTimeout(function() {showCue();},1000); 
