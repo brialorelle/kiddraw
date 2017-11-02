@@ -153,33 +153,33 @@ function nextTrial() {
 						age: 'unknown'}
 		console.log(current_data);
 
-        // $.ajax({
-        //        type: 'POST',
-        //        url: 'http://138.68.25.178:4000/db/insert',
-        //        dataType: 'jsonp',
-        //        traditional: true,
-        //        timeout: 2000,                   
-        //        contentType: 'application/json; charset=utf-8',
-        //        data: current_data,
-        //        retryLimit: 3,
-        //        error: function(x, t, m) {
-        //           if(t==="timeout") {
-        //             console.log("got timeout, try again...");
-        //             console.log(m);
-        //             this.retryLimit--;                    
-        //             $.ajax(this);
-        //             return;
-        //           } else {
-        //               console.log(t);
-        //               this.retryLimit--;
-        //               $.ajax(this);    
-        //               return;                      
-        //           }
-        //        },
-        //         success: function(msg) { 
-        //         console.log('image uploaded successfully');
-        //        }
-        // });						
+        $.ajax({
+               type: 'POST',
+               url: 'http://171.64.40.90:9919/db/insert',
+               dataType: 'jsonp',
+               traditional: true,
+               timeout: 2000,                   
+               contentType: 'application/json; charset=utf-8',
+               data: current_data,
+               retryLimit: 3,
+               error: function(x, t, m) {
+                  if(t==="timeout") {
+                    console.log("got timeout, try again...");
+                    console.log(m);
+                    this.retryLimit--;                    
+                    $.ajax(this);
+                    return;
+                  } else {
+                      console.log(t);
+                      this.retryLimit--;
+                      $.ajax(this);    
+                      return;                      
+                  }
+               },
+                success: function(msg) { 
+                console.log('image uploaded successfully');
+               }
+        });						
 
 
 		// data.sketchData = GET SKETCHPAD DATA
