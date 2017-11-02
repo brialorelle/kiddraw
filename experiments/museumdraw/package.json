@@ -4,6 +4,7 @@
   "description": "tools to collect drawing data from kids",
   "main": "index.js",
   "dependencies": {
+    "express": "^4.16.2",
     "lodash": "^4.17.4",
     "paper": "^0.11.5"
   },
