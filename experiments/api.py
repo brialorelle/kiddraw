@@ -25,12 +25,8 @@ from tornado.options import define, options
 
 import pymongo as pm
 
-
 define("port", default=4000, help="run on the given port", type=int)
-
 print('ready to connect')
-
-#REGRESSORS = cPickle.load(open('/om/user/yamins/morph_regressors.pkl'))
 
 class App(tornado.web.Application):
     """
@@ -51,7 +47,7 @@ class BaseHandler(tornado.web.RequestHandler):
 
         callback = args.pop('callback', None)   
         
-        resp = jsonize(self.get_response(args))        
+        resp = json.dumps(self.get_response(args))        
 
         if callback:
             self.write(callback + '(')
@@ -90,13 +86,6 @@ def save_response(handler,args):
     fs = FS_DICT[(dbname, colname)]    
     print args
     _id = fs.put(filestr, **args) # actually put file in db
-
-
-def jsonize(x):
-    try:
-        json.dumps(x)
-    else:
-        return x
 
 
 def main():
