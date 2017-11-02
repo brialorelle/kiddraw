@@ -13,12 +13,6 @@ Oct 26 2017
 // and much more...
 
 
-
-$(document).ready(function() {	
-	console.log('document ready');
-
-})
-
 // 1. Setup trial order and randomize it!
 
 var stimListTest = [{"category": "rabbit", "video": "rabbit.mp4"},
@@ -73,7 +67,7 @@ function startDrawing(){
 
         setTimeout(function() {showCue();},1000); 
         setTimeout(function() {hideCue();},5000);  // Take cues away after 5 - after video ends
-        setTimeout(function() {showSubmit();},10000); // some minimum amount of time before "I'm done button"
+        setTimeout(function() {showSubmit();},6000); // some minimum amount of time before "I'm done button"
 		timestamp_cueOnset = new Date().getTime();
 }
 
@@ -85,7 +79,7 @@ $('#ready').on('touchstart click',function(){
 		$('#allDone').fadeOut('fast');
         setTimeout(function() {showCue();},1000); 
         setTimeout(function() {hideCue();},5000);  // Take cues away after 4s?
-        setTimeout(function() {showSubmit();},10000); // some minimum amount of time before "I'm done button"
+        setTimeout(function() {showSubmit();},6000); // some minimum amount of time before "I'm done button"
 		timestamp_cueOnset = new Date().getTime();
 })
 
@@ -97,8 +91,7 @@ $('#allDone').on('touchstart click',function(){
         endExp();
 })
  
-function showCue() {
-	
+function showCue() {	
 	$('#cue').fadeIn('fast'); //text cue associated with trial
 	$('#cueVideoDiv').show(); //show video div 
 	playVideo();
@@ -131,6 +124,10 @@ function loadNextVideo(){
   player.load();
 }
 
+// function writeDataToMongo = function(data) {
+
+// }
+
 function nextTrial() {
 	curTrial++
 	console.log('clicked submit');
@@ -140,6 +137,51 @@ function nextTrial() {
 		var thisTrialIndex=trialOrder[curTrial] 
 		loadNextVideo(thisTrialIndex)
 		document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[thisTrialIndex].category;
+
+		// save sketch png
+        var dataURL = document.getElementById('sketchpad').toDataURL();
+        dataURL = dataURL.replace('data:image/png;base64,','');
+
+        var category = stimListTest[thisTrialIndex].category;
+
+        current_data = {imgData: dataURL,
+        				category: category,
+						dbname:'kiddraw',
+						colname:'test',
+						trialNum: curTrial,
+						time: Date.now(),
+						age: 'unknown'}
+		console.log(current_data);
+
+        $.ajax({
+               type: 'POST',
+               url: 'http://138.68.25.178:4000/saveresponse',
+               dataType: 'jsonp',
+               traditional: true,
+               timeout: 2000,                   
+               contentType: 'application/json; charset=utf-8',
+               data: current_data,
+               retryLimit: 3,
+               error: function(x, t, m) {
+                  if(t==="timeout") {
+                    console.log("got timeout, try again...");
+                    console.log(m);
+                    this.retryLimit--;                    
+                    $.ajax(this);
+                    return;
+                  } else {
+                      console.log(t);
+                      this.retryLimit--;
+                      $.ajax(this);    
+                      return;                      
+                  }
+               },
+                success: function(msg) { 
+                console.log('image uploaded successfully');
+               }
+        });						
+
+
 		// data.sketchData = GET SKETCHPAD DATA
 		// data.category = category
 		// data.video = video
