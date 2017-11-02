@@ -61,7 +61,8 @@ class BaseHandler(tornado.web.RequestHandler):
 auth = pd.read_csv('auth.txt', header = None) # this auth.txt file contains the password for the sketchloop user
 PASSWORD = auth.values[0][0]
 MONGO_PORT = 20809
-CONN = pm.MongoClient('mongodb://sketchloop:{}@127.0.0.1:{}/'.format(PASSWORD,MONGO_PORT))  
+# CONN = pm.MongoClient('mongodb://sketchloop:{}@127.0.0.1:{}/'.format(PASSWORD,MONGO_PORT))  
+CONN = pm.MongoClient(port=MONGO_PORT)
 
 DB_DICT = {}
 FS_DICT = {}      
