@@ -25,7 +25,7 @@ from tornado.options import define, options
 
 import pymongo as pm
 
-define("port", default=8880, help="run on the given port", type=int)
+define("port", default=9919, help="run on the given port", type=int)
 print('ready to connect')
 
 class App(tornado.web.Application):
@@ -96,6 +96,7 @@ def main():
     tornado.options.parse_command_line()
     ioloop = tornado.ioloop.IOLoop.instance()
     http_server = tornado.httpserver.HTTPServer(App(), max_header_size=10000000)
+    print options.port
     http_server.listen(options.port)
     tornado.autoreload.start()
     ioloop.start()
