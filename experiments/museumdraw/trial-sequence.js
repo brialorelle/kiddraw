@@ -155,7 +155,7 @@ function nextTrial() {
 
         $.ajax({
                type: 'POST',
-               url: 'http://171.64.40.90:9919/db/insert',
+               url: 'http://171.64.40.90:9919/saveresponse',
                dataType: 'jsonp',
                traditional: true,
                timeout: 2000,                   
