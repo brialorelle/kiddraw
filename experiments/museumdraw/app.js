@@ -4,12 +4,32 @@ const app = express();
 
 app.listen(8889, function() {
     console.log('listening on 8889')
-})
+});
 
-console.log(__dirname);
+app.get('/*', (req, res) => {
+  serveFile(req, res); 
+});
 
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');  
-  // Note: __dirname is directory that contains the JavaScript source code. Try logging it and see what you get!
-  // Mine was '/Users/zellwk/Projects/demo-repos/crud-express-mongo' for this app.
-})
+var serveFile = function(req, res) {
+  var fileName = req.params[0];
+  console.log('\t :: Express :: file requested: ' + fileName);
+  return res.sendFile(fileName, {root: __dirname}); 
+};
+
+var writeDataToMongo = function(data) {
+  var postData = _.extend({
+    dbname: data['dbname'],
+    colname: data['colname']
+	  }, line);
+	  sendPostRequest(
+    	'http://localhost:4000/db/insert',
+    	{ json: postData },
+    	(error, res, body) => {
+      if (!error && res.statusCode === 200) {
+        console.log(`sent data to store`);
+      } else {
+		console.log(`error sending data to store: ${error} ${body}`);
+      }
+    }
+  );
+};
