@@ -25,7 +25,7 @@ from tornado.options import define, options
 
 import pymongo as pm
 
-define("port", default=4000, help="run on the given port", type=int)
+define("port", default=9919, help="run on the given port", type=int)
 print('ready to connect')
 
 class App(tornado.web.Application):
