@@ -6,7 +6,10 @@
   "dependencies": {
     "express": "^4.16.2",
     "lodash": "^4.17.4",
-    "paper": "^0.11.5"
+    "paper": "^0.11.5",
+    "request": "^2.83.0",
+    "xmldom": "^0.1.27",
+    "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {},
   "scripts": {
