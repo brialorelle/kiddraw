@@ -152,7 +152,7 @@ function nextTrial() {
 						trialNum: curTrial,
 						time: Date.now(),
 						age: 'unknown'};
-						
+
 		console.log(current_data);
 
 		// send data to server to write to database

@@ -36,7 +36,14 @@ app.get('/*', (req, res) => {
   serveFile(req, res); 
 });
 
-var socket = io.connect('http://localhost:8001');
+// var socket = io.connect('http://localhost:8001');
+
+io.on('connection', function (socket) {
+  socket.emit('news', { hello: 'world' });
+  socket.on('current_data', function(data) {
+      console.log('current_data received: ' + data);
+  });
+});
 
 var serveFile = function(req, res) {
   var fileName = req.params[0];
