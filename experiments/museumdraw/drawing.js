@@ -1,54 +1,53 @@
-paper.install(window);
+// paper.install(window);
 
-window.onload = function() {  
+// window.onload = function() {  
 
-  socket = io.connect();
+//   socket = io.connect();
 
-  paper.setup('sketchpad');
-  // Create a simple drawing tool:
-  var tool = new Tool();
-  tool.minDistance = 10;
-  var path, path2;     
+//   paper.setup('sketchpad');
+//   // Create a simple drawing tool:
+//   var tool = new Tool();
+//   tool.minDistance = 10;
+//   var path, path2;     
 
-  // Define a mousedown and mousedrag handler
-  tool.onMouseDown = function(event) {
-    path = new Path();      
-    path.strokeColor = '#0074D9';
-    path.strokeWidth = 10;
-    path.add(event.point);
-  }
+//   // Define a mousedown and mousedrag handler
+//   tool.onMouseDown = function(event) {
+//     path = new Path();      
+//     path.strokeColor = '#0074D9';
+//     path.strokeWidth = 10;
+//     path.add(event.point);
+//   }
 
-  tool.onMouseDrag = function(event) {
-    path.add(event.point);
-  }
+//   tool.onMouseDrag = function(event) {
+//     path.add(event.point);
+//   }
 
-  tool.onMouseUp = function(event) {
-    path.selected = false;
-    path.simplify(10);
-    finalPoint = path._segments.slice(-1)[0];
+//   tool.onMouseUp = function(event) {
+//     path.selected = false;
+//     path.simplify(10);
+//     finalPoint = path._segments.slice(-1)[0];
 
-    jsonString = path.exportJSON({asString: true}).replace(/\./g,'~~~');
-    svgString = globalGame.path.exportSVG({asString: true}).replace(/\./g,'~~~');
+//     jsonString = path.exportJSON({asString: true}).replace(/\./g,'~~~');
+//     svgString = path.exportSVG({asString: true}).replace(/\./g,'~~~');
 
+//     stroke_data = {
+//       json: jsonString,
+//       svg: svgString,
+//       category: category,
+//       dbname:'kiddraw',
+//       colname:'test',
+//       trialNum: curTrial,
+//       time: Date.now(),
+//       date: readable_date,    
+//       age: 'unknown'  
+//     };
 
-    stroke_data = {
-      json: jsonString,
-      svg: svgString,
-      category: category,
-      dbname:'kiddraw',
-      colname:'test',
-      trialNum: curTrial,
-      time: Date.now(),
-      date: readable_date,    
-      age: 'unknown'  
-    };
-
-    console.log(stroke_data);
-    // send stroke data to server
-    socket.emit('stroke',stroke_data);
+//     console.log(stroke_data);
+//     // send stroke data to server
+//     socket.emit('stroke',stroke_data);
 
     
-  }
-}
+//   }
+// }
 
 
