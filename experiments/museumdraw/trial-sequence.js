@@ -12,8 +12,6 @@ Oct 26 2017
 // CSS: Make sure sizing works well on an iPad
 // and much more...
 
-// var socket = io.connect('https://localhost');
-socket = io.connect();
 
 // 1. Setup trial order and randomize it!
 
@@ -125,9 +123,6 @@ function loadNextVideo(){
   player.load();
 }
 
-// function writeDataToMongo = function(data) {
-
-// }
 
 function nextTrial() {
 	curTrial++
@@ -151,7 +146,7 @@ function nextTrial() {
 						colname:'test',
 						trialNum: curTrial,
 						time: Date.now(),
-						age: 'unknown'};
+						age: 'unknown'}; // @bria: please pass in real age here?
 
 		console.log(current_data);
 
