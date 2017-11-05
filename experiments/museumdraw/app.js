@@ -42,7 +42,7 @@ io.on('connection', function (socket) {
   socket.emit('news', { hello: 'world' });
   socket.on('current_data', function(data) {
       console.log('current_data received: ' + JSON.stringify(data));
-      writeDataToMongo(data);
+      writeDataToMongo(data)
   });
 });
 
@@ -53,13 +53,9 @@ var serveFile = function(req, res) {
 };
 
 var writeDataToMongo = function(data) {
-  var postData = _.extend({
-    dbname: data['dbname'],
-    colname: data['colname']
-	  }, line);
 	  sendPostRequest(
     	'http://localhost:4000/db/insert',
-    	{ json: postData },
+    	{ json: data },
     	(error, res, body) => {
       if (!error && res.statusCode === 200) {
         console.log(`sent data to store`);
