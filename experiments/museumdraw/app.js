@@ -41,11 +41,19 @@ app.get('/*', (req, res) => {
 // var socket = io.connect('http://localhost:8001');
 
 io.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
   socket.on('current_data', function(data) {
       console.log('current_data received: ' + JSON.stringify(data));
-      writeDataToMongo(data)
+      writeDataToMongo(data);
   });
+
+  socket.on('stroke', function(data) {
+      console.log('stroke data received: ' + JSON.stringify(data));
+      var xmlDoc = new parser().parseFromString(data['svg'].replace(/~~~/g, '.'));
+      var svgData = xmlDoc.documentElement.getAttribute('d');
+      data['svg'] = svgData;
+      writeDataToMongo(data);      
+  })
+
 });
 
 var serveFile = function(req, res) {

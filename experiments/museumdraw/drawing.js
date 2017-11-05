@@ -27,6 +27,26 @@ window.onload = function() {
     path.simplify(10);
     finalPoint = path._segments.slice(-1)[0];
 
+    jsonString = path.exportJSON({asString: true}).replace(/\./g,'~~~');
+    svgString = globalGame.path.exportSVG({asString: true}).replace(/\./g,'~~~');
+
+
+    stroke_data = {
+      json: jsonString,
+      svg: svgString,
+      category: category,
+      dbname:'kiddraw',
+      colname:'test',
+      trialNum: curTrial,
+      time: Date.now(),
+      date: readable_date,    
+      age: 'unknown'  
+    };
+
+    console.log(stroke_data);
+    // send stroke data to server
+    socket.emit('stroke',stroke_data);
+
     
   }
 }
