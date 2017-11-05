@@ -196,8 +196,8 @@ window.onload = function() {
     path.simplify(10);
     finalPoint = path._segments.slice(-1)[0];
 
-    var jsonString = path.exportJSON({asString: true}).replace(/\./g,'~~~');
-    var svgString = path.exportSVG({asString: true}).replace(/\./g,'~~~');
+    var jsonString = path.exportJSON({asString: true});
+    var svgString = path.exportSVG({asString: true});
     var category = stimListTest[thisTrialIndex].category;
     var readable_date = new Date();
 
