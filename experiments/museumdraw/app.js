@@ -1,14 +1,39 @@
-console.log('Running app.js')
-const express = require('express');
-const app = express();
+global.__base = __dirname + '/';
 
-app.listen(8889, function() {
-    console.log('listening on 8889')
-});
+var 
+    use_https     = true,
+    argv          = require('minimist')(process.argv.slice(2)),
+    https         = require('https'),
+    fs            = require('fs'),
+    app           = require('express')(),
+    _             = require('lodash'),
+
+if (argv.gameport) {
+  gameport = argv.gameport;
+  console.log('using port ' + gameport);
+} else {
+  gameport = 8888;
+  console.log('no gameport specified: using 8888\nUse the --gameport flag to change');
+}
+
+try {
+  var privateKey  = fs.readFileSync('/etc/apache2/ssl/rxdhawkins.me.key'),
+      certificate = fs.readFileSync('/etc/apache2/ssl/rxdhawkins.me.crt'),
+      intermed    = fs.readFileSync('/etc/apache2/ssl/intermediate.crt'),
+      options     = {key: privateKey, cert: certificate, ca: intermed},
+      server      = require('https').createServer(options,app).listen(gameport),
+      io          = require('socket.io')(server);
+} catch (err) {
+  console.log("cannot find SSL certificates; falling back to http");
+  var server      = app.listen(gameport),
+      io          = require('socket.io')(server);
+}
 
 app.get('/*', (req, res) => {
   serveFile(req, res); 
 });
+
+var socket = io.connect('http://localhost:8001');
 
 var serveFile = function(req, res) {
   var fileName = req.params[0];

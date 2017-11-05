@@ -12,6 +12,7 @@ Oct 26 2017
 // CSS: Make sure sizing works well on an iPad
 // and much more...
 
+var socket = io.connect('http://localhost:8889');
 
 // 1. Setup trial order and randomize it!
 
@@ -150,42 +151,13 @@ function nextTrial() {
 						colname:'test',
 						trialNum: curTrial,
 						time: Date.now(),
-						age: 'unknown'}
+						age: 'unknown'};
+						
 		console.log(current_data);
 
-        // $.ajax({
-        //        type: 'GET',
-        //        url: 'http://171.64.40.90:8888/saveresponse',
-        //        dataType: 'jsonp',
-        //        traditional: true,
-        //        timeout: 2000,                   
-        //        contentType: 'application/json; charset=utf-8',
-        //        data: current_data,
-        //        retryLimit: 3,
-        //        error: function(x, t, m) {
-        //           if(t==="timeout") {
-        //             console.log("got timeout, try again...");
-        //             this.retryLimit--;                    
-        //             $.ajax(this);
-        //             return;
-        //           } else {
-        //               console.log(t);
-        //               this.retryLimit--;
-        //               $.ajax(this);    
-        //               return;                      
-        //           }
-        //        },
-        //         success: function(msg) { 
-        //         console.log('image uploaded successfully');
-        //        }
-        // });						
+		// send data to server to write to database
+		socket.emit('current_data',current_data);
 
-
-		// data.sketchData = GET SKETCHPAD DATA
-		// data.category = category
-		// data.video = video
-		// data.submitTime?
-		// CLEAR SKETCHPAD 
 		$('#submit').fadeOut('fast'); // fade out submit button
 		$('#ready').fadeIn('fast'); // fade in ready
 		$('#goodJob').fadeIn('fast'); 
