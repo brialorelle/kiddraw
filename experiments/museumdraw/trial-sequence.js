@@ -140,12 +140,14 @@ function nextTrial() {
 
         var category = stimListTest[thisTrialIndex].category;
 
+        readable_date = new Date();
         current_data = {imgData: dataURL,
         				category: category,
 						dbname:'kiddraw',
 						colname:'test',
 						trialNum: curTrial,
 						time: Date.now(),
+						date: readable_date,
 						age: 'unknown'}; // @bria: please pass in real age here?
 
 		console.log(current_data);
