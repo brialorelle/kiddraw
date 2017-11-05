@@ -6,8 +6,10 @@ var
     https         = require('https'),
     fs            = require('fs'),
     app           = require('express')(),
-    _             = require('lodash');
-
+    _             = require('lodash'),
+    parser        = require('xmldom').DOMParser,
+    XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest,
+    sendPostRequest = require('request').post;    
 
 var gameport;
 
