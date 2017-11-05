@@ -48,7 +48,7 @@ io.on('connection', function (socket) {
 
   socket.on('stroke', function(data) {
       console.log('stroke data received: ' + JSON.stringify(data));
-      var xmlDoc = new parser().parseFromString(data['svg'].replace(/~~~/g, '.'));
+      var xmlDoc = new parser().parseFromString(data['svg']);
       var svgData = xmlDoc.documentElement.getAttribute('d');
       data['svg'] = svgData;
       writeDataToMongo(data);      

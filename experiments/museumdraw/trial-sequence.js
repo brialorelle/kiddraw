@@ -213,7 +213,7 @@ window.onload = function() {
       age: 'unknown'  
     };
 
-    console.log(stroke_data);
+    // console.log(stroke_data);
     // send stroke data to server
     socket.emit('stroke',stroke_data);
     
