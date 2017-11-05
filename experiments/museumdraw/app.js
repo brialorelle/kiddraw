@@ -41,7 +41,8 @@ app.get('/*', (req, res) => {
 io.on('connection', function (socket) {
   socket.emit('news', { hello: 'world' });
   socket.on('current_data', function(data) {
-      console.log('current_data received: ' + data);
+      console.log('current_data received: ' + JSON.stringify(data));
+      writeDataToMongo(data);
   });
 });
 
