@@ -12,7 +12,8 @@ Oct 26 2017
 // CSS: Make sure sizing works well on an iPad
 // and much more...
 
-var socket = io.connect('http://localhost:8889');
+// var socket = io.connect('https://localhost');
+socket = io.connect();
 
 // 1. Setup trial order and randomize it!
 
@@ -45,7 +46,6 @@ var trialOrder=shuffle(trialOrder)
 var thisTrialIndex=trialOrder[curTrial] 
 
 ////
-
 
 
 function startExp(){

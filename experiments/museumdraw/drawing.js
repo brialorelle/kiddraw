@@ -2,6 +2,8 @@ paper.install(window);
 
 window.onload = function() {  
 
+  socket = io.connect();
+
   paper.setup('sketchpad');
   // Create a simple drawing tool:
   var tool = new Tool();
