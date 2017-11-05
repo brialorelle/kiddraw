@@ -6,10 +6,18 @@ var
     https         = require('https'),
     fs            = require('fs'),
     app           = require('express')(),
-    _             = require('lodash'),
+    _             = require('lodash');
 
 
-var gameport = 8888;
+var gameport;
+
+if(argv.gameport) {
+  gameport = argv.gameport;
+  console.log('using port ' + gameport);
+} else {
+  gameport = 8888;
+  console.log('no gameport specified: using 8888\nUse the --gameport flag to change');
+}
 
 try {
   var privateKey  = fs.readFileSync('/etc/apache2/ssl/rxdhawkins.me.key'),

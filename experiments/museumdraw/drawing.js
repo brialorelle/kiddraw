@@ -25,6 +25,7 @@ window.onload = function() {
     path.simplify(10);
     finalPoint = path._segments.slice(-1)[0];
 
+    
   }
 }
 
