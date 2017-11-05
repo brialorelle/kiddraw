@@ -154,7 +154,7 @@ function nextTrial() {
 						date: readable_date,
 						age: 'unknown'}; // @bria: please pass in real age here?
 
-		console.log(current_data);
+		// console.log(current_data);
 
 		// send data to server to write to database
 		socket.emit('current_data',current_data);
@@ -196,13 +196,12 @@ window.onload = function() {
     path.simplify(10);
     finalPoint = path._segments.slice(-1)[0];
 
-    var jsonString = path.exportJSON({asString: true});
+    // var jsonString = path.exportJSON({asString: true});
     var svgString = path.exportSVG({asString: true});
     var category = stimListTest[thisTrialIndex].category;
     var readable_date = new Date();
 
     stroke_data = {
-      json: jsonString,
       svg: svgString,
       category: category,
       dbname:'kiddraw',
