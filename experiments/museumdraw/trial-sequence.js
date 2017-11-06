@@ -107,7 +107,36 @@ function hideCue() {
 }
 
 function showSubmit() {
-	$('#submit').fadeIn('fast');
+	$('#submit_div').fadeIn('fast');
+}
+
+function submitted() {
+  $('#submit').click(function () {
+
+    // save sketch png
+    var dataURL = document.getElementById('sketchpad').toDataURL();
+    dataURL = dataURL.replace('data:image/png;base64,','');
+
+    var category = stimListTest[thisTrialIndex].category;
+    var age = $('#years').value;
+
+    readable_date = new Date();
+    current_data = {imgData: dataURL,
+            category: category,
+        dbname:'kiddraw',
+        colname:'test',
+        trialNum: curTrial,
+        time: Date.now(),
+        date: readable_date,
+        age: age}; 
+
+    // console.log(current_data);
+
+    // send data to server to write to database
+    socket.emit('current_data',current_data);
+
+    nextTrial();
+  })
 }
 
 // video player functions
@@ -135,31 +164,10 @@ function nextTrial() {
 	$('#sketchpad').fadeOut('fast'); // fade out sketchpas before choice buttons
 	if (curTrial<maxTrials){
 		var thisTrialIndex=trialOrder[curTrial] 
-		loadNextVideo(thisTrialIndex)
+		loadNextVideo(thisTrialIndex);
 		document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[thisTrialIndex].category;
 
-		// save sketch png
-        var dataURL = document.getElementById('sketchpad').toDataURL();
-        dataURL = dataURL.replace('data:image/png;base64,','');
-
-        var category = stimListTest[thisTrialIndex].category;
-
-        readable_date = new Date();
-        current_data = {imgData: dataURL,
-        				category: category,
-						dbname:'kiddraw',
-						colname:'test',
-						trialNum: curTrial,
-						time: Date.now(),
-						date: readable_date,
-						age: 'unknown'}; // @bria: please pass in real age here?
-
-		// console.log(current_data);
-
-		// send data to server to write to database
-		socket.emit('current_data',current_data);
-
-		$('#submit').fadeOut('fast'); // fade out submit button
+		$('#submit_div').fadeOut('fast'); // fade out submit button
 		$('#ready').fadeIn('fast'); // fade in ready
 		$('#goodJob').fadeIn('fast'); 
 		$('#allDone').fadeIn('fast'); 
