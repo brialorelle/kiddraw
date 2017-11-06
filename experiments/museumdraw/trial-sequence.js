@@ -37,6 +37,7 @@ var stimListTest = [{"category": "rabbit"},
       {"category": "car"},
 			]
 var curTrial=0 // global variable, trial counter
+var sessionId='pilot0_' + Date.now().toString()
 var maxTrials = stimListTest.length-1; // 
 var trialOrder = [];
 for (var i = 0; i <= maxTrials; i++) {
@@ -156,6 +157,7 @@ window.onload = function() {
     readable_date = new Date();
     current_data = {
         dataType: 'finalImage',
+        sessionId: sessionId,
         imgData: dataURL,
         category: category,
         dbname:'kiddraw',
@@ -225,6 +227,7 @@ window.onload = function() {
 
     stroke_data = {
       dataType: 'stroke',
+      sessionId: sessionId,
       svg: svgString,
       category: category,
       dbname:'kiddraw',
