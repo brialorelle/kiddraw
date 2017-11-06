@@ -92,7 +92,7 @@ button[disabled] {
     border: solid 5px #999;
 }
 
-#submit {
+#submit_div {
     margin: auto;
     text-align:center
 }
