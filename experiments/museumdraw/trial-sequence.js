@@ -142,8 +142,10 @@ window.onload = function() {
     var age = $('#years').value;
 
     readable_date = new Date();
-    current_data = {imgData: dataURL,
-            category: category,
+    current_data = {
+        dataType: 'finalImage',
+        imgData: dataURL,
+        category: category,
         dbname:'kiddraw',
         colname:'test',
         trialNum: curTrial,
@@ -210,6 +212,7 @@ window.onload = function() {
     var readable_date = new Date();
 
     stroke_data = {
+      dataType: 'stroke',
       svg: svgString,
       category: category,
       dbname:'kiddraw',
