@@ -159,7 +159,7 @@ window.onload = function() {
         imgData: dataURL,
         category: category,
         dbname:'kiddraw',
-        colname:'test',
+        colname:'pilot0',
         trialNum: curTrial,
         time: Date.now(),
         date: readable_date,
@@ -168,7 +168,7 @@ window.onload = function() {
     // console.log(current_data);
 
     // send data to server to write to database
-    socket.emit('current_data',current_data);
+    socket.emit('current_data', current_data);
     nextTrial();
   });
 
@@ -204,7 +204,7 @@ window.onload = function() {
   // Define a mousedown and mousedrag handler
   tool.onMouseDown = function(event) {
     path = new Path();      
-    path.strokeColor = '#0074D9';
+    path.strokeColor = '#000000';
     path.strokeWidth = 10;
     path.add(event.point);
   }
