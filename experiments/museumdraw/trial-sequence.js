@@ -74,26 +74,7 @@ function startDrawing(){
 		timestamp_cueOnset = new Date().getTime();
 }
 
-// for other trials
-$('#ready').on('touchstart click',function(){
-		console.log('touched ready button');
-		$('#goodJob').fadeOut('fast'); 
-		$('#ready').fadeOut('fast');
-		$('#allDone').fadeOut('fast');
-        setTimeout(function() {showCue();},1000); 
-        setTimeout(function() {hideCue();},5000);  // Take cues away after 4s?
-        setTimeout(function() {showSubmit();},6000); // some minimum amount of time before "I'm done button"
-		timestamp_cueOnset = new Date().getTime();
-})
 
-
-$('#allDone').on('touchstart click',function(){
-		console.log('touched all done');
-		$('#ready').fadeOut('fast');
-		$('#allDone').fadeOut('fast');
-        endExp();
-})
- 
 function showCue() {	
 	$('#cue').fadeIn('fast'); //text cue associated with trial
 	$('#cueVideoDiv').show(); //show video div 
@@ -108,35 +89,6 @@ function hideCue() {
 
 function showSubmit() {
 	$('#submit_div').fadeIn('fast');
-}
-
-function submitted() {
-  $('#submit').click(function () {
-
-    // save sketch png
-    var dataURL = document.getElementById('sketchpad').toDataURL();
-    dataURL = dataURL.replace('data:image/png;base64,','');
-
-    var category = stimListTest[thisTrialIndex].category;
-    var age = $('#years').value;
-
-    readable_date = new Date();
-    current_data = {imgData: dataURL,
-            category: category,
-        dbname:'kiddraw',
-        colname:'test',
-        trialNum: curTrial,
-        time: Date.now(),
-        date: readable_date,
-        age: age}; 
-
-    // console.log(current_data);
-
-    // send data to server to write to database
-    socket.emit('current_data',current_data);
-
-    nextTrial();
-  })
 }
 
 // video player functions
@@ -180,6 +132,54 @@ function nextTrial() {
 }
 
 window.onload = function() { 
+
+  $('#submit').click(function () {
+    // save sketch png
+    var dataURL = document.getElementById('sketchpad').toDataURL();
+    dataURL = dataURL.replace('data:image/png;base64,','');
+
+    var category = stimListTest[thisTrialIndex].category;
+    var age = $('#years').value;
+
+    readable_date = new Date();
+    current_data = {imgData: dataURL,
+            category: category,
+        dbname:'kiddraw',
+        colname:'test',
+        trialNum: curTrial,
+        time: Date.now(),
+        date: readable_date,
+        age: age}; 
+
+    // console.log(current_data);
+
+    // send data to server to write to database
+    socket.emit('current_data',current_data);
+    nextTrial();
+  });
+
+  // for other trials
+  $('#ready').on('touchstart click',function(){
+      console.log('touched ready button');
+      $('#goodJob').fadeOut('fast'); 
+      $('#ready').fadeOut('fast');
+      $('#allDone').fadeOut('fast');
+          setTimeout(function() {showCue();},1000); 
+          setTimeout(function() {hideCue();},5000);  // Take cues away after 4s?
+          setTimeout(function() {showSubmit();},6000); // some minimum amount of time before "I'm done button"
+      timestamp_cueOnset = new Date().getTime();
+  })
+
+
+  $('#allDone').on('touchstart click',function(){
+      console.log('touched all done');
+      $('#ready').fadeOut('fast');
+      $('#allDone').fadeOut('fast');
+          endExp();
+  })
+   
+
+
   // Drawing related tools
   paper.setup('sketchpad');
   // Create a simple drawing tool:
