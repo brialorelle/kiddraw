@@ -36,6 +36,7 @@ var stimListTest = [{"category": "rabbit"},
       {"category": "boat"},
       {"category": "car"},
 			]
+
 var curTrial=0 // global variable, trial counter
 var maxTrials = stimListTest.length-1; // 
 var trialOrder = [];
@@ -228,7 +229,7 @@ window.onload = function() {
       svg: svgString,
       category: category,
       dbname:'kiddraw',
-      colname:'test',
+      colname:'pilot0',
       trialNum: curTrial,
       time: Date.now(),
       date: readable_date,    
