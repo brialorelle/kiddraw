@@ -78,13 +78,19 @@ function endExp(){
 function startDrawing(){
 		// loadNextVideo(thisTrialIndex)
 		document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[thisTrialIndex].category;
+    
 
 	 $('#getAge').fadeOut('fast'); // fade out age screen
 	 $('#mainExp').fadeIn('fast'); // fade in exp
-
-        setTimeout(function() {showCue();},1000); 
-        setTimeout(function() {hideCue();},5000);  // Take cues away after 5 - after video ends
-        setTimeout(function() {showSubmit();},6000); // some minimum amount of time before "I'm done button"
+    // // resize canvas
+    var canvas = document.getElementById("sketchpad"),
+         ctx=canvas.getContext("2d");
+    canvas.style.height='600px';
+    canvas.style.width='600px';
+    // //
+    setTimeout(function() {showCue();},1000); 
+    setTimeout(function() {hideCue();},5000);  // Take cues away after 5 - after video ends
+    setTimeout(function() {showSubmit();},6000); // some minimum amount of time before "I'm done button"
 		timestamp_cueOnset = new Date().getTime();
 }
 
@@ -196,13 +202,13 @@ window.onload = function() {
   })
    
 
-
   // Drawing related tools
   paper.setup('sketchpad');
   // Create a simple drawing tool:
   var tool = new Tool();
   tool.minDistance = 10;
   var path, path2;     
+
 
   // Define a mousedown and mousedrag handler
   tool.onMouseDown = function(event) {
