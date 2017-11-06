@@ -20,9 +20,21 @@ socket = io.connect();
 // 1. Setup trial order and randomize it!
 
 var stimListTest = [{"category": "rabbit"},
-			{"category": "banana"},
-			{"category": "boat"},
-			{"category": "cup"},
+			{"category": "cat"},
+			{"category": "chair"},
+			{"category": "couch"},
+      {"category": "banana"},
+      {"category": "phone"},
+      {"category": "cup"},
+      {"category": "foot"},
+      {"category": "ice cream"},
+      {"category": "frog"},
+      {"category": "carrot"},
+      {"category": "flower"},
+      {"category": "cup"},
+      {"category": "train"},
+      {"category": "boat"},
+      {"category": "car"},
 			]
 var curTrial=0 // global variable, trial counter
 var maxTrials = stimListTest.length-1; // 
