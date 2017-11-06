@@ -151,7 +151,7 @@ window.onload = function() {
     // save sketch png
     var dataURL = document.getElementById('sketchpad').toDataURL();
     dataURL = dataURL.replace('data:image/png;base64,','');
-
+    var thisTrialIndex=trialOrder[curTrial] 
     var category = stimListTest[thisTrialIndex].category;
     var age = $('#years').value;
 
@@ -223,6 +223,7 @@ window.onload = function() {
 
     // var jsonString = path.exportJSON({asString: true});
     var svgString = path.exportSVG({asString: true});
+    var thisTrialIndex=trialOrder[curTrial] 
     var category = stimListTest[thisTrialIndex].category;
     var readable_date = new Date();
 
