@@ -86,7 +86,7 @@ button[disabled] {
 #sketchpad {
     position: absolute;
     top: 12vh;
-    left: 7%;
+    left: 20%;
     right: 7%;
     background: #ffffff;
     border: solid 5px #999;
@@ -94,7 +94,7 @@ button[disabled] {
 
 #submit_div {
     margin: auto;
-    text-align:center
+    text-align:left
 }
 
 #cue {
