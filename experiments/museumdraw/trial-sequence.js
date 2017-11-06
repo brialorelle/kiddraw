@@ -19,10 +19,10 @@ socket = io.connect();
 
 // 1. Setup trial order and randomize it!
 
-var stimListTest = [{"category": "rabbit", "video": "rabbit.mp4"},
-			{"category": "banana","video": "banana.mp4"},
-			{"category": "boat","video": "boat.mp4"},
-			{"category": "cup","video": "cup.mp4"},
+var stimListTest = [{"category": "rabbit"},
+			{"category": "banana"},
+			{"category": "boat"},
+			{"category": "cup"},
 			]
 var curTrial=0 // global variable, trial counter
 var maxTrials = stimListTest.length-1; // 
@@ -62,11 +62,11 @@ function endExp(){
 
 // for the first time we start the experiment
 function startDrawing(){
-		loadNextVideo(thisTrialIndex)
+		// loadNextVideo(thisTrialIndex)
 		document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[thisTrialIndex].category;
 
-	 	$('#getAge').fadeOut('fast'); // fade out age screen
-	    $('#mainExp').fadeIn('fast'); // fade in exp
+	 $('#getAge').fadeOut('fast'); // fade out age screen
+	 $('#mainExp').fadeIn('fast'); // fade in exp
 
         setTimeout(function() {showCue();},1000); 
         setTimeout(function() {hideCue();},5000);  // Take cues away after 5 - after video ends
@@ -77,13 +77,13 @@ function startDrawing(){
 
 function showCue() {	
 	$('#cue').fadeIn('fast'); //text cue associated with trial
-	$('#cueVideoDiv').show(); //show video div 
-	playVideo();
+	// $('#cueVideoDiv').show(); //show video div 
+	// playVideo();
 }
 
 function hideCue() {
 	$('#cue').fadeOut('fast'); // fade out cue
-	$('#cueVideoDiv').hide(); //show video html - this can be a variable later?
+	// $('#cueVideoDiv').hide(); //show video html - this can be a variable later?
 	$('#sketchpad').fadeIn('fast'); // fade in sketchpad  here?
 }
 
@@ -92,21 +92,21 @@ function showSubmit() {
 }
 
 // video player functions
-function playVideo(){
-  videojs("cueVideo").ready(function(){ // need to wait until video is ready
-  var player = this;
-  player.play();
-	});
-}
+// function playVideo(){
+//   videojs("cueVideo").ready(function(){ // need to wait until video is ready
+//   var player = this;
+//   player.play();
+// 	});
+// }
 
-function loadNextVideo(){
-  var player=videojs('cueVideo');
-  player.pause();
-  var thisTrialIndex=trialOrder[curTrial] 
-  console.log(stimListTest[thisTrialIndex].video)
-  player.src({ type: "video/mp4", src: "videos/" + stimListTest[thisTrialIndex].video });
-  player.load();
-}
+// function loadNextVideo(){
+//   var player=videojs('cueVideo');
+//   player.pause();
+//   var thisTrialIndex=trialOrder[curTrial] 
+//   console.log(stimListTest[thisTrialIndex].video)
+//   player.src({ type: "video/mp4", src: "videos/" + stimListTest[thisTrialIndex].video });
+//   player.load();
+// }
 
 
 function nextTrial() {
@@ -116,7 +116,7 @@ function nextTrial() {
 	$('#sketchpad').fadeOut('fast'); // fade out sketchpas before choice buttons
 	if (curTrial<maxTrials){
 		var thisTrialIndex=trialOrder[curTrial] 
-		loadNextVideo(thisTrialIndex);
+		// loadNextVideo(thisTrialIndex);
 		document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[thisTrialIndex].category;
 
 		$('#submit_div').fadeOut('fast'); // fade out submit button
