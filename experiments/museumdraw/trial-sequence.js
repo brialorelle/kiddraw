@@ -147,7 +147,7 @@ window.onload = function() {
         imgData: dataURL,
         category: category,
         dbname:'kiddraw',
-        colname:'test',
+        colname:'pilot0',
         trialNum: curTrial,
         time: Date.now(),
         date: readable_date,
