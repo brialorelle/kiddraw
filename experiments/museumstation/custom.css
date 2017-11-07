@@ -144,13 +144,26 @@ button[disabled] {
 
 #submit_div {
     margin: auto;
-    text-align:left
+    text-align:center
+    left:0;
+    right:0;
+    position:absolute;
 }
 
 #cue {
+    position:absolute;
     font-size: 3em;
+    text-align:center;
+    left: 0;
+    right: 0;
     margin: auto;
-    text-align:center
+}
+
+#cueVideo {
+    position:absolute;
+    left: 0;
+    right: 0;
+    margin:auto;
 }
 
 #ready {
@@ -188,8 +201,8 @@ button[disabled] {
 
 #mainExp {
   position:absolute;
-  height: 1024px;
-  width: 768px;
+  height: 100%;
+  width: 100%;
 }
 
 

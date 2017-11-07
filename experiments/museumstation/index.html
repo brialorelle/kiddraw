@@ -14,7 +14,7 @@
     </head>
 
 <body>
-
+        <div id="WelcomeScreen">
         <div id="Welcome">
             <img src="images/stanford.png" alt="Stanford University" style="text-align:center"></img>
                 <p id='logo-text'>Stanford Language and Cognition Lab</p>   
@@ -41,7 +41,6 @@
         <br>
         <br>
         <br>
-        <!-- <div id="consent"> -->
         <div id="consentText"
         <p> By proceeding,  you agree to participate in this research. Your child will be asked to draw pictures of common objects on this tablet. No audio/video taping will occur and no identifiable information will be collection. Your child’s participation will take approximately 30 seconds – 5 minutes, depending on how long they choose to draw.  <br></br>
 
@@ -55,30 +54,21 @@
         <button style="font-size: 36pt; font-family: Schoolbell,cursive;" onclick="startDrawing()"> LET'S DRAW ! </button>
         </div>
 
-    </div>
+        </div>
+        </div>
 
 
     <div id="mainExp" style="display:none">
-<!--         <div style="display:none" class="videoDiv" id="cueVideoDiv">
+        <div style="display:none" class="videoDiv" id="cueVideoDiv">
             <video id="cueVideo" class="video-js" preload="auto" >
                <source src="videos/rabbit.mp4" type="video/mp4">
             </video>
-        </div> -->
-        <div id="ready" style="display:none"> <button style="font-size: 2em; background-color: #4CAF50;"> Let's keep drawing! </button> </div> 
-        <div id="allDone" style="display:none"> <button style="font-size: 2em; background-color: #f44336;"> I'm all done! </button>  </div>   
-        <div id ="goodJob" style="display:none"> <img src="images/thankyou.jpg" style="height: 300px; width: 300px"></div>
+        </div>
         <div id ="cue" style="display:none"></div>
         <div id="submit_div" style="display:none"> 
-            <button id="submit" style="font-size: 1em"> NEXT !</button>
+            <button id="submit" style="font-size: 36pt; font-family: Schoolbell,cursive;"> ALL DONE !</button>
         </div>
-        <canvas id="sketchpad" width="300" height="300" style="display:none"></canvas>
-    </div>
-
-    <div id="Thanks" class=bufferSlides style="display:none" >
-    <br>
-        <img src="images/stanford.png" alt="Stanford University">
-        <p id='logo-text'>Stanford Language and Cognition Lab</p>
-        <div> Thanks for participating!! To learn more, go to langcog.stanford.edu </div>
+        <canvas id="sketchpad" width="600" height="600" style="display:none"></canvas>
     </div>
 
     <script src="trial-sequence.js"></script>

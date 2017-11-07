@@ -19,26 +19,11 @@ socket = io.connect();
 
 // 1. Setup trial order and randomize it!
 
-var stimListTest = [{"category": "rabbit"},
-			{"category": "cat"},
-			{"category": "chair"},
-			{"category": "couch"},
-      {"category": "banana"},
-      {"category": "phone"},
-      {"category": "cup"},
-      {"category": "foot"},
-      {"category": "ice cream"},
-      {"category": "frog"},
-      {"category": "carrot"},
-      {"category": "flower"},
-      {"category": "cup"},
-      {"category": "train"},
-      {"category": "boat"},
-      {"category": "car"},
-			]
+var stimListTest = [{"category": "rabbit", "video": "rabbit.mp4"},
+{"category": "boat", "video": "boat.mp4"}]
 
 var curTrial=0 // global variable, trial counter
-var sessionId='pilot0_' + Date.now().toString()
+var sessionId='stationPilot0_' + Date.now().toString()
 var maxTrials = stimListTest.length-1; // 
 var trialOrder = [];
 for (var i = 0; i <= maxTrials; i++) {
@@ -64,30 +49,15 @@ var thisTrialIndex=trialOrder[curTrial]
 ////
 
 
-function startExp(){
-	$('#Welcome').fadeOut('fast'); // hide intro screen
-	$('#getAge').fadeIn('fast'); // fade in ready button
-}
-
-function endExp(){
-	$('#mainExp').fadeOut('fast'); 
-	$('#Thanks').fadeIn('fast'); // hide intro screen
-}
-
 // for the first time we start the experiment
 function startDrawing(){
-		// loadNextVideo(thisTrialIndex)
+		loadNextVideo(thisTrialIndex)
 		document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[thisTrialIndex].category;
     
-
-	 $('#getAge').fadeOut('fast'); // fade out age screen
+	 $('#WelcomeScreen').fadeOut('fast'); // fade out age screen
 	 $('#mainExp').fadeIn('fast'); // fade in exp
     // // resize canvas
-    var canvas = document.getElementById("sketchpad"),
-         ctx=canvas.getContext("2d");
-    canvas.style.height='600px';
-    canvas.style.width='600px';
-    // //
+
     setTimeout(function() {showCue();},1000); 
     setTimeout(function() {hideCue();},5000);  // Take cues away after 5 - after video ends
     setTimeout(function() {showSubmit();},6000); // some minimum amount of time before "I'm done button"
@@ -97,13 +67,13 @@ function startDrawing(){
 
 function showCue() {	
 	$('#cue').fadeIn('fast'); //text cue associated with trial
-	// $('#cueVideoDiv').show(); //show video div 
-	// playVideo();
+	$('#cueVideoDiv').show(); //show video div 
+	playVideo();
 }
 
 function hideCue() {
 	$('#cue').fadeOut('fast'); // fade out cue
-	// $('#cueVideoDiv').hide(); //show video html - this can be a variable later?
+	$('#cueVideoDiv').hide(); //show video html - this can be a variable later?
 	$('#sketchpad').fadeIn('fast'); // fade in sketchpad  here?
 }
 
@@ -112,43 +82,29 @@ function showSubmit() {
 }
 
 // video player functions
-// function playVideo(){
-//   videojs("cueVideo").ready(function(){ // need to wait until video is ready
-//   var player = this;
-//   player.play();
-// 	});
-// }
+function playVideo(){
+  videojs("cueVideo").ready(function(){ // need to wait until video is ready
+  var player = this;
+  player.play();
+	});
+}
 
-// function loadNextVideo(){
-//   var player=videojs('cueVideo');
-//   player.pause();
-//   var thisTrialIndex=trialOrder[curTrial] 
-//   console.log(stimListTest[thisTrialIndex].video)
-//   player.src({ type: "video/mp4", src: "videos/" + stimListTest[thisTrialIndex].video });
-//   player.load();
-// }
+function loadNextVideo(){
+  var player=videojs('cueVideo');
+  player.pause();
+  var thisTrialIndex=trialOrder[curTrial] 
+  console.log(stimListTest[thisTrialIndex].video)
+  player.src({ type: "video/mp4", src: "videos/" + stimListTest[thisTrialIndex].video });
+  player.load();
+}
 
 
 function nextTrial() {
-	curTrial++
-	console.log('clicked submit');
 	project.activeLayer.removeChildren(); // clear sketchpad hack?
-	$('#sketchpad').fadeOut('fast'); // fade out sketchpas before choice buttons
-	if (curTrial<maxTrials){
-		var thisTrialIndex=trialOrder[curTrial] 
-		// loadNextVideo(thisTrialIndex);
-		document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[thisTrialIndex].category;
-
-		$('#submit_div').fadeOut('fast'); // fade out submit button
-		$('#ready').fadeIn('fast'); // fade in ready
-		$('#goodJob').fadeIn('fast'); 
-		$('#allDone').fadeIn('fast'); 
-		// GET NEXT CUE AND VIDEO //
-	}
-	else {
-		endExp();
-	}
-
+  $('#sketchpad').fadeOut('fast'); // fade out sketchpad etc
+  $('#mainExp').fadeOut('fast'); // fade out sketchpad etc
+  $('#submit_div').fadeOut('fast'); // fade out sketchpad etc
+  $('#WelcomeScreen').fadeIn('fast'); // fade in welcome screen
 }
 
 window.onload = function() { 
@@ -181,28 +137,15 @@ window.onload = function() {
     nextTrial();
   });
 
-  // for other trials
-  $('#ready').on('touchstart click',function(){
-      console.log('touched ready button');
-      $('#goodJob').fadeOut('fast'); 
-      $('#ready').fadeOut('fast');
-      $('#allDone').fadeOut('fast');
-          setTimeout(function() {showCue();},1000); 
-          setTimeout(function() {hideCue();},5000);  // Take cues away after 4s?
-          setTimeout(function() {showSubmit();},6000); // some minimum amount of time before "I'm done button"
-      timestamp_cueOnset = new Date().getTime();
-  })
-
-
-  $('#allDone').on('touchstart click',function(){
-      console.log('touched all done');
-      $('#ready').fadeOut('fast');
-      $('#allDone').fadeOut('fast');
-          endExp();
-  })
-   
+  // resize canvas display
+  var canvas = document.getElementById("sketchpad"),
+       ctx=canvas.getContext("2d");
+  canvas.style.height='600px';
+  canvas.style.width='600px';
 
   // Drawing related tools
+  paper.setup('ageDraw');
+  paper.setup('consentDraw');
   paper.setup('sketchpad');
   // Create a simple drawing tool:
   var tool = new Tool();
