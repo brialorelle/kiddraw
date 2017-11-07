@@ -145,6 +145,7 @@ button[disabled] {
 #submit_div {
     margin: auto;
     text-align:center
+    top:5%;
     left:0;
     right:0;
     position:absolute;
@@ -186,25 +187,38 @@ button[disabled] {
    top: 5%;
 }
 
-#allDone {
-   font-size: 1em;
-   position:absolute;
-   left:50%;
-   top: 75%;
-}
-
-#goodJob{
-  position:absolute;
-  top: 38%;
-  left: 40%;
-}
-
 #mainExp {
   position:absolute;
   height: 100%;
   width: 100%;
 }
 
+
+#progressBar {
+  width: 90%;
+  margin: 10px auto;
+  height: 22px;
+  background-color: #0A5F44;
+  position: absolute;
+  left: 0;
+  right:0;
+  bottom: 2%;
+}
+
+#progressBar div {
+  height: 100%;
+  text-align: right;
+  padding: 0 10px;
+  line-height: 22px; /* same as #progressBar height if we want text middle aligned */
+  width: 0;
+  background-color: #CBEA00;
+  box-sizing: border-box;
+  position: absolute;
+  left: 0;
+  right:0;
+  bottom: 2%;
+
+}
 
 
 /*.video-js .vjs-control-bar {

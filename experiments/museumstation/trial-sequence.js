@@ -30,6 +30,9 @@ for (var i = 0; i <= maxTrials; i++) {
    trialOrder.push(i);
 }
 
+//
+var stopAutoTrigger=0;
+
 //helpfuls
 function shuffle (a) 
 { 
@@ -75,6 +78,15 @@ function hideCue() {
 	$('#cue').fadeOut('fast'); // fade out cue
 	$('#cueVideoDiv').hide(); //show video html - this can be a variable later?
 	$('#sketchpad').fadeIn('fast'); // fade in sketchpad  here?
+  monitorProgress()
+}
+
+function monitorProgress(){
+  console.log('starting monitoring')
+  $('#progressBar').show();
+  progress(20, 20, $('#progressBar')); // show progress bar
+  stopAutoTrigger=0; // reset this global var
+  setTimeout(function() {automaticEnd(stopAutoTrigger);},20000)
 }
 
 function showSubmit() {
@@ -99,17 +111,67 @@ function loadNextVideo(){
 }
 
 
+function automaticEnd(stopAutoTrigger){
+     
+     if (stopAutoTrigger) {
+        console.log('stopped automatic next trial trigger')
+     }
+     else {
+        console.log(' automatically triggered next trial ')
+        // save sketch png
+        var dataURL = document.getElementById('sketchpad').toDataURL();
+        dataURL = dataURL.replace('data:image/png;base64,','');
+        var thisTrialIndex=trialOrder[curTrial] 
+        var category = stimListTest[thisTrialIndex].category;
+        var age = $('#years').value;
+
+        readable_date = new Date();
+        current_data = {
+            dataType: 'finalImage',
+            sessionId: sessionId,
+            imgData: dataURL,
+            category: category,
+            dbname:'kiddraw',
+            colname:'pilot0',
+            trialNum: curTrial,
+            time: Date.now(),
+            date: readable_date,
+            age: age}; 
+
+        // console.log(current_data);
+
+        // send data to server to write to database
+        socket.emit('current_data', current_data);
+        nextTrial();
+    }
+  };
+
+
 function nextTrial() {
 	project.activeLayer.removeChildren(); // clear sketchpad hack?
+  $('#progressBar').hide();
   $('#sketchpad').fadeOut('fast'); // fade out sketchpad etc
   $('#mainExp').fadeOut('fast'); // fade out sketchpad etc
   $('#submit_div').fadeOut('fast'); // fade out sketchpad etc
   $('#WelcomeScreen').fadeIn('fast'); // fade in welcome screen
 }
 
+function progress(timeleft, timetotal, $element) {
+    var progressBarWidth = timeleft * $element.width() / timetotal;
+    var timeLeftOut = timeleft
+    $element.find('div').animate({ width: progressBarWidth }, timeleft == timetotal ? 0 : 1000, "linear").html(Math.floor(timeleft/60) + ":"+ timeleft%60);
+    if(timeleft > 0) {
+        setTimeout(function() {
+            progress(timeleft - 1, timetotal, $element);
+        }, 1000);
+    }
+};
+
 window.onload = function() { 
 
   $('#submit').click(function () {
+    stopAutoTrigger=1; // stop the automatic triggering of the function if we clicked this
+
     // save sketch png
     var dataURL = document.getElementById('sketchpad').toDataURL();
     dataURL = dataURL.replace('data:image/png;base64,','');
