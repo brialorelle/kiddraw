@@ -1,0 +1,30 @@
+{
+  "name": "experiments",
+  "version": "1.0.0",
+  "description": "tools to collect drawing data from kids",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.16.2",
+    "lodash": "^4.17.4",
+    "minimist": "^1.2.0",
+    "paper": "^0.11.5",
+    "request": "^2.83.0",
+    "socket.io": "^2.0.4",
+    "xmldom": "^0.1.27",
+    "xmlhttprequest": "^1.8.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brialorelle/kiddraw.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/brialorelle/kiddraw/issues"
+  },
+  "homepage": "https://github.com/brialorelle/kiddraw#readme"
+}

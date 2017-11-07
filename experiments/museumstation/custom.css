@@ -1,0 +1,206 @@
+body {
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; }
+}
+
+button {
+  font-family: "Schoolbell", cursive; 
+  background: url(images/button-gradient.png);
+  border: 1px solid #999;
+  border-top: 1px solid #e0e0e0;
+  border-left: 1px solid #e0e0e0;
+  margin: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
+  height: 50px;
+  min-width: 70px;
+}
+
+button:active {
+  border-left: 1px solid #c9c9c9;
+  border-top: 1px solid #c9c9c9;
+  background: none;
+  background-color: #c9c9c9;
+}
+
+button[disabled] {
+  background: url(zen-button.png);
+  border: 1px solid #999;
+  border-top: 1px solid #e0e0e0;
+  border-left: 1px solid #e0e0e0;
+  cursor: not-allowed;
+}
+
+#logo-text {
+  font-weight: bold;
+}
+
+.slideButton {
+   position: absolute;
+   margin: auto;
+   right:0;left:0;
+   bottom: 5%;
+   width:280px;
+   text-align: center;
+   border: solid 5px #999;
+}
+
+#consent {
+  text-align: left;
+  height: 420px;
+  width: 700px;
+  position: relative;
+  margin: auto;
+  float:top;
+  top: 20vh;
+  border: solid 5px #999;
+}
+
+.videoDiv {
+    margin: auto;
+    position: absolute;
+    top: 12vh;
+    right:0;left:0;
+    background: #ffffff;
+    border: solid 5px #999;
+    width: 300px;
+    height: 200px;
+}
+
+.video-js {
+    width: 300px;
+    height: 200px;
+}
+
+
+.bufferSlides {
+	height: auto;
+	width: auto;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: auto ;
+	left:0; right:0; top:10%; bottom: 0;
+  font-size: 1em;
+	position: absolute;
+}
+
+#drawingIcon {
+     top: 2%;
+    left: 20%;
+    position: absolute;
+    width: 100px;
+}
+
+#consentText {
+    position: absolute;
+    bottom: 15%;
+}
+
+#Welcome {
+    margin: auto;
+    top: 20vh;
+    text-align: center;
+}
+
+#sketchpad {
+    position: absolute;
+    top: 12vh;
+    left: 20%;
+    right: 7%;
+    background: #ffffff;
+    border: solid 5px #999;
+}
+
+#kidConsent {
+    position: absolute;
+    top: 20vh;
+    width: 95%;
+    left: 0;
+    right: 0;
+    margin: auto;
+    background: #ffffff;
+    border: solid 5px #999;
+}
+
+#consentDraw {
+    position: absolute;
+    background: #ffffff;
+    left: 25%;
+    bottom: 10%;
+    width: 50px;
+    height: 50px;
+    border: solid 5px #999;
+}
+
+#ageDraw {
+    position: absolute;
+    right: 50%;
+    top: 5%;
+    width: 80px;
+    height: 80px;
+    background: #ffffff;
+    border: solid 5px #999;
+}
+
+#submit_div {
+    margin: auto;
+    text-align:left
+}
+
+#cue {
+    font-size: 3em;
+    margin: auto;
+    text-align:center
+}
+
+#ready {
+   font-size: 1em;
+   position:absolute;
+   left:40%;
+   top: 25%;
+}
+
+#iam {
+  position:absolute;
+   left:30%;
+   top: 5%;
+}
+
+
+#yearsold {
+  position:absolute;
+   left:55%;
+   top: 5%;
+}
+
+#allDone {
+   font-size: 1em;
+   position:absolute;
+   left:50%;
+   top: 75%;
+}
+
+#goodJob{
+  position:absolute;
+  top: 38%;
+  left: 40%;
+}
+
+#mainExp {
+  position:absolute;
+  height: 1024px;
+  width: 768px;
+}
+
+
+
+/*.video-js .vjs-control-bar {
+  display:none!important; 
+}*/
+
+/*.video-js .vjs-big-play-button {
+    display: none;
+}*/
+
+
+

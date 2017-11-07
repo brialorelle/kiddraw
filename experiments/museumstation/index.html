@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>Draw Something!</title>
+        <script type="text/javascript" src="/socket.io/socket.io.js"></script>        
+        <link href="custom.css" media="screen" rel="stylesheet" type="text/css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    	<script type="text/javascript" src="./node_modules/paper/dist/paper-full.js"></script>
+        <link href="https://vjs.zencdn.net/6.2.8/video-js.css" rel="stylesheet"> 
+        <script src="https://vjs.zencdn.net/6.2.8/video.js"></script>  
+        <script src="trial-sequence.js"></script> 
+        <link href="https://fonts.googleapis.com/css?family=Schoolbell" rel="stylesheet">     
+    </head>
+
+<body>
+
+        <div id="Welcome">
+            <img src="images/stanford.png" alt="Stanford University" style="text-align:center"></img>
+                <p id='logo-text'>Stanford Language and Cognition Lab</p>   
+        </div>
+
+        
+        <div id="kidConsent">
+             <img src="images/drawingIcon.png" id="drawingIcon" ></img>       
+            <p id="iam" style="font-family: Schoolbell,cursive; font-size: 24pt;"> I AM  </p>
+            <canvas id="ageDraw" width="100" height="100"></canvas>
+            <p id="yearsold" style="font-family: Schoolbell,cursive; font-size: 24pt;"> YEARS OLD </p>
+            
+             <br>
+             <br>
+             <br>
+             <br>
+             <br>
+              <br>
+            
+            <p style="font-family: Schoolbell,cursive; font-size: 24pt; text-align:center"> YOU CAN USE MY DRAWING </p>
+             <canvas id="consentDraw" width="100" height="100""></canvas>
+        </div>
+           <br>
+        <br>
+        <br>
+        <br>
+        <!-- <div id="consent"> -->
+        <div id="consentText"
+        <p> By proceeding,  you agree to participate in this research. Your child will be asked to draw pictures of common objects on this tablet. No audio/video taping will occur and no identifiable information will be collection. Your child’s participation will take approximately 30 seconds – 5 minutes, depending on how long they choose to draw.  <br></br>
+
+        The drawing data collected here will be used for research purposes by the Stanford Language and Cognition Lab and the San Jose Children's Discovery Museum, and will be displayed on the Museum's website on a future date. There are no risks or benefits to participating: no identifying information will be collected, so you and your child’s identity will remain anonymous. Your child can stop drawing at any time or choose not to answer any question without penalty. For more information, email the Stanford lab at langcoglab@stanford.edu, or call 650-721-9270. If you are not satisfied with how this study is being conducted, or if you have any concerns, complaints, or general questions about the research or your rights as a participant, please contact the Stanford Institutional Review Board (IRB) to speak to someone independent of the research team at (650)-723-2480 or toll free at 1-866-680-2906.  You can also write to the Stanford IRB, Stanford University, 3000 El Camino Real, Five Palo Alto Square, 4th Floor, Palo Alto, CA 94306.
+        </p>
+        </div>
+        <br>
+
+
+       <div class="slideButton">
+        <button style="font-size: 36pt; font-family: Schoolbell,cursive;" onclick="startDrawing()"> LET'S DRAW ! </button>
+        </div>
+
+    </div>
+
+
+    <div id="mainExp" style="display:none">
+<!--         <div style="display:none" class="videoDiv" id="cueVideoDiv">
+            <video id="cueVideo" class="video-js" preload="auto" >
+               <source src="videos/rabbit.mp4" type="video/mp4">
+            </video>
+        </div> -->
+        <div id="ready" style="display:none"> <button style="font-size: 2em; background-color: #4CAF50;"> Let's keep drawing! </button> </div> 
+        <div id="allDone" style="display:none"> <button style="font-size: 2em; background-color: #f44336;"> I'm all done! </button>  </div>   
+        <div id ="goodJob" style="display:none"> <img src="images/thankyou.jpg" style="height: 300px; width: 300px"></div>
+        <div id ="cue" style="display:none"></div>
+        <div id="submit_div" style="display:none"> 
+            <button id="submit" style="font-size: 1em"> NEXT !</button>
+        </div>
+        <canvas id="sketchpad" width="300" height="300" style="display:none"></canvas>
+    </div>
+
+    <div id="Thanks" class=bufferSlides style="display:none" >
+    <br>
+        <img src="images/stanford.png" alt="Stanford University">
+        <p id='logo-text'>Stanford Language and Cognition Lab</p>
+        <div> Thanks for participating!! To learn more, go to langcog.stanford.edu </div>
+    </div>
+
+    <script src="trial-sequence.js"></script>
+
+</body>  
+
+</html>
+
+
