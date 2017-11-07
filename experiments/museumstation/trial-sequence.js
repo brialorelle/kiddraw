@@ -32,6 +32,7 @@ for (var i = 0; i <= maxTrials; i++) {
 
 //
 var stopAutoTrigger=0;
+var clickedSubmit=0;
 
 //helpfuls
 function shuffle (a) 
@@ -54,6 +55,7 @@ var thisTrialIndex=trialOrder[curTrial]
 
 // for the first time we start the experiment
 function startDrawing(){
+    clickedSubmit=0;
 		loadNextVideo(thisTrialIndex)
 		document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[thisTrialIndex].category;
     
@@ -85,8 +87,6 @@ function monitorProgress(){
   console.log('starting monitoring')
   $('#progressBar').show();
   progress(20, 20, $('#progressBar')); // show progress bar
-  stopAutoTrigger=0; // reset this global var
-  setTimeout(function() {automaticEnd(stopAutoTrigger);},20000)
 }
 
 function showSubmit() {
@@ -111,12 +111,8 @@ function loadNextVideo(){
 }
 
 
-function automaticEnd(stopAutoTrigger){
-     
-     if (stopAutoTrigger) {
-        console.log('stopped automatic next trial trigger')
-     }
-     else {
+function automaticEnd(){
+
         console.log(' automatically triggered next trial ')
         // save sketch png
         var dataURL = document.getElementById('sketchpad').toDataURL();
@@ -143,7 +139,7 @@ function automaticEnd(stopAutoTrigger){
         // send data to server to write to database
         socket.emit('current_data', current_data);
         nextTrial();
-    }
+    
   };
 
 
@@ -160,17 +156,23 @@ function progress(timeleft, timetotal, $element) {
     var progressBarWidth = timeleft * $element.width() / timetotal;
     var timeLeftOut = timeleft
     $element.find('div').animate({ width: progressBarWidth }, timeleft == timetotal ? 0 : 1000, "linear").html(Math.floor(timeleft/60) + ":"+ timeleft%60);
-    if(timeleft > 0) {
+    console.log("clicked submit = " + clickedSubmit)
+    console.log("time left = " + timeleft)
+    if(timeleft > 0 & clickedSubmit==0) {
         setTimeout(function() {
             progress(timeleft - 1, timetotal, $element);
         }, 1000);
+      }
+    else if(timeleft == 0 & clickedSubmit==0){
+      automaticEnd();
     }
-};
+  };
+
 
 window.onload = function() { 
 
   $('#submit').click(function () {
-    stopAutoTrigger=1; // stop the automatic triggering of the function if we clicked this
+    clickedSubmit=1;
 
     // save sketch png
     var dataURL = document.getElementById('sketchpad').toDataURL();
