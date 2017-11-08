@@ -96,8 +96,8 @@ function startDrawing(){
     canvas.style.width='600px';
     // //
     setTimeout(function() {showCue();},1000); 
-    setTimeout(function() {hideCue();},5000);  // Take cues away after 5 - after video ends
-    setTimeout(function() {showSubmit();},6000); // some minimum amount of time before "I'm done button"
+    setTimeout(function() {hideCue();},3000);  // Take cues away after 5 - after video ends
+    setTimeout(function() {showSubmit();},4000); // some minimum amount of time before "I'm done button"
 		timestamp_cueOnset = new Date().getTime();
 }
 
@@ -228,8 +228,8 @@ window.onload = function() {
       $('#ready').fadeOut('fast');
       $('#allDone').fadeOut('fast');
           setTimeout(function() {showCue();},1000); 
-          setTimeout(function() {hideCue();},5000);  // Take cues away after 4s?
-          setTimeout(function() {showSubmit();},6000); // some minimum amount of time before "I'm done button"
+          setTimeout(function() {hideCue();},3000);  // Take cues away after 4s?
+          setTimeout(function() {showSubmit();},4000); // some minimum amount of time before "I'm done button"
       timestamp_cueOnset = new Date().getTime();
   })
 
