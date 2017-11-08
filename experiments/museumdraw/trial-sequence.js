@@ -107,7 +107,7 @@ function showCue() {
 }
 
 function hideCue() {
-	$('#cue').fadeOut('fast'); // fade out cue
+	// $('#cue').fadeOut('fast'); // fade out cue
 	// $('#cueVideoDiv').hide(); //show video html - this can be a variable later?
 	$('#sketchpad').fadeIn('fast'); // fade in sketchpad  here?
   clickedSubmit=0; // reset this global
@@ -127,7 +127,7 @@ function nextTrial() {
 	if (curTrial<maxTrials){
 		var thisTrialIndex=trialOrder[curTrial] 
 		document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[thisTrialIndex].category;
-    
+    $('#cue').fadeOut('fast'); 
     $('#progressBar').fadeOut('fast'); // fade out submit button
 		$('#submit_div').fadeOut('fast'); // fade out submit button
 		$('#ready').fadeIn('fast'); // fade in ready
