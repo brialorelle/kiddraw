@@ -3,7 +3,7 @@ body {
 }
 
 button {
-  font-family: "HelveticaNeue-Light";
+  font-family: "Schoolbell", cursive; 
   background: url(images/button-gradient.png);
   border: 1px solid #999;
   border-top: 1px solid #e0e0e0;
@@ -38,9 +38,10 @@ button[disabled] {
    position: absolute;
    margin: auto;
    right:0;left:0;
-   top: 40vh;
+   bottom: 5%;
+   width: 280px;
    text-align: center;
-   float:bottom;
+   border: solid 5px #999;
 }
 
 #consent {
@@ -106,15 +107,15 @@ button[disabled] {
 #ready {
    font-size: 1em;
    position:absolute;
-   left:40%;
+   left:38%;
    top: 25%;
 }
 
 #allDone {
    font-size: 1em;
    position:absolute;
-   left:50%;
-   top: 75%;
+   left:42%;
+   top: 65%;
 }
 
 #goodJob{
@@ -125,10 +126,36 @@ button[disabled] {
 
 #mainExp {
   position:absolute;
-  height: 1024px;
-  width: 768px;
+  height: 100%;
+  width: 100%;
 }
 
+
+#progressBar {
+  width: 90%;
+  margin: 10px auto;
+  height: 22px;
+  background-color: #0A5F44;
+  position: absolute;
+  left: 0;
+  right:0;
+  bottom: 2%;
+}
+
+#progressBar div {
+  height: 100%;
+  text-align: right;
+  padding: 0 10px;
+  line-height: 22px; /* same as #progressBar height if we want text middle aligned */
+  width: 0;
+  background-color: #CBEA00;
+  box-sizing: border-box;
+  position: absolute;
+  left: 0;
+  right:0;
+  bottom: 2%;
+
+}
 
 
 /*.video-js .vjs-control-bar {

@@ -31,7 +31,7 @@ var stimListTest = [{"category": "rabbit"},
       {"category": "frog"},
       {"category": "carrot"},
       {"category": "flower"},
-      {"category": "cup"},
+      {"category": "shoe"},
       {"category": "train"},
       {"category": "boat"},
       {"category": "car"},
@@ -60,7 +60,7 @@ function shuffle (a)
 //global variables here
 var trialOrder=shuffle(trialOrder)
 var thisTrialIndex=trialOrder[curTrial] 
-
+var clickedSubmit=0;
 ////
 
 
@@ -73,6 +73,13 @@ function endExp(){
 	$('#mainExp').fadeOut('fast'); 
 	$('#Thanks').fadeIn('fast'); // hide intro screen
 }
+
+function monitorProgress(){
+  console.log('starting monitoring')
+  $('#progressBar').show();
+  progress(20, 20, $('#progressBar')); // show progress bar
+}
+
 
 // for the first time we start the experiment
 function startDrawing(){
@@ -97,53 +104,35 @@ function startDrawing(){
 
 function showCue() {	
 	$('#cue').fadeIn('fast'); //text cue associated with trial
-	// $('#cueVideoDiv').show(); //show video div 
-	// playVideo();
 }
 
 function hideCue() {
 	$('#cue').fadeOut('fast'); // fade out cue
 	// $('#cueVideoDiv').hide(); //show video html - this can be a variable later?
 	$('#sketchpad').fadeIn('fast'); // fade in sketchpad  here?
+  clickedSubmit=0; // reset this global
+  monitorProgress() 
 }
 
 function showSubmit() {
 	$('#submit_div').fadeIn('fast');
 }
 
-// video player functions
-// function playVideo(){
-//   videojs("cueVideo").ready(function(){ // need to wait until video is ready
-//   var player = this;
-//   player.play();
-// 	});
-// }
-
-// function loadNextVideo(){
-//   var player=videojs('cueVideo');
-//   player.pause();
-//   var thisTrialIndex=trialOrder[curTrial] 
-//   console.log(stimListTest[thisTrialIndex].video)
-//   player.src({ type: "video/mp4", src: "videos/" + stimListTest[thisTrialIndex].video });
-//   player.load();
-// }
-
 
 function nextTrial() {
 	curTrial++
-	console.log('clicked submit');
+
 	project.activeLayer.removeChildren(); // clear sketchpad hack?
 	$('#sketchpad').fadeOut('fast'); // fade out sketchpas before choice buttons
 	if (curTrial<maxTrials){
 		var thisTrialIndex=trialOrder[curTrial] 
-		// loadNextVideo(thisTrialIndex);
 		document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[thisTrialIndex].category;
-
+    
+    $('#progressBar').fadeOut('fast'); // fade out submit button
 		$('#submit_div').fadeOut('fast'); // fade out submit button
 		$('#ready').fadeIn('fast'); // fade in ready
 		$('#goodJob').fadeIn('fast'); 
 		$('#allDone').fadeIn('fast'); 
-		// GET NEXT CUE AND VIDEO //
 	}
 	else {
 		endExp();
@@ -151,9 +140,54 @@ function nextTrial() {
 
 }
 
+function automaticEnd(){
+
+        console.log(' automatically triggered next trial ')
+        // save sketch png
+        var dataURL = document.getElementById('sketchpad').toDataURL();
+        dataURL = dataURL.replace('data:image/png;base64,','');
+        var thisTrialIndex=trialOrder[curTrial] 
+        var category = stimListTest[thisTrialIndex].category;
+        var age = $('#years').value;
+
+        readable_date = new Date();
+        current_data = {
+            dataType: 'finalImage',
+            sessionId: sessionId,
+            imgData: dataURL,
+            category: category,
+            dbname:'kiddraw',
+            colname:'pilot0',
+            trialNum: curTrial,
+            time: Date.now(),
+            date: readable_date}; 
+
+        // send data to server to write to database
+        socket.emit('current_data', current_data);
+        nextTrial();
+  };
+
+
+function progress(timeleft, timetotal, $element) {
+    var progressBarWidth = timeleft * $element.width() / timetotal;
+    var timeLeftOut = timeleft
+    $element.find('div').animate({ width: progressBarWidth }, timeleft == timetotal ? 0 : 1000, "linear").html(Math.floor(timeleft/60) + ":"+ timeleft%60);
+    console.log("clicked submit = " + clickedSubmit)
+    console.log("time left = " + timeleft)
+    if(timeleft > 0 & clickedSubmit==0) {
+        setTimeout(function() {
+            progress(timeleft - 1, timetotal, $element);
+        }, 1000);
+      }
+    else if(timeleft == 0 & clickedSubmit==0){
+      automaticEnd();
+    }
+  };
+
 window.onload = function() { 
 
   $('#submit').click(function () {
+    clickedSubmit=1;
     // save sketch png
     var dataURL = document.getElementById('sketchpad').toDataURL();
     dataURL = dataURL.replace('data:image/png;base64,','');
