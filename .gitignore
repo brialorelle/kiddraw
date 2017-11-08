@@ -1,8 +1,8 @@
 stim_videos/
 node_modules/
+sketches/
 .DS_Store
 *.csv
 *.npy
 *.ipynb_checkpoints/
-*.png
 auth.txt
