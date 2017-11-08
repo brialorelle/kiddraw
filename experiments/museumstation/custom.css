@@ -104,11 +104,9 @@ button[disabled] {
 
 #sketchpad {
     position: absolute;
-    top: 12vh;
+    top: 20vh;
     left: 20%;
     right: 7%;
-    background: #ffffff;
-    border: solid 5px #999;
 }
 
 #kidConsent {

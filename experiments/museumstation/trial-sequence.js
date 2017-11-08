@@ -14,11 +14,9 @@ Oct 26 2017
 
 // 0. Load dependencies
 paper.install(window);
-
 socket = io.connect();
 
 // 1. Setup trial order and randomize it!
-
 var stimListTest = [{"category": "rabbit", "video": "rabbit.mp4"},
 {"category": "boat", "video": "boat.mp4"}]
 
@@ -30,8 +28,7 @@ for (var i = 0; i <= maxTrials; i++) {
    trialOrder.push(i);
 }
 
-//
-var stopAutoTrigger=0;
+// set global variables
 var clickedSubmit=0;
 
 //helpfuls
@@ -39,29 +36,28 @@ function shuffle (a)
 { 
     var o = [];
     for (var i=0; i < a.length; i++) {
-		o[i] = a[i];
+    o[i] = a[i];
     } 
     for (var j, x, i = o.length;
-	 i;
-	 j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);	
+   i;
+   j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x); 
     return o;
 }
 //global variables here
 var trialOrder=shuffle(trialOrder)
 var thisTrialIndex=trialOrder[curTrial] 
 
-////
-
-
-// for the first time we start the experiment
+// for each time we start drawing
 function startDrawing(){
-    clickedSubmit=0;
-		loadNextVideo(thisTrialIndex)
-		document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[thisTrialIndex].category;
+  // resize canvas
+    clickedSubmit=0; //reset this variable
+
+    saveConsentData(); // save consent screen
+		loadNextVideo(thisTrialIndex) // change video
+		document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[thisTrialIndex].category; // change cue
     
 	 $('#WelcomeScreen').fadeOut('fast'); // fade out age screen
 	 $('#mainExp').fadeIn('fast'); // fade in exp
-    // // resize canvas
 
     setTimeout(function() {showCue();},1000); 
     setTimeout(function() {hideCue();},5000);  // Take cues away after 5 - after video ends
@@ -69,18 +65,31 @@ function startDrawing(){
 		timestamp_cueOnset = new Date().getTime();
 }
 
-
+// show cue without canvas
 function showCue() {	
 	$('#cue').fadeIn('fast'); //text cue associated with trial
 	$('#cueVideoDiv').show(); //show video div 
 	playVideo();
 }
 
+// hide cue and show sketchpad canvas
 function hideCue() {
 	$('#cue').fadeOut('fast'); // fade out cue
 	$('#cueVideoDiv').hide(); //show video html - this can be a variable later?
-	$('#sketchpad').fadeIn('fast'); // fade in sketchpad  here?
-  monitorProgress()
+	 
+   // change sketchpad so it is visible again; change style
+   project.activeLayer.removeChildren(); // clear sketchpad  just in case they've drawn during video
+   //
+   var canvas = document.getElementById("sketchpad"),
+         ctx=canvas.getContext("2d");
+    canvas.width=600;
+    canvas.height=600;
+    canvas.style.height='600px';
+    canvas.style.width='600px';
+    canvas.style.border="solid 5px #999";
+    canvas.style.top="15vh";
+    //
+  monitorProgress() // since we now have a timeout function
 }
 
 function monitorProgress(){
@@ -110,6 +119,32 @@ function loadNextVideo(){
   player.load();
 }
 
+function saveConsentData(){
+        console.log(' saving consent "form" to database')
+        // save sketch png
+        var dataURL = document.getElementById('sketchpad').toDataURL();
+        dataURL = dataURL.replace('data:image/png;base64,','');
+        var category = "consent"
+
+        readable_date = new Date();
+        current_data = {
+            dataType: 'finalImage',
+            sessionId: sessionId,
+            imgData: dataURL,
+            category: category,
+            dbname:'kiddraw',
+            colname:'stationPilot0',
+            trialNum: curTrial,
+            time: Date.now(),
+            date: readable_date}; 
+
+        // console.log(current_data);
+
+        // send data to server to write to database
+        socket.emit('current_data', current_data);
+        project.activeLayer.removeChildren(); // clear sketchpad 
+}
+
 
 function automaticEnd(){
 
@@ -128,28 +163,33 @@ function automaticEnd(){
             imgData: dataURL,
             category: category,
             dbname:'kiddraw',
-            colname:'pilot0',
+            colname:'stationPilot0',
             trialNum: curTrial,
             time: Date.now(),
-            date: readable_date,
-            age: age}; 
-
-        // console.log(current_data);
+            date: readable_date}; 
 
         // send data to server to write to database
         socket.emit('current_data', current_data);
-        nextTrial();
-    
+        restartExperiment();
   };
 
 
-function nextTrial() {
-	project.activeLayer.removeChildren(); // clear sketchpad hack?
+function restartExperiment() {
+	project.activeLayer.removeChildren(); // clear sketchpad 
+
   $('#progressBar').hide();
-  $('#sketchpad').fadeOut('fast'); // fade out sketchpad etc
   $('#mainExp').fadeOut('fast'); // fade out sketchpad etc
   $('#submit_div').fadeOut('fast'); // fade out sketchpad etc
   $('#WelcomeScreen').fadeIn('fast'); // fade in welcome screen
+
+  //reset canvas size to intro sizes for consent data
+    var canvas = document.getElementById("sketchpad"),
+         ctx=canvas.getContext("2d");
+    canvas.width=400;
+    canvas.height=225;
+    canvas.style.width='400px';
+    canvas.style.height='225px';
+    canvas.style.border="none"
 }
 
 function progress(timeleft, timetotal, $element) {
@@ -179,7 +219,6 @@ window.onload = function() {
     dataURL = dataURL.replace('data:image/png;base64,','');
     var thisTrialIndex=trialOrder[curTrial] 
     var category = stimListTest[thisTrialIndex].category;
-    var age = $('#years').value;
 
     readable_date = new Date();
     current_data = {
@@ -188,34 +227,23 @@ window.onload = function() {
         imgData: dataURL,
         category: category,
         dbname:'kiddraw',
-        colname:'pilot0',
+        colname:'stationPilot0',
         trialNum: curTrial,
         time: Date.now(),
-        date: readable_date,
-        age: age}; 
-
-    // console.log(current_data);
+        date: readable_date}; 
 
     // send data to server to write to database
     socket.emit('current_data', current_data);
-    nextTrial();
+    restartExperiment();
   });
 
-  // resize canvas display
-  var canvas = document.getElementById("sketchpad"),
-       ctx=canvas.getContext("2d");
-  canvas.style.height='600px';
-  canvas.style.width='600px';
-
   // Drawing related tools
-  paper.setup('ageDraw');
-  paper.setup('consentDraw');
   paper.setup('sketchpad');
+
   // Create a simple drawing tool:
   var tool = new Tool();
   tool.minDistance = 10;
   var path, path2;     
-
 
   // Define a mousedown and mousedrag handler
   tool.onMouseDown = function(event) {
@@ -246,11 +274,10 @@ window.onload = function() {
       svg: svgString,
       category: category,
       dbname:'kiddraw',
-      colname:'pilot0',
+      colname:'stationPilot0',
       trialNum: curTrial,
       time: Date.now(),
-      date: readable_date,    
-      age: 'unknown'  
+      date: readable_date
     };
 
     // console.log(stroke_data);
