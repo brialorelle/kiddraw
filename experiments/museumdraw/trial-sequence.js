@@ -147,7 +147,7 @@ function automaticEnd(){
         dataURL = dataURL.replace('data:image/png;base64,','');
         var thisTrialIndex=trialOrder[curTrial] 
         var category = stimListTest[thisTrialIndex].category;
-        var age = $('#years').value;
+        var age = document.getElementById('years').value;
 
         readable_date = new Date();
         current_data = {
@@ -196,7 +196,7 @@ window.onload = function() {
     dataURL = dataURL.replace('data:image/png;base64,','');
     var thisTrialIndex=trialOrder[curTrial] 
     var category = stimListTest[thisTrialIndex].category;
-    var age = $('#years').value;
+    var age = document.getElementById('years').value;
 
     readable_date = new Date();
     current_data = {
@@ -272,7 +272,7 @@ window.onload = function() {
     var thisTrialIndex=trialOrder[curTrial] 
     var category = stimListTest[thisTrialIndex].category;
     var readable_date = new Date();
-    var age = $('#years').value;
+    var age = document.getElementById('years').value;
 
     stroke_data = {
       dataType: 'stroke',
