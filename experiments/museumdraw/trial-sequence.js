@@ -272,6 +272,7 @@ window.onload = function() {
     var thisTrialIndex=trialOrder[curTrial] 
     var category = stimListTest[thisTrialIndex].category;
     var readable_date = new Date();
+    var age = $('#years').value;
 
     stroke_data = {
       dataType: 'stroke',
@@ -283,8 +284,7 @@ window.onload = function() {
       trialNum: curTrial,
       time: Date.now(),
       date: readable_date,    
-      age: 'unknown'  
-    };
+      age: age};
 
     // console.log(stroke_data);
     // send stroke data to server
