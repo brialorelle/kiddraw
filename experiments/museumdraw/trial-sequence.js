@@ -159,7 +159,8 @@ function automaticEnd(){
             colname:'E1',
             trialNum: curTrial,
             time: Date.now(),
-            date: readable_date}; 
+            date: readable_date,
+            age: age}
 
         // send data to server to write to database
         socket.emit('current_data', current_data);
