@@ -120,19 +120,18 @@ function showSubmit() {
 
 
 function nextTrial() {
-	curTrial++
-
+	$('#cue').fadeOut('fast'); 
+  $('#progressBar').fadeOut('fast'); // fade out submit button
+  $('#submit_div').fadeOut('fast'); // fade out submit button
 	project.activeLayer.removeChildren(); // clear sketchpad hack?
 	$('#sketchpad').fadeOut('fast'); // fade out sketchpas before choice buttons
+  //
+  curTrial++ // increase trial counter
 	if (curTrial<maxTrials){
-		var thisTrialIndex=trialOrder[curTrial] 
-		document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[thisTrialIndex].category;
-    $('#cue').fadeOut('fast'); 
-    $('#progressBar').fadeOut('fast'); // fade out submit button
-		$('#submit_div').fadeOut('fast'); // fade out submit button
-		$('#ready').fadeIn('fast'); // fade in ready
+    // fade in ready next screen and set up trial
+		$('#ready').fadeIn('fast'); 
 		$('#goodJob').fadeIn('fast'); 
-		$('#allDone').fadeIn('fast'); 
+		$('#allDone').fadeIn('fast');
 	}
 	else {
 		endExp();
@@ -180,7 +179,10 @@ function progress(timeleft, timetotal, $element) {
         }, 1000);
       }
     else if(timeleft == 0 & clickedSubmit==0){
-      automaticEnd();
+        automaticEnd();
+      }
+    else if (clickedSubmit==1){
+      return;
     }
   };
 
@@ -218,6 +220,9 @@ window.onload = function() {
   // for other trials
   $('#ready').on('touchstart click',function(){
       console.log('touched ready button');
+    var thisTrialIndex=trialOrder[curTrial] 
+    document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[thisTrialIndex].category;
+      
       $('#goodJob').fadeOut('fast'); 
       $('#ready').fadeOut('fast');
       $('#allDone').fadeOut('fast');
