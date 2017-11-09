@@ -18,33 +18,6 @@ paper.install(window);
 socket = io.connect();
 
 // 1. Setup trial order and randomize it!
-
-var stimListTest = [{"category": "rabbit"},
-			{"category": "cat"},
-			{"category": "chair"},
-			{"category": "couch"},
-      {"category": "banana"},
-      {"category": "phone"},
-      {"category": "cup"},
-      {"category": "foot"},
-      {"category": "ice cream"},
-      {"category": "frog"},
-      {"category": "carrot"},
-      {"category": "flower"},
-      {"category": "shoe"},
-      {"category": "train"},
-      {"category": "boat"},
-      {"category": "car"},
-			]
-
-var curTrial=0 // global variable, trial counter
-var sessionId='E1b_' + Date.now().toString()
-var maxTrials = stimListTest.length-1; // 
-var trialOrder = [];
-for (var i = 0; i <= maxTrials; i++) {
-   trialOrder.push(i);
-}
-
 //helpfuls
 function shuffle (a) 
 { 
@@ -57,12 +30,36 @@ function shuffle (a)
 	 j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);	
     return o;
 }
+
+var stimListTest = [{"category": "rabbit"},
+	{"category": "cat"},
+	{"category": "chair"},
+	{"category": "couch"},
+    {"category": "banana"},
+    {"category": "phone"},
+    {"category": "cup"},
+    {"category": "foot"},
+    {"category": "ice cream"},
+	{"category": "frog"},
+	{"category": "carrot"},
+	{"category": "flower"},
+	{"category": "shoe"},
+	{"category": "train"},
+	{"category": "boat"},
+	{"category": "car"},
+]
+
+stimListTest=shuffle(stimListTest)
+stimListTest.unshift({category:"circle"})
+stimListTest.unshift({category:"triangle"})
+var maxTrials = stimListTest.length; // 18 should be max including familiarization
+var curTrial=0 // global variable, trial counter
+var sessionId='E1c_' + Date.now().toString()
+var timeLimit=30; // in seconds
+
 //global variables here
-var trialOrder=shuffle(trialOrder)
-var thisTrialIndex=trialOrder[curTrial] 
 var clickedSubmit=0;
 ////
-
 
 function startExp(){
 	$('#Welcome').fadeOut('fast'); // hide intro screen
@@ -75,97 +72,51 @@ function endExp(){
 }
 
 function monitorProgress(){
+  clickedSubmit=0;
   console.log('starting monitoring')
-  $('#progressBar').show();
-  progress(20, 20, $('#progressBar')); // show progress bar
+  progress(timeLimit, timeLimit, $('#progressBar')); // show progress bar
+  $('#progressBar').show(); // don't show progress bar until we start monitorung
 }
-
 
 // for the first time we start the experiment
 function startDrawing(){
-		// loadNextVideo(thisTrialIndex)
-		document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[thisTrialIndex].category;
-    
-
-	 $('#getAge').fadeOut('fast'); // fade out age screen
+	document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[curTrial].category;   
 	 $('#mainExp').fadeIn('fast'); // fade in exp
-    // // resize canvas
-    var canvas = document.getElementById("sketchpad"),
-         ctx=canvas.getContext("2d");
-    canvas.style.height='600px';
-    canvas.style.width='600px';
-    // //
+    // 
     setTimeout(function() {showCue();},1000); 
     setTimeout(function() {hideCue();},3000);  // Take cues away after 5 - after video ends
-    setTimeout(function() {showSubmit();},4000); // some minimum amount of time before "I'm done button"
-		timestamp_cueOnset = new Date().getTime();
+	timestamp_cueOnset = new Date().getTime();
 }
-
 
 function showCue() {	
 	$('#cue').fadeIn('fast'); //text cue associated with trial
 }
 
 function hideCue() {
-	// $('#cue').fadeOut('fast'); // fade out cue
-	// $('#cueVideoDiv').hide(); //show video html - this can be a variable later?
-	$('#sketchpad').fadeIn('fast'); // fade in sketchpad  here?
-  clickedSubmit=0; // reset this global
+  $('#sketchpad').fadeIn('fast'); // fade in sketchpad  here?
+  $('#submit_div').fadeIn('fast');
   monitorProgress() 
 }
 
-function showSubmit() {
-	$('#submit_div').fadeIn('fast');
-}
-
-
 function nextTrial() {
-	$('#cue').fadeOut('fast'); 
-  $('#progressBar').fadeOut('fast'); // fade out submit button
-  $('#submit_div').fadeOut('fast'); // fade out submit button
 	project.activeLayer.removeChildren(); // clear sketchpad hack?
+	$('#cue').fadeOut('fast');  // get rid of cue
+    $('#progressBar').fadeOut('fast'); // fade out progress bar
+    $('#submit_div').fadeOut('fast'); // fade out submit button
 	$('#sketchpad').fadeOut('fast'); // fade out sketchpas before choice buttons
-  //
-  curTrial++ // increase trial counter
+ 	 //
+  	curTrial++ // increase trial counter
+  	console.log(curTrial)
 	if (curTrial<maxTrials){
     // fade in ready next screen and set up trial
-		$('#ready').fadeIn('fast'); 
-		$('#goodJob').fadeIn('fast'); 
-		$('#allDone').fadeIn('fast');
+		$('#ready').fadeIn('fast'); // let's keep going button 
+		$('#goodJob').fadeIn('fast'); // good job image
+		$('#allDone').fadeIn('fast'); // all done with drawing button
 	}
 	else {
 		endExp();
 	}
-
 }
-
-function automaticEnd(){
-
-        console.log(' automatically triggered next trial ')
-        // save sketch png
-        var dataURL = document.getElementById('sketchpad').toDataURL();
-        dataURL = dataURL.replace('data:image/png;base64,','');
-        var thisTrialIndex=trialOrder[curTrial] 
-        var category = stimListTest[thisTrialIndex].category;
-        var age = document.getElementById('years').value;
-
-        readable_date = new Date();
-        current_data = {
-            dataType: 'finalImage',
-            sessionId: sessionId,
-            imgData: dataURL,
-            category: category,
-            dbname:'kiddraw',
-            colname:'E1b',
-            trialNum: curTrial,
-            time: Date.now(),
-            date: readable_date,
-            age: age}
-
-        // send data to server to write to database
-        socket.emit('current_data', current_data);
-        nextTrial();
-  };
 
 
 function progress(timeleft, timetotal, $element) {
@@ -180,22 +131,22 @@ function progress(timeleft, timetotal, $element) {
         }, 1000);
       }
     else if(timeleft == 0 & clickedSubmit==0){
-        automaticEnd();
+    
+        console.log("trial timed out")
+        saveSketchData();
+        nextTrial();
+        return; //  get out of here
       }
-    else if (clickedSubmit==1){
-      return;
+    else if (clickedSubmit==1){   
+      console.log("exiting out of progress function")
+      return; //  get out of here, data being saved by other button
     }
   };
 
-window.onload = function() { 
-
-  $('#submit').click(function () {
-    clickedSubmit=1;
-    // save sketch png
+function saveSketchData(){
     var dataURL = document.getElementById('sketchpad').toDataURL();
     dataURL = dataURL.replace('data:image/png;base64,','');
-    var thisTrialIndex=trialOrder[curTrial] 
-    var category = stimListTest[thisTrialIndex].category;
+    var category = stimListTest[curTrial].category;
     var age = document.getElementById('years').value;
 
     readable_date = new Date();
@@ -211,29 +162,41 @@ window.onload = function() {
         date: readable_date,
         age: age}; 
 
-    // console.log(current_data);
-
     // send data to server to write to database
     socket.emit('current_data', current_data);
-    nextTrial();
-  });
+}
 
-  // for other trials
+window.onload = function() { 
+
+    // resize canvas
+    var canvas = document.getElementById("sketchpad"),
+         ctx=canvas.getContext("2d");
+    canvas.style.height='600px';
+    canvas.style.width='600px';
+
+  $('#submit').on('touchstart click', function () {
+  	 clickedSubmit=1;
+	 console.log('touched submit button');
+	 saveSketchData();
+     nextTrial();
+	});
+ 
+  // for other trials, coming from intermediate screen
   $('#ready').on('touchstart click',function(){
+      $('#ready').fadeOut('fast'); // let's keep going button 
+	  $('#goodJob').fadeOut('fast'); // good job image
+	  $('#allDone').fadeOut('fast'); // all done with drawing button
       console.log('touched ready button');
-    var thisTrialIndex=trialOrder[curTrial] 
-    document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[thisTrialIndex].category;
-      
-      $('#goodJob').fadeOut('fast'); 
-      $('#ready').fadeOut('fast');
-      $('#allDone').fadeOut('fast');
-          setTimeout(function() {showCue();},1000); 
-          setTimeout(function() {hideCue();},3000);  // Take cues away after 4s?
-          setTimeout(function() {showSubmit();},4000); // some minimum amount of time before "I'm done button"
-      timestamp_cueOnset = new Date().getTime();
+      startDrawing();
   })
 
+  // coming from age screen at beginning
+  $('#startTask').on('touchstart click',function(){
+      $('#getAge').fadeOut('fast'); // fade out age screen
+      startDrawing();
+  })
 
+  // just want to wrap up
   $('#allDone').on('touchstart click',function(){
       console.log('touched all done');
       $('#ready').fadeOut('fast');
@@ -264,13 +227,12 @@ window.onload = function() {
 
   tool.onMouseUp = function(event) {
     path.selected = false;
-    path.simplify(10);
+    // path.simplify(5); /// this was messing kids up
     finalPoint = path._segments.slice(-1)[0];
 
     // var jsonString = path.exportJSON({asString: true});
     var svgString = path.exportSVG({asString: true});
-    var thisTrialIndex=trialOrder[curTrial] 
-    var category = stimListTest[thisTrialIndex].category;
+    var category = stimListTest[curTrial].category;
     var readable_date = new Date();
     var age = document.getElementById('years').value;
 
