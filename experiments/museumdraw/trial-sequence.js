@@ -192,8 +192,8 @@ function resizeCanvas(){
          ctx=canvas.getContext("2d");
     canvas.style.height='600px';
     canvas.style.width='600px';
-  ctx.width=600;
-	ctx.height=600;
+  ctx.width=100;
+	ctx.height=100;
 }
 
 
