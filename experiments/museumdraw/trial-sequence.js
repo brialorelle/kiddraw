@@ -156,8 +156,8 @@ function saveSketchData(){
 	var canvas = document.getElementById("sketchpad"),
          ctx=canvas.getContext("2d");
 	ctx = canvas.getContext('2d');
-	ctx.width=200;
-	ctx.height=200;
+	ctx.width=1;
+	ctx.height=1;
 	canvas.style.height='200px';
   canvas.style.width='200px';
 	//
