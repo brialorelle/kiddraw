@@ -155,11 +155,16 @@ function saveSketchData(){
 	// downsamplesketchpad before saveing
 	var canvas = document.getElementById("sketchpad"),
          ctx=canvas.getContext("2d");
-	ctx = canvas.getContext('2d');
-	ctx.width=1;
-	ctx.height=1;
-	canvas.style.height='200px';
-  canvas.style.width='200px';
+	
+  var dataURL = canvas.toDataURL();
+  console.log(dataURL.length)
+
+  // tmpCanvas = document.createElement("canvas");
+  // ctx.scale(.5, .5);
+  
+
+  // var dataURL = canvas.toDataURL();
+  // console.log("should be smaller" +dataURL.length)
 	//
   var dataURL = canvas.toDataURL();
   console.log(dataURL.length)
@@ -192,8 +197,8 @@ function resizeCanvas(){
          ctx=canvas.getContext("2d");
     canvas.style.height='600px';
     canvas.style.width='600px';
-  ctx.width=100;
-	ctx.height=100;
+  ctx.width=600;
+	ctx.height=600;
 }
 
 
