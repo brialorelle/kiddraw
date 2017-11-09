@@ -161,7 +161,7 @@ function saveSketchData(){
 	canvas.style.height='200px';
     canvas.style.width='200px';
 	//
-    var dataURL = canvas.toDataURL();
+    var dataURL = canvas.toDataURL("image/png", .5);
     dataURL = dataURL.replace('data:image/png;base64,','');
     var category = stimListTest[curTrial].category;
     var age = document.getElementById('years').value;
