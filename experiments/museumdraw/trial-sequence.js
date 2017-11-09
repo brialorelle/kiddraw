@@ -209,30 +209,30 @@ window.onload = function() {
 	});
  
   // for other trials, coming from intermediate screen
-  $('#ready').on('touchstart click',function(e){
+  $('#ready').click(){
     e.stopImmediatePropagation();
     $('#ready').fadeOut('fast'); // let's keep going button 
 	  $('#goodJob').fadeOut('fast'); // good job image
 	  $('#allDone').fadeOut('fast'); // all done with drawing button
       console.log('touched ready button');
       startDrawing();
-  })
+  }
 
   // coming from age screen at beginning
-  $('#startTask').on('touchstart click',function(e){
+  $('#startTask').click(){
     e.stopImmediatePropagation();
       $('#getAge').fadeOut('fast'); // fade out age screen
       startDrawing();
-  })
+  }
 
   // just want to wrap up
-  $('#allDone').on('touchstart click',function(e){
+  $('#allDone').click(){
     e.stopImmediatePropagation();
       console.log('touched all done');
       $('#ready').fadeOut('fast');
       $('#allDone').fadeOut('fast');
           endExp();
-  })
+  }
    
 
   // Drawing related tools
