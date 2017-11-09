@@ -162,8 +162,8 @@ function saveSketchData(){
   destCtx = tmpCanvas.getContext('2d');
 	destCtx.drawImage(canvas, 0,0,150,150)
 
-  // var dataURL = tmpCanvas.toDataURL();
-  var dataURL = canvas.toDataURL();
+  var dataURL = tmpCanvas.toDataURL();
+  //var dataURL = canvas.toDataURL();
   // console.log(dataURLTest.length)
   // console.log("should be longer" +dataURL.length)
   
