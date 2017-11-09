@@ -201,38 +201,35 @@ window.onload = function() {
 
    resizeCanvas(); // make sure the canvas is the right size
 
-  $('#submit').click{
+  $('#submit').click(function(){
   	 clickedSubmit=1;
 	 console.log('touched submit button');
 	 saveSketchData();
      nextTrial();
-	};
+	});
  
   // for other trials, coming from intermediate screen
-  $('#ready').click{
-    e.stopImmediatePropagation();
+  $('#ready').click(function() {
     $('#ready').fadeOut('fast'); // let's keep going button 
 	  $('#goodJob').fadeOut('fast'); // good job image
 	  $('#allDone').fadeOut('fast'); // all done with drawing button
       console.log('touched ready button');
       startDrawing();
-  };
+  });
 
   // coming from age screen at beginning
-  $('#startTask').click(){
-    e.stopImmediatePropagation();
+  $('#startTask').click(function(){
       $('#getAge').fadeOut('fast'); // fade out age screen
       startDrawing();
-  };
+  });
 
   // just want to wrap up
-  $('#allDone').click{
-    e.stopImmediatePropagation();
+  $('#allDone').click(function(){
       console.log('touched all done');
       $('#ready').fadeOut('fast');
       $('#allDone').fadeOut('fast');
           endExp();
-  };
+  });
    
 
   // Drawing related tools
