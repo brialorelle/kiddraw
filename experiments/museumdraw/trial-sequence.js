@@ -59,8 +59,8 @@ var timeLimit=30; // in seconds
 
 //global variables here
 var clickedSubmit=0;
-////
 
+//// simple show/hide functions
 function startExp(){
 	$('#Welcome').fadeOut('fast'); // hide intro screen
 	$('#getAge').fadeIn('fast'); // fade in ready button
@@ -69,23 +69,6 @@ function startExp(){
 function endExp(){
 	$('#mainExp').fadeOut('fast'); 
 	$('#Thanks').fadeIn('fast'); // hide intro screen
-}
-
-function monitorProgress(){
-  clickedSubmit=0;
-  console.log('starting monitoring')
-  progress(timeLimit, timeLimit, $('#progressBar')); // show progress bar
-  $('#progressBar').show(); // don't show progress bar until we start monitorung
-}
-
-// for the first time we start the experiment
-function startDrawing(){
-	document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[curTrial].category;   
-	 $('#mainExp').fadeIn('fast'); // fade in exp
-    // 
-    setTimeout(function() {showCue();},1000); 
-    setTimeout(function() {hideCue();},3000);  // Take cues away after 5 - after video ends
-	timestamp_cueOnset = new Date().getTime();
 }
 
 function showCue() {	
@@ -98,7 +81,28 @@ function hideCue() {
   monitorProgress() 
 }
 
+function monitorProgress(){
+  clickedSubmit=0;
+  console.log('starting monitoring')
+  progress(timeLimit, timeLimit, $('#progressBar')); // show progress bar
+  $('#progressBar').show(); // don't show progress bar until we start monitorung
+}
+
+// every time we start drawing
+function startDrawing(){
+	resizeCanvas()
+	document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[curTrial].category;   
+	 $('#mainExp').fadeIn('fast'); // fade in exp
+    // 
+    setTimeout(function() {showCue();},1000); 
+    setTimeout(function() {hideCue();},3000);  // Take cues away after 5 - after video ends
+	timestamp_cueOnset = new Date().getTime();
+}
+
+
+//  when we're done with a trial and go to the next screen
 function nextTrial() {
+	console.log("got to next trial function")
 	project.activeLayer.removeChildren(); // clear sketchpad hack?
 	$('#cue').fadeOut('fast');  // get rid of cue
     $('#progressBar').fadeOut('fast'); // fade out progress bar
@@ -118,7 +122,7 @@ function nextTrial() {
 	}
 }
 
-
+//  monitoring progress spent on a trial and triggering next events
 function progress(timeleft, timetotal, $element) {
     var progressBarWidth = timeleft * $element.width() / timetotal;
     var totalBarWidth = timetotal * $element.width();
@@ -132,7 +136,6 @@ function progress(timeleft, timetotal, $element) {
         }, 1000);
       }
     else if(timeleft == 0 & clickedSubmit==0){
-    
         console.log("trial timed out")
         saveSketchData();
         nextTrial();
@@ -146,8 +149,17 @@ function progress(timeleft, timetotal, $element) {
     }
   };
 
+
+// saving sketch data to server
 function saveSketchData(){
-    var dataURL = document.getElementById('sketchpad').toDataURL();
+	// downsamplesketchpad before saveing
+	var canvas = document.getElementById("sketchpad"),
+         ctx=canvas.getContext("2d");
+	ctx = canvas.getContext('2d');
+	ctx.width=200;
+	ctx.height=200;
+	//
+    var dataURL = canvas.toDataURL();
     dataURL = dataURL.replace('data:image/png;base64,','');
     var category = stimListTest[curTrial].category;
     var age = document.getElementById('years').value;
@@ -169,13 +181,21 @@ function saveSketchData(){
     socket.emit('current_data', current_data);
 }
 
-window.onload = function() { 
-
+// resizing the canvas at the start of each trial
+function resizeCanvas(){
     // resize canvas
     var canvas = document.getElementById("sketchpad"),
          ctx=canvas.getContext("2d");
     canvas.style.height='600px';
     canvas.style.width='600px';
+    ctx.width=600;
+	ctx.height=600;
+}
+
+
+window.onload = function() { 
+
+   resizeCanvas(); // make sure the canvas is the right size
 
   $('#submit').on('touchstart click', function () {
   	 clickedSubmit=1;
