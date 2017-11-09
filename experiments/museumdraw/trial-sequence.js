@@ -209,8 +209,9 @@ window.onload = function() {
 	});
  
   // for other trials, coming from intermediate screen
-  $('#ready').on('touchstart click',function(){
-      $('#ready').fadeOut('fast'); // let's keep going button 
+  $('#ready').on('touchstart click',function(e){
+    e.stopImmediatePropagation();
+    $('#ready').fadeOut('fast'); // let's keep going button 
 	  $('#goodJob').fadeOut('fast'); // good job image
 	  $('#allDone').fadeOut('fast'); // all done with drawing button
       console.log('touched ready button');
@@ -218,13 +219,15 @@ window.onload = function() {
   })
 
   // coming from age screen at beginning
-  $('#startTask').on('touchstart click',function(){
+  $('#startTask').on('touchstart click',function(e){
+    e.stopImmediatePropagation();
       $('#getAge').fadeOut('fast'); // fade out age screen
       startDrawing();
   })
 
   // just want to wrap up
-  $('#allDone').on('touchstart click',function(){
+  $('#allDone').on('touchstart click',function(e){
+    e.stopImmediatePropagation();
       console.log('touched all done');
       $('#ready').fadeOut('fast');
       $('#allDone').fadeOut('fast');
