@@ -121,6 +121,7 @@ function nextTrial() {
 
 function progress(timeleft, timetotal, $element) {
     var progressBarWidth = timeleft * $element.width() / timetotal;
+    var totalBarWidth = timetotal * $element.width();
     var timeLeftOut = timeleft
     $element.find('div').animate({ width: progressBarWidth }, timeleft == timetotal ? 0 : 1000, "linear").html(Math.floor(timeleft/60) + ":"+ timeleft%60);
     console.log("clicked submit = " + clickedSubmit)
@@ -135,10 +136,12 @@ function progress(timeleft, timetotal, $element) {
         console.log("trial timed out")
         saveSketchData();
         nextTrial();
+        $element.find('div').width(totalBarWidth)
         return; //  get out of here
       }
     else if (clickedSubmit==1){   
       console.log("exiting out of progress function")
+      $element.find('div').width(totalBarWidth)
       return; //  get out of here, data being saved by other button
     }
   };
