@@ -201,15 +201,18 @@ window.onload = function() {
 
    resizeCanvas(); // make sure the canvas is the right size
 
-  $('#submit').click(function(){
-  	 clickedSubmit=1;
+  $('#submit').click(function(e){
+   event.preventDefault(e)
+   clickedSubmit=1;
 	 console.log('touched submit button');
 	 saveSketchData();
      nextTrial();
 	});
  
   // for other trials, coming from intermediate screen
-  $('#ready').click(function() {
+  $('#ready').click(function(e) {
+   event.preventDefault(e)
+
     $('#ready').fadeOut('fast'); // let's keep going button 
 	  $('#goodJob').fadeOut('fast'); // good job image
 	  $('#allDone').fadeOut('fast'); // all done with drawing button
@@ -218,13 +221,15 @@ window.onload = function() {
   });
 
   // coming from age screen at beginning
-  $('#startTask').click(function(){
+  $('#startTask').click(function(e){
+      event.preventDefault(e)
       $('#getAge').fadeOut('fast'); // fade out age screen
       startDrawing();
   });
 
   // just want to wrap up
-  $('#allDone').click(function(){
+  $('#allDone').click(function(e){
+    event.preventDefault(e)
       console.log('touched all done');
       $('#ready').fadeOut('fast');
       $('#allDone').fadeOut('fast');
