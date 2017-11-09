@@ -158,6 +158,8 @@ function saveSketchData(){
 	ctx = canvas.getContext('2d');
 	ctx.width=200;
 	ctx.height=200;
+	canvas.style.height='200px';
+    canvas.style.width='200px';
 	//
     var dataURL = canvas.toDataURL();
     dataURL = dataURL.replace('data:image/png;base64,','');
