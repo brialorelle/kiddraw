@@ -155,18 +155,19 @@ function saveSketchData(){
 	// downsamplesketchpad before saveing
 	var canvas = document.getElementById("sketchpad"),
          ctx=canvas.getContext("2d");
-	
-  var dataURL = canvas.toDataURL();
-  console.log(dataURL.length)
+  
+  tmpCanvas = document.createElement("canvas");
+  tmpCanvas.width=150;
+  tmpCanvas.height=150;
+  destCtx = tmpCanvas.getContext('2d');
+	destCtx.drawImage(canvas, 0,0,150,150)
 
-  // tmpCanvas = document.createElement("canvas");
-  // ctx.scale(.5, .5);
-
-
+  var dataURL = tmpCanvas.toDataURL();
   // var dataURL = canvas.toDataURL();
-  // console.log("should be smaller" +dataURL.length)
-	//
-  console.log(dataURL.length)
+  // console.log(dataURLTest.length)
+  // console.log("should be longer" +dataURL.length)
+  
+  
   dataURL = dataURL.replace('data:image/png;base64,','');
   var category = stimListTest[curTrial].category;
   var age = document.getElementById('years').value;
