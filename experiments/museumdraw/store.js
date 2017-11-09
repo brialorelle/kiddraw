@@ -56,8 +56,8 @@ function serve() {
 
   mongoConnectWithRetry(2000, (connection) => {
 
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({ extended: true }));
+    app.use(bodyParser.json({limit: "50mb"})); // added bll
+    app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
 
     app.post('/db/insert', (request, response) => {
       if (!request.body) {
