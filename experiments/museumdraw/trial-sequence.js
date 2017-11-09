@@ -14,8 +14,8 @@ Oct 26 2017
 
 // 0. Load dependencies
 paper.install(window);
-
 socket = io.connect();
+
 
 // 1. Setup trial order and randomize it!
 //helpfuls
@@ -159,18 +159,26 @@ function saveSketchData(){
 	ctx.width=200;
 	ctx.height=200;
 	canvas.style.height='200px';
-    canvas.style.width='200px';
+  canvas.style.width='200px';
 	//
-    var dataURL = canvas.toDataURL("image/png", .5);
+    var dataURL = canvas.toDataURL("image/png", .1);
+    console.log(dataURL)
     dataURL = dataURL.replace('data:image/png;base64,','');
     var category = stimListTest[curTrial].category;
     var age = document.getElementById('years').value;
+
+    // test stirng
+    var x = "1234567890";
+    var iterations = 1400;
+    for (var i = 0; i < iterations; i++) {
+    x += x+x;
+    }
 
     readable_date = new Date();
     current_data = {
         dataType: 'finalImage',
         sessionId: sessionId,
-        imgData: dataURL,
+        imgData: x,
         category: category,
         dbname:'kiddraw',
         colname:'E1b',
@@ -190,7 +198,7 @@ function resizeCanvas(){
          ctx=canvas.getContext("2d");
     canvas.style.height='600px';
     canvas.style.width='600px';
-    ctx.width=600;
+  ctx.width=600;
 	ctx.height=600;
 }
 
