@@ -161,12 +161,11 @@ function saveSketchData(){
 
   // tmpCanvas = document.createElement("canvas");
   // ctx.scale(.5, .5);
-  
+
 
   // var dataURL = canvas.toDataURL();
   // console.log("should be smaller" +dataURL.length)
 	//
-  var dataURL = canvas.toDataURL();
   console.log(dataURL.length)
   dataURL = dataURL.replace('data:image/png;base64,','');
   var category = stimListTest[curTrial].category;
