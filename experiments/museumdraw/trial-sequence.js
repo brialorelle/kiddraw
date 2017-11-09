@@ -161,24 +161,18 @@ function saveSketchData(){
 	canvas.style.height='200px';
   canvas.style.width='200px';
 	//
-    var dataURL = canvas.toDataURL("image/png", .1);
-    console.log(dataURL)
-    dataURL = dataURL.replace('data:image/png;base64,','');
-    var category = stimListTest[curTrial].category;
-    var age = document.getElementById('years').value;
+  var dataURL = canvas.toDataURL("image/jpeg", 0.1);
+  console.log(dataURL)
+  dataURL = dataURL.replace('data:image/png;base64,','');
+  var category = stimListTest[curTrial].category;
+  var age = document.getElementById('years').value;
 
-    // test stirng
-    var x = "1234567890";
-    var iterations = 1400;
-    for (var i = 0; i < iterations; i++) {
-    x += x+x;
-    }
-
+  // test stirng
     readable_date = new Date();
     current_data = {
         dataType: 'finalImage',
         sessionId: sessionId,
-        imgData: x,
+        imgData: dataURL,
         category: category,
         dbname:'kiddraw',
         colname:'E1b',
