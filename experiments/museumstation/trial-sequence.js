@@ -30,7 +30,7 @@ for (var i = 0; i <= maxTrials; i++) {
 
 // set global variables
 var clickedSubmit=0;
-
+var timeLimit=30;
 //helpfuls
 function shuffle (a) 
 { 
@@ -93,10 +93,41 @@ function hideCue() {
 }
 
 function monitorProgress(){
+  clickedSubmit=0;
   console.log('starting monitoring')
-  $('#progressBar').show();
-  progress(20, 20, $('#progressBar')); // show progress bar
+  progress(timeLimit, timeLimit, $('#progressBar')); // show progress bar
+  $('#progressBar').show(); // don't show progress bar until we start monitorung
 }
+
+
+
+//  monitoring progress spent on a trial and triggering next events
+function progress(timeleft, timetotal, $element) {
+    var progressBarWidth = timeleft * $element.width() / timetotal;
+    var totalBarWidth = timetotal * $element.width();
+    var timeLeftOut = timeleft
+    $element.find('div').animate({ width: progressBarWidth }, timeleft == timetotal ? 0 : 1000, "linear").html(Math.floor(timeleft/60) + ":"+ timeleft%60);
+    console.log("clicked submit = " + clickedSubmit)
+    console.log("time left = " + timeleft)
+    if(timeleft > 0 & clickedSubmit==0) {
+        setTimeout(function() {
+            progress(timeleft - 1, timetotal, $element);
+        }, 1000);
+      }
+    else if(timeleft == 0 & clickedSubmit==0){
+        console.log("trial timed out")
+        saveSketchData();
+        restartExperiment();
+        $element.find('div').width(totalBarWidth)
+        return; //  get out of here
+      }
+    else if (clickedSubmit==1){   
+      console.log("exiting out of progress function")
+      $element.find('div').width(totalBarWidth)
+      return; //  get out of here, data being saved by other button
+    }
+  };
+
 
 function showSubmit() {
 	$('#submit_div').fadeIn('fast');
@@ -118,6 +149,44 @@ function loadNextVideo(){
   player.src({ type: "video/mp4", src: "videos/" + stimListTest[thisTrialIndex].video });
   player.load();
 }
+
+// saving sketch data to server
+function saveSketchData(){
+  // downsamplesketchpad before saveing
+  var canvas = document.getElementById("sketchpad"),
+         ctx=canvas.getContext("2d");
+  
+  tmpCanvas = document.createElement("canvas");
+  tmpCanvas.width=150;
+  tmpCanvas.height=150;
+  destCtx = tmpCanvas.getContext('2d');
+  destCtx.drawImage(canvas, 0,0,150,150)
+
+  var dataURL = tmpCanvas.toDataURL();
+  //var dataURL = canvas.toDataURL();
+  // console.log(dataURLTest.length)
+  // console.log("should be longer" +dataURL.length)
+  
+  
+  dataURL = dataURL.replace('data:image/png;base64,','');
+  var category = stimListTest[curTrial].category;
+
+  // test stirng
+    readable_date = new Date();
+    current_data = {
+        dataType: 'finalImage',
+        sessionId: sessionId,
+        imgData: dataURL,
+        category: category,
+        dbname:'kiddraw',
+        colname:'E1c',
+        trialNum: curTrial,
+        time: Date.now(),
+        date: readable_date}; 
+
+    // send data to server to write to database
+    socket.emit('current_data', current_data);
+};
 
 function saveConsentData(){
         console.log(' saving consent "form" to database')
@@ -146,34 +215,6 @@ function saveConsentData(){
 }
 
 
-function automaticEnd(){
-
-        console.log(' automatically triggered next trial ')
-        // save sketch png
-        var dataURL = document.getElementById('sketchpad').toDataURL();
-        dataURL = dataURL.replace('data:image/png;base64,','');
-        var thisTrialIndex=trialOrder[curTrial] 
-        var category = stimListTest[thisTrialIndex].category;
-        var age = $('#years').value;
-
-        readable_date = new Date();
-        current_data = {
-            dataType: 'finalImage',
-            sessionId: sessionId,
-            imgData: dataURL,
-            category: category,
-            dbname:'kiddraw',
-            colname:'stationPilot0',
-            trialNum: curTrial,
-            time: Date.now(),
-            date: readable_date}; 
-
-        // send data to server to write to database
-        socket.emit('current_data', current_data);
-        restartExperiment();
-  };
-
-
 function restartExperiment() {
 	project.activeLayer.removeChildren(); // clear sketchpad 
 
@@ -192,50 +233,21 @@ function restartExperiment() {
     canvas.style.border="none"
 }
 
-function progress(timeleft, timetotal, $element) {
-    var progressBarWidth = timeleft * $element.width() / timetotal;
-    var timeLeftOut = timeleft
-    $element.find('div').animate({ width: progressBarWidth }, timeleft == timetotal ? 0 : 1000, "linear").html(Math.floor(timeleft/60) + ":"+ timeleft%60);
-    console.log("clicked submit = " + clickedSubmit)
-    console.log("time left = " + timeleft)
-    if(timeleft > 0 & clickedSubmit==0) {
-        setTimeout(function() {
-            progress(timeleft - 1, timetotal, $element);
-        }, 1000);
-      }
-    else if(timeleft == 0 & clickedSubmit==0){
-      automaticEnd();
-    }
-  };
-
 
 window.onload = function() { 
 
-  $('#submit').click(function () {
+  $('#submit').click(function (e) {
+    event.preventDefault(e)
     clickedSubmit=1;
-
-    // save sketch png
-    var dataURL = document.getElementById('sketchpad').toDataURL();
-    dataURL = dataURL.replace('data:image/png;base64,','');
-    var thisTrialIndex=trialOrder[curTrial] 
-    var category = stimListTest[thisTrialIndex].category;
-
-    readable_date = new Date();
-    current_data = {
-        dataType: 'finalImage',
-        sessionId: sessionId,
-        imgData: dataURL,
-        category: category,
-        dbname:'kiddraw',
-        colname:'stationPilot0',
-        trialNum: curTrial,
-        time: Date.now(),
-        date: readable_date}; 
-
-    // send data to server to write to database
-    socket.emit('current_data', current_data);
+    saveSketchData()
     restartExperiment();
   });
+
+  $('#startExp').click(function(e) {
+     event.preventDefault(e)
+      console.log('touched start button');
+      startDrawing();
+    });
 
   // Drawing related tools
   paper.setup('sketchpad');
@@ -249,7 +261,7 @@ window.onload = function() {
   tool.onMouseDown = function(event) {
     path = new Path();      
     path.strokeColor = '#000000';
-    path.strokeWidth = 10;
+    path.strokeWidth = 5;
     path.add(event.point);
   }
 
@@ -259,7 +271,7 @@ window.onload = function() {
 
   tool.onMouseUp = function(event) {
     path.selected = false;
-    path.simplify(10);
+    path.simplify(2);
     finalPoint = path._segments.slice(-1)[0];
 
     // var jsonString = path.exportJSON({asString: true});
