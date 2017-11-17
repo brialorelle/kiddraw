@@ -114,7 +114,7 @@ function progress(timeleft, timetotal, $element) {
       }
     else if(timeleft == 0 & clickedSubmit==0){
         console.log("trial timed out")
-        saveSketchData();
+        // saveSketchData();
         restartExperiment();
         $element.find('div').width(totalBarWidth)
         return; //  get out of here
@@ -176,7 +176,7 @@ function saveSketchData(){
         imgData: dataURL,
         category: category,
         dbname:'kiddraw',
-        colname:'E1c',
+        colname:'stationPilot0',
         trialNum: curTrial,
         time: Date.now(),
         date: readable_date}; 
@@ -232,7 +232,7 @@ window.onload = function() {
   $('#submit').click(function (e) {
     event.preventDefault(e)
     clickedSubmit=1;
-    saveSketchData()
+    // saveSketchData()
     restartExperiment();
   });
 
@@ -291,9 +291,8 @@ window.onload = function() {
       date: readable_date
     };
 
-    // console.log(stroke_data);
     // send stroke data to server
-    // socket.emit('stroke',stroke_data);
+    // socket.emit('stroke',stroke_data); / not for demo
     
   }
 
