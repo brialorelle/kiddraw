@@ -32,6 +32,7 @@ button[disabled] {
 
 #logo-text {
   font-weight: bold;
+  font-style: italic;
 }
 
 .slideButton {
@@ -41,7 +42,6 @@ button[disabled] {
    bottom: 5%;
    width:280px;
    text-align: center;
-   border: solid 5px #999;
 }
 
 #consent {
@@ -105,8 +105,8 @@ button[disabled] {
 #sketchpad {
     position: absolute;
     top: 20vh;
-    left: 20%;
-    right: 7%;
+    left: 10%;
+    right: 10%;
 }
 
 #kidConsent {

@@ -18,15 +18,14 @@ socket = io.connect();
 
 // 1. Setup trial order and randomize it!
 var stimListTest = [{"category": "rabbit", "video": "rabbit.mp4"},
-{"category": "boat", "video": "boat.mp4"}]
+{"category": "boat", "video": "boat.mp4"},
+{"category": "cup", "video": "cup.mp4"},
+{"category": "banana", "video": "banana.mp4"}]
 
+var stimListTest = shuffle(stimListTest)
 var curTrial=0 // global variable, trial counter
 var sessionId='stationPilot0_' + Date.now().toString()
 var maxTrials = stimListTest.length-1; // 
-var trialOrder = [];
-for (var i = 0; i <= maxTrials; i++) {
-   trialOrder.push(i);
-}
 
 // set global variables
 var clickedSubmit=0;
@@ -43,22 +42,20 @@ function shuffle (a)
    j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x); 
     return o;
 }
-//global variables here
-var trialOrder=shuffle(trialOrder)
-var thisTrialIndex=trialOrder[curTrial] 
+
 
 // for each time we start drawing
 function startDrawing(){
   // resize canvas
+    $('#WelcomeScreen').fadeOut('fast'); // fade out age screen
+    $('#sketchpad').fadeIn('fast');   // make sue this isn't shown until we're ready
+    //
     clickedSubmit=0; //reset this variable
-
-    saveConsentData(); // save consent screen
-		loadNextVideo(thisTrialIndex) // change video
-		document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[thisTrialIndex].category; // change cue
-    
-	 $('#WelcomeScreen').fadeOut('fast'); // fade out age screen
-	 $('#mainExp').fadeIn('fast'); // fade in exp
-
+    // saveConsentData(); // save consent screen
+    project.activeLayer.removeChildren(); // clear sketchpad 
+		loadNextVideo(curTrial) // change video
+		document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[curTrial].category; // change cue
+    //
     setTimeout(function() {showCue();},1000); 
     setTimeout(function() {hideCue();},5000);  // Take cues away after 5 - after video ends
     setTimeout(function() {showSubmit();},6000); // some minimum amount of time before "I'm done button"
@@ -67,6 +64,7 @@ function startDrawing(){
 
 // show cue without canvas
 function showCue() {	
+  $('#mainExp').fadeIn('fast'); // fade in exp
 	$('#cue').fadeIn('fast'); //text cue associated with trial
 	$('#cueVideoDiv').show(); //show video div 
 	playVideo();
@@ -76,37 +74,37 @@ function showCue() {
 function hideCue() {
 	$('#cue').fadeOut('fast'); // fade out cue
 	$('#cueVideoDiv').hide(); //show video html - this can be a variable later?
-	 
-   // change sketchpad so it is visible again; change style
-   project.activeLayer.removeChildren(); // clear sketchpad  just in case they've drawn during video
-   //
-   var canvas = document.getElementById("sketchpad"),
+  setUpDrawing()
+}
+
+function setUpDrawing(){
+    $('#sketchpad').fadeIn('fast');  
+    canvasBorder();
+    monitorProgress(); // since we now have a timeout function 
+};
+
+function canvasBorder(){
+    console.log('border back on canvas')
+     var canvas = document.getElementById("sketchpad"),
          ctx=canvas.getContext("2d");
-    canvas.width=600;
-    canvas.height=600;
-    canvas.style.height='600px';
-    canvas.style.width='600px';
     canvas.style.border="solid 5px #999";
     canvas.style.top="15vh";
-    //
-  monitorProgress() // since we now have a timeout function
-}
+};
+
 
 function monitorProgress(){
   clickedSubmit=0;
   console.log('starting monitoring')
   progress(timeLimit, timeLimit, $('#progressBar')); // show progress bar
   $('#progressBar').show(); // don't show progress bar until we start monitorung
-}
-
-
+};
 
 //  monitoring progress spent on a trial and triggering next events
 function progress(timeleft, timetotal, $element) {
     var progressBarWidth = timeleft * $element.width() / timetotal;
     var totalBarWidth = timetotal * $element.width();
     var timeLeftOut = timeleft
-    $element.find('div').animate({ width: progressBarWidth }, timeleft == timetotal ? 0 : 1000, "linear").html(Math.floor(timeleft/60) + ":"+ timeleft%60);
+    $element.find('div').animate({ width: progressBarWidth }, timeleft == timetotal ? 0 : 1000, "linear").html(timeleft%60);
     console.log("clicked submit = " + clickedSubmit)
     console.log("time left = " + timeleft)
     if(timeleft > 0 & clickedSubmit==0) {
@@ -144,9 +142,8 @@ function playVideo(){
 function loadNextVideo(){
   var player=videojs('cueVideo');
   player.pause();
-  var thisTrialIndex=trialOrder[curTrial] 
-  console.log(stimListTest[thisTrialIndex].video)
-  player.src({ type: "video/mp4", src: "videos/" + stimListTest[thisTrialIndex].video });
+  console.log(stimListTest[curTrial].video)
+  player.src({ type: "video/mp4", src: "videos/" + stimListTest[curTrial].video });
   player.load();
 }
 
@@ -226,10 +223,6 @@ function restartExperiment() {
   //reset canvas size to intro sizes for consent data
     var canvas = document.getElementById("sketchpad"),
          ctx=canvas.getContext("2d");
-    canvas.width=400;
-    canvas.height=225;
-    canvas.style.width='400px';
-    canvas.style.height='225px';
     canvas.style.border="none"
 }
 
@@ -249,6 +242,12 @@ window.onload = function() {
       startDrawing();
     });
 
+  //
+  var canvas = document.getElementById("sketchpad"),
+     ctx=canvas.getContext("2d");
+  canvas.height = window.innerWidth*.8;
+  canvas.width = canvas.height;
+
   // Drawing related tools
   paper.setup('sketchpad');
 
@@ -261,7 +260,8 @@ window.onload = function() {
   tool.onMouseDown = function(event) {
     path = new Path();      
     path.strokeColor = '#000000';
-    path.strokeWidth = 5;
+    path.strokeCap = 'round';
+    path.strokeWidth = 10;
     path.add(event.point);
   }
 
@@ -271,13 +271,12 @@ window.onload = function() {
 
   tool.onMouseUp = function(event) {
     path.selected = false;
-    path.simplify(2);
+    // path.simplify(2);
     finalPoint = path._segments.slice(-1)[0];
 
     // var jsonString = path.exportJSON({asString: true});
     var svgString = path.exportSVG({asString: true});
-    var thisTrialIndex=trialOrder[curTrial] 
-    var category = stimListTest[thisTrialIndex].category;
+    var category = stimListTest[curTrial].category;
     var readable_date = new Date();
 
     stroke_data = {
@@ -294,7 +293,7 @@ window.onload = function() {
 
     // console.log(stroke_data);
     // send stroke data to server
-    socket.emit('stroke',stroke_data);
+    // socket.emit('stroke',stroke_data);
     
   }
 
