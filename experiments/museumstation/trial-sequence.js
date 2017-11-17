@@ -213,17 +213,18 @@ function saveConsentData(){
 
 
 function restartExperiment() {
-	project.activeLayer.removeChildren(); // clear sketchpad 
-
+	
+  project.activeLayer.removeChildren();
   $('#progressBar').hide();
-  $('#mainExp').fadeOut('fast'); // fade out sketchpad etc
   $('#submit_div').fadeOut('fast'); // fade out sketchpad etc
+  $('#mainExp').fadeOut('fast');
   $('#WelcomeScreen').fadeIn('fast'); // fade in welcome screen
-
+  
   //reset canvas size to intro sizes for consent data
-    var canvas = document.getElementById("sketchpad"),
+  var canvas = document.getElementById("sketchpad"),
          ctx=canvas.getContext("2d");
-    canvas.style.border="none"
+   canvas.style.border="none"
+ 
 }
 
 
