@@ -186,12 +186,11 @@ rm(colInd); colInd <- grep("age",names(joint))
 joint[,colInd]=scale(joint[,colInd])
 ```
 
-## Inferential statistics: Does recogizability of drawings increase with age? 
-Full random effects structure (session_id = subj, category = prompt) with extra fixed effects for number of strokes, draw duration, and avg intensity (e.g., amount of ink)
+## Inferential statistics: Does recogizability of drawings increase with age?
+Fixed effects of age, object cateogry, number of strokes, draw duration, and avg intensity (e.g., amount of ink)
+Random effects of subject (session_id). Can't include random slopes (1+category|sessionId) since every child did not draw every category.
 ```{r}
 ## Full model first
-# Can't include random slopes (1+category|sessionId) since not every subject drew every thing
-
 fullModel=lmer(normCorrect ~ age + category + mean_intensity + num_strokes + draw_duration + (1|session_id), joint, REML = FALSE)
 
 # Check for normality assumptions on residuals
@@ -201,14 +200,14 @@ shapiro.test(residuals(fullModel))
 qqnorm(s$residuals)
 
 # Full model minus age
-noAge=lmer(normCorrect ~ category + mean_intensity + num_strokes + draw_duration + (1| session_id), joint, REML = FALSE)
+noAge=lmer(normCorrect ~ category + mean_intensity + num_strokes+ draw_duration + (1| session_id), joint, REML = FALSE)
 
 ## Model testing - model that includes age is better than model without age.
 modelOut=anova(fullModel,noAge)
 pOut=format.pval(modelOut$`Pr(>Chisq)`[2],1); # these quotes make it hard to embed in text...shorter variable for ease
 
 ## Refit model for with REML for reporting betas
-fullModelReport=lmer(normCorrect ~ age + category + mean_intensity + draw_duration + (1|session_id), joint, REML = TRUE)
+fullModelReport=lmer(normCorrect ~ age + category + mean_intensity + num_strokes + draw_duration + (1|session_id), joint, REML = TRUE)
 
 coefOut=coef(summary(fullModelReport))
 ageBeta=format(round(coefOut[2,1],2),2)
@@ -217,8 +216,8 @@ ageZ=format(round(coefOut[2,3],2),2)
 
 ```
 
-## Alternative solution - generalized logistic mixed-effects models
-Get convergence warnings here even with minimal models -- ugh. -- commented out.
+## Alternative solution - generalized logistic mixed-effects models on raw rating data
+Get convergence warnings here even with minimal models -- ugh. -- commented out. If either of you see a better way to do these that I'm missing or have any suggestions I'd be happy to give these another shot.
 ``` {r}
 # joinedRatings$correctNum=as.numeric(joinedRatings$correct)
 # 
@@ -231,11 +230,12 @@ Get convergence warnings here even with minimal models -- ugh. -- commented out.
 ```
 
 
-
 ## VSS ABSTRACT DRAFT
 Title options:
 "Drawings convey object category information by middle childhood"
+
 "Drawings as a window into the development of object category representations"
+
 "Development of ability to depict object categories"
 
 Abstract:
