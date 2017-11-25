@@ -3,7 +3,7 @@ rm(list=ls())
 knitr::opts_chunk$set(fig.width=8, fig.height=5, 
                       echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE)
 suppressPackageStartupMessages(c("dplyr","langcog","tidyr","ggplot2","lme4"))
-#library(langcog)
+#library(langcog)a
 library(dplyr)
 library(ggplot2)
 library(rjson)
@@ -54,6 +54,6 @@ d.pretty <- d.raw %>%
   mutate(sessionId = getSessionId(imNameShort)) %>%
   mutate(correct = (rating == category))
 
-write.table(d.pretty, "recognitionData.csv", sep=",")
+write.table(d.pretty, "../output/museumdraw_E1c_recognitionData.csv", sep=",")
 
 

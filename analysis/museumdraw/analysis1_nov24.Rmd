@@ -1,5 +1,5 @@
 ---
-title: "KidDraw-Descriptives"
+title: "KidDraw-Analysis1"
 author: "Bria Long"
 date: "11/20/2017"
 output: html_document
@@ -7,15 +7,17 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+suppressPackageStartupMessages(c("dplyr","langcog","tidyr","ggplot2","lme4"))
+
 ```
 
 ## Load data and do basic preprocessing.
 ```{r}
 # Source some helper functions
-source("/Users/brialong/Documents/GitHub/kiddraw/analysis/museumdraw/HelperCodeR/useful.R")
+source("/Users/brialong/Documents/GitHub/kiddraw/analysis/museumdraw/helper_code/useful.R")
 
 ## Read in data outputs from python - stroke numbers, intensity, bounding boc, etc.
-d <- read.csv("museumdraw_E1c_imageData.csv");
+d <- read.csv("preprocessed_data/museumdraw_E1c_imageData.csv");
 
 # get rid of drwaings without age - these were when we were testing the interface.
 d <- d %>%
@@ -24,18 +26,35 @@ d <- d %>%
 # make new variable name with image name for joining with recognition data
 d$imNameShort = paste(d$category, '_sketch','_', d$age,'_', d$session_id,'.png', sep="");        
 ## Read in data outputs from turk data - true/false recognition with 21AFC
-r <- read.csv("museumdraw_E1c_recognitionData.csv");
+r <- read.csv("preprocessed_data/museumdraw_E1c_recognitionData.csv");
 
 ## check we have the right lengths
 length(d$session_id)==length(unique(r$imageName));
 ```
+## Take a look at the raw rating data as a sanity check
+Confusions look more or less reasonable
+```{r}
+dataFrameR=as.data.frame(r);
+
+ratingConfusions <- dataFrameR %>%
+  dplyr::group_by(category, rating)  %>%
+  dplyr::summarize(number = n())
+
+ggplot(ratingConfusions, aes(rating,number))+
+  geom_point() +
+  facet_wrap(~category) + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
 
 ##  Preprocess data and join datasets
 ```{r}
+# add special column 
+r$cantTell=(r$rating=="cannott tell at all")
+
 ## Get the percent recognized for each drawing
 corbyItem <- r %>%
-  group_by(imNameShort) %>%
-  summarize(meanCorrect = mean(correct))
+  dplyr::group_by(imNameShort) %>%
+  dplyr::summarize(meanCorrect = mean(correct), propCantTell = mean(cantTell))
 
 ## Joint the two datasets together
 joint=join(d,corbyItem);
@@ -88,9 +107,11 @@ ggplot(joint, aes(age, meanCorrect)) +
 ```
 
 ## How much variance is there per participant (i.e., per child drawer?)
+Looks like there are some kids that are very bad or very good at drawing, but there is also a fair number of kids with wide distributions
+
 ```{r, echo=FALSE}
-ggplot(joint, aes(meanCorrect)) +
-  geom_histogram(bins= 12.5) +
+ggplot(joint, aes(1, meanCorrect)) +
+  geom_violin() +
   facet_wrap(~session_id)
 ```
 
@@ -109,9 +130,16 @@ round(mean(joint$age),2)
 countDrawings=aggregate(imNameShort ~ age, joint, length)
 round(countDrawings,2)
 
+
+ageDescriptives <- joint %>%
+  dplyr::group_by(age) %>%
+  dplyr::summarize(meanCorrect = mean(meanCorrect), propCantTell = mean(propCantTell))
+
 # Percent correct by age category
-ageDescriptives=aggregate(correct ~ age, r, mean)
-round(ageDescriptives,2)
+round(ageDescriptives$meanCorrect*100,1)
+
+# Percent "can't tell at all" by age category
+round(ageDescriptives$propCantTell*100,1)
 
 ```
 
@@ -129,21 +157,4 @@ anova(fullModel,noAge)
 
 
 ```
-
-
-# ```{r}
-# possibleResponses=unique(joint$rating); ## 16
-# possibleCategories=unique(joint$category); ## 21
-# 
-# for (thisCat in possibleCategories)
-#   temp=count(r$rating[r$category==thisCat])
-#   frequencyByCat=temp[order(temp$freq,decreasing = TRUE),]
-#   qplot(frequencyByCat)
-#   geom_smooth(method="loess",span=1)
-# 
-#   
-# ggplot(r, aes()
-# ```
-
-
 
