@@ -71,6 +71,7 @@ ggplot(d, aes(num_strokes, draw_duration)) +
 ```
 
 ## Are darker drawings better recognized?
+# Interesting - probably somewhat up to a point. Last points are creating a big tail on the loess function but probably more ink = more information = better recognized
 ```{r, echo=FALSE}
 ggplot(joint, aes(mean_intensity, meanCorrect)) + 
   geom_jitter(alpha=.5) +
@@ -78,13 +79,16 @@ ggplot(joint, aes(mean_intensity, meanCorrect)) +
 ```
 
 ## Are drawings with more strokes better recognized?
+# Nope,probalby not
 ```{r, echo=FALSE}
 ggplot(joint, aes(num_strokes, meanCorrect)) +
   geom_jitter(alpha=.5) +
   geom_smooth(method="loess",span=1)
+
 ```
 
 ## Are drawings that take longer better recognized?
+# Probably nothing here
 ```{r, echo=FALSE}
 ggplot(joint, aes(draw_duration, meanCorrect)) +
   geom_jitter(alpha=.5) +
@@ -92,6 +96,7 @@ ggplot(joint, aes(draw_duration, meanCorrect)) +
 ```
 
 ## Are drawings better recognized with age?
+# Interesting potential plateau by ~6?
 ```{r, echo=FALSE}
 ggplot(joint, aes(age, meanCorrect)) +
   geom_jitter(alpha=.5) +
@@ -99,6 +104,7 @@ ggplot(joint, aes(age, meanCorrect)) +
 ```
 
 ## How does this variance break down by catergory?
+# Some items show a stronger trend than others but overall looks good
 ```{r, echo=FALSE}
 ggplot(joint, aes(age, meanCorrect)) +
   geom_jitter(alpha=.5) +
@@ -144,14 +150,32 @@ round(ageDescriptives$propCantTell*100,1)
 ```
 
 ## Inferential statistics - linear mixed models
-``` {r}
-###  Does recogizability of drawings increase with age? 
-# Full random effects structure with extra fixed effects for number of strokes, draw duration, and avg intensity (e.g., amount of ink)
 
-fullModel=lmer(meanCorrect ~ age + category + mean_intensity + num_strokes + draw_duration + (1|session_id) + (1|category), joint, REML = FALSE)
+# Check out main DV and transform it
+```{r}
+# ggplot(joint, aes(meanCorrect)) +
+#   geom_histogram()
+
+# normalize by arc sine transformation - constant
+# http://www2.psychology.uiowa.edu/faculty/mordkoff/GradStats/part%201/I.08%20transforms.pdf
+normalizedPropData <- function (data) {
+  out = (asin(sqrt(data)) - 0.2854)
+}
+
+joint$normCorrect=normalizedPropData(joint$meanCorrect)
+
+# # replot it - doesn't look perfect but better
+# ggplot(joint, aes(normCorrect)) +
+#   geom_histogram(bins =15)
+  
+```
+## Does recogizability of drawings increase with age? 
+# Full random effects structure with extra fixed effects for number of strokes, draw duration, and avg intensity (e.g., amount of ink)
+``` {r}
+fullModel=lmer(normCorrect ~ age + category + mean_intensity + num_strokes + draw_duration + (1|session_id) + (1|category), joint, REML = FALSE)
 
 # Full model minus age
-noAge=lmer(meanCorrect ~ category + mean_intensity + num_strokes + draw_duration + (1 | session_id) + (1|category), joint, REML = FALSE)
+noAge=lmer(normCorrect ~ category + mean_intensity + num_strokes + draw_duration + (1 | session_id) + (1|category), joint, REML = FALSE)
 
 # Model testing - model that includes age is better than model without age.
 modelOut=anova(fullModel,noAge)
