@@ -5,6 +5,7 @@ quality_ratings/
 papers/
 output/
 z-extra/
+z-test/
 *.DS_Store
 .DS_Store
 .DS_Store
