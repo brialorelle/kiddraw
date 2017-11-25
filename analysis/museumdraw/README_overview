@@ -1,0 +1,10 @@
+KidDraw
+Preprocessing pipeline overview
+11/25/2017
+
+1. Drawings are pulled from the database on the cocolab server. Basic descriptives (number of strokes, intensity, etc.) are calculated in python in an iPython notebook and read out to a .csv file ('museumdraw_E1c_imageData.csv'). All sketches are saved here locally and pushed to github repo (under sketches). 
+
+2. Turk recognition ratings were obtained for all drawings as of this Tuesday (11/21, 286 drawings). Code and preprocessing for these rating data (N=14 turkers did all 286 ratings) is under ratings/recognition_ratings. Analysis code reads in the json files and outputs a nice .csv file, which I've copied to the anlaysis foler ('museumdraw_E1c_recognitionData.csv')
+
+3. These data from these two .csv files are read into the anlaysis file here (analysis1_nov25_vssAbstract.Rmd), where all of the descriptives and statistics are computed and fed into the VSS abstract at the end of the document.
+
