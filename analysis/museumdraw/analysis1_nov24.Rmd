@@ -32,15 +32,16 @@ r <- read.csv("preprocessed_data/museumdraw_E1c_recognitionData.csv");
 length(d$session_id)==length(unique(r$imageName));
 ```
 ## Take a look at the raw rating data as a sanity check
-Confusions look more or less reasonable
+Highest chosen category is correct one;  confusions look more or less reasonable
 ```{r}
 dataFrameR=as.data.frame(r);
 
 ratingConfusions <- dataFrameR %>%
   dplyr::group_by(category, rating)  %>%
-  dplyr::summarize(number = n())
+  dplyr::summarize(number = n()) 
 
-ggplot(ratingConfusions, aes(rating,number))+
+ratingConfusions$rating=as.factor(ratingConfusions$rating)
+ggplot(ratingConfusions, aes(rating,number, color=rating))+
   geom_point() +
   facet_wrap(~category) + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
@@ -48,7 +49,7 @@ ggplot(ratingConfusions, aes(rating,number))+
 
 ##  Preprocess data and join datasets
 ```{r}
-# add special column 
+# add special column for when people selected "can't tell at all" during ratings; not separated out in current analyses 
 r$cantTell=(r$rating=="cannott tell at all")
 
 ## Get the percent recognized for each drawing
@@ -58,57 +59,99 @@ corbyItem <- r %>%
 
 ## Joint the two datasets together
 joint=join(d,corbyItem);
+
+# treat session_id and category as factors 
+joint$session_id=as.factor(joint$session_id)
+joint$category=as.factor(joint$category)
+
+## for use below with glmer analyses (which never converged...)
+joinedRatings=join(r,d)
+```
+## Basic descriptives
+``` {r}
+# Number of drawings
+numDrawings=length(joint$imNameShort)
+
+# Number of drawers
+numDrawers=length(unique(joint$session_id))
+
+# Average age of drawers
+avgAge=round(mean(d$age[d$trial_num==2]),2) ## 2 is the first non-practice trial, use d structure here since it is doesn't repeat for each rating trial
+
+# Drawings by category
+drawingsByCategory <- joint %>%
+  dplyr::group_by(category) %>%
+  dplyr::summarize(count = n())
+
+# Drawings by age
+ageDescriptives <- joint %>%
+  dplyr::group_by(age) %>%
+  dplyr::summarize(count = n(), meanCorrect = mean(meanCorrect), propCantTell = mean(propCantTell))
+
+# Percent "can't tell at all" by age category
+ageCantTellOut=round(ageDescriptives$propCantTell*100,1) # not reported in abstract, but interesting.
+
+# Percent correct by age category
+ageCorrOut=format(round(ageDescriptives$meanCorrect*100,1), nsmall=1)
 ```
 
-## How much do these descripive variables covary with eachother?
+# Exploratory plots
+## How much do num_strokes / intensity / duration  covary with eachother?
 In all of the following plots, one point = one drawing
 ```{r, echo=FALSE}
 ggplot(d, aes(num_strokes, mean_intensity)) +
-  geom_point()
+  geom_jitter(alpha=.5) + 
+  geom_smooth(method="loess", span=2, alpha=.1)
 
 ggplot(d, aes(num_strokes, draw_duration)) +
-  geom_point()
+  geom_jitter(alpha=.5) + 
+  geom_smooth(method="loess", span=2, alpha=.1)
 ```
 
 ## Are darker drawings better recognized?
-# Interesting - probably somewhat up to a point. Last points are creating a big tail on the loess function but probably more ink = more information = better recognized
+Interesting - probably somewhat up to a point. Last points are creating a big tail on the loess function but probably more ink = more information = better recognized
+
 ```{r, echo=FALSE}
-ggplot(joint, aes(mean_intensity, meanCorrect)) + 
+ggplot(joint, aes(mean_intensity, meanCorrect, color=category)) + 
   geom_jitter(alpha=.5) +
-  geom_smooth(method="loess",span=1)
+  geom_smooth(method="loess", span=2, alpha=.1)
 ```
 
 ## Are drawings with more strokes better recognized?
-# Nope,probalby not
+
 ```{r, echo=FALSE}
-ggplot(joint, aes(num_strokes, meanCorrect)) +
+ggplot(joint, aes(num_strokes, meanCorrect, color=category)) +
   geom_jitter(alpha=.5) +
-  geom_smooth(method="loess",span=1)
+  geom_smooth(method="loess",span=2, alpha=.1)
 
 ```
 
 ## Are drawings that take longer better recognized?
-# Probably nothing here
+
 ```{r, echo=FALSE}
-ggplot(joint, aes(draw_duration, meanCorrect)) +
+ggplot(joint, aes(draw_duration, meanCorrect, color=category)) +
   geom_jitter(alpha=.5) +
-  geom_smooth(method="loess",span=1)
+  geom_smooth(method="loess",span=2, alpha=.1)
 ```
 
 ## Are drawings better recognized with age?
-# Interesting potential plateau by ~6?
+
 ```{r, echo=FALSE}
 ggplot(joint, aes(age, meanCorrect)) +
   geom_jitter(alpha=.5) +
-  geom_smooth(method="loess",span=1) 
+  geom_smooth(method="loess",span=2, alpha=.1) 
+
+ggplot(joint, aes(age, meanCorrect, color=category)) +
+  geom_jitter(alpha=.5) +
+  geom_smooth(method="loess",span=2, alpha=.1) 
 ```
 
-## How does this variance break down by catergory?
-# Some items show a stronger trend than others but overall looks good
+## How does this trend break down by catergory?
+Some items show a stronger trend than others but overall looks good
 ```{r, echo=FALSE}
-ggplot(joint, aes(age, meanCorrect)) +
+ggplot(joint, aes(age, meanCorrect, color=category)) +
   geom_jitter(alpha=.5) +
-  geom_smooth(method="loess",span=1) + 
+  geom_smooth(method="loess",span=2, alpha=.5) + 
   facet_wrap(~category)
 ```
 
@@ -121,69 +164,77 @@ ggplot(joint, aes(1, meanCorrect)) +
   facet_wrap(~session_id)
 ```
 
-## Basic descriptives in data
+# Inferential statistics: data preprocessing
 ``` {r}
-# Number of drawings
-length(joint$imNameShort)
-
-# Number of drawers
-length(unique(joint$session_id))
-
-# Average age of drawers
-round(mean(joint$age),2)
-
-# Drawings by age category
-countDrawings=aggregate(imNameShort ~ age, joint, length)
-round(countDrawings,2)
-
-
-ageDescriptives <- joint %>%
-  dplyr::group_by(age) %>%
-  dplyr::summarize(meanCorrect = mean(meanCorrect), propCantTell = mean(propCantTell))
-
-# Percent correct by age category
-ageCorrOut=round(ageDescriptives$meanCorrect*100,1)
-
-# Percent "can't tell at all" by age category
-round(ageDescriptives$propCantTell*100,1)
-
-```
-
-## Inferential statistics - linear mixed models
-
-# Check out main DV and transform it
-```{r}
-# ggplot(joint, aes(meanCorrect)) +
-#   geom_histogram()
-
-# normalize by arc sine transformation - constant
-# http://www2.psychology.uiowa.edu/faculty/mordkoff/GradStats/part%201/I.08%20transforms.pdf
-normalizedPropData <- function (data) {
-  out = (asin(sqrt(data)) - 0.2854)
+# First norm DV by arc sine transformation since it is a proportion
+arcSinTransform <- function (data) {
+  out = (asin(sqrt(data)))
 }
+joint$normCorrect=arcSinTransform(joint$meanCorrect)
 
-joint$normCorrect=normalizedPropData(joint$meanCorrect)
+# Rescale  continuous predictor variables to get rid of warnings when fitting with only ML
+colInd <- grep("mean_intensity",names(joint))
+joint[,colInd]=scale(joint[,colInd])
 
-# # replot it - doesn't look perfect but better
-# ggplot(joint, aes(normCorrect)) +
-#   geom_histogram(bins =15)
-  
+rm(colInd); colInd <- grep("draw_duration",names(joint))
+joint[,colInd]=scale(joint[,colInd])
+
+rm(colInd); colInd <- grep("num_strokes",names(joint))
+joint[,colInd]=scale(joint[,colInd])
+
+rm(colInd); colInd <- grep("age",names(joint))
+joint[,colInd]=scale(joint[,colInd])
 ```
-## Does recogizability of drawings increase with age? 
-# Full random effects structure with extra fixed effects for number of strokes, draw duration, and avg intensity (e.g., amount of ink)
-``` {r}
-fullModel=lmer(normCorrect ~ age + category + mean_intensity + num_strokes + draw_duration + (1|session_id) + (1|category), joint, REML = FALSE)
+
+## Inferential statistics: Does recogizability of drawings increase with age? 
+Full random effects structure (session_id = subj, category = prompt) with extra fixed effects for number of strokes, draw duration, and avg intensity (e.g., amount of ink)
+```{r}
+## Full model first
+# Can't include random slopes (1+category|sessionId) since not every subject drew every thing
+
+fullModel=lmer(normCorrect ~ age + category + mean_intensity + num_strokes + draw_duration + (1|session_id), joint, REML = FALSE)
+
+# Check for normality assumptions on residuals
+s=summary(fullModel)
+hist(s$residuals)
+shapiro.test(residuals(fullModel))
+qqnorm(s$residuals)
 
 # Full model minus age
-noAge=lmer(normCorrect ~ category + mean_intensity + num_strokes + draw_duration + (1 | session_id) + (1|category), joint, REML = FALSE)
+noAge=lmer(normCorrect ~ category + mean_intensity + num_strokes + draw_duration + (1| session_id), joint, REML = FALSE)
 
-# Model testing - model that includes age is better than model without age.
+## Model testing - model that includes age is better than model without age.
 modelOut=anova(fullModel,noAge)
 pOut=format.pval(modelOut$`Pr(>Chisq)`[2],1); # these quotes make it hard to embed in text...shorter variable for ease
+
+## Refit model for with REML for reporting betas
+fullModelReport=lmer(normCorrect ~ age + category + mean_intensity + draw_duration + (1|session_id), joint, REML = TRUE)
+
+coefOut=coef(summary(fullModelReport))
+ageBeta=format(round(coefOut[2,1],2),2)
+ageSE=format(round(coefOut[2,2],2),2)
+ageZ=format(round(coefOut[2,3],2),2)
+
 ```
 
-VSS ABSTRACT DRAFT
+## Alternative solution - generalized logistic mixed-effects models
+Get convergence warnings here even with minimal models -- ugh. -- commented out.
+``` {r}
+# joinedRatings$correctNum=as.numeric(joinedRatings$correct)
+# 
+# fullModel_glmer=glmer(correctNum ~ age + category + mean_intensity + num_strokes + draw_duration + (1+ age|session_id) + (1|category), data = joinedRatings,  family = "binomial")
+# 
+# reducedModel_glmer=glmer(correctNum ~ age + category + mean_intensity + (1|session_id), data = joinedRatings,  family = "binomial")
+# 
+# minimalModel_glmer=glmer(correctNum ~ age + category + (1|session_id), data = joinedRatings,  family = "binomial")
 
-In order to draw a “chair”, we need both to access a mental representation of this category and distill this representation into a the few strokes of a pen. These visual abstractions capture ‘high-level’ perceptual similarity relationships between object categories (Fan, Yamins, & Turk-Brown, 2015), depicting the key perceptual features needed to convey category membership.  Here, we examine when children develop the ability to quickly produce these abstract visual representations. Children (N = `r length(unique(joint$session_id))`, M = `r round(mean(joint$age),2)` years, range 4-10 years) participated in a drawing game on an iPad where they were prompted to draw one of sixteen object categories with a verbal cue (e.g., “Can you draw a cup?”).  Children drew each object category for 30 seconds, after which they were prompted to either make another drawing or to stop drawing altogether. Afterwards, a group of adults (N = 15) were shown all 286 drawings and attempted to recognize each drawing by choosing between the original 16 object categories and 6 additional foil categories. We asked whether the recognizability of drawings increased with age by fitting linear mixed-effect models. We found that this was the case, despite a wide degree of variation across  object categories and by individual children, and when accounting for the amount of time spent drawing, number of strokes, and ink used (% drawings recognized; chance = 4.8%; $M_{4yrs}$ = `r ageCorrOut[1]`%, $M_{5yrs}$ = `r ageCorrOut[2]`%, $M_{6yrs}$ = `r ageCorrOut[3]`%, $M_{7yrs}$ = `r ageCorrOut[4]`%,$M_{8yrs}$ = `r ageCorrOut[5]`%, $M_{9yrs}$ = `r ageCorrOut[6]`%, $M_{10yrs}$ = `r ageCorrOut[7]`%); removing age from the model significantly decreased the fit ($X^2$(1) = `r round(modelOut$Chisq[2],2)`, p = `r pOut`).These results suggest that by middle childhood we develop the ability to quickly produce visual abstractions that efficiently convey object category information, and broadly point towards visual production as a new avenue for examining the development of object category representations.
+```
+
+
+
+## VSS ABSTRACT DRAFT
+### Drawings convey object category information by middle childhood
+
+Drawing is a powerful tool for communicating concepts in visual form — a few well-placed strokes can convey the identity of a person, object, or scene. Prior work has found that deep neural network models of the ventral stream trained purely on photographs also recognized drawings by nonexpert adults, reflecting concordance in abstract representations of object categories in drawings and photos at higher layers in these models (Fan, Yamins, & Turk-Browne, 2015). How do ordinary people become so effective at producing recognizable drawings? Here we examine the trajectory of this learning during childhood. Children (N = `r numDrawers`, *M* = `r avgAge` years, range 4-10 years) participated in an iPad-based drawing game. On each round, they were prompted with a verbal cue to draw one of sixteen familiar objects (e.g., “Can you draw a cup?”). Children drew each object category for 30 seconds, after which they were prompted to either make another drawing or to stop drawing altogether. Afterwards, a group of naive adults (N = `r length(unique(r$workerid))`) were presented with each of the children's drawings (`r numDrawings`) and guessed the identity of the drawn object. Using a linear mixed-effect modeling approach, we found that recognizability of drawings increased reliably with age (b = .`r ageBeta`, SE = `r ageSE`, Z = `r ageZ`), accounting for variation across categories and children, and after accounting for the amount of time spent drawing, number of strokes, and total ink used  (% drawings recognized; chance = 4.8%; $M_{4yrs}$ = `r ageCorrOut[1]`%, $M_{5yrs}$ = `r ageCorrOut[2]`%, $M_{6yrs}$ = `r ageCorrOut[3]`%, $M_{7yrs}$ = `r ageCorrOut[4]`%, $M_{8yrs}$ = `r ageCorrOut[5]`%, $M_{9yrs}$ = `r ageCorrOut[6]`%, $M_{10yrs}$ = `r ageCorrOut[7]`%); removing age from the model significantly decreased the fit as indidcated by likelikhood ratio tests ($X^2$(1) = `r round(modelOut$Chisq[2],2)`, *p* = `r pOut` ).These results suggest that by middle childhood we develop the ability to quickly produce visual abstractions that efficiently convey object category information, and broadly point towards visual production as a new avenue for examining the development of object category representations. 
 
 
