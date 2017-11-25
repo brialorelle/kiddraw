@@ -3,7 +3,7 @@ node_modules/
 sketches/
 quality_ratings/
 papers/
-output/
+outputs/
 z-extra/
 z-test/
 *.DS_Store

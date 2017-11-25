@@ -1,7 +1,7 @@
 ---
 title: "KidDraw-Analysis1"
 author: "Bria Long"
-date: "11/20/2017"
+date: "11/24/2017"
 output: html_document
 ---
 
@@ -136,7 +136,7 @@ ageDescriptives <- joint %>%
   dplyr::summarize(meanCorrect = mean(meanCorrect), propCantTell = mean(propCantTell))
 
 # Percent correct by age category
-round(ageDescriptives$meanCorrect*100,1)
+ageCorrOut=round(ageDescriptives$meanCorrect*100,1)
 
 # Percent "can't tell at all" by age category
 round(ageDescriptives$propCantTell*100,1)
@@ -146,15 +146,20 @@ round(ageDescriptives$propCantTell*100,1)
 ## Inferential statistics - linear mixed models
 ``` {r}
 ###  Does recogizability of drawings increase with age? 
-# Full random effects structure with mean_intensity as a covariate
+# Full random effects structure with extra fixed effects for number of strokes, draw duration, and avg intensity (e.g., amount of ink)
+
 fullModel=lmer(meanCorrect ~ age + category + mean_intensity + num_strokes + draw_duration + (1|session_id) + (1|category), joint, REML = FALSE)
 
-# Same model without age
+# Full model minus age
 noAge=lmer(meanCorrect ~ category + mean_intensity + num_strokes + draw_duration + (1 | session_id) + (1|category), joint, REML = FALSE)
 
 # Model testing - model that includes age is better than model without age.
-anova(fullModel,noAge)
-
-
+modelOut=anova(fullModel,noAge)
+pOut=format.pval(modelOut$`Pr(>Chisq)`[2],1); # these quotes make it hard to embed in text...shorter variable for ease
 ```
+
+VSS ABSTRACT DRAFT
+
+In order to draw a “chair”, we need both to access a mental representation of this category and distill this representation into a the few strokes of a pen. These visual abstractions capture ‘high-level’ perceptual similarity relationships between object categories (Fan, Yamins, & Turk-Brown, 2015), depicting the key perceptual features needed to convey category membership.  Here, we examine when children develop the ability to quickly produce these abstract visual representations. Children (N = `r length(unique(joint$session_id))`, M = `r round(mean(joint$age),2)` years, range 4-10 years) participated in a drawing game on an iPad where they were prompted to draw one of sixteen object categories with a verbal cue (e.g., “Can you draw a cup?”).  Children drew each object category for 30 seconds, after which they were prompted to either make another drawing or to stop drawing altogether. Afterwards, a group of adults (N = 15) were shown all 286 drawings and attempted to recognize each drawing by choosing between the original 16 object categories and 6 additional foil categories. We asked whether the recognizability of drawings increased with age by fitting linear mixed-effect models. We found that this was the case, despite a wide degree of variation across  object categories and by individual children, and when accounting for the amount of time spent drawing, number of strokes, and ink used (% drawings recognized; chance = 4.8%; $M_{4yrs}$ = `r ageCorrOut[1]`%, $M_{5yrs}$ = `r ageCorrOut[2]`%, $M_{6yrs}$ = `r ageCorrOut[3]`%, $M_{7yrs}$ = `r ageCorrOut[4]`%,$M_{8yrs}$ = `r ageCorrOut[5]`%, $M_{9yrs}$ = `r ageCorrOut[6]`%, $M_{10yrs}$ = `r ageCorrOut[7]`%); removing age from the model significantly decreased the fit ($X^2$(1) = `r round(modelOut$Chisq[2],2)`, p = `r pOut`).These results suggest that by middle childhood we develop the ability to quickly produce visual abstractions that efficiently convey object category information, and broadly point towards visual production as a new avenue for examining the development of object category representations.
+
 
