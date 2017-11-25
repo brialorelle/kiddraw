@@ -1,0 +1,5 @@
+{
+  ".js":          {"name": "javascript", "symbol": "//"},
+  ".css":         {"name": "css", "symbol": "/\\*"},
+  ".html":         {"name": "html", "symbol": "<!--"}
+}

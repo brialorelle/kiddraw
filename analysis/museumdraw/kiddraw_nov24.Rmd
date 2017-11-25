@@ -1,0 +1,149 @@
+---
+title: "KidDraw-Descriptives"
+author: "Bria Long"
+date: "11/20/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load data and do basic preprocessing.
+```{r}
+# Source some helper functions
+source("/Users/brialong/Documents/GitHub/kiddraw/analysis/museumdraw/HelperCodeR/useful.R")
+
+## Read in data outputs from python - stroke numbers, intensity, bounding boc, etc.
+d <- read.csv("museumdraw_E1c_imageData.csv");
+
+# get rid of drwaings without age - these were when we were testing the interface.
+d <- d %>%
+  filter(!is.na(age))
+
+# make new variable name with image name for joining with recognition data
+d$imNameShort = paste(d$category, '_sketch','_', d$age,'_', d$session_id,'.png', sep="");        
+## Read in data outputs from turk data - true/false recognition with 21AFC
+r <- read.csv("museumdraw_E1c_recognitionData.csv");
+
+## check we have the right lengths
+length(d$session_id)==length(unique(r$imageName));
+```
+
+##  Preprocess data and join datasets
+```{r}
+## Get the percent recognized for each drawing
+corbyItem <- r %>%
+  group_by(imNameShort) %>%
+  summarize(meanCorrect = mean(correct))
+
+## Joint the two datasets together
+joint=join(d,corbyItem);
+```
+
+## How much do these descripive variables covary with eachother?
+In all of the following plots, one point = one drawing
+```{r, echo=FALSE}
+ggplot(d, aes(num_strokes, mean_intensity)) +
+  geom_point()
+
+ggplot(d, aes(num_strokes, draw_duration)) +
+  geom_point()
+```
+
+## Are darker drawings better recognized?
+```{r, echo=FALSE}
+ggplot(joint, aes(mean_intensity, meanCorrect)) + 
+  geom_jitter(alpha=.5) +
+  geom_smooth(method="loess",span=1)
+```
+
+## Are drawings with more strokes better recognized?
+```{r, echo=FALSE}
+ggplot(joint, aes(num_strokes, meanCorrect)) +
+  geom_jitter(alpha=.5) +
+  geom_smooth(method="loess",span=1)
+```
+
+## Are drawings that take longer better recognized?
+```{r, echo=FALSE}
+ggplot(joint, aes(draw_duration, meanCorrect)) +
+  geom_jitter(alpha=.5) +
+  geom_smooth(method="loess",span=1)
+```
+
+## Are drawings better recognized with age?
+```{r, echo=FALSE}
+ggplot(joint, aes(age, meanCorrect)) +
+  geom_jitter(alpha=.5) +
+  geom_smooth(method="loess",span=1) 
+```
+
+## How does this variance break down by catergory?
+```{r, echo=FALSE}
+ggplot(joint, aes(age, meanCorrect)) +
+  geom_jitter(alpha=.5) +
+  geom_smooth(method="loess",span=1) + 
+  facet_wrap(~category)
+```
+
+## How much variance is there per participant (i.e., per child drawer?)
+```{r, echo=FALSE}
+ggplot(joint, aes(meanCorrect)) +
+  geom_histogram(bins= 12.5) +
+  facet_wrap(~session_id)
+```
+
+## Basic descriptives in data
+``` {r}
+# Number of drawings
+length(joint$imNameShort)
+
+# Number of drawers
+length(unique(joint$session_id))
+
+# Average age of drawers
+round(mean(joint$age),2)
+
+# Drawings by age category
+countDrawings=aggregate(imNameShort ~ age, joint, length)
+round(countDrawings,2)
+
+# Percent correct by age category
+ageDescriptives=aggregate(correct ~ age, r, mean)
+round(ageDescriptives,2)
+
+```
+
+## Inferential statistics - linear mixed models
+``` {r}
+###  Does recogizability of drawings increase with age? 
+# Full random effects structure with mean_intensity as a covariate
+fullModel=lmer(meanCorrect ~ age + category + mean_intensity + num_strokes + draw_duration + (1|session_id) + (1|category), joint, REML = FALSE)
+
+# Same model without age
+noAge=lmer(meanCorrect ~ category + mean_intensity + num_strokes + draw_duration + (1 | session_id) + (1|category), joint, REML = FALSE)
+
+# Model testing - model that includes age is better than model without age.
+anova(fullModel,noAge)
+
+
+```
+
+
+# ```{r}
+# possibleResponses=unique(joint$rating); ## 16
+# possibleCategories=unique(joint$category); ## 21
+# 
+# for (thisCat in possibleCategories)
+#   temp=count(r$rating[r$category==thisCat])
+#   frequencyByCat=temp[order(temp$freq,decreasing = TRUE),]
+#   qplot(frequencyByCat)
+#   geom_smooth(method="loess",span=1)
+# 
+#   
+# ggplot(r, aes()
+# ```
+
+
+
