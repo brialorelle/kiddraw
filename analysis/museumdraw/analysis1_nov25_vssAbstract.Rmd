@@ -12,6 +12,8 @@ library(tidyverse)
 library(assertthat)
 library(ggthemes)
 library(lme4)
+library(langcog)
+library(forcats)
 theme_set(theme_few())
 ```
 
@@ -72,7 +74,7 @@ joint=left_join(d,corbyItem) %>%
   mutate(session_id = factor(session_id), 
          category = factor(category))
 
-## for use below with glmer analyses (which never converged...)
+## for use below with glmer analyses
 joinedRatings <- left_join(r,d)
 ```
 ## Basic descriptives
@@ -96,20 +98,17 @@ joint %>%
 Drawings by age
 
 ```{r}
-joint %>%
+ageCorrOut<-joint %>%
   group_by(age) %>%
   summarize(count = n(), 
             meanCorrect = mean(meanCorrect), 
-            propCantTell = mean(propCantTell)) %>%
-  kable(digits = 2)
+            propCantTell = mean(propCantTell)) 
+
+kable(ageCorrOut,digits = 2)  
 ```
 
 # Exploratory plots
-
-
-
 ## How much do num_strokes / intensity / duration  covary with eachother?
-
 In all of the following plots, one point = one drawing.
 
 ```{r}
@@ -130,7 +129,7 @@ ggplot(d, aes(x = draw_duration, y = num_strokes)) +
 
 Interesting - probably somewhat up to a point. Last points are creating a big tail on the loess function but probably more ink = more information = better recognized
 
-```{r, echo=FALSE}
+```{r}
 ggplot(joint, aes(mean_intensity, meanCorrect, color=category)) + 
   geom_jitter(alpha=.5) +
   geom_smooth(aes(group = 1), method="loess", span=2, alpha=.1)
@@ -220,29 +219,6 @@ ggplot(joint, aes(x = session_id, y = meanCorrect, col = age)) +
 
 ```
 
-# Inferential statistics: data preprocessing
-
-``` {r}
-# First norm DV by arc sine transformation since it is a proportion
-arcSinTransform <- function (data) {
-  out = (asin(sqrt(data)))
-}
-joint$normCorrect=arcSinTransform(joint$meanCorrect)
-
-# Rescale  continuous predictor variables to get rid of warnings when fitting with only ML
-colInd <- grep("mean_intensity",names(joint))
-joint[,colInd]=scale(joint[,colInd])
-
-rm(colInd); colInd <- grep("draw_duration",names(joint))
-joint[,colInd]=scale(joint[,colInd])
-
-rm(colInd); colInd <- grep("num_strokes",names(joint))
-joint[,colInd]=scale(joint[,colInd])
-
-rm(colInd); colInd <- grep("age",names(joint))
-joint[,colInd]=scale(joint[,colInd])
-```
-
 ## Inferential statistics: Does recogizability of drawings increase with age?
 
 ``` {r}
@@ -252,8 +228,8 @@ mod <- glmer(correct ~ age + (1 | session_id) + (1 | category),
 
 kable(summary(mod)$coef, digits = 3)
 ```
-Now add some predictors, including  number of strokes, draw duration, and avg intensity (e.g., amount of ink). Standardize predictors for comparability. 
 
+Now add some predictors, including  number of strokes, draw duration, and avg intensity (e.g., amount of ink). Standardize predictors for comparability. 
 ``` {r}
 mod_covariates <- glmer(correct ~ scale(age) + 
                           scale(draw_duration) + 
@@ -263,18 +239,20 @@ mod_covariates <- glmer(correct ~ scale(age) +
                         (1 | category), 
       data = joinedRatings,  
       family = "binomial")
-
+modelOut=summary(mod_covariates)
 kable(summary(mod_covariates)$coef, digits = 3)
+
 ```
 
 Poke around with interactions with age. Critical generalization is that the age increase still holds even controlling these factors, and there is no interaction. Could do this model a bunch of different ways, this is just one possibility. 
+
 
 ``` {r}
 mod_covariates_age <- glmer(correct ~ (scale(age) + 
                           scale(draw_duration) + 
                           scale(num_strokes))^2 +
                         (1|session_id) + 
-                        (1 | category), 
+                        (1 |category), 
       data = joinedRatings,  
       family = "binomial")
 
@@ -282,13 +260,10 @@ kable(summary(mod_covariates_age)$coef, digits = 3)
 ```
 ## VSS ABSTRACT DRAFT
 
-**NOTE: COEFFICIENTS NOT UPDATED**
 
-Title options:
 "Drawings as a window into the development of object category representations"
 
-Abstract:
-Drawing is a powerful tool for communicating concepts in visual form — a few well-placed strokes can convey the identity of a person, object, or scene. Prior work has found that deep neural network models of the ventral stream trained purely on photographs can also recognize drawings by nonexpert adults, reflecting concordance in abstract representations of object categories in drawings and photos at higher layers in these models (Fan, Yamins, & Turk-Browne, 2015). How do ordinary people become so effective at producing recognizable drawings? Here we examine the trajectory of this learning during childhood. Children (N = `r numDrawers`, *M* = `r avgAge` years, range 4-10 years) participated in an iPad-based drawing game where they were prompted with a verbal cue to draw one of sixteen familiar objects (e.g., “Can you draw a cup?”). Children drew each object category for 30 seconds, after which they were prompted to either make another drawing or to stop drawing altogether. Afterwards, a group of naive adults (N = `r length(unique(r$workerid))`) guessed the identity of each drawn object(`r numDrawings` drawings). Using a linear mixed-effect modeling approach, we found that recognizability of drawings increased reliably with age (b = `r ageBeta`, SE = `r ageSE`, Z = `r ageZ`), accounting for variation across categories and children and the amount of time spent drawing, number of strokes, and total ink used  (% drawings recognized; chance = 4.8%; $M_{4yrs}$ = `r ageCorrOut[1]`%, $M_{5yrs}$ = `r ageCorrOut[2]`%, $M_{6yrs}$ = `r ageCorrOut[3]`%, $M_{7yrs}$ = `r ageCorrOut[4]`%, $M_{8yrs}$ = `r ageCorrOut[5]`%, $M_{9yrs}$ = `r ageCorrOut[6]`%, $M_{10yrs}$ = `r ageCorrOut[7]`%); removing age from the model significantly decreased model fit ($X^2$(1) = `r round(modelOut$Chisq[2],2)`, *p* = `r pOut` ). These results suggest that the capacity to quickly produce graphical representations that communicate object category information is highly developed by middle childhood. More broadly, these findings point to visual production tasks as a promising avenue for examining the development of object category representations.
+Drawing is a powerful tool for communicating concepts in visual form — a few well-placed strokes can convey the identity of a person, object, or scene. Prior work has found that deep neural network models of the ventral stream trained purely on photographs can also recognize drawings by nonexpert adults, reflecting concordance in abstract representations of object categories in drawings and photos at higher layers in these models (Fan, Yamins, & Turk-Browne, 2015). How do ordinary people become so effective at producing recognizable drawings? Here we examine the trajectory of this learning during childhood. Children (N = `r length(unique(joint$session_id))`, *M* = `r round(mean(d$age[d$trial_num==2]),2)` years, range 4-10 years) participated in an iPad-based drawing game where they were prompted with a verbal cue to draw one of sixteen familiar objects (e.g., “Can you draw a cup?”). Children drew each object category for 30 seconds, after which they were prompted to either make another drawing or to stop drawing altogether. Afterwards, a group of naive adults (N = `r length(unique(r$workerid))`) guessed the identity of each drawn object (`r length(joint$imNameShort)` drawings). Using a linear mixed-effect modeling approach, we found that recognizability of drawings increased reliably with age (b = `r format(modelOut$coefficients[2,1],digits=2)`, SE = `r format(modelOut$coefficients[2,2],digits=2) `, Z = `r format(modelOut$coefficients[2,3],digits=2)`), accounting for variation across object categories and individual children (% drawings recognized; chance = 4.8%; $M_{4yrs}$ = `r format(ageCorrOut$meanCorrect[1]*100,digits=2)`%, $M_{5yrs}$ = `r format(ageCorrOut$meanCorrect[2]*100,digits=2)`%, $M_{6yrs}$ = `r format(ageCorrOut$meanCorrect[3]*100,digits=2)`%, $M_{7yrs}$ = `r format(ageCorrOut$meanCorrect[4]*100,digits=2)`%, $M_{8yrs}$ = `r format(ageCorrOut$meanCorrect[5]*100,digits=2)`%, $M_{9yrs}$ = `r format(ageCorrOut$meanCorrect[6]*100,digits=2)`%, $M_{10yrs}$ = `r format(ageCorrOut$meanCorrect[7]*100,digits=2)`%).  Further, this relationship persisted when controlling for several low-level covariates — the amount of time spent drawing, the number of strokes, and total ink used. These results suggest that the capacity to quickly produce graphical representations that communicate object category information is highly developed by middle childhood. More broadly, these findings point to visual production tasks as a promising avenue for examining the development of object category representations.
 
 Word Limit: 300 words (currently at 301 words)
 
