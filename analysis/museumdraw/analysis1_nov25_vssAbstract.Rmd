@@ -246,17 +246,32 @@ kable(summary(mod_covariates)$coef, digits = 3)
 
 Poke around with interactions with age. Critical generalization is that the age increase still holds even controlling these factors, and there is no interaction. Could do this model a bunch of different ways, this is just one possibility. 
 
-
 ``` {r}
 mod_covariates_age <- glmer(correct ~ (scale(age) + 
                           scale(draw_duration) + 
                           scale(num_strokes))^2 +
                         (1|session_id) + 
-                        (1 |category), 
+                        (1|category), 
+      data = joinedRatings,  
+      family = "binomial")
+kable(summary(mod_covariates_age)$coef, digits = 3)
+```
+
+One other try, removing interaction between draw_duration & num_strokes
+```{r}
+
+mod_covariates_age_v2 <- glmer(correct ~ scale(age) + 
+                          scale(draw_duration) + 
+                          scale(num_strokes) +
+                          scale(age)*scale(draw_duration) +
+                          scale(age)*scale(num_strokes) +
+                        (1|session_id) + 
+                        (1|category), 
       data = joinedRatings,  
       family = "binomial")
 
-kable(summary(mod_covariates_age)$coef, digits = 3)
+kable(summary(mod_covariates_age_v2)$coef, digits = 3)
+
 ```
 ## VSS ABSTRACT DRAFT
 
