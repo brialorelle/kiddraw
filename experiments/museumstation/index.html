@@ -16,14 +16,26 @@
     </head>
 
 <body>
-    <div id="WelcomeScreen">
-        <div id="Welcome">
+
+    <div id="landingPage">
+        <div class="welcomeHeader">
+        <img src="images/stanford.png" alt="Stanford University" style="text-align:center"></img>
+            <p id='logo-text'>Stanford Language and Cognition Lab</p>  
+        </div>
+        <p style="font-family: Schoolbell,cursive; text-align:center; font-size: 80pt;"> LET'S DRAW! <p>
+        <img src="images/drawingIcon.png" id="drawingIcon" style="width:300px; height:300px;"></img> 
+        <br><br><br>
+        <img src="images/play.jpg" id="startConsent" style="width:300px; height:300px;"></img> 
+    </div>
+
+    
+    <div id="consentPage" style="display:none">
+        <div class="welcomeHeader">
             <img src="images/stanford.png" alt="Stanford University" style="text-align:center"></img>
                 <p id='logo-text'>Stanford Language and Cognition Lab</p>   
         </div>
     
         <div id="kidConsent">
-             <!-- <img src="images/drawingIcon.png" id="drawingIcon" ></img>        -->
             <p style="font-family: Schoolbell,cursive; text-align:center; font-size: 24pt;"> HOW OLD ARE YOU ? <p>
             
             <button class=ageButton id="age3"> &nbsp 3 &nbsp </button>

@@ -48,7 +48,7 @@ function shuffle (a)
 function startDrawing(){
     if (curTrial==0){
       saveConsentData();
-      $('#WelcomeScreen').fadeOut('fast'); // fade out age screen 
+      $('#consentPage').fadeOut('fast'); // fade out age screen 
        beginTrial()
     }
     else if (curTrial>0 && curTrial<maxTrials) {
@@ -148,7 +148,7 @@ function loadNextVideo(){
   player.load();
 }
 
-// saving sketch data to server
+// saving data functions
 function saveSketchData(){
   // downsamplesketchpad before saveing
   var canvas = document.getElementById("sketchpad"),
@@ -192,17 +192,21 @@ function saveConsentData(){
         // get age and consent placeholder
 }
 
+// experiment navigation functions
+function showConsentPage(){
+  $('#landingPage').fadeOut('fast');
+  $('#consentPage').fadeIn('fast');
+}
 
 function restartExperiment() {
   project.activeLayer.removeChildren();
   $('#progressBar').hide();
   $('#mainExp').fadeOut('fast');
-  $('#WelcomeScreen').fadeIn('fast'); // fade in welcome screen
+  $('#consentPage').fadeIn('fast'); // fade in consent screen
   $('#checkConsent').prop('checked', false); // uncheck consent box
   $('#submit_div').fadeOut('fast'); // fade out sketchpad etc
   $('#sketchpad').fadeOut('fast');
 }
-
 
 function readyOrNot(){
   project.activeLayer.removeChildren();
@@ -220,14 +224,11 @@ function endExperiment(){
 
 window.onload = function() { 
 
-  $('#submit').click(function (e) {
-    event.preventDefault(e)
-    clickedSubmit=1; // indicate that we submitted
-    curTrial=curTrial+1; // increase counter
-    saveSketchData()
-    readyOrNot();
-  });
-
+  $('#startConsent').click(function(e) {
+      event.preventDefault(e)
+      showConsentPage();
+    });
+    
   $('#startExp').click(function(e) {
      event.preventDefault(e)
       console.log('touched start button');
@@ -238,6 +239,14 @@ window.onload = function() {
         alert("Can we use your child's drawings? If so, please click the box above to start drawing!")
       } 
     });
+
+  $('#submit').click(function (e) {
+    event.preventDefault(e)
+    clickedSubmit=1; // indicate that we submitted
+    curTrial=curTrial+1; // increase counter
+    saveSketchData()
+    readyOrNot();
+  });
 
     $('#keepGoing').click(function(e) {
      event.preventDefault(e)

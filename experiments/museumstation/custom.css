@@ -93,10 +93,8 @@ button[disabled] {
 }
 
 #drawingIcon {
-     top: 2%;
-    left: 15%;
-    position: absolute;
-    width: 100px;
+    margin:auto;
+    display:block;
 }
 
 #consentText {
@@ -104,7 +102,7 @@ button[disabled] {
     bottom: 15%;
 }
 
-#Welcome {
+.welcomeHeader {
     margin: auto;
     top: 20vh;
     text-align: center;
@@ -255,6 +253,15 @@ button[disabled] {
   left:35%;
   right:0%;
   position:absolute;
+}
+
+#startConsent {
+  height:300px;
+  width:300px;
+  top: 60vh;
+  width: 50%;
+  display: block;
+  margin: auto;
 }
 /*.video-js .vjs-control-bar {
   display:none!important; 
