@@ -30,6 +30,14 @@ button[disabled] {
   cursor: not-allowed;
 }
 
+.ageButton {
+  font-size: 36pt; 
+  text-align:center;
+  font-family: Schoolbell,cursive; 
+  font-style: italic
+}
+
+
 #logo-text {
   font-weight: bold;
   font-style: italic;
@@ -105,8 +113,8 @@ button[disabled] {
 #sketchpad {
     position: absolute;
     top: 20vh;
-    left: 10%;
-    right: 10%;
+    left: 2.5%;
+    border: solid 5px #999;
 }
 
 #kidConsent {
@@ -118,6 +126,7 @@ button[disabled] {
     margin: auto;
     background: #ffffff;
     border: solid 5px #999;
+    text-align: center;
 }
 
 #consentDraw {
@@ -179,6 +188,17 @@ button[disabled] {
 }
 
 
+#checkConsent {
+    position: absolute;
+    background: #ffffff;
+    left: 25%;
+    bottom: 10%;
+    width: 50px;
+    height: 50px;
+    border: solid 5px #999;
+}
+
+
 #yearsold {
   position:absolute;
    left:55%;
@@ -218,7 +238,24 @@ button[disabled] {
 
 }
 
+#allDone {
+  height:300px;
+  width:300px;
+  top: 60vh;
+  left:35%;
+  right:0%;
+  position:absolute;
+}
 
+
+#keepGoing {
+  height:300px;
+  width:300px;
+  top: 10vh;
+  left:35%;
+  right:0%;
+  position:absolute;
+}
 /*.video-js .vjs-control-bar {
   display:none!important; 
 }*/

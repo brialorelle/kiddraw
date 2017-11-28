@@ -44,22 +44,32 @@ function shuffle (a)
 }
 
 
-// for each time we start drawing
+// for each time we start drawings
 function startDrawing(){
-  // resize canvas
-    $('#WelcomeScreen').fadeOut('fast'); // fade out age screen
-    $('#sketchpad').fadeIn('fast');   // make sue this isn't shown until we're ready
+    if (curTrial==0){
+      saveConsentData();
+      $('#WelcomeScreen').fadeOut('fast'); // fade out age screen 
+       beginTrial()
+    }
+    else if (curTrial>0 && curTrial<maxTrials) {
+      $('#readyOrNotPage').fadeOut('fast'); // fade out age screen 
+       beginTrial()
+    }
+    else if (curTrial==maxTrials){
+      endExperiment();
+    }
+}
+
+function beginTrial(){
     //
     clickedSubmit=0; //reset this variable
-    // saveConsentData(); // save consent screen
-    project.activeLayer.removeChildren(); // clear sketchpad 
-		loadNextVideo(curTrial) // change video
-		document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[curTrial].category; // change cue
+    loadNextVideo(curTrial) // change video
+    document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[curTrial].category; // change cue
     //
     setTimeout(function() {showCue();},1000); 
     setTimeout(function() {hideCue();},5000);  // Take cues away after 5 - after video ends
     setTimeout(function() {showSubmit();},6000); // some minimum amount of time before "I'm done button"
-		timestamp_cueOnset = new Date().getTime();
+    timestamp_cueOnset = new Date().getTime();
 }
 
 // show cue without canvas
@@ -79,16 +89,7 @@ function hideCue() {
 
 function setUpDrawing(){
     $('#sketchpad').fadeIn('fast');  
-    canvasBorder();
     monitorProgress(); // since we now have a timeout function 
-};
-
-function canvasBorder(){
-    console.log('border back on canvas')
-     var canvas = document.getElementById("sketchpad"),
-         ctx=canvas.getContext("2d");
-    canvas.style.border="solid 5px #999";
-    canvas.style.top="15vh";
 };
 
 
@@ -115,7 +116,7 @@ function progress(timeleft, timetotal, $element) {
     else if(timeleft == 0 & clickedSubmit==0){
         console.log("trial timed out")
         // saveSketchData();
-        restartExperiment();
+        readyOrNot();
         $element.find('div').width(totalBarWidth)
         return; //  get out of here
       }
@@ -188,65 +189,72 @@ function saveSketchData(){
 function saveConsentData(){
         console.log(' saving consent "form" to database')
         // save sketch png
-        var dataURL = document.getElementById('sketchpad').toDataURL();
-        dataURL = dataURL.replace('data:image/png;base64,','');
-        var category = "consent"
-
-        readable_date = new Date();
-        current_data = {
-            dataType: 'finalImage',
-            sessionId: sessionId,
-            imgData: dataURL,
-            category: category,
-            dbname:'kiddraw',
-            colname:'stationPilot0',
-            trialNum: curTrial,
-            time: Date.now(),
-            date: readable_date}; 
-
-        // console.log(current_data);
-
-        // send data to server to write to database
-        socket.emit('current_data', current_data);
-        project.activeLayer.removeChildren(); // clear sketchpad 
+        // get age and consent placeholder
 }
 
 
 function restartExperiment() {
-	
   project.activeLayer.removeChildren();
   $('#progressBar').hide();
-  $('#submit_div').fadeOut('fast'); // fade out sketchpad etc
   $('#mainExp').fadeOut('fast');
   $('#WelcomeScreen').fadeIn('fast'); // fade in welcome screen
-  
-  //reset canvas size to intro sizes for consent data
-  var canvas = document.getElementById("sketchpad"),
-         ctx=canvas.getContext("2d");
-   canvas.style.border="none"
- 
+  $('#checkConsent').prop('checked', false); // uncheck consent box
+  $('#submit_div').fadeOut('fast'); // fade out sketchpad etc
+  $('#sketchpad').fadeOut('fast');
 }
 
+
+function readyOrNot(){
+  project.activeLayer.removeChildren();
+  $('#readyOrNotPage').fadeIn('fast');
+  $('#mainExp').fadeOut('fast');
+  $('#progressBar').hide(); 
+  $('#submit_div').fadeOut('fast'); // fade out sketchpad etc
+  $('#sketchpad').fadeOut('fast');
+}
+
+function endExperiment(){
+  $('#readyOrNotPage').fadeOut('fast');
+  $('#thanksPage').fadeIn('fast');
+}
 
 window.onload = function() { 
 
   $('#submit').click(function (e) {
     event.preventDefault(e)
-    clickedSubmit=1;
-    // saveSketchData()
-    restartExperiment();
+    clickedSubmit=1; // indicate that we submitted
+    curTrial=curTrial+1; // increase counter
+    saveSketchData()
+    readyOrNot();
   });
 
   $('#startExp').click(function(e) {
      event.preventDefault(e)
       console.log('touched start button');
+      if ($("#checkConsent").is(':checked')){
+        startDrawing();
+      }
+      else {
+        alert("Can we use your child's drawings? If so, please click the box above to start drawing!")
+      } 
+    });
+
+    $('#keepGoing').click(function(e) {
+     event.preventDefault(e)
+      console.log('touched next trial button');
       startDrawing();
+    });
+
+  $('#allDone').click(function(e) {
+     event.preventDefault(e)
+      console.log('touched endExperiment  button');
+      endExperiment()
     });
 
   //
   var canvas = document.getElementById("sketchpad"),
      ctx=canvas.getContext("2d");
-  canvas.height = window.innerWidth*.8;
+  canvas.height = window.innerWidth*.95;
   canvas.width = canvas.height;
 
   // Drawing related tools
