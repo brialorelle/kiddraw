@@ -64,7 +64,7 @@ function beginTrial(){
     //
     clickedSubmit=0; //reset this variable
     loadNextVideo(curTrial) // change video
-    document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[curTrial].category; // change cue
+    document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[curTrial].category + " ?"; // change cue
     //
     setTimeout(function() {showCue();},1000); 
     setTimeout(function() {hideCue();},5000);  // Take cues away after 5 - after video ends
