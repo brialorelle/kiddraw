@@ -87,8 +87,8 @@ button[disabled] {
 #sketchpad {
     position: absolute;
     top: 12vh;
-    left: 20%;
-    right: 7%;
+    left: 9%;
+    right: 0%;
     background: #ffffff;
     border: solid 5px #999;
 }
@@ -107,21 +107,21 @@ button[disabled] {
 #ready {
    font-size: 1em;
    position:absolute;
-   left:38%;
+   left:34%;
    top: 25%;
 }
 
 #allDone {
    font-size: 1em;
    position:absolute;
-   left:42%;
+   left:38%;
    top: 65%;
 }
 
 #goodJob{
   position:absolute;
   top: 38%;
-  left: 40%;
+  left: 36%;
 }
 
 #mainExp {

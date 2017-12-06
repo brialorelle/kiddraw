@@ -5,6 +5,7 @@ quality_ratings/
 z-multipleCanvasTry/
 papers/
 outputs/
+irb/
 z-extra/
 z-test/
 *.DS_Store
@@ -19,3 +20,5 @@ auth.txt
 auth.json
 history.csv
 .Rproj.user
+experiments/museumdraw/node_modules/.DS_Store
+experiments/museumdraw/.DS_Store

@@ -31,30 +31,57 @@ function shuffle (a)
     return o;
 }
 
-var stimListTest = [{"category": "rabbit"},
-	{"category": "cat"},
-	{"category": "chair"},
-	{"category": "couch"},
-    {"category": "banana"},
-    {"category": "phone"},
-    {"category": "cup"},
-    {"category": "foot"},
-    {"category": "ice cream"},
-	{"category": "frog"},
-	{"category": "carrot"},
-	{"category": "flower"},
-	{"category": "shoe"},
-	{"category": "train"},
-	{"category": "boat"},
-	{"category": "car"},
+// round 1
+// var stimListTest = [{"category": "rabbit"},
+// 	{"category": "cat"},
+// 	{"category": "chair"},
+// 	{"category": "couch"},
+//     {"category": "banana"},
+//     {"category": "phone"},
+//     {"category": "cup"},
+//     {"category": "foot"},
+//     {"category": "ice cream"},
+// 	{"category": "frog"},
+// 	{"category": "carrot"},
+// 	{"category": "flower"},
+// 	{"category": "shoe"},
+// 	{"category": "train"},
+// 	{"category": "boat"},
+// 	{"category": "car"},
+// ]
+
+// round 2
+var stimListTest = [{"category": "airplane"},
+  {"category": "bus"},
+  {"category": "bike"},
+  {"category": "piano"},
+    {"category": "table"},
+    {"category": "door"},
+    {"category": "bed"},
+    {"category": "fork"},
+    {"category": "keys"},
+  {"category": "hat"},
+  {"category": "apple"},
+  {"category": "cookie"},
+  {"category": "mushroom"},
+  {"category": "horse"},
+  {"category": "dog"},
+  {"category": "sheep"},
+  {"category": "bear"},
+  {"category": "fish"},
+  {"category": "bird"},
+  {"category": "spider"},
+  {"category": "shark"},
+  {"category": "duck"}
 ]
+
 
 stimListTest=shuffle(stimListTest)
 stimListTest.unshift({category:"circle"})
 stimListTest.unshift({category:"triangle"})
 var maxTrials = stimListTest.length; // 18 should be max including familiarization
 var curTrial=0 // global variable, trial counter
-var sessionId='E1c_' + Date.now().toString()
+var sessionId='E1d_' + Date.now().toString()
 var timeLimit=30; // in seconds
 
 //global variables here
@@ -180,7 +207,7 @@ function saveSketchData(){
         imgData: dataURL,
         category: category,
         dbname:'kiddraw',
-        colname:'E1c',
+        colname:'E1d',
         trialNum: curTrial,
         time: Date.now(),
         date: readable_date,
@@ -254,7 +281,7 @@ window.onload = function() {
   tool.onMouseDown = function(event) {
     path = new Path();      
     path.strokeColor = '#000000';
-    path.strokeWidth = 10;
+    path.strokeWidth = 5;
     path.add(event.point);
   }
 
@@ -264,7 +291,7 @@ window.onload = function() {
 
   tool.onMouseUp = function(event) {
     path.selected = false;
-    // path.simplify(5); /// this was messing kids up
+    path.simplify(2); /// this was messing kids up
     finalPoint = path._segments.slice(-1)[0];
 
     // var jsonString = path.exportJSON({asString: true});
@@ -279,7 +306,7 @@ window.onload = function() {
       svg: svgString,
       category: category,
       dbname:'kiddraw',
-      colname:'E1c',
+      colname:'E1d',
       trialNum: curTrial,
       time: Date.now(),
       date: readable_date,    
