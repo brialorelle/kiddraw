@@ -16,6 +16,7 @@ z-test/
 *.npy
 *.json
 *.ipynb_checkpoints/
+*.pyc
 auth.txt
 auth.json
 history.csv
