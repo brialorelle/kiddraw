@@ -131,7 +131,7 @@ class FeatureExtractor():
                 age = path.split('/')[-1].split('_')[2]
                 session = path.split('/')[-1].split('.')[0].split('_')[-2] + '_' + path.split('/')[-1].split('.')[0].split('_')[-1]
             elif self.cohort == 'adult':
-                age = '30'
+                age = 'adult'
                 session = 'unknown'
             else:
                 print('Need to specify a cohort: "kid" or "adult"!')
