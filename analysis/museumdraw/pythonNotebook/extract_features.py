@@ -40,6 +40,7 @@ def preprocess_features(Features, Y):
     _Y = Y.sort_values(['label','age','session'])
     inds = np.array(_Y.index)
     _Features = normalize(Features[inds])
+    _Y = _Y.reset_index() # reset pandas dataframe index
     return _Features, _Y
 
 def save_features(Features, Y, layer_num, cohort):
@@ -62,6 +63,13 @@ def convert_age(Ages):
             ages.append(-1)
     return ages
 
+## remove data where you dont have age information
+def remove_nans(Features, Y):
+    ind = Y.index[(Y['age'] > 0)]
+    _Y = Y.loc[ind]
+    _Features = Features[ind.tolist()]
+    return _Features, _Y
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
@@ -81,9 +89,11 @@ if __name__ == "__main__":
     ## handle trials where we didn't have age information
     if args.cohort=='kid':
         Ages = convert_age(Ages)
+        Features, Y = remove_nans(Features, Y)        
         
     # organize metadata into dataframe
     Y = make_dataframe(Labels,Ages,Sessions)
     _Features, _Y = preprocess_features(Features, Y)
+
     layer = save_features(_Features, _Y, args.layer_ind, args.cohort)
        
