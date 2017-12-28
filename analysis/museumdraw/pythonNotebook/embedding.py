@@ -71,7 +71,7 @@ class VGG19Embeddings(nn.Module):
         
 class FeatureExtractor():
     
-    def __init__(self,paths,layer=6, use_cuda=True, imsize=224, batch_size=64, cuda_device=3):
+    def __init__(self,paths,layer=6, use_cuda=True, imsize=224, batch_size=64, cuda_device=3, cohort='kid'):
         self.layer = layer
         self.paths = paths
         self.num_sketches = len(self.paths)
@@ -79,7 +79,8 @@ class FeatureExtractor():
         self.imsize = imsize
         self.batch_size = batch_size
         self.cuda_device = 3
-            
+        self.cohort = cohort ## 'kid' if analyzing kids' drawings; 'adult' if analyzing adults' drawings
+
     def extract_feature_matrix(self):
         
         def RGBA2RGB(image, color=(255, 255, 255)):
@@ -122,23 +123,26 @@ class FeatureExtractor():
             for p in vgg19.parameters():
                 p.requires_grad = False
 
-            return vgg19             
+            return vgg19  
+        
+        def get_metadata_from_path(path):
+            label = path.split('/')[-2]            
+            if self.cohort == 'kid':
+                age = path.split('/')[-1].split('_')[2]
+                session = path.split('/')[-1].split('.')[0].split('_')[-2] + '_' + path.split('/')[-1].split('.')[0].split('_')[-1]
+            elif self.cohort == 'adult':
+                age = '30'
+                session = 'unknown'
+            else:
+                print('Need to specify a cohort: "kid" or "adult"!')
+                age = 'unknown'
+                session = 'unknown'
+            return label, age, session        
 
-        def get_label_from_path(path):
-            return path.split('/')[-2]
-        
-        def get_age_from_path(path):
-            return path.split('/')[-1].split('_')[2]
-        
-        def get_session_from_path(path):
-            return path.split('/')[-1].split('.')[0].split('_')[-2] + '_' + path.split('/')[-1].split('.')[0].split('_')[-1]
-        
         def generator(paths, imsize=self.imsize, use_cuda=use_cuda):
             for path in paths:
                 image = load_image(path)
-                label = get_label_from_path(path)
-                age = get_age_from_path(path)
-                session = get_session_from_path(path)
+                label, age, session = get_metadata_from_path(path)
                 yield (image, label, age, session)        
                                                 
         # define generator
@@ -207,4 +211,3 @@ class FeatureExtractor():
         Sessions = np.array([item for sublist in Sessions for item in sublist])
         return Features, Labels, Ages, Sessions
     
-                
