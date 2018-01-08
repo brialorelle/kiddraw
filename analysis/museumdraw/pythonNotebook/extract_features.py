@@ -20,6 +20,8 @@ import base64
 
 from embedding import *
 
+CUDA_VISIBLE_DEVICES=3
+
 # retrieve sketch paths
 def list_files(path, ext='png'):
     result = [y for x in os.walk(path) for y in glob(os.path.join(x[0], '*.%s' % ext))]
