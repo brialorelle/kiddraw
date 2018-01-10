@@ -1,4 +1,4 @@
-index,workerid,rating,imageName,category,imNameShort,age,sessionId,correct
+index2,workerid,rating,imageName,category,imNameShort,age,sessionId,correct
 1,A2OO4PG3LBLP5I,flower,https://langcog.stanford.edu/expts/BLL/kiddraw-recognitionRatings/sketches/flower/flower_sketch_10_E1c_1510783638074.png,flower,flower_sketch_10_E1c_1510783638074.png,10,1510783638074.png,TRUE
 2,A2OO4PG3LBLP5I,chair,https://langcog.stanford.edu/expts/BLL/kiddraw-recognitionRatings/sketches/carrot/carrot_sketch_4_E1c_1510268275436.png,carrot,carrot_sketch_4_E1c_1510268275436.png,4,1510268275436.png,FALSE
 3,A2OO4PG3LBLP5I,shoe,https://langcog.stanford.edu/expts/BLL/kiddraw-recognitionRatings/sketches/shoe/shoe_sketch_10_E1c_1511293452162.png,shoe,shoe_sketch_10_E1c_1511293452162.png,10,1511293452162.png,TRUE
