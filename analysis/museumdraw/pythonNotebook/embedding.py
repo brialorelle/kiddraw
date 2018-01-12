@@ -71,14 +71,14 @@ class VGG19Embeddings(nn.Module):
         
 class FeatureExtractor():
     
-    def __init__(self,paths,layer=6, use_cuda=True, imsize=224, batch_size=64, cuda_device=1, cohort='kid'):
+    def __init__(self,paths,layer=6, use_cuda=True, imsize=224, batch_size=64, cuda_device=3, cohort='kid'):
         self.layer = layer
         self.paths = paths
         self.num_sketches = len(self.paths)
         self.use_cuda = use_cuda
         self.imsize = imsize
         self.batch_size = batch_size
-        self.cuda_device = 3
+        self.cuda_device = 1
         self.cohort = cohort ## 'kid' if analyzing kids' drawings; 'adult' if analyzing adults' drawings
 
     def extract_feature_matrix(self):
