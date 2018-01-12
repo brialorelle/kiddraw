@@ -32,9 +32,7 @@ class VGG19Embeddings(nn.Module):
         self.linear1 = nn.Sequential(*(list(vgg19.classifier.children())[slice(0, 2)]))
         self.linear2 = nn.Sequential(*(list(vgg19.classifier.children())[slice(3, 5)]))
         self.linear3 = nn.Sequential(list(vgg19.classifier.children())[-1])
-        print (layer_index)
-        print(type(layer_index))
-        assert layer_index < 8
+        layer_index = int(float(layer_index)) # bll 
         assert layer_index >= -1 and layer_index < 8
         self.layer_index = layer_index
 
