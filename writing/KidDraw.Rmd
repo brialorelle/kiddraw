@@ -10,13 +10,9 @@ author-information: >
     \And {\large \bf Michael C. Frank } \\ \texttt{mcfrank@stanford.edu} \\ Department of Psychology \\ Stanford University}
 
 abstract: 
-    "The abstract should be one paragraph, indented 1/8 inch on both sides,
-in 9 point font with single spacing. The heading Abstract should
-be 10 point, bold, centered, with one line space below it. This
-one-paragraph abstract section is required only for standard spoken
-papers and standard posters (i.e., those presentations that will be
-represented by six page papers in the Proceedings)."
-    
+    "A few well placed strokes can convey the identity of a person, object, or place. How do we become so skilled at creating these graphical abstractions?  Here, we take a developmental appraoch to question by asking children (age range 3-10 years) to draw a wide range of objects (e.g. 'can you draw a chair?'). First, we analyze the degree to which children were able to depict recognizable exemplars of these categories in under 30 seconds. We find that children become increasingly skilled at producing recognizable drawings, even when controlling for low-level covariates (the amount of ink used, the time spent drawing, and the number of strokes). Second, we analyze the degree to which children's drawings share perceptual features with those produced by adults by analyzing their featural similarity at each layer of deep convolutional neural network (VGG-19). Overall, we find that older children's drawings were most similar to adults in higher-levle layers of the network, while younger childrens drawings were most similar to adults in mid-level layers of the network. Thus, these results suggest that the ability to produce abstract graphical represnetations of objects is highly developed by middle childhood, but that even the most primitive drawings made by children contain featural similarities to the objects they are trying to depict. Broadly, these results
+point towards drawing as a promising avenue for investigating object representations in childhood."
+  
 keywords:
     "object representations; drawings; child development"
     
@@ -111,6 +107,7 @@ ageCorrOut<-joint %>%
   summarize(count = n(), 
             meanCorrect = mean(meanCorrect), 
             propCantTell = mean(propCantTell)) 
+
 ```
 
 ```{r exampleDrawings, fig.env = "figure", fig.pos = "h", out.width="100%", fig.align = "center", set.cap.width=T, num.cols.cap=2, fig.cap = "Example drawings made by children ages 4-10 of several object  categories."}
@@ -119,27 +116,35 @@ grid::grid.raster(img)
 ```
 ### Low-level covariates. 
 The use of a digital interface for drawing allowed us to quickly and easily assess the contribution of several low-level factors that may co-vary with drawing ability. For each drawing, we thus quantified the amount of time spend drawings, the number of strokes used, and the overall intensity (e.g., amount of ink). Descriptives plots describing the output of these variables can be seen in (see Figure \ref{fig:covDescriptives}, left). 
-```{r covDescriptives, fig.env="figure*", fig.height=2, fig.width=6, fig.pos = "h", fig.align = "center", fig.cap = "R plot" }
-p1<-ggplot(joint, aes(x = num_strokes, y=meanCorrect, color=age)) +
-  geom_jitter(alpha=.5) +
+```{r covDescriptives, fig.env="figure*", fig.height=2, fig.width=7, fig.pos = "h", fig.align = "center", fig.cap = "R plot" }
+p1<-ggplot(joint, aes(x = num_strokes, y=meanCorrect, col=age)) +
+  geom_jitter(alpha=.3) +
   geom_smooth(aes(group = 1), method="loess",span=3, alpha=.1) +
-  theme(legend.position="left", aspect.ratio=1) +
-  labs(y = "Prop. recognized", x = "Number of strokes used") 
+  ylim(0, 1) +
+  labs(y = "Prop. recognized", x = "Number of strokes") 
 
-p2<-ggplot(joint, aes(x = mean_intensity, y=meanCorrect, color=age)) +
-  geom_jitter(alpha=.5) +
+p2<-ggplot(joint, aes(x = mean_intensity, y=meanCorrect, col=age)) +
+  geom_jitter(alpha=.3) +
   geom_smooth(aes(group = 1), method="loess",span=3, alpha=.1) +
-  theme(legend.position="none", aspect.ratio=1) +
-  labs(y = "Prop. recognized", x = "Amount of ink used") 
+  labs(y = "", x = "Amount of 'ink' used") 
 
-p3<-ggplot(joint, aes(x = draw_duration, y=meanCorrect, color=age)) +
-  geom_jitter(alpha=.5) +
+p3<-ggplot(joint, aes(x = draw_duration, y=meanCorrect, col=age)) +
+  geom_jitter(alpha=.3) +
   geom_smooth(aes(group = 1), method="loess",span=3, alpha=.1) +
-  theme(legend.position="none", aspect.ratio=1) +
-  labs(y = "Prop. recognized", x = "Time spent drawing") 
+  labs(y = "", x = "Time spent drawing") 
 
-grid.arrange(p1,p2,p3, nrow = 1)
+g_legend<-function(a.gplot){
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)}
 
+mylegend<-g_legend(p1)
+grid.arrange(arrangeGrob(p1 + theme(legend.position="none"),
+                         p2 + theme(legend.position="none"),
+                         p3 + theme(legend.position="none"),
+                         nrow=1),
+             mylegend, nrow=2,heights=c(12, 2))
 ```
 ###  GLMM procedure. 
 We aimed to assess whether children’s ability to produce recognizable drawings increased with age, independent of low-level covariates. To do so, we used a generalized logistic mixed effect model, with age, drawing duration, amount of ink used, and number of strokes as fixed effects, and with random effects for each individual child drawer and object category. 
@@ -173,8 +178,7 @@ modelOut=summary(mod_covariates)
 
 First, we observed that some items were much easier to draw than others. For example, children of all ages produced drawings of cats that were readily recognizable as "cats", but few children of any age produced drawings that were recognizable as "shoes" (see Figure \ref{fig:recognizabilityByItem}). Howver, almost all items also saw an increase in recognizability with the age of the drawer. Across all items, we saw that the proportin of drawings recognized increased steadily with age (% drawings recognized; chance = 4.8%; $M_{4yrs}$ = `r format(ageCorrOut$meanCorrect[1]*100,digits=2)`%, $M_{5yrs}$ = `r format(ageCorrOut$meanCorrect[2]*100,digits=2)`%, $M_{6yrs}$ = `r format(ageCorrOut$meanCorrect[3]*100,digits=2)`%, $M_{7yrs}$ = `r format(ageCorrOut$meanCorrect[4]*100,digits=2)`%, $M_{8yrs}$ = `r format(ageCorrOut$meanCorrect[5]*100,digits=2)`%, $M_{9yrs}$ = `r format(ageCorrOut$meanCorrect[6]*100,digits=2)`%, $M_{10yrs}$ = `r format(ageCorrOut$meanCorrect[7]*100,digits=2)`%).
 
-Next, we asked whether this relationsip would persist when we controlled for these item effects and the number of strokes, amount of ink used, and the time spent drawing. In other words, is this increase in recognizability due to an increase in expressive power, or simply due to the fact that older children may have put more effort into their drawings?
-Our generalized logistic mixed-effect model revealed that the recognizability of drawings increased reliably with age (b = `r format(modelOut$coefficients[2,1],digits=2)`, SE = `r format(modelOut$coefficients[2,2],digits=2) `, Z = `r format(modelOut$coefficients[2,3],digits=2)`), accounting for variation across object categories and individual children and controlling for several low-level covariates — the amount of time spent drawing, the number of strokes, and total ink used. All model coefficients can be seen in Table \ref{table:modelCoefficients}
+Next, we asked whether this relationsip would persist when we controlled for these item effects and the number of strokes, amount of ink used, and the time spent drawing. In other words, is this increase in recognizability due to an increase in expressive power, or simply due to the fact that older children may have put more effort into their drawings? Our generalized logistic mixed-effect model revealed that the recognizability of drawings increased reliably with age (b = `r format(modelOut$coefficients[2,1],digits=2)`, SE = `r format(modelOut$coefficients[2,2],digits=2) `, Z = `r format(modelOut$coefficients[2,3],digits=2)`), accounting for variation across object categories and individual children and controlling for several low-level covariates — the amount of time spent drawing, the number of strokes, and total ink used. All model coefficients can be seen in Table \ref{table:modelCoefficients}
 
 
 ```{r recognizabilityByItem, fig.env="figure", fig.pos = "H", fig.align = "center", fig.width=4, fig.height=4, fig.cap = "Proportion of drawings recognized for object category, sorted from hardest to easiest items. Error bars represent non-parametric 95 percent confidence intervals, estimated using the langcog r package." }
@@ -193,13 +197,28 @@ ggplot(ms, aes(x = category, y = mean, col = age_group)) +
   
 ```
 
-```{r modelCoefficients, results="asis"}
-tab1 <- xtable::xtable(summary(mod_covariates)$coef, digits=3, 
-                      caption = "Model coefficients of a GLMM predicting the recognziability of each   drawing.")
+<!-- ```{r modelCoefficients, results="asis"} -->
+<!-- tab1 <- xtable::xtable(summary(mod_covariates)$coef, digits=3,  -->
+<!--                       caption = "Model coefficients of a GLMM predicting the recognziability of each  drawing.") -->
 
-print(tab1, type="latex", comment = F, table.placement = "H")
-```
+<!-- print(tab1, type="latex", comment = F, table.placement = "H") -->
+<!-- ``` -->
 
+\begin{table}[H]
+\centering
+\begin{tabular}{rrrrr}
+  \hline
+ & Estimate & Std. Error & z value & Pr($>$$|$z$|$) \\ 
+  \hline
+(Intercept) & 0.861 & 0.321 & 2.680 & 0.007 \\ 
+  Age & 0.956 & 0.174 & 5.497 & 0.000 \\ 
+  Drawing duration & 0.338 & 0.109 & 3.105 & 0.002 \\ 
+  Amount of ink & 0.014 & 0.080 & 0.179 & 0.858 \\ 
+  Number of strokes & -0.289 & 0.098 & -2.959 & 0.003 \\ 
+   \hline
+\end{tabular}
+\caption{Model coefficients of a GLMM predicting the recognziability of each  drawing.} 
+\end{table}
  
 # Part 2: How similar are children's and adults drawings?  
 
@@ -223,15 +242,17 @@ We used a standard, pre-trained implementation of VGG-19 (cite VGG-19) to extrac
 
 ### Representational Similarity Analyses 
 To construct similarity matrixes for each of the categories, the feature vectors for each categories were correlated with all other categories. The upper diagonal of the resulting, symmetric correlation matrix (shown in Figure XX) were then correlated (Spearman’s r) across age groups at within each layer of VGG-19. 
+
 ## Results
 First, we analyzed the full set of drawings, and found that both younger children and older children generated sketches that moderately resembled those of adults’ in higher-level layers (FC7) of a deep convolutional neural network trained to recognize objects. Younger children’s category similarities moderately resembled adults (Spearman’s r=XX), while older children’s category similarities were significantly more structured and adult-like (Spearman’s r=XX). This first analyses thus supports the results of Experiment 1, where we found that the recognizability of the sketches improved with age, irrespective of low-level covariates.
 Second, we also analyzed a subset of the categories (14)  in which we had at least five drawings from both younger and older children. 
 
 # General Discussion
 
-These results suggest that the capacity to quickly produce graphical representations that communicate object category information is highly developed by middle childhood.
+Overal, we found that the capacity to quickly produce graphical representations that communicate object category information is highly developed by middle childhood. 
 
-These results also suggest that the ability to produce visual concepts is highly developed by middle childhood. In under 30 seconds, even 6-year-olds produced drawings that were on average %% recognizable in our 21AFC task.
+
+An obvious future direction for this work is to understand the contribution of children's motor control abilities in producing graphical representations. In other words, to what degree are drawings made by older children more recognizable simply because older children have finer motor control abilities?
 
 # Acknowledgements
 
