@@ -79,7 +79,7 @@ class FeatureExtractor():
         self.use_cuda = use_cuda
         self.imsize = imsize
         self.batch_size = batch_size
-        self.cuda_device = 1
+        self.cuda_device = cuda_device
         self.cohort = cohort ## 'kid' if analyzing kids' drawings; 'adult' if analyzing adults' drawings
 
     def extract_feature_matrix(self):
