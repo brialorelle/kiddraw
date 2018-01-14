@@ -48,9 +48,9 @@ def save_features(Features, Y, layer_num, cohort):
     if not os.path.exists('./features'):
         os.makedirs('./features')
     layers = ['P1','P2','P3','P4','P5','FC6','FC7']
-    np.save('./features/FEATURES_{}_{}.npy'.format(layers[layer_num], cohort), Features)
+    np.save('./features/FEATURES_{}_{}.npy'.format(layers[int(layer_num)], cohort), Features)
     Y.to_csv('./features/METADATA_{}.csv'.format(cohort))
-    return layers[layer_num]
+    return layers[int(layer_num)]
 
 def convert_age(Ages):
     '''
