@@ -184,13 +184,13 @@ class FeatureExtractor():
                         quit = True
                         print('stopped!')
                         break                
-
+                
+                n = n + 1       
                 if n == self.num_sketches//self.batch_size:
                     sketch_batch = sketch_batch.narrow(0,0,b)
                     label_batch = label_batch[:b + 1] 
                     age_batch = age_batch[:b + 1]   
                     session_batch = session_batch[:b + 1]
-                n = n + 1       
                 
                 # extract features from batch
                 sketch_batch = extractor(sketch_batch)
