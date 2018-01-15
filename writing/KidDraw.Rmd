@@ -193,7 +193,8 @@ Thus, these results suggest that the ability to quickly produce graphical repres
 ```{r recognizabilityByItem, fig.env="figure", fig.pos = "H", fig.align = "center", fig.width=4, fig.height=4, fig.cap = "Proportion of drawings recognized for object category, sorted from hardest to easiest items. Error bars represent non-parametric 95 percent confidence intervals, estimated using the langcog r package." }
 
 ms <- joint %>%
-  mutate(age_group = cut(age, c(3.9, 6, 8, 10.1), labels = c("4-6","6-8","8-10"))) %>%
+   mutate(age_group = cut(age, c(3.9, 6, 8, 10.1), labels = c("4-6","6-8","8-10"))) %>%
+  # mutate(age_group = cut(age, c(3.9, 6, 10.1), labels = c("3-6","7-10"))) %>%
   group_by(category, age_group) %>%
   multi_boot_standard(col = "meanCorrect")  %>%
   ungroup %>%
@@ -239,7 +240,7 @@ For this analyses, we collected a larger sample of drawings using the same metho
 ## Methods
 
 ### Participants
-Participants included those who participated in the first round of data collection, used in Experiment 1, as well as an additional 37 children, again recruited from the floor of the San Jose Children’s Discovery Museum. Overall, this yielded an additional XX drawings (excluding practice trials), where older children (ages 7-9  years) produced XX drawings, and younger children (3-6 years) produced XX drawings, yielding a total of XX drawings for analyses (older: XX drawings, younger: XX drawings).
+Participants included those who participated in the first round of data collection, used in Experiment 1, as well as an additional 37 children, again recruited from the floor of the San Jose Children’s Discovery Museum. Overall, this yielded an additional 98 drawings (excluding practice trials). This left us with a total of 177 drawings made by
 
 ### Stimuli
 For this second round of data collection, we expanded our set of categories to include equal numbers of vehicles, furniture, small objects, food items, mammals, and non-mammals (new items: airplane, bus, bike, piano, table, door, bed, fork, keys, hat, apple, cookie, mushroom, horse, dog, sheep, bear, fish, bird, spider, shark, duck).
@@ -251,22 +252,26 @@ We obtained a sample of adult drawings from the Google QuickDraw database (https
 We used a standard, pre-trained implementation of VGG-19 (cite VGG-19) to extract features in response to all sketches at each layer of the network, including the first five convolutional layers (C1-C5) as well as the two fully-connected layers (FC6 and FC7). Features were normalized within each layer across all sketches and then averaged within each category (e.g., “cat”, “rabbit”). This yielded a vector corresponding to the number of features in each layer for all 38 of the drawn categories in younger children, older children, and adults. 
 
 ### Representational Similarity Analyses 
-To construct similarity matrixes for each of the categories, the feature vectors for each categories were correlated with all other categories. The upper diagonal of the resulting, symmetric correlation matrix (shown in Figure XX) were then correlated (Spearman’s r) across age groups at within each layer of VGG-19.  Second, we performed this same analysis in a subset of shared categories categories (14)  in which we had at least five drawings from both younger and older children. 
+To construct similarity matrixes for each of the categories, the feature vectors for each categories were correlated with all other categories. The upper diagonal of the resulting, symmetric correlation matrix (shown in Figure \ref{fig:RSAAllCat}) were then correlated (Spearman’s r) across age groups at within each layer of VGG-19.  Second, we performed this same analysis in a subset of shared categories categories (14)  in which we had at least three drawings from both younger and older children.  For visualization purposes, we ordered object categories according to their naturally occuring similarity clusters in the data using a variant of affine propagation  ^^^ JUDY INSERT DETAILS HERE ^^^
+
+### Category classification analyses
+^^^ JUDY INSERT DETAILS HERE ^^^
 
 ```{r RSAAllCat, fig.env = "figure*", fig.pos = "h", fig.align='center', fig.width=7, fig.height=3, set.cap.width=T, num.cols.cap=1, fig.cap = "Category correlation matrixes in the highest layer of VGG-19 (FC7) for drawings made by younger children ( 3-6 years of age), older children (7-10 years of age), and adults (Google QuickDraw database). Each square in one of these matrixes represnets the correlation between two categories (e.g., chair and couch) in this layer of the network; lighter colors indicate higher correlations. Data-driven analyses were used to group the categories to reveal the similarity clusters. "}
 img <- png::readPNG("figs/RSA-AllCategories.png")
 grid::grid.raster(img)
 ```
 ## Results
-First, we analyzed the full set of drawings, and found that both younger children and older children generated sketches that moderately resembled those of adults’ in higher-level layers (FC7) of a deep convolutional neural network trained to recognize objects. Younger children’s category similarities moderately resembled adults (Spearman’s r=XX), while older children’s category similarities were significantly more structured and adult-like (Spearman’s r=XX, see Figure \ref{fig:RSAAllCat}).  We found the same pattern of results when only anlayzing the smaller subset of categories, finding that younger children’s category similarities moderately resembled adults (Spearman’s r=XX), while older children’s category similarities were significantly more structured and adult-like (Spearman’s r=XX). Thus, these first analyses thus supports the results of Experiment 1, where we found that the recognizability of the sketches improved with age, irrespective of low-level covariates.
+We first compared the category similarities in the highest layer of the network (FC7). Overall, we found that 3-5 year-old's drawings had category similarities that only weakly resembled adults (Spearman’s r=.20), while 5-7 year olds had more apparent category similarities (Spearman's r=.53), and 8-10 year olds had the highest similarities  (Spearman’s r=.68), see Figure \ref{fig:RSAAllCat}).  We found the same pattern of results when only anlayzing the smaller subset of categories, finding that younger children’s category similarities moderately resembled adults (Spearman’s r=XX), while older children’s category similarities were significantly more structured and adult-like (Spearman’s r=.67). Similarily, a simple linear classifier applied to the outputs of the final layer of VGG-19 could classify sketches made by older children at XX%, and sketches made by younger children XX% (adults=XX% of the time). 
 
-Next, we performed this same analysis at each layer of VGG-19, examining about the layer-wise emergence of these simialarities. Overall, we found XX (see Figure \ref{fig:layerWise}), suggesting XXX. For younger children, the similarity structure to adult drawings reached a peak at layer XX (Spearman's r=XX).  For older children, the similarity structure to adults drawings reached a peak at layer XX (Spearman's r=XX). We again found the same pattern of results when when analyzed only a subset of the categories with a high number of drawings (younger children, peak at layer XX, Spearman's r=XX; older children, peak at layer XX, Spearman's r=XX). 
+Next, we examined the featural similarities between sketches produced by adults and children at each layer of VGG-19, examining about the layer-wise emergence of these similarites. For this analysis, we restricted our comparisons to categogries for which we had three or more drawings per category per age group. Overall, we found that the similarity between children and adults' drawings increased in each subsequent layer of the network, reaching a peak in the final layers of the network (see Figure \ref{fig:layerWise}; Spearman's r values, Layer 1=0.215,  ayer 1=0.206,Layer 3=0.249,Layer 4=0.435,Layer 5=0.637,Layer 6=0.696, Layer 7=0.72). For younger children, we found a similar pattern of results, though similarity to adult drawings was overall lower (Spearman's r values, Layer 1=0.074,  Layer 2=0.001,  Layer 3=0.04 ,  Layer 4=0.119,  Layer 5=0.368,  Layer 6=0.464,  Layer 7=0.49). Thus, if anything younger children's drawings were  For older children. We again found the same pattern of results when when analyzed only a subset of the categories with a high number of drawings (younger children, peak at layer XX, Spearman's r=XX; older children, peak at layer XX, Spearman's r=XX). 
+had fewer low-level features in commons with adults' drawings than older children's drawings, suggesting that they in fact still contained mid and high-level perceptual feature simialrities. 
 
 Taken together, these results suggest that children and adults are accessing similar category representations to perform these drawing tasks that manifest in perceptual similarities between adults and children, even in the most primitive drawings.
 
 
-```{r layerWise, fig.env = "figure", fig.pos = "H", fig.align='center', fig.width=2, fig.height=3, set.cap.width=T, num.cols.cap=1, fig.label="headcam", fig.cap = "Category correlation matrixes in the highest layer of VGG-19 (FC7) for drawings made by younger children ( 3-6 years of age), older children (7-10 years of age), and adults (Google QuickDraw database). Each square in one of these matrixes represnets the correlation between two categories (e.g., chair and couch) in this layer of the network; lighter colors indicate higher correlations. Data-driven analyses were used to group the categories to reveal the similarity clusters. "}
-img <- png::readPNG("figs/walrus.png")
+```{r layerWise, fig.env = "figure", fig.pos = "H", fig.align='center', fig.width=4, fig.height=4, set.cap.width=T, num.cols.cap=1, fig.label="headcam", fig.cap = "Between-cohort similarity "}
+img <- png::readPNG("figs/btw_cohort_similarity-2.png")
 grid::grid.raster(img)
 ```
 
