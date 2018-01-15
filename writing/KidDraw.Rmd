@@ -233,7 +233,11 @@ ggplot(ms, aes(x = category, y = mean, col = age_group)) +
  
 # Part 2: How similar are children's and adults drawings?  
 
+<<<<<<< HEAD
 To what degree are children's drawings similar to those of adults? While younger children often produced drawings that were unrecognizable at the basic-level,  these recognizability ratings may underestimate the perceptual content depicted in children’s drawings. For example, children may not be able to depict the visual differences between a bunny and a frog, but they still may capture many of the essential perceptual features needed to depict an animal. Here, we turn to deep neural network models of object recognition to quantify the similarities between children’s and adults drawings, asking how similar they are in terms of feature similarity at each progressively complex layer of a deep convolutional neural network. In other words, how similar are children and adult's drawings (and why)?
+=======
+To what degree are children's drawings similar to those of adults? While younger children often produced drawings that were unrecognizable at the basic-level,  these recognizability ratings may underestimate the perceptual content depicted in children’s drawings. For example, children may not be able to depict the visual differences between a bunny and a frog, but they still may capture many of the essential perceptual features needed to depict an animal. Here, we turn to deep neural network models of object recognition to quantify the similarities between children’s and adults drawings, asking how similar they are in terms of feature similarity at each progressively complex layer of a deep convolutional neural network. While younger and older children’s drawings may differ in the high-level visual features needed to recognize the depicted object at the basic-level (e.g., to ears needed to recognize the sketch as a “bunny”), might they instead be more similar at mid-level layers of a deep convolutional neural network?
+>>>>>>> 3da0d9662ef8a419e7b5dade3ac57edb4dc4b842
 
 For this analyses, we collected a larger sample of drawings using the same methodology, this time sampling from both the previously used categories as well as a new selection of 22 categories (see Stimuli) allowing us to span superordinate category distinctions.  With this larger sample of drawings, we thus examine the degree to which children and adults drawings resemble each other in a deep convolutional neural network, specifically VGG-19.
 
@@ -258,7 +262,11 @@ To construct similarity matrixes for each of the categories, the feature vectors
 ^^^ JUDY INSERT DETAILS HERE ^^^
 
 ```{r RSAAllCat, fig.env = "figure*", fig.pos = "h", fig.align='center', fig.width=7, fig.height=3, set.cap.width=T, num.cols.cap=1, fig.cap = "Category correlation matrixes in the highest layer of VGG-19 (FC7) for drawings made by younger children ( 3-6 years of age), older children (7-10 years of age), and adults (Google QuickDraw database). Each square in one of these matrixes represnets the correlation between two categories (e.g., chair and couch) in this layer of the network; lighter colors indicate higher correlations. Data-driven analyses were used to group the categories to reveal the similarity clusters. "}
+<<<<<<< HEAD
 img <- png::readPNG("figs/RSA_SubsetCategories.png")
+=======
+#img <- png::readPNG("figs/RSA-AllCategories.png")
+>>>>>>> 3da0d9662ef8a419e7b5dade3ac57edb4dc4b842
 grid::grid.raster(img)
 ```
 ## Results
