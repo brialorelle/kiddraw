@@ -49,7 +49,8 @@
 % \textwidth 16cm
 % \textheight 21cm
 
-\title{Drawings as a window into object representations in childhood}
+\title{Drawings as a window into developmental changes in object
+representations}
 
 
 \author{{\large \bf Bria Long} \\ \texttt{bria@stanford.edu} \\ Department of Psychology \\ Stanford University \And {\large \bf Judith E. Fan} \\ \texttt{jefan@stanford.edu} \\ Department of Psychology \\ Stanford University \And {\large \bf Michael C. Frank } \\ \texttt{mcfrank@stanford.edu} \\ Department of Psychology \\ Stanford University}
@@ -59,11 +60,11 @@
 \maketitle
 
 \begin{abstract}
-A few well placed strokes can convey the identity of a person, object,
-or place. How do we become so skilled at creating graphical
-abstractions? Here, we take a developmental approach to question by
-asking children (ages 3-10 years) to draw a wide range of objects (e.g.
-`can you draw a chair?') in under 30 seconds. Then, we analyze how the
+How do object category representations change throughout childhood? To
+approach this question, we turned to drawings as a way to investigate
+children's internal representations of object categories. We asked
+children (ages 3-10 years) to draw a wide range of objects (e.g. `can
+you draw a chair?') in under 30 seconds. Then, we analyzed how the
 content of these drawings changes across development. We analyzed the
 degree to which children were able to depict recognizable exemplars of
 these categories, and found that children become increasingly skilled at
@@ -72,14 +73,14 @@ covariates (the amount of ink used, the time spent drawing, and the
 number of strokes). Second, we analyzed the degree to which children's
 drawings share perceptual features with those produced by adults,
 analyzing their featural similarity at each layer of deep convolutional
-neural network (VGG-19). Overall, we find that childrens' drawings were
-most similar to adults' in higher-level layers of the network. These
-results suggest that the ability to produce abstract graphical
-represnetations of objects is highly developed by middle childhood, and
-that even the most primitive drawings made by children contain featural
-similarities to the objects they are trying to depict. Broadly, these
-results point towards drawing as a promising avenue for investigating
-object representations in childhood.
+neural network. Overall, we find that childrens' drawings were most
+similar to adults' in higher-level layers of the network. These results
+suggest that the ability to produce abstract graphical represnetations
+of objects is highly developed by middle childhood, and that even the
+most primitive drawings made by children contain featural similarities
+to the objects they are trying to depict. Broadly, these results point
+towards drawing as a promising avenue for investigating object
+representations in childhood.
 
 \textbf{Keywords:}
 object representations; drawings; child development
@@ -90,10 +91,9 @@ object representations; drawings; child development
 Consider what one has to do in order to draw ``a phone'' -- one needs to
 access the mental representation of ``a phone'', distill this into a
 pictoral format, and plan a sequence of hand movements to effectively
-convey this visual concept. Yet this is a trivial task for ordinary
-adults. How do we learn to so effectively produce recognizable drawings?
-And might drawings offer a window into how young children represent
-common object categories?
+convey this visual concept. Yet this is a trivial task for adults. How
+do children's drawings change over development? And might they offer a
+window into how young children represent object categories?
 
 While drawing has been extensively studied in early childhood, a primary
 focus has been on when children come to treat drawings as symbols for
@@ -111,23 +111,44 @@ Far less research, however, has examined if children's drawings reflect
 how children represent objects in the world around them. Indeed,
 drawings are a powerful way to tap internal representations of object
 categories, even in non-expert adults. For example, adults tend to draw
-objects that are small in the real-world at small visual sizes, and
-objects that are big in the real-world at big visual sizes (Konkle \&
-Oliva (2011)). Further, to be recognizable, drawings have to depict the
-necessary features to express a given visual concept. This intuition is
-supported by recent computational work: deep neural network models of
-the ventral stream trained purely on photographs can also recognize
-drawings by non-expert adults, as drawings and photographs generate
-similar representations in higher-level layers of these models. In other
-words, drawings capture high-level similarity relationships between
-object categories (Fan, Yamins, \& Turk-Browne, 2015).
+objects relative to their size in the real-world: objects that are big
+in the real-world (e.g., cars) tend to take up more ``space'' on a
+canvas than objects that are small in the real-world (e.g., cups)
+(Konkle \& Oliva (2011)). Moreover, to be recognizable, drawings have to
+depict the necessary features to express a given visual concept. This
+intuition is supported by recent computational work: deep neural network
+models of the ventral stream trained purely on photographs can also
+recognize drawings by non-expert adults, as drawings and photographs
+generate similar representations in higher-level layers of these models.
+In other words, drawings capture high-level similarity relationships
+between object categories (Fan, Yamins, \& Turk-Browne, 2015).
 
-Here, we explore how children draw common object categories across early
-childhood. First, we ask if children produce more recognizable drawings
-as they get older after factoring out low-level covariates. Second, we
-examine how similar children and adult's drawings are in terms of their
-perceptual features by comparing their representations in a deep
-convolutional neural network (VGG-19).
+Some evidence suggests that children's ability to recognize objects
+continues to develop into early adolescence, including the ability to
+recognize objects across dramatic changes in viewpoint (Bova et al.,
+2007; Dekker, Mareschal, Sereno, \& Johnson, 2011). Children's ability
+to process the relationship between objects' parts also has a protracted
+developmental trajectory (for reviews, see Nishimura, Scherf, \&
+Behrmann (2009); Jüttner, Wakui, Petters, \& Davidoff (2016)). For
+example, while young children have a bias to categorize novel objects on
+the basis of part-specific information, older children rely more on the
+relationship between the object parts (Mash, 2006); and even older
+children have difficulty detecting changes in the propotions of an
+object's parts in familiar categories (i.e., animals; (Davidoff \&
+Roberson, 2002; Jüttner, Petters, Wakui, \& Davidoff, 2014; Jüttner,
+Wakui, Petters, Kaur, \& Davidoff, 2013)). Thus, this work raises the
+possibility that children's representations of common object categories
+(e.g., cups, cars) are also undergoing developmental changes. In
+general, however, there is a lack of behavioral research systematically
+examining object category representations in childhood and comparing
+them to those of adults.
+
+Here, we use children's drawings as window into object representations
+in childhood. First, we ask if children produce more recognizable
+drawings as they get older after factoring out low-level covariates.
+Second, we examine how similar children and adult's drawings are in
+terms of their perceptual features by comparing their representations in
+a deep convolutional neural network (VGG-19). We conclude b
 
 \section{Part 1: Why do children get better at
 drawing?}\label{part-1-why-do-children-get-better-at-drawing}
@@ -135,8 +156,6 @@ drawing?}\label{part-1-why-do-children-get-better-at-drawing}
 First, children (ages 3-10 years) produced drawings of 16 common object
 categories in a simple drawing game. Then, naïve adults attempted to
 recognize these drawings in a forced-choice recognition task.
-
-\subsection{Methods}\label{methods}
 
 \begin{CodeChunk}
 \begin{figure*}[h]
@@ -148,6 +167,8 @@ recognize these drawings in a forced-choice recognition task.
 \caption[Example drawings made by children ages 4-10 of several object  categories]{Example drawings made by children ages 4-10 of several object  categories.}\label{fig:exampleDrawings}
 \end{figure*}
 \end{CodeChunk}
+
+\subsection{Methods}\label{methods}
 
 \subsubsection{Participants}\label{participants}
 
@@ -211,17 +232,6 @@ overall intensity of the drawing(e.g., amount of ink). Descriptives
 plots describing the output of these variables can be seen in (see
 Figure \ref{fig:covDescriptives}, left).
 
-\begin{CodeChunk}
-\begin{figure*}[h]
-
-{\centering \includegraphics{figs/covDescriptives-1} 
-
-}
-
-\caption[The proportion of adults who recognized each drawing is plotted as a function of the number of strokes, amount of ink used, and the time spent creating each drawing]{The proportion of adults who recognized each drawing is plotted as a function of the number of strokes, amount of ink used, and the time spent creating each drawing. Each dot represents an individual drawing; dots are colored by the age of the drawer.}\label{fig:covDescriptives}
-\end{figure*}
-\end{CodeChunk}
-
 \subsubsection{GLMM procedure.}\label{glmm-procedure.}
 
 We aimed to assess whether children's ability to produce recognizable
@@ -229,9 +239,36 @@ drawings increased with age, independent of low-level covariates. To do
 so, we used a generalized logistic mixed effect model, with age, drawing
 duration, amount of ink used, and number of strokes as fixed effects,
 and with random effects for each individual child drawer and object
-category.
+category. The dependent variable was whether the proportion of adults
+that recognized a given drawing. This was specified in the lme4 r
+package as: glmer(correct \textasciitilde{} scale(age) +
+scale(draw\_duration) + scale(mean\_intensity) + scale(num\_strokes)
++(1\textbar{}session\_id) + (1\textbar{}category), family =
+``binomial'')
 
 \subsection{Results}\label{results}
+
+\begin{CodeChunk}
+\begin{figure}[H]
+
+{\centering \includegraphics{figs/recByAge-1} 
+
+}
+
+\caption[Drawings are plotted according to the age of the drawer (x-axis) and the proportion of adults that correctly identified the target object category in recognition task (y-axis)]{Drawings are plotted according to the age of the drawer (x-axis) and the proportion of adults that correctly identified the target object category in recognition task (y-axis); each dot represents one drawing.}\label{fig:recByAge}
+\end{figure}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{figure}[H]
+
+{\centering \includegraphics{figs/recognizabilityByItem-1} 
+
+}
+
+\caption[Proportion of drawings recognized for object category, sorted from hardest to easiest items]{Proportion of drawings recognized for object category, sorted from hardest to easiest items. Error bars represent non-parametric 95 percent confidence intervals, estimated using the langcog r package.}\label{fig:recognizabilityByItem}
+\end{figure}
+\end{CodeChunk}
 
 First, we observed that some items were much easier to draw than others.
 For example, children of all ages produced drawings of cats that were
@@ -240,9 +277,7 @@ drawings that were recognizable as ``shoes'' (see Figure
 \ref{fig:recognizabilityByItem}). Howver, almost all items also saw an
 increase in recognizability with the age of the drawer. Across all
 items, the proportion of drawings recognized increased steadily with age
-(\% drawings recognized; chance = 4.8\%; \(M_{4yrs}\) = 14\%,
-\(M_{5yrs}\) = 45\%, \(M_{6yrs}\) = 70\%, \(M_{7yrs}\) = 72\%,
-\(M_{8yrs}\) = 66\%, \(M_{9yrs}\) = 76\%, \(M_{10yrs}\) = 85\%).
+(see Figure \ref{fig:recByAge}).
 
 Next, we asked whether this relationsip persists when we control for
 low-level covariates: the number of strokes, amount of ink used, and the
@@ -257,24 +292,21 @@ and accounting for variation across object categories and individual
 children. All model coefficients can be seen in Table 1.. Adding
 interaction terms between age and these low-level covariates did little
 to decrease the effect of age on recognizability (b = 0.94, SE = 0.18, Z
-= 5.4).
+= 5.4). Thus, these results suggest that the ability to quickly produce
+graphical representations of object categories increases with age,
+controlling for low-level covariates. Further, these results sugest that
+this ability is highly developed by middle childhood.
 
 \begin{CodeChunk}
-\begin{figure}[H]
+\begin{figure*}[h]
 
-{\centering \includegraphics{figs/recognizabilityByItem-1} 
+{\centering \includegraphics{figs/covDescriptives-1} 
 
 }
 
-\caption[Proportion of drawings recognized for object category, sorted from hardest to easiest items]{Proportion of drawings recognized for object category, sorted from hardest to easiest items. Error bars represent non-parametric 95 percent confidence intervals, estimated using the langcog r package.}\label{fig:recognizabilityByItem}
-\end{figure}
+\caption[The proportion of adults who recognized each drawing is plotted as a function of the number of strokes, amount of ink used, and the time spent creating each drawing]{The proportion of adults who recognized each drawing is plotted as a function of the number of strokes, amount of ink used, and the time spent creating each drawing. Each dot represents an individual drawing; dots are colored by the age of the drawer.}\label{fig:covDescriptives}
+\end{figure*}
 \end{CodeChunk}
-
-Thus, these results suggest that the ability to quickly produce
-graphical representations of object categories increases with age,
-independently of low-level covariates. Further, these results sugest
-that this ability is highly developed by middle childhood, plateauing
-for these object cateogries around age 6-7.
 
 \begin{table}[H]
 \centering
@@ -568,9 +600,25 @@ Bloom, P., \& Markson, L. (1998). Intention and analogy in children's
 naming of pictorial representations. \emph{Psychological Science},
 \emph{9}(3), 200--204.
 
+\hypertarget{ref-bova2007}{}
+Bova, S. M., Fazzi, E., Giovenzana, A., Montomoli, C., Signorini, S. G.,
+Zoppello, M., \& Lanzi, G. (2007). The development of visual object
+recognition in school-age children. \emph{Developmental
+Neuropsychology}, \emph{31}(1), 79--102.
+
 \hypertarget{ref-callaghan1999early}{}
 Callaghan, T. C. (1999). Early understanding and production of graphic
 symbols. \emph{Child Development}, \emph{70}(6), 1314--1324.
+
+\hypertarget{ref-davidoff2002}{}
+Davidoff, J., \& Roberson, D. (2002). Development of animal recognition:
+A difference between parts and wholes. \emph{Journal of Experimental
+Child Psychology}, \emph{81}(3), 217--234.
+
+\hypertarget{ref-dekker2011dorsal}{}
+Dekker, T., Mareschal, D., Sereno, M. I., \& Johnson, M. H. (2011).
+Dorsal and ventral stream activation and object recognition performance
+in school-age children. \emph{NeuroImage}, \emph{57}(3), 659--670.
 
 \hypertarget{ref-Efron:1979ts}{}
 Efron, B. (1979). 1977 Rietz Lecture - Bootstrap Methods - Another Look
@@ -584,6 +632,23 @@ representations for visual recognition and production. In \emph{CogSci}.
 Gardner, H. (1994). \emph{The arts and human development: With a new
 introduction by the author}. Basic Books.
 
+\hypertarget{ref-juttner2014late}{}
+Jüttner, M., Petters, D., Wakui, E., \& Davidoff, J. (2014). Late
+development of metric part-relational processing in object recognition.
+\emph{Journal of Experimental Psychology: Human Perception and
+Performance}, \emph{40}(4), 1718.
+
+\hypertarget{ref-juttner2016developmental}{}
+Jüttner, M., Wakui, E., Petters, D., \& Davidoff, J. (2016).
+Developmental commonalities between object and face recognition in
+adolescence. \emph{Frontiers in Psychology}, \emph{7}.
+
+\hypertarget{ref-juttner2013developmental}{}
+Jüttner, M., Wakui, E., Petters, D., Kaur, S., \& Davidoff, J. (2013).
+Developmental trajectories of part-based and configural object
+recognition in adolescence. \emph{Developmental Psychology},
+\emph{49}(1), 161.
+
 \hypertarget{ref-konkle2011canonical}{}
 Konkle, T., \& Oliva, A. (2011). Canonical visual size for real-world
 objects. \emph{Journal of Experimental Psychology: Human Perception and
@@ -594,6 +659,15 @@ Kriegeskorte, N., Mur, M., Ruff, D. A., Kiani, R., Bodurka, J., Esteky,
 H., \ldots{} Bandettini, P. A. (2008). Matching categorical object
 representations in inferior temporal cortex of man and monkey.
 \emph{Neuron}, \emph{60}(6), 1126--1141.
+
+\hypertarget{ref-mash2006}{}
+Mash, C. (2006). Multidimensional shape similarity in the development of
+visual object classification. \emph{Journal of Experimental Child
+Psychology}, \emph{95}(2), 128--152.
+
+\hypertarget{ref-nishimura2009}{}
+Nishimura, M., Scherf, S., \& Behrmann, M. (2009). Development of object
+recognition in humans. \emph{F1000 Biology Reports}, \emph{1}.
 
 \hypertarget{ref-simonyan2014very}{}
 Simonyan, K., \& Zisserman, A. (2014). Very deep convolutional networks

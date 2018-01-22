@@ -45,24 +45,24 @@ theme_set(theme_few())
 
 # Introduction
 
-Consider what one has to do in order to draw “a phone” – one needs to access the mental representation of “a phone”, distill this into a pictoral format, and plan a sequence of hand movements to effectively convey this visual concept. Yet this is a trivial task for ordinary adults. How do children's drawings change over development? And might they offer a window into how young children represent common object categories?
+Consider what one has to do in order to draw “a phone” – one needs to access the mental representation of “a phone”, distill this into a pictoral format, and plan a sequence of hand movements to effectively convey this visual concept. Yet this is a trivial task for adults. How do children's drawings change over development? And might they offer a window into how young children represent object categories?
 
 While drawing has been extensively studied in early childhood, a primary focus has been on when children come to treat drawings as symbols for object categories [@gardner1994arts]. And a wealth of evidence now suggests that in fact young children attribute rich meanings to their drawings. For example, children will attribute different symbolic content (e.g., “a balloon”, “a lollipop”) to very similar drawings based on what they intended to draw [@bloom1998intention]. Further, children will monitor whether their drawings are adequate symbols for the things they are trying to draw, and will improve their drawings when given feedback that their drawings are not effective at communicating the identity of object [@callaghan1999early].
 
-Far less research, however, has examined if children’s drawings reflect how children represent objects in the world around them. Indeed, drawings are a powerful way to tap internal representations of object categories, even in non-expert adults. For example, adults tend to draw objects that are small in the real-world at small visual sizes, and objects that are big in the real-world at big visual sizes (@konkle2011canonical). Further, to be recognizable, drawings have to depict the necessary features to express a given visual concept.  This intuition is supported by recent computational work: deep neural network models of the ventral stream trained purely on photographs can also recognize drawings by non-expert adults, as drawings and photographs generate similar representations in higher-level layers of these models. In other words, drawings capture high-level similarity relationships between object categories [@fan2015common].
+Far less research, however, has examined if children’s drawings reflect how children represent objects in the world around them. Indeed, drawings are a powerful way to tap internal representations of object categories, even in non-expert adults. For example, adults tend to draw objects relative to their size in the real-world:  objects that are big in the real-world (e.g., cars) tend to take up more "space" on a canvas than objects that are small in the real-world (e.g., cups) (@konkle2011canonical). Moreover, to be recognizable, drawings have to depict the necessary features to express a given visual concept.  This intuition is supported by recent computational work: deep neural network models of the ventral stream trained purely on photographs can also recognize drawings by non-expert adults, as drawings and photographs generate similar representations in higher-level layers of these models. In other words, drawings capture high-level similarity relationships between object categories [@fan2015common]. 
 
-Furthermore, ample evidence suggests that children's object recognition abilities continue to develop well throughout later childhood, specifically in the domains of configural and holistic processing (@juttner2016) For example,  while young children have a  bias to categorize novel objects on the basis of part-specific information, older children rely more on the relationship between the object parts [@mash2006]; and even older children have difficulty detecting changes in the propotions of an object's parts in familiar categories (i.e., animals; @Juttner2013; @davidoff2002).
+Some evidence suggests that children's ability to recognize objects continues to develop into early adolescence, including the ability to recognize objects across dramatic changes in viewpoint [@bova2007;@dekker2011dorsal]. Children's ability to process the relationship between objects' parts also has a protracted developmental trajectory (for reviews, see @nishimura2009; @juttner2016developmental). For example, while young children have a bias to categorize novel objects on the basis of part-specific information, older children rely more on the relationship between the object parts [@mash2006]; and even older children have difficulty detecting changes in the propotions of an object's parts in familiar categories (i.e., animals; [@juttner2014late; @juttner2013developmental; @davidoff2002]). Thus, this work raises the possibility that children's representations of common object categories (e.g., cups, cars) are also undergoing developmental changes. In general, however, there is a lack of behavioral research systematically examining object category representations in childhood and comparing them to those of adults.  
 
-Here, we explore how children draw common object categories across early childhood. First, we ask if children produce more recognizable drawings as they get older after factoring out low-level covariates.  Second, we examine how similar children and adult's drawings are in terms of their perceptual features by comparing their representations in a deep convolutional neural network (VGG-19).
+Here, we use children's drawings as window into object representations in childhood. First, we ask if children produce more recognizable drawings as they get older after factoring out low-level covariates. Second, we examine how similar children and adult's drawings are in terms of their perceptual features by comparing their representations in a deep convolutional neural network (VGG-19). We conclude b  
 
 # Part 1: Why do children get better at drawing?
 First, children (ages 3-10 years) produced drawings of 16 common object categories in a simple drawing game. Then, naïve adults attempted to recognize these drawings in a forced-choice recognition task.
-
-## Methods
 ```{r exampleDrawings, fig.env = "figure*", fig.pos = "h", out.width="100%", fig.align = "center", set.cap.width=T, num.cols.cap=2, fig.cap = "Example drawings made by children ages 4-10 of several object  categories."}
 img <- png::readPNG("figs/drawings.png")
 grid::grid.raster(img)
 ```
+
+## Methods
 
 ### Participants
 For the drawing task, children (N = 41, M = 6.9 years, range 4-10 years) were recruited at the San Jose Children’s Discovery Museum and participated in this experiment. For the recognizability experiment, 14 adults with US IP addresses were recruited and rated all of the 268 drawings.
@@ -126,6 +126,70 @@ ageCorrOut<-joint %>%
 
 ### Low-level covariates. 
 The use of a digital interface for drawing allowed us to quickly and easily assess the contribution of several low-level factors that may co-vary with drawing ability. For each drawing, we thus quantified the amount of time spend drawing, the number of strokes used, and the overall intensity of the drawing(e.g., amount of ink). Descriptives plots describing the output of these variables can be seen in (see Figure \ref{fig:covDescriptives}, left). 
+
+###  GLMM procedure. 
+We aimed to assess whether children’s ability to produce recognizable drawings increased with age, independent of low-level covariates. To do so, we used a generalized logistic mixed effect model, with age, drawing duration, amount of ink used, and number of strokes as fixed effects, and with random effects for each individual child drawer and object category. The dependent variable was whether the proportion of adults that recognized a given drawing. This was specified in the lme4 r package as: glmer(correct ~ scale(age) +  scale(draw_duration) +  scale(mean_intensity) +  scale(num_strokes) +(1|session_id) + (1|category), family = "binomial")
+
+## Results
+
+```{r recByAge, fig.env="figure", fig.pos = "H", fig.align = "center", fig.width=3, fig.height=3, fig.cap = "Drawings are plotted according to the age of the drawer (x-axis) and the proportion of adults that correctly identified the target object category in recognition task (y-axis); each dot represents one drawing." }
+ggplot(joint, aes(age, meanCorrect)) +
+  geom_jitter(alpha=.5, width = .1) +
+  geom_smooth(method="loess",span=2, alpha=.1) +
+  labs(y = "Proportion identified", x = "Chidren's age") 
+```
+
+``` {r include=FALSE, echo=FALSE}
+## GLMM procedure
+modelOut <- glmer(correct ~ age + (1 | session_id) + (1 | category), 
+      data = joinedRatings,  
+      family = "binomial")
+
+mod_covariates <- glmer(correct ~ scale(age) + 
+                          scale(draw_duration) + 
+                          scale(mean_intensity) + 
+                          scale(num_strokes) +
+                        (1|session_id) + 
+                        (1|category), 
+      data = joinedRatings,  
+      family = "binomial")
+
+mod_covariates_2 <- glmer(correct ~ (scale(age) + 
+                          scale(draw_duration) + 
+                          scale(num_strokes))^2 +
+                        (1|session_id) + 
+                        (1|category), 
+      data = joinedRatings,  
+      family = "binomial")
+
+modelOut=summary(mod_covariates)
+modelOut_Int=summary(mod_covariates_2)
+```
+
+```{r recognizabilityByItem, fig.env="figure", fig.pos = "H", fig.align = "center", fig.width=3, fig.height=3, fig.cap = "Proportion of drawings recognized for object category, sorted from hardest to easiest items. Error bars represent non-parametric 95 percent confidence intervals, estimated using the langcog r package." }
+
+ms <- joint %>%
+  mutate(age_group = cut(age, c(3.9, 6, 10.1), labels = c("3-6","7-10"))) %>%
+  group_by(category, age_group) %>%
+  multi_boot_standard(col = "meanCorrect")  %>%
+  ungroup %>%
+  mutate(category = fct_reorder(category, mean))
+
+ggplot(ms, aes(x = category, y = mean, col = age_group)) + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  coord_flip() +
+  theme_bw() +
+  theme(legend.direction = "horizontal", legend.position="bottom") +
+  labs(y = "Proportion recognized", x = "Object category") +
+  scale_color_brewer(palette="Paired", "Age group", labels=c("3-6 yrs.", "7-10 yrs."))
+
+```
+First, we observed that some items were much easier to draw than others. For example, children of all ages produced drawings of cats that were readily recognizable as "cats", but few children of any age produced drawings that were recognizable as "shoes" (see Figure \ref{fig:recognizabilityByItem}). Howver, almost all items also saw an increase in recognizability with the age of the drawer. Across all items, the proportion of drawings recognized increased steadily with age (see Figure \ref{fig:recByAge}). 
+
+<!-- (% drawings recognized; chance = 4.8%; $M_{4yrs}$ = `r format(ageCorrOut$meanCorrect[1]*100,digits=2)`%, $M_{5yrs}$ = `r format(ageCorrOut$meanCorrect[2]*100,digits=2)`%, $M_{6yrs}$ = `r format(ageCorrOut$meanCorrect[3]*100,digits=2)`%, $M_{7yrs}$ = `r format(ageCorrOut$meanCorrect[4]*100,digits=2)`%, $M_{8yrs}$ = `r format(ageCorrOut$meanCorrect[5]*100,digits=2)`%, $M_{9yrs}$ = `r format(ageCorrOut$meanCorrect[6]*100,digits=2)`%, $M_{10yrs}$ = `r format(ageCorrOut$meanCorrect[7]*100,digits=2)`%). -->
+
+Next, we asked whether this relationsip persists when we control for low-level covariates: the number of strokes, amount of ink used, and the time spent drawing. In other words, is this increase in recognizability due to an increase in expressive power, or simply due to the fact that older children may have put more effort into their drawings? Our generalized logistic mixed-effect model revealed that the recognizability of drawings increased reliably with when controlling for these low-level covariates — the amount of time spent drawing, the number of strokes, and total ink used (b = `r format(modelOut$coefficients[2,1],digits=2)`, SE = `r format(modelOut$coefficients[2,2],digits=2) `, Z = `r format(modelOut$coefficients[2,3],digits=2)`), and accounting for variation across object categories and individual children. All model coefficients can be seen in Table 1.. Adding interaction terms between age and these low-level covariates did little to decrease the effect of age on recognizability (b = `r format(modelOut_Int$coefficients[2,1],digits=2)`, SE = `r format(modelOut_Int$coefficients[2,2],digits=2) `, Z = `r format(modelOut_Int$coefficients[2,3],digits=2)`).  Thus, these results suggest that the ability to quickly produce graphical representations of object categories increases with age, controlling for low-level covariates. Further, these results sugest that this ability is highly developed by middle childhood.
+
 ```{r covDescriptives, fig.env="figure*", fig.height=3, fig.width=7, fig.pos = "h", fig.align = "center", fig.cap = "The proportion of adults who recognized each drawing is plotted as a function of the number of strokes, amount of ink used, and the time spent creating each drawing. Each dot represents an individual drawing; dots are colored by the age of the drawer." }
 ms <- joint
             
@@ -167,61 +231,6 @@ grid.arrange(arrangeGrob(p1 + theme(legend.position="none"),
                          nrow=1),
              mylegend, nrow=2,heights=c(12, 2))
 ```
-###  GLMM procedure. 
-We aimed to assess whether children’s ability to produce recognizable drawings increased with age, independent of low-level covariates. To do so, we used a generalized logistic mixed effect model, with age, drawing duration, amount of ink used, and number of strokes as fixed effects, and with random effects for each individual child drawer and object category. 
-
-## Results
-``` {r include=FALSE, echo=FALSE}
-## GLMM procedure
-modelOut <- glmer(correct ~ age + (1 | session_id) + (1 | category), 
-      data = joinedRatings,  
-      family = "binomial")
-
-mod_covariates <- glmer(correct ~ scale(age) + 
-                          scale(draw_duration) + 
-                          scale(mean_intensity) + 
-                          scale(num_strokes) +
-                        (1|session_id) + 
-                        (1|category), 
-      data = joinedRatings,  
-      family = "binomial")
-
-mod_covariates_2 <- glmer(correct ~ (scale(age) + 
-                          scale(draw_duration) + 
-                          scale(num_strokes))^2 +
-                        (1|session_id) + 
-                        (1|category), 
-      data = joinedRatings,  
-      family = "binomial")
-
-modelOut=summary(mod_covariates)
-modelOut_Int=summary(mod_covariates_2)
-```
-
-First, we observed that some items were much easier to draw than others. For example, children of all ages produced drawings of cats that were readily recognizable as "cats", but few children of any age produced drawings that were recognizable as "shoes" (see Figure \ref{fig:recognizabilityByItem}). Howver, almost all items also saw an increase in recognizability with the age of the drawer. Across all items, the proportion of drawings recognized increased steadily with age (% drawings recognized; chance = 4.8%; $M_{4yrs}$ = `r format(ageCorrOut$meanCorrect[1]*100,digits=2)`%, $M_{5yrs}$ = `r format(ageCorrOut$meanCorrect[2]*100,digits=2)`%, $M_{6yrs}$ = `r format(ageCorrOut$meanCorrect[3]*100,digits=2)`%, $M_{7yrs}$ = `r format(ageCorrOut$meanCorrect[4]*100,digits=2)`%, $M_{8yrs}$ = `r format(ageCorrOut$meanCorrect[5]*100,digits=2)`%, $M_{9yrs}$ = `r format(ageCorrOut$meanCorrect[6]*100,digits=2)`%, $M_{10yrs}$ = `r format(ageCorrOut$meanCorrect[7]*100,digits=2)`%).
-
-Next, we asked whether this relationsip persists when we control for low-level covariates: the number of strokes, amount of ink used, and the time spent drawing. In other words, is this increase in recognizability due to an increase in expressive power, or simply due to the fact that older children may have put more effort into their drawings? Our generalized logistic mixed-effect model revealed that the recognizability of drawings increased reliably with when controlling for these low-level covariates — the amount of time spent drawing, the number of strokes, and total ink used (b = `r format(modelOut$coefficients[2,1],digits=2)`, SE = `r format(modelOut$coefficients[2,2],digits=2) `, Z = `r format(modelOut$coefficients[2,3],digits=2)`), and accounting for variation across object categories and individual children. All model coefficients can be seen in Table 1.. Adding interaction terms between age and these low-level covariates did little to decrease the effect of age on recognizability (b = `r format(modelOut_Int$coefficients[2,1],digits=2)`, SE = `r format(modelOut_Int$coefficients[2,2],digits=2) `, Z = `r format(modelOut_Int$coefficients[2,3],digits=2)`). 
-
-```{r recognizabilityByItem, fig.env="figure", fig.pos = "H", fig.align = "center", fig.width=3, fig.height=3, fig.cap = "Proportion of drawings recognized for object category, sorted from hardest to easiest items. Error bars represent non-parametric 95 percent confidence intervals, estimated using the langcog r package." }
-
-ms <- joint %>%
-  mutate(age_group = cut(age, c(3.9, 6, 10.1), labels = c("3-6","7-10"))) %>%
-  group_by(category, age_group) %>%
-  multi_boot_standard(col = "meanCorrect")  %>%
-  ungroup %>%
-  mutate(category = fct_reorder(category, mean))
-
-ggplot(ms, aes(x = category, y = mean, col = age_group)) + 
-  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
-  coord_flip() +
-  theme_bw() +
-  theme(legend.direction = "horizontal", legend.position="bottom") +
-  labs(y = "Proportion recognized", x = "Object category") +
-  scale_color_brewer(palette="Paired", "Age group", labels=c("3-6 yrs.", "7-10 yrs."))
-
-```
-
-Thus, these results suggest that the ability to quickly produce graphical representations of object categories increases with age, independently of low-level covariates. Further, these results sugest that this ability is highly developed by middle childhood, plateauing for these object cateogries around age 6-7.
 
 <!-- ```{r modelCoefficients, results="asis"} -->
 <!-- tab1 <- xtable::xtable(summary(mod_covariates)$coef, digits=3,  -->
