@@ -20,11 +20,25 @@ import base64
 
 from embedding import *
 
-
 # retrieve sketch paths
 def list_files(path, ext='png'):
     result = [y for x in os.walk(path) for y in glob(os.path.join(x[0], '*.%s' % ext))]
     return result
+
+def check_invalid_sketch(filenames,invalids_path='drawings_to_exclude_clean.txt'):    
+    if not os.path.exists(invalids_path):
+        print('No file containing invalid paths at {}'.format(invalids_path))
+        invalids = []        
+    else:
+        x = pd.read_csv(invalids_path, header=None)
+        x.columns = ['filenames']
+        invalids = list(x.filenames.values)
+    valids = []   
+    basenames = [f.split('/')[-1] for f in filenames]
+    for i,f in enumerate(basenames):
+        if f not in invalids:
+            valids.append(filenames[i])
+    return valids
 
 def make_dataframe(Labels,Ages,Sessions):    
     Y = pd.DataFrame([Labels,Ages,Sessions])
@@ -81,6 +95,11 @@ if __name__ == "__main__":
     
     ## get list of all sketch paths
     sketch_paths = sorted(list_files(args.data))
+    print('Length of sketch_paths before filtering: {}'.format(len(sketch_paths)))
+    
+    ## filter out invalid sketches
+    sketch_paths = check_invalid_sketch(sketch_paths)
+    print('Length of sketch_paths after filtering: {}'.format(len(sketch_paths)))    
     
     ## extract features
     layers = ['P1','P2','P3','P4','P5','FC6','FC7']
