@@ -1,0 +1,56 @@
+kid-draw comments
+
+t
+abstract
+  - "How do we become so skilled at creating graphical abstractions?" --> makes me think this is going to be a paper about learning to draw (i.e., input story). maybe something like, how do drawings change over development?
+  - VGG-19 -> maybe cut? not sure what it was
+  - currently framed as a first step, but i wanted a little more about the puzzle of understanding changes children's object representations. why is this cool to understand and why might drawings help?
+
+intro
+  - i liked the problem statement in paragraph 3 "what do drawings tell us about children's underlying object representation" --> i think this could be emphasized by changing the question posed in the abstract
+  - super minor - but it wasn't immediately clear to me what was being "compared" across the CNN models.
+
+  - why are shoes so hard to draw!?
+
+
+part 1 - analysis
+
+  - for the GLMM it wasn't immediately clear that you were predicting the accuracy of adult judgements. you might include the model specification in R lme4 syntax.
+  - i'd be curious -- what's the relationship between the low-level covariates and age. i can read it off Fig2, but people might have questions about whether younger vs. older children were doing more stuff.
+  - it might be nice to say something quantitative about the change in prob. of recognition or the odds-ratio for each year of development. For info on converting the logit coefs, see:
+      - https://stats.idre.ucla.edu/r/dae/logit-regression/
+      - https://stats.idre.ucla.edu/other/mult-pkg/faq/general/faq-how-do-i-interpret-odds-ratios-in-logistic-regression/
+  - why the age split in Fig 3? and i might have missed it, but is this Fig referenced in the text?
+
+  \\\\
+  - age is a proxy for other stuff that's changing. so you might want to say something about what you think is changing that the low-level covariates that you did measure are failing to capture.
+
+part 2
+
+  - might be nice to add a sentence or two about what a "complex" layer in a neural net means. to help motivate why are you looking at layers that differ in complexity
+  - what is VGG-19?
+  - it would be good to justify the larger sample of drawings -- did you just need more data? or was the category structure critical to the analysis?
+  - how did you select the cut point between younger/older children? median split on age?
+  - i wasn't sure how this followed from the binning procedure: "This ensured the robust estimates of feature distance in the folowing analyses."
+  - CNN: it might be nice to say a bit more about convolutional vs. full-connected as it relates to "complexity" of the layer
+  - Rep similarity analysis
+      - i thought the math was relatively clear, but i think it'd be helpful to put the *goal* of the RDM approach at the front of this section. something like, "we needed some way to measure/compare similarity between feature vectors and the RDM approach allows us to this."
+      - What is R in RDM(R)ij
+      - similar point about the s.e._jacknife -- could move the goal sentence ["getting p-values and CIs"] to the first sentence of the paragraph.
+  - it would also be helpful to say why you use Spearman vs. Pearson for the different similarity analyses
+  - why do the "Category classification" analysis?
+  - really liked the plot of spearman R as a function of layer complexity! I would say you don't even need to put the R values in the text. just point to Fig 5.
+  - in Fig 4, i have a hard time interpreting similarity/differences across age in the RDM panels. might be nice to have a little more scaffolding about the interpretation in the caption or the text
+  - in Fig. 6, you could sort the x-axis by the Spearman R value. [for some ggplot magic, check out the forcats package http://forcats.tidyverse.org/reference/fct_reorder.html]
+  - by the end of part 2, i'm still not sure what the classification analysis adds?
+
+  - i struggled with the claim that "these results suggest that children and adults are accessing similar category representations to per- form these drawing task"
+- i think because I wasn't sure about the alternative hypothesis (accessing different or noisier category representations?) and what would be the evidence for it in these data?
+
+discussion
+
+  - what does "highly developed" mean
+  - "irrespec- tive of the amount of time they spent drawing or the amount of “ink” they used" --> but isn't time drawing still a reliable predictor of recognizability? and isn't Num. strokes a negative predictor?
+      - i feel like you could've framed the model results the other way and said that "even controlling for age, the amount of time children spent drawing was a strong predictor of recognizability."
+  - i really enjoyed the developmental story about object representations in the GD, and the possible links between the nature of these representations and other aspects of higher cognition (e.g., word learning).
+      - this developmental question feels like the puzzle that you are trying to solve. but i'm not sure this came through as strongly in the introduction, which felt like it was more about "learning" to become an effective drawer and validating a method as a way to access object reps. maybe you could bring some of this text to the intro?
