@@ -53,14 +53,14 @@ In adulthood, drawings can serve a powerful tool to tap internal representations
 
 While drawing has been extensively studied in early childhood, a primary focus has been on when and why children treat drawings as symbolic [@gardner1994arts], and evidence now suggests that young children do attribute rich meanings to their drawings. For example, children will attribute different symbolic content (e.g., “a balloon”, “a lollipop”) to very similar drawings based on what they intended to draw [@bloom1998intention]. Further, children will monitor whether their drawings are adequate symbols for the things they are trying to draw, and will improve their drawings when given feedback that their drawings are not effective at communicating the identity of object [@callaghan1999early]. To our knowlede, no research  has examined whether children's drawings reflect how they are representing objects in the world around them.
 
-Here, we examined how children's of object categories change over childhood, and examine how children's drawings might ofer a window into how young children represent object categories. First, we ask if children produce more recognizable drawings as they get older after factoring out low-level covariates. Second, we examine how similar children and adult's drawings are in terms of their perceptual features by comparing their representations in a deep convolutional neural network (VGG-19). 
-
-# Part 1: Why do children get better at drawing?
-First, children (ages 3-10 years) produced drawings of 16 common object categories in a simple drawing game. Then, naïve adults attempted to recognize these drawings in a forced-choice recognition task.
 ```{r exampleDrawings, fig.env = "figure*", fig.pos = "h", out.width="100%", fig.align = "center", set.cap.width=T, num.cols.cap=2, fig.cap = "Example drawings made by children ages 4-10 of several object  categories."}
 img <- png::readPNG("figs/drawings.png")
 grid::grid.raster(img)
 ```
+Here, we explore the perceptual schemas that children associate with object categories and how these change over childhood by examining what amd how children draw. First, we examine if children produce more recognizable drawings as they get older after factoring out low-level covariates. Second, we compare the perceptual features of child and adult drawings by comparing their representations in a deep convolutional neural network trained to recognize objects. Together, this work begin a developmental project to investigate children's internal representations of object categories and how they are linked to their developing perceptual abilities.
+
+# Part 1: Why do children get better at drawing?
+First, children (ages 3-10 years) produced drawings of 16 common object categories in a simple drawing game. Then, naïve adults attempted to recognize these drawings in a forced-choice recognition task.
 
 ## Methods
 
@@ -123,22 +123,11 @@ ageCorrOut<-joint %>%
 
 ```
 
-
 ### Low-level covariates. 
 The use of a digital interface for drawing allowed us to quickly and easily assess the contribution of several low-level factors that may co-vary with drawing ability. For each drawing, we thus quantified the amount of time spent drawing, the number of strokes used, and the overall intensity of the drawing (e.g., amount of ink). Descriptives plots describing the output of these variables can be seen in Figure \ref{fig:covDescriptives}. 
 
 ###  GLMM procedure. 
 We aimed to assess whether children’s ability to produce recognizable drawings increased with age, independent of low-level covariates. To do so, we used a generalized logistic mixed effect model, with age (specified in years), drawing duration, amount of ink used, and number of strokes as fixed effects, and with random effects for each individual child drawer and object category. The dependent variable was whether the proportion of adults that recognized a given drawing. This was specified in the lme4 r package as: glmer(correct ~ scale(age) +  scale(draw_duration) +  scale(mean_intensity) +  scale(num_strokes) +(1|session_id) + (1|category), family = "binomial")
-
-## Results
-
-```{r recByAge, fig.env="figure", fig.pos = "H", fig.align = "center", fig.width=3, fig.height=3, fig.cap = "Drawings are plotted according to the age of the drawer (x-axis) and the proportion of adults that correctly identified the target object category in recognition task (y-axis); each dot represents one drawing." }
-ggplot(joint, aes(age, meanCorrect)) +
-  geom_jitter(alpha=.5, width = .1) +
-  geom_smooth(method="loess",span=2, alpha=.1) +
-  labs(y = "Proportion identified", x = "Chidren's age") 
-```
-
 ``` {r include=FALSE, echo=FALSE}
 ## GLMM procedure
 modelOut <- glmer(correct ~ age + (1 | session_id) + (1 | category), 
@@ -165,6 +154,19 @@ mod_covariates_2 <- glmer(correct ~ (scale(age) +
 modelOut=summary(mod_covariates)
 modelOut_Int=summary(mod_covariates_2)
 ```
+## Results
+
+First, we observed that some items were much easier to draw than others. For example, children of all ages produced drawings of cats that were readily recognizable as "cats", but few children of any age produced drawings that were recognizable as "shoes" (see Figure \ref{fig:recognizabilityByItem}). Howver, almost all items also saw an increase in recognizability with the age of the drawer. Across all items, the proportion of drawings recognized increased steadily with age (see Figure \ref{fig:recByAge}). 
+
+Next, we asked whether this relationsip persists when we control for low-level covariates: the number of strokes, amount of ink used, and the time spent drawing. In other words, is this increase in recognizability due to an increase in expressive power, or simply due to the fact that older children may have put more effort into their drawings? Our generalized logistic mixed-effect model revealed that the recognizability of drawings increased reliably when controlling for these low-level covariates — the amount of time spent drawing, the number of strokes, and total ink used (b = `r format(modelOut$coefficients[2,1],digits=2)`, SE = `r format(modelOut$coefficients[2,2],digits=2) `, Z = `r format(modelOut$coefficients[2,3],digits=2)`), and accounting for variation across object categories and individual children. All model coefficients can be seen in Table 1. Adding interaction terms between age and these low-level covariates did little to decrease the effect of age on recognizability (b = `r format(modelOut_Int$coefficients[2,1],digits=2)`, SE = `r format(modelOut_Int$coefficients[2,2],digits=2) `, Z = `r format(modelOut_Int$coefficients[2,3],digits=2)`).  Thus, these results suggest that the ability to quickly produce graphical representations of object categories increases with age, controlling for low-level covariates. Further, these results sugest that this ability is highly developed by middle childhood.
+
+<!-- # ```{r recByAge, fig.env="figure", fig.pos = "H", fig.align = "center", fig.width=3, fig.height=3, fig.cap = "Drawings are plotted according to the age of the drawer (x-axis) and the proportion of adults that correctly identified the target object category in recognition task (y-axis); each dot represents one drawing." } -->
+<!-- # ggplot(joint, aes(age, meanCorrect)) + -->
+<!-- #   geom_jitter(alpha=.5, width = .1) + -->
+<!-- #   geom_smooth(method="loess",span=2, alpha=.1) + -->
+<!-- #   labs(y = "Proportion identified", x = "Chidren's age")  -->
+<!-- # ``` -->
+
 
 ```{r recognizabilityByItem, fig.env="figure", fig.pos = "H", fig.align = "center", fig.width=3, fig.height=3, fig.cap = "Proportion of drawings recognized for object category, sorted from hardest to easiest items. Error bars represent non-parametric 95 percent confidence intervals, estimated using the langcog r package." }
 
@@ -184,24 +186,28 @@ ggplot(ms, aes(x = category, y = mean, col = age_group)) +
   scale_color_brewer(palette="Paired", "Age group", labels=c("3-6 yrs.", "7-10 yrs."))
 
 ```
-First, we observed that some items were much easier to draw than others. For example, children of all ages produced drawings of cats that were readily recognizable as "cats", but few children of any age produced drawings that were recognizable as "shoes" (see Figure \ref{fig:recognizabilityByItem}). Howver, almost all items also saw an increase in recognizability with the age of the drawer. Across all items, the proportion of drawings recognized increased steadily with age (see Figure \ref{fig:recByAge}). 
 
-<!-- (% drawings recognized; chance = 4.8%; $M_{4yrs}$ = `r format(ageCorrOut$meanCorrect[1]*100,digits=2)`%, $M_{5yrs}$ = `r format(ageCorrOut$meanCorrect[2]*100,digits=2)`%, $M_{6yrs}$ = `r format(ageCorrOut$meanCorrect[3]*100,digits=2)`%, $M_{7yrs}$ = `r format(ageCorrOut$meanCorrect[4]*100,digits=2)`%, $M_{8yrs}$ = `r format(ageCorrOut$meanCorrect[5]*100,digits=2)`%, $M_{9yrs}$ = `r format(ageCorrOut$meanCorrect[6]*100,digits=2)`%, $M_{10yrs}$ = `r format(ageCorrOut$meanCorrect[7]*100,digits=2)`%). -->
-
-Next, we asked whether this relationsip persists when we control for low-level covariates: the number of strokes, amount of ink used, and the time spent drawing. In other words, is this increase in recognizability due to an increase in expressive power, or simply due to the fact that older children may have put more effort into their drawings? Our generalized logistic mixed-effect model revealed that the recognizability of drawings increased reliably when controlling for these low-level covariates — the amount of time spent drawing, the number of strokes, and total ink used (b = `r format(modelOut$coefficients[2,1],digits=2)`, SE = `r format(modelOut$coefficients[2,2],digits=2) `, Z = `r format(modelOut$coefficients[2,3],digits=2)`), and accounting for variation across object categories and individual children. All model coefficients can be seen in Table 1. Adding interaction terms between age and these low-level covariates did little to decrease the effect of age on recognizability (b = `r format(modelOut_Int$coefficients[2,1],digits=2)`, SE = `r format(modelOut_Int$coefficients[2,2],digits=2) `, Z = `r format(modelOut_Int$coefficients[2,3],digits=2)`).  Thus, these results suggest that the ability to quickly produce graphical representations of object categories increases with age, controlling for low-level covariates. Further, these results sugest that this ability is highly developed by middle childhood.
-
-```{r covDescriptives, fig.env="figure*", fig.height=3, fig.width=7, fig.pos = "h", fig.align = "center", fig.cap = "The proportion of adults who recognized each drawing is plotted as a function of the number of strokes, amount of ink used, and the time spent creating each drawing. Each dot represents an individual drawing; dots are colored by the age of the drawer." }
+```{r covDescriptives, fig.env="figure*", fig.height=3, fig.width=7, fig.pos = "h", fig.align = "center", fig.cap = "The proportion of adults who recognized each drawing is plotted as a function of child's age, the number of strokes, amount of ink used, and the time spent creating each drawing. Each dot represents an individual drawing; dots in the right three plots are colored by the age of the drawer." }
 ms <- joint
-            
+
+p4<-ggplot(joint, aes(age, meanCorrect)) +
+  geom_jitter(alpha=.5, width = .1) +
+  geom_smooth(method="loess",span=2, alpha=.1) +
+  theme_bw() +
+  ylim(0,1) +
+  labs(y = "Prop. recognized", x = "Age (years)") 
+        
 p1<-ggplot(ms, aes(x = num_strokes, y=meanCorrect, color=age)) +
   geom_jitter(alpha=.7) +
   geom_smooth(aes(group = 1), method="lm",span=3, alpha=.1, color="grey") +
   theme_bw() +
   ylim(0,1) +
+  scale_color_viridis()+ 
   theme(legend.direction = "horizontal") +
-  scale_color_viridis() +
-  # scale_color_distiller(palette="Spectral", "Age") +
-  labs(y = "Prop. recognized", x = "Number of strokes") 
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) +
+  labs(y = "", x = "Number of strokes") 
 
 p2<-ggplot(ms, aes(x = mean_intensity, y=meanCorrect, color=age)) +
   geom_jitter(alpha=.7) +
@@ -209,8 +215,10 @@ p2<-ggplot(ms, aes(x = mean_intensity, y=meanCorrect, color=age)) +
   ylim(0,1) +
   theme_bw() +
   scale_color_viridis()+
-  # scale_color_distiller(palette="Spectral", "Age") +
-  labs(y = "", x = "Amount of 'ink' used") 
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) +
+  labs(y = "", x = "'Ink' used (a.u.)") 
 
 p3<-ggplot(ms, aes(x = draw_duration, y=meanCorrect, color=age)) +
   geom_jitter(alpha=.7) +
@@ -218,8 +226,10 @@ p3<-ggplot(ms, aes(x = draw_duration, y=meanCorrect, color=age)) +
   geom_smooth(aes(group = 1), method="lm",span=3, alpha=.1, color="grey") +
   theme_bw() +
   scale_color_viridis()+ 
-  # scale_color_distiller(palette="Spectral", "Age") +
-  labs(y = "", x = "Time spent drawing") 
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) +
+  labs(y = "", x = "Drawing time (s)") 
 
 g_legend<-function(a.gplot){
   tmp <- ggplot_gtable(ggplot_build(a.gplot))
@@ -228,11 +238,9 @@ g_legend<-function(a.gplot){
   return(legend)}
 
 mylegend<-g_legend(p1)
-grid.arrange(arrangeGrob(p1 + theme(legend.position="none"),
-                         p2 + theme(legend.position="none"),
-                         p3 + theme(legend.position="none"),
-                         nrow=1),
-             mylegend, nrow=2,heights=c(12, 2))
+
+
+grid.arrange(p4, p1 + theme(legend.position="none"), p2 + theme(legend.position="none"),p3 + theme(legend.position="none"), mylegend, heights=c(12, 2), layout_matrix = rbind(c(1,1,2,3,4), c(NA,NA,NA,5,NA)))
 ```
 
 <!-- ```{r modelCoefficients, results="asis"} -->
@@ -265,7 +273,7 @@ We thus examine the feature similarity between children and adult's drawings at 
 
 ## Methods
 ### Stimuli
-For this analyses, we collected a larger sample of drawings using the same methodology, this time sampling from both the previously used categories as well as a new selection of 22 categories (see Stimuli) allowing us to span superordinate category distinctions abd to include equal numbers of vehicles, furniture, small objects, food items, mammals, and non-mammals (new items: airplane, bus, bike, piano, table, door, bed, fork, keys, hat, apple, cookie, mushroom, horse, dog, sheep, bear, fish, bird, spider, shark, duck); this wider category structure has often be used to compare object category representations using deep convolutional neural networks [@yamins2014; @krigeskorte2008].
+For this analyses, we collected a larger sample of drawings using the same methodology, this time sampling from both the previously used categories as well as a new selection of 22 categories (see Stimuli) allowing us to span superordinate category distinctions abd to include equal numbers of vehicles, furniture, small objects, food items, mammals, and non-mammals (new items: airplane, bus, bike, piano, table, door, bed, fork, keys, hat, apple, cookie, mushroom, horse, dog, sheep, bear, fish, bird, spider, shark, duck); this wider category structure has often be used to compare object category representations using deep convolutional neural networks [@yamins2014performance; @kriegeskorte2008RSA].
 
 ### Participants
 Participants included those who participated in the first round of data collection, used in Experiment 1, as well as an additional 37 children, again recruited from the floor of the San Jose Children’s Discovery Museum. Overall, this yielded an additional 98 drawings (excluding practice trials) for a total of 387 drawings. For the subsequent analyses, we binned children's age coarsely into "younger children" (aged 3-6 years) and "older" children (aged 7-10 years) and restricted analyses to categories where we had at least 3 drawings per age group (16 categories); this allowed us to analyze approximately the same number of drawings in each age group (younger children, N=118 drawings; older children, N=161 drawings). By including a minimum number of drawings per class and age category, we ensured robust estimates in the folowing analyses.
@@ -277,9 +285,9 @@ We obtained a sample of adult drawings from the Google QuickDraw database. Speci
 We used a standard, pre-trained implementation of VGG-19 [@simonyan2014very] to extract features in response to all sketches at each layer of the network, including the first five convolutional layers (C1-C5) as well as the two fully-connected layers (FC6 and FC7). Features were normalized within each layer across all sketches and then averaged within each category (e.g., “cat”, “rabbit”). This yielded a vector corresponding to the number of features in each layer for all 38 of the drawn categories in younger children, older children, and adults. 
 
 ### Representational Similarity Analyses 
-Each layer of VGG-19 (the CNN used here) contains thousands of features; representational similarity analyses treats each feature as a dimenion in a feature space and computes the distances between images in this high-dimensional space. Separately for drawings from younger children, older children, and adults, we averaged the feature vectors within each object class for a given layer of VGG and then computed a layer-specific matrix of the Pearson correlation distances between these average vectors across classes [@kriegeskorte2008matching]. Formally, this entailed computing: $$RDM(R)_{ij} = 1- \frac{cov(\vec{r}_{i}, \vec{r}_{j})}{\sqrt{var(\vec{r}_{i}) \cdot var(\vec{r}_{j})}}$$, where $\vec{r}_{i}$ and $\vec{r}_{j}$ are the mean feature vectors for the $i$th and $j$th object classes, respectively, where R represents the correlation betwen two classes (e.g., rabbits and shoes). Each of these 16x16 representational dissimilarity matrices (RDMs, shown in Figure \ref{fig:RSAAllCat}) provides a compact description of the layout of objects in the high-dimensional feature space inherent to each layer of the model. Following Kriegeskorte et al. (2008), we measured the similarity between object representations in different layers by computing the Spearman rank correlations between the RDMs for those corresponding layers.
+Each layer of VGG-19 (the CNN used here) contains thousands of features; representational similarity analyses treats each feature as a dimenion in a feature space and computes the distances between images in this high-dimensional space. Separately for drawings from younger children, older children, and adults, we averaged the feature vectors within each object class for a given layer of VGG and then computed a layer-specific matrix of the Pearson correlation distances between these average vectors across classes [@kriegeskorte2008RSA]. Formally, this entailed computing: $$RDM(R)_{ij} = 1- \frac{cov(\vec{r}_{i}, \vec{r}_{j})}{\sqrt{var(\vec{r}_{i}) \cdot var(\vec{r}_{j})}}$$, where $\vec{r}_{i}$ and $\vec{r}_{j}$ are the mean feature vectors for the $i$th and $j$th object classes, respectively, where R represents the correlation betwen two classes (e.g., rabbits and shoes). Each of these 16x16 representational dissimilarity matrices (RDMs, shown in Figure \ref{fig:RSAAllCat}) provides a compact description of the layout of objects in the high-dimensional feature space inherent to each layer of the model. Following @kriegeskorte2008RSA, we measured the similarity between object representations in different layers by computing the Spearman rank correlations between the RDMs for those corresponding layers.
 
-Estimates of standard error for the Spearman correlation between RDMs (i.e., between domains or between layers) were generated by jackknife resampling of the 16 object classes. This estimate of standard error allows us to construct 95\% confidence intervals and compute two-sided p-values for specific comparisons [@Tukey:1958wn;@Efron:1979ts]. This entails iterating through each of the 16 subsamples that exclude a single class, computing the correlation on each iteration, then aggregating these values. Specifically, the jackknife estimate of the standard error can be computed as: $s.e._{(jackknife)} = \sqrt{\frac{n-1}{n} \sum_{i=1}^{n} (\bar{x}_{i} - \bar{x}_{(.)})^{2}}$, where $\bar{x}_{i}$ is the correlation based on leaving out the $i$th object class and $\bar{x}_{(.)} = \frac{1}{n} \sum_{i}^{n} \bar{x}_{i}$, the mean correlation across all subsamples (of size 15). 
+Estimates of standard error for the Spearman correlation between RDMs (i.e., between domains or between layers) were generated by jackknife resampling of the 16 object classes. This estimate of standard error allows us to construct 95\% confidence intervals and compute two-sided p-values for specific comparisons [@Efron:1979ts; @Tukey:1958wn]. This entails iterating through each of the 16 subsamples that exclude a single class, computing the correlation on each iteration, then aggregating these values. Specifically, the jackknife estimate of the standard error can be computed as: $s.e._{(jackknife)} = \sqrt{\frac{n-1}{n} \sum_{i=1}^{n} (\bar{x}_{i} - \bar{x}_{(.)})^{2}}$, where $\bar{x}_{i}$ is the correlation based on leaving out the $i$th object class and $\bar{x}_{(.)} = \frac{1}{n} \sum_{i}^{n} \bar{x}_{i}$, the mean correlation across all subsamples (of size 15). 
 
 ### Category similarity analyses
 We also directly analyzed the similarity of the feature representations generated by sketches from  younger children vs. adults and between older children vs. adults. To do so, we  computed the Pearson correlation between the average category vectors for adults and the average category vectors for younger/older children; this yielded a correlation score for each object category for each age comparison.
@@ -287,20 +295,19 @@ We also directly analyzed the similarity of the feature representations generate
 ### Category classification analyses
 Model features were also used to train softmax classifiers (http://scikit-learn.org/) with L2 regularization to evaluate the degree to which category information was linearly accessible from sketches made by each group of participants. Predictions are then made for images held out from the training set, and accuracy is assessed on these held-out images. The robustness of classifier accuracy scores was determined using stratified 5-fold cross validation on 80\% train/20\% test class-balanced splits. 
 
+## Results
+
+```{r layerWise, fig.env = "figure", fig.pos = "H", fig.align='center', fig.width=3, fig.height=4, set.cap.width=T, num.cols.cap=1, fig.label="headcam", fig.cap = "Spearman's correlation between representational dissimilarity matrices (RDMs) between drawings produced by adults and younger children (grey line) and between adults and older children (black line) at each layer of VGG-19--the first five convolutional layers and the last two fully connected layers. Error bars represent standard error of the mean obtained by a jacknife re-sampling procedure (see Methods)."}
+img <- png::readPNG("figs/btw_cohort_similarity-2.png")
+grid::grid.raster(img)
+```  
+### Layer-wise feature similarity 
+We first examined the featural similarities between sketches produced by adults and children at each layer of VGG-19. Overall, we found that the similarity between older children and adults' drawings increased in each subsequent layer of the network, reaching a peak in the final layers of the network (see Figure \ref{fig:layerWise}). For younger children, we found a similar pattern of results, though similarity to adult drawings was overall lower. The RDMs for the final layer of the network (where similarity was the highest; FC7) are shown in Figure \ref{fig:RSAAllCat} for younger children, older children, and adults.
+
 ```{r RSAAllCat, fig.env = "figure*", fig.pos = "h", fig.align='center', fig.width=7, fig.height=3, set.cap.width=T, num.cols.cap=1, fig.cap = "Representational dissimilarity matrices (RDMs) in the highest layer of VGG-19 (FC7) for drawings made by younger children (3-6 years of age), older children (7-10 years of age), and adults (Google QuickDraw database). Each square in one of these matrices represents the correlation distance between two categories (e.g., chair and couch) in this layer of the network; lighter colors indicate pairs of categories that generated dissimilar feature representations; darker colors indicate pairs of cateogries that generated more similar feature representations. Categories are grouped to reveal the inherent simiarity structure."}
 img <- png::readPNG("figs/RSA.png")
 grid::grid.raster(img)
 ```
-
-## Results
-
-### Layer-wise feature similarity 
-We first examined the featural similarities between sketches produced by adults and children at each layer of VGG-19. Overall, we found that the similarity between older children and adults' drawings increased in each subsequent layer of the network, reaching a peak in the final layers of the network (see Figure \ref{fig:layerWise}). For younger children, we found a similar pattern of results, though similarity to adult drawings was overall lower. The RDMs for the final layer of the network (where similarity was the highest; FC7) are shown in Figure \ref{fig:RSAAllCat} for younger children, older children, and adults.
-
-```{r layerWise, fig.env = "figure", fig.pos = "H", fig.align='center', fig.width=3, fig.height=4, set.cap.width=T, num.cols.cap=1, fig.label="headcam", fig.cap = "Spearman's correlation between representational dissimilarity matrixes (RDMs) between drawings produced by adults and younger children (grey line) and between adults and older children (black line) at each layer of VGG-19--the first five convolutional layers and the last two fully connected layers. Error bars represent standard error of the mean obtained by a jacknife re-sampling procedure (see Methods)."}
-img <- png::readPNG("figs/btw_cohort_similarity-2.png")
-grid::grid.raster(img)
-```  
 
 ### Category similarity analyses
 Next, we explored which categories generated representations in FC7 that were  more or less similar between younger children vs. adults and between older children vs. adults (see Figure \ref{fig:simpleCorr}). Overall, we found a good deal of variability; for some categories, children's and adult's drawings generated feature representations that were relatively dissimilar in this final layer of the network (e.g., couches, shoes) while others generated very similar feature representations (e.g., flowers, chairs).
