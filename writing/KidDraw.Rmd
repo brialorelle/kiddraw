@@ -160,14 +160,6 @@ First, we observed that some items were much easier to draw than others. For exa
 
 Next, we asked whether this relationsip persists when we control for low-level covariates: the number of strokes, amount of ink used, and the time spent drawing. In other words, is this increase in recognizability due to an increase in expressive power, or simply due to the fact that older children may have put more effort into their drawings? Our generalized logistic mixed-effect model revealed that the recognizability of drawings increased reliably when controlling for these low-level covariates — the amount of time spent drawing, the number of strokes, and total ink used (b = `r format(modelOut$coefficients[2,1],digits=2)`, SE = `r format(modelOut$coefficients[2,2],digits=2) `, Z = `r format(modelOut$coefficients[2,3],digits=2)`), and accounting for variation across object categories and individual children. All model coefficients can be seen in Table 1. Adding interaction terms between age and these low-level covariates did little to decrease the effect of age on recognizability (b = `r format(modelOut_Int$coefficients[2,1],digits=2)`, SE = `r format(modelOut_Int$coefficients[2,2],digits=2) `, Z = `r format(modelOut_Int$coefficients[2,3],digits=2)`).  Thus, these results suggest that the ability to quickly produce graphical representations of object categories increases with age, controlling for low-level covariates. Further, these results sugest that this ability is highly developed by middle childhood.
 
-<!-- # ```{r recByAge, fig.env="figure", fig.pos = "H", fig.align = "center", fig.width=3, fig.height=3, fig.cap = "Drawings are plotted according to the age of the drawer (x-axis) and the proportion of adults that correctly identified the target object category in recognition task (y-axis); each dot represents one drawing." } -->
-<!-- # ggplot(joint, aes(age, meanCorrect)) + -->
-<!-- #   geom_jitter(alpha=.5, width = .1) + -->
-<!-- #   geom_smooth(method="loess",span=2, alpha=.1) + -->
-<!-- #   labs(y = "Proportion identified", x = "Chidren's age")  -->
-<!-- # ``` -->
-
-
 ```{r recognizabilityByItem, fig.env="figure", fig.pos = "H", fig.align = "center", fig.width=3, fig.height=3, fig.cap = "Proportion of drawings recognized for object category, sorted from hardest to easiest items. Error bars represent non-parametric 95 percent confidence intervals, estimated using the langcog r package." }
 
 ms <- joint %>%
