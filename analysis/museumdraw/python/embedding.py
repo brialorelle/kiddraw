@@ -79,7 +79,7 @@ class FeatureExtractor():
         self.use_cuda = use_cuda
         self.imsize = imsize
         self.padding = 10
-        self.batch_size = batch_size       
+        self.batch_size = batch_size
         self.cuda_device = cuda_device
         self.cohort = cohort ## 'kid' if analyzing kids' drawings; 'adult' if analyzing adults' drawings
 
@@ -109,15 +109,19 @@ class FeatureExtractor():
             # crop to sketch only (eliminate white space)
             arr = np.asarray(im)
             w,h,d = np.where(arr<255) # where the image is not white
+            if len(h)==0:
+                print(path)            
             xlb = min(h)
             xub = max(h)
             ylb = min(w)
             yub = max(w)
-            im = im.crop((xlb, ylb, xub, yub))            
+            lb = min([xlb,ylb])
+            ub = max([xub,yub])            
+            im = im.crop((lb, lb, ub, ub))            
 
             loader = transforms.Compose([
+                transforms.Pad(padding),                
                 transforms.Scale(imsize),
-                transforms.Pad(padding),
                 transforms.ToTensor()])
 
             im = Variable(loader(im), volatile=volatile)
