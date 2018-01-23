@@ -192,28 +192,25 @@ ms <- joint
 
 p4<-ggplot(joint, aes(age, meanCorrect)) +
   geom_jitter(alpha=.5, width = .1) +
-  geom_smooth(method="loess",span=2, alpha=.1) +
-  theme_bw() +
+  geom_smooth(method="lm",span=2, alpha=.1,color="orange") +
+  theme_few() +
   ylim(0,1) +
   labs(y = "Prop. recognized", x = "Age (years)") 
         
 p1<-ggplot(ms, aes(x = num_strokes, y=meanCorrect, color=age)) +
   geom_jitter(alpha=.7) +
-  geom_smooth(aes(group = 1), method="lm",span=3, alpha=.1, color="grey") +
-  theme_bw() +
+  geom_smooth(aes(group = 1), method="lm",span=3, alpha=.1, color="orange") +
+  theme_few() +
   ylim(0,1) +
   scale_color_viridis()+ 
   theme(legend.direction = "horizontal") +
-  theme(axis.title.y=element_blank(),
-        axis.text.y=element_blank(),
-        axis.ticks.y=element_blank()) +
   labs(y = "", x = "Number of strokes") 
 
 p2<-ggplot(ms, aes(x = mean_intensity, y=meanCorrect, color=age)) +
   geom_jitter(alpha=.7) +
-  geom_smooth(aes(group = 1), method="lm",span=3, alpha=.1, color="grey") +
+  geom_smooth(aes(group = 1), method="lm",span=3, alpha=.1, color="orange") +
   ylim(0,1) +
-  theme_bw() +
+  theme_few() +
   scale_color_viridis()+
   theme(axis.title.y=element_blank(),
         axis.text.y=element_blank(),
@@ -223,7 +220,7 @@ p2<-ggplot(ms, aes(x = mean_intensity, y=meanCorrect, color=age)) +
 p3<-ggplot(ms, aes(x = draw_duration, y=meanCorrect, color=age)) +
   geom_jitter(alpha=.7) +
   ylim(0,1) +
-  geom_smooth(aes(group = 1), method="lm",span=3, alpha=.1, color="grey") +
+  geom_smooth(aes(group = 1), method="lm",span=3, alpha=.1, color="orange") +
   theme_bw() +
   scale_color_viridis()+ 
   theme(axis.title.y=element_blank(),
