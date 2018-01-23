@@ -78,7 +78,8 @@ class FeatureExtractor():
         self.num_sketches = len(self.paths)
         self.use_cuda = use_cuda
         self.imsize = imsize
-        self.batch_size = batch_size
+        self.padding = 10
+        self.batch_size = batch_size       
         self.cuda_device = cuda_device
         self.cohort = cohort ## 'kid' if analyzing kids' drawings; 'adult' if analyzing adults' drawings
 
@@ -101,12 +102,22 @@ class FeatureExtractor():
             background.paste(image, mask=image.split()[3])  # 3 is the alpha channel
             return background
 
-        def load_image(path, imsize=224, volatile=True, use_cuda=False):
+        def load_image(path, imsize=224, padding=self.padding, volatile=True, use_cuda=False):
             im = Image.open(path)
             im = RGBA2RGB(im)
+            
+            # crop to sketch only (eliminate white space)
+            arr = np.asarray(im)
+            w,h,d = np.where(arr<255) # where the image is not white
+            xlb = min(h)
+            xub = max(h)
+            ylb = min(w)
+            yub = max(w)
+            im = im.crop((xlb, ylb, xub, yub))            
 
             loader = transforms.Compose([
                 transforms.Scale(imsize),
+                transforms.Pad(padding),
                 transforms.ToTensor()])
 
             im = Variable(loader(im), volatile=volatile)
