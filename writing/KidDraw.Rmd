@@ -10,7 +10,7 @@ author-information: >
     \And {\large \bf Michael C. Frank } \\ \texttt{mcfrank@stanford.edu} \\ Department of Psychology \\ Stanford University}
 
 abstract: 
-    "How do object category representations change throughout childhood? We used drawings as a way to investigate children's representations of object categories. Children (ages 3-10 years) were asked to draw a wide range of objects (e.g. 'can you draw a chair?') in under 30 seconds. Then, we analyzed how these drawings change across childhood. We found that children became increasingly skilled at producing recognizable drawings, even when controlling for low-level covariates (the amount of ink used, the time spent drawing, and the number of strokes). Next, we used a convolutional neural network optimized to recognize objects to quantify the perceptual similarity between children's and adult's drawings.Overall, we find that children's drawings were most similar to adult's drawings in higher-level layers of the network, supporting the idea that children and adult's drawings are most similar in terms of relatively high-level perceptual features (e.g., the presence of eyes; object parts). Thus, thse results suggest both the ability to produce abstract graphical represenetations of objects is relatively adult-like by middle childhood, and that even the most primitive drawings made by children contain featural similarities to the objects they are trying to depict. Broadly, these results point towards drawing as a promising avenue for investigating object representations in childhood."
+    "How do children's represtations of object categories change as they grow older? Children are prolific artists, drawing both imagined and experienced objects from an early age. Here, we examine children's drawings as a window into how children represent objects. We asked children (ages 3-10 years) to draw a wide range of objects (e.g. 'can you draw a chair?') on an iPad. Then, we analyzed how these drawings change across childhood. We found that children became increasingly skilled at producing drawings that were recognizable to naïve adults, even when controlling for the amount of children spent drawing. Next, we quantified the perceptual similarity between children's and adult's drawings using the feature representations in a hiearchical convolutional neural network trained to recognize objects. Overall, we find that children's drawings were most similar to adult's drawings in later layers of the network, suggesting that children and adult's drawings capture perceptual features useful for recognition. Broadly, these results point towards drawing as a promising avenue for investigating object representations in childhood."
   
 keywords:
     "object representations; drawings; child development"
@@ -18,9 +18,8 @@ keywords:
 output: cogsci2016::cogsci_paper
 ---
 ```{r echo=FALSE, include=FALSE}
-## NOTES
+# NOTES
 # Still working on making the entire notebook reproducible, including porting some of the Jupyter notebook outputs over).
-
 # Some of the figures need improving here - colors are off between two of the age plots
 ```
 
@@ -39,25 +38,27 @@ library(viridis)
 library(lme4)
 library(langcog)
 library(forcats)
+library(egg)
 library(gridExtra)
 theme_set(theme_few())
 ```
 
 # Introduction
+One of our oldest human behaviors is drawing: cave decorations have been dated to 40,000 years old  [@pike2012u;@valladas1992direct] in caves such as Cauvet and Lascaux  [@bataille1955lascaux; @chalmin2004blasons] with drawings likely made by both children and adults [@sharpe2006study]. What do drawings reveal about the way we represent the world around us?
 
-By the time we're adults, we've acquired a wealth of knowledge about different categories of objects and animals, and we know what they tend to look like. For example, we know that apples tend to be round and that rabbits tend have long, oval-ish ears. And so if one is asked to draw an apple or a rabbit, most people can easily produce something that communicates the essence of this category. Here, we investigate the development of the perceptual schemas that we associate with object categories In other words, what do young children think a "rabbit" looks like, and how does this change throughout childhood?  
+For example, consider what one has to do in order to draw a phone – one needs to access the mental representation of “a phone”, distill this into a pictorial format, and plan a sequence of hand movements to effectively convey this visual concept. The drawings we produce tend reflect how we experience different object categories. For example, adults tend to draw objects relative to their size in the real-world:  objects that are big in the real-world (e.g., cars) tend to take up more "space" on a canvas than objects that are small in the real-world (e.g., cups) [@konkle2011canonical]. 
 
-In some ways, children's ability to categorize objects appeares well developed by the preschool years. Nonetheless, children's object recognition abilities continue to mature into early adolescence (for reviews, see @nishimura2009; @juttner2016developmental). Children's ability to recognize objects across dramatic changes in viewpoint and lighting does not reach adult levels until almost 12 years of age [@bova2007;@dekker2011dorsal]while  children's ability to process the relationship between objects' parts also has a protracted developmental trajectory. For example, while young children have a bias to categorize novel objects on the basis of part-specific information, older children rely more on the relationship between the object parts [@mash2006]; and even older children have difficulty detecting changes in the propotions of an object's parts in familiar categories (i.e., animals; [@juttner2014late; @juttner2013developmental; @davidoff2002]). Thus, children's representations of common object categories (e.g., cups, cars) may also be undergoing developmental change concurrently. 
+Furthermore, in order to be recognizable, drawings have to depict the necessary visual features to express a given visual concept. Recent computational work supports this intuition: deep neural network models trained purely on photographs can also recognize drawings made by non-expert adults, as drawings and photographs generate similar representations in later layers of these models [@fan2015common]. In other words, drawings capture high-level perceptual similarity relationships between object categories: two objects that are perceptually similar (e.g., cups and mugs) are likely to be drawn in similar ways.
 
-In adulthood, drawings can serve a powerful tool to tap internal representations of object categories.For example, consider what one has to do in order to draw a phone – one needs to access the mental representation of “a phone”, distill this into a pictoral format, and plan a sequence of hand movements to effectively convey this visual concept. Furthermore, in order to be recognizable, these drawings have to depict the necessary features to express a given visual concept. Recent computational work supports this intuition that drawings depict the essential perceptual features of visual object categories: deep neural network models of the ventral stream trained purely on photographs can also recognize drawings by non-expert adults, as drawings and photographs generate similar representations in higher-level layers of these models [@fan2015common]. In other words, drawings capture high-level similarity relationships between object categories. Furthermore, adult's drawings can reflect how we experience different object categories. For example, dults tend to draw objects relative to their size in the real-world:  objects that are big in the real-world (e.g., cars) tend to take up more "space" on a canvas than objects that are small in the real-world (e.g., cups) (@konkle2011canonical). 
+Here, we investigate children’s drawings as a window into how children represent object categories and their similarity structure. While one might intuit that children’s category representations are relatively mature by the preschool years, children's ability to recognize objects continue to mature into early adolescence (for reviews, see @nishimura2009; @juttner2016developmental). For example, children have trouble recognizing objects across dramatic changes in viewpoint and lighting until almost 12 years of age [@bova2007;@dekker2011dorsal]. Children's ability to process the relationship between objects' parts also has a protracted developmental trajectory: while young children have a bias to categorize novel objects on the basis of part-specific information, older children rely more on the relationship between the object parts [@mash2006]; and even older children have difficulty detecting changes in the proportions of an object's parts in familiar categories (i.e., animals; [@juttner2014late; @juttner2013developmental; @davidoff2002]). Further, young children have a hard time understanding the correspondence between two-tone images (i.e, Mooney images) and the photographs that they were generated from--something that is natural and effortless for adults [@Yoon2011]. Thus, children’s representations of object categories may also may also be shifting throughout childhood.
 
-While drawing has been extensively studied in early childhood, a primary focus has been on when and why children treat drawings as symbolic [@gardner1994arts], and evidence now suggests that young children do attribute rich meanings to their drawings. For example, children will attribute different symbolic content (e.g., “a balloon”, “a lollipop”) to very similar drawings based on what they intended to draw [@bloom1998intention]. Further, children will monitor whether their drawings are adequate symbols for the things they are trying to draw, and will improve their drawings when given feedback that their drawings are not effective at communicating the identity of object [@callaghan1999early]. To our knowlede, no research  has examined whether children's drawings reflect how they are representing objects in the world around them.
+While drawing has been extensively studied in early childhood, a primary focus has been on when and how children treat drawings as symbolic [@gardner1994arts], and evidence now suggests that young children do attribute rich meanings to their drawings. For example, children will attribute different symbolic content (e.g., “a balloon”, “a lollipop”) to very similar drawings based on what they intended to draw [@bloom1998intention] and will monitor whether their drawings are adequate symbols for the things they are trying to draw [@callaghan1999early]. However, to our knowledge, no research has examined whether children's drawings reflect how they are representing objects in the world around them.
 
 ```{r exampleDrawings, fig.env = "figure*", fig.pos = "h", out.width="100%", fig.align = "center", set.cap.width=T, num.cols.cap=2, fig.cap = "Example drawings made by children ages 4-10 of several object  categories."}
 img <- png::readPNG("figs/drawings.png")
 grid::grid.raster(img)
 ```
-Here, we explore the perceptual schemas that children associate with object categories and how these change over childhood by examining what amd how children draw. First, we examine if children produce more recognizable drawings as they get older after factoring out low-level covariates. Second, we compare the perceptual features of child and adult drawings by comparing their representations in a deep convolutional neural network trained to recognize objects. Together, this work begin a developmental project to investigate children's internal representations of object categories and how they are linked to their developing perceptual abilities.
+Here, we explore childrne's perceptual representatinos of object categories and how these change over childhood by examining what amd how children draw. First, we examine if children produce more recognizable drawings as they get older after factoring out low-level covariates. Second, we compare the perceptual features of child and adult drawings by comparing their representations in a deep convolutional neural network trained to recognize objects. Together, this work begin a developmental project to investigate children's internal representations of object categories and how they are linked to their developing perceptual and cognitive abilities.
 
 # Part 1: Why do children get better at drawing?
 First, children (ages 3-10 years) produced drawings of 16 common object categories in a simple drawing game. Then, naïve adults attempted to recognize these drawings in a forced-choice recognition task.
@@ -195,7 +196,10 @@ p1<-ggplot(ms, aes(x = num_strokes, y=meanCorrect, color=age)) +
   theme_few() +
   ylim(0,1) +
   scale_color_viridis()+ 
-  theme(legend.direction = "horizontal") +
+    theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) +
+  theme(legend.position="none") +
   labs(y = "", x = "Number of strokes") 
 
 p2<-ggplot(ms, aes(x = mean_intensity, y=meanCorrect, color=age)) +
@@ -207,6 +211,7 @@ p2<-ggplot(ms, aes(x = mean_intensity, y=meanCorrect, color=age)) +
   theme(axis.title.y=element_blank(),
         axis.text.y=element_blank(),
         axis.ticks.y=element_blank()) +
+  theme(legend.position="none") +
   labs(y = "", x = "'Ink' used (a.u.)") 
 
 p3<-ggplot(ms, aes(x = draw_duration, y=meanCorrect, color=age)) +
@@ -220,16 +225,18 @@ p3<-ggplot(ms, aes(x = draw_duration, y=meanCorrect, color=age)) +
         axis.ticks.y=element_blank()) +
   labs(y = "", x = "Drawing time (s)") 
 
-g_legend<-function(a.gplot){
-  tmp <- ggplot_gtable(ggplot_build(a.gplot))
-  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
-  legend <- tmp$grobs[[leg]]
-  return(legend)}
+# g_legend<-function(a.gplot){
+#   tmp <- ggplot_gtable(ggplot_build(a.gplot))
+#   leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+#   legend <- tmp$grobs[[leg]]
+#   return(legend)}
+# 
+# mylegend<-g_legend(p1)
 
-mylegend<-g_legend(p1)
+# 
+# grid.arrange(p4, p1 + theme(legend.position="none"), p2 + theme(legend.position="none"),p3 + theme(legend.position="none"), mylegend, heights=c(12, 2), layout_matrix = rbind(c(1,1,2,3,4), c(NA,NA,NA,5,NA)))
 
-
-grid.arrange(p4, p1 + theme(legend.position="none"), p2 + theme(legend.position="none"),p3 + theme(legend.position="none"), mylegend, heights=c(12, 2), layout_matrix = rbind(c(1,1,2,3,4), c(NA,NA,NA,5,NA)))
+ggarrange(p4,p1,p2,p3, nrow=1)
 ```
 
 <!-- ```{r modelCoefficients, results="asis"} -->
@@ -258,7 +265,7 @@ grid.arrange(p4, p1 + theme(legend.position="none"), p2 + theme(legend.position=
 # Part 2: How similar are children's and adult's drawings?  
 To what degree are children's drawings similar to those of adults? While younger children often produced drawings that were unrecognizable at the basic-level,these recognizability ratings may underestimate the perceptual content depicted in children’s drawings. For example, children may not be able to depict the visual differences between a bunny and a frog, but they still may capture many of the essential perceptual features needed to depict an animal. Here, we turn to deep neural network models of object recognition to quantify the similarities between children’s and adults drawings. While the earliest layers of this network tend to capture similarites in low-level features (e.g., spatial frequency, edges), intermediate and higher layers tend to capture similarities in mid- to high-level visual features, including overall object shape and the presence of diagnostic object parts (e.g., legs, handles) [@gucclu2015deep] and predict neural responses in object-selective cortex [@gucclu2015deep; @yamins2014performance]. 
 
-We thus examine the feature similarity between children and adult's drawings at each layer of a deep convolutional neural network optimized for object recognition--called VGG-19 [@simonyan2014very]. Prior work has found that adults's drawings of objects tend to be the most similar to photos of these objects in terms of higher-level layers of deep CNNs [@fan2015common]. Thus, if children's drawings also exhibit high-level perceptual similarites to adults' drawings, then we should expect feature similarity to reach a peak in later, higher layers of the network. However, if children's drawings do not contain these more diagnostic features, then we might expect similarity to peak in earlier convolutional layers. We perform these analyses separately for two age groups, roughly "young children" (ages 3-6)and "older children" (ages 7-10).
+We thus examine the feature similarity between children and adult's drawings at each layer of a deep convolutional neural network optimized for object recognition--called VGG-19 [@simonyan2014very]. Prior work has found that adults's drawings of objects tend to be the most similar to photos of these objects in terms of higher-level layers of deep CNNs [@fan2015common]. Thus, if children's drawings also exhibit high-level perceptual similarites to adults' drawings, then we should expect feature similarity to reach a peak in later, higher layers of the network. However, if children's drawings do not contain these more diagnostic features, then we might expect similarity to peak in earlier convolutional layers. We perform these analyses separately for two age groups, roughly "young children" (ages 3-6) and "older children" (ages 7-10).
 
 ## Methods
 ### Stimuli
@@ -293,7 +300,7 @@ grid::grid.raster(img)
 ### Layer-wise feature similarity 
 We first examined the featural similarities between sketches produced by adults and children at each layer of VGG-19. Overall, we found that the similarity between older children and adults' drawings increased in each subsequent layer of the network, reaching a peak in the final layers of the network (see Figure \ref{fig:layerWise}). For younger children, we found a similar pattern of results, though similarity to adult drawings was overall lower. The RDMs for the final layer of the network (where similarity was the highest; FC7) are shown in Figure \ref{fig:RSAAllCat} for younger children, older children, and adults.
 
-```{r RSAAllCat, fig.env = "figure*", fig.pos = "h", fig.align='center', fig.width=7, fig.height=3, set.cap.width=T, num.cols.cap=1, fig.cap = "Representational dissimilarity matrices (RDMs) in the highest layer of VGG-19 (FC7) for drawings made by younger children (3-6 years of age), older children (7-10 years of age), and adults (Google QuickDraw database). Each square in one of these matrices represents the correlation distance between two categories (e.g., chair and couch) in this layer of the network; lighter colors indicate pairs of categories that generated dissimilar feature representations; darker colors indicate pairs of cateogries that generated more similar feature representations. Categories are grouped to reveal the inherent simiarity structure."}
+```{r RSAAllCat, fig.env = "figure*", fig.pos = "h", fig.align='center', fig.width=7, fig.height=3, set.cap.width=T, num.cols.cap=2, fig.cap = "Representational dissimilarity matrices (RDMs) in the highest layer of VGG-19 (FC7) for drawings made by younger children (3-6 years of age), older children (7-10 years of age), and adults (Google QuickDraw database). Each square in one of these matrices represents the correlation distance between two categories (e.g., chair and couch) in this layer of the network; lighter colors indicate pairs of categories that generated dissimilar feature representations; darker colors indicate pairs of cateogries that generated more similar feature representations. Categories are grouped to reveal the inherent simiarity structure."}
 img <- png::readPNG("figs/RSA.png")
 grid::grid.raster(img)
 ```
@@ -330,11 +337,11 @@ ggplot(c_plot, aes(x = label, y = corr, fill=ageGroup)) +
 Finaly, we examined the degree to which these featural representations could be used to classify these skeches at the basic-level. We found that sketches made by younger children were classifiable 35% of the time (SD=5%), while those made by older children (7-10 years) were classifiable 51% of the time (SD=6%). While the overall performance of the classified is relatively low compared to the human performance seen in Part 1, we still observed a relative increase in recognizability between younger and older children. Thus, these results suggest that the difference in recognizability of the sketches stems directly from a differences in perceptual features that can be detected by a deep convolutional neural network trained to recognize objects. Taken together, these results suggest that children and adults are accessing somewhat similar category representations when asked to "draw a chair", and that these representations manifest in perceptual similarities in children and adults' drawings.
 
 # General Discussion
-We explored how children get better at drawing and how similar their drawings are to adult's drawings. Overall, we found that the capacity to quickly produce graphical representations that communicate object category information isdeveloped by middle childhood. Children produced drawings in under 30 seconds that were recognizable by adults with only the few "strokes" of a pen; older children were better able to produce these graphical abstractions than younger children, though children who took longer to draw produced more recognizable drawings.Further, children's drawings were most similar to adult drawings in the higher-level layers of a deep convolutional neural network trained to recognize objects, suggesting that children and adults drawings share high-level perceptual features useful for basic-level object recognition.
+We explored how children get better at drawing and how similar their drawings are to adult's drawings. Overall, we found that the capacity to quickly produce graphical representations that communicate object category information isdeveloped by middle childhood. Children produced drawings that were recognizable by adults with only the few "strokes" of a pen; older children were better able to produce these graphical abstractions than younger children, though children who took longer to draw produced more recognizable drawings. Further, children's drawings were most similar to adult drawings in the higher-level layers of a deep convolutional neural network trained to recognize objects, suggesting that children and adults drawings share high-level perceptual features useful for basic-level object recognition.
 
 An obvious future direction concerns the contribution of children's motor control to their drawing abilities. In other words, to what degree are drawings made by older children more recognizable simply because older children have better fine motor control?  Children certainly practice drawing—-both on their own and in structured settings (e.g., art classes)--and this practice invariably plays a role in the fidelity of drawings that children can produce. We plan to measure children's fine motor control on an orthogonal task (e.g., tracing a complex shape) to begin to understand how this factor influences the recognizability of children's drawings.
 
-Ultimately, we hope to understand the degree to which changes in children's drawings of object categories reflect changes in children's representations of object categories. Throughout childhood, children certainly acquire a wealth of experience with the objects in the world around them, and this experience likely helps build more detailed internal representations of the categories. Thus, one possibility is that children's internal representations that they map to the words "rabbit", "chair", and "couch" are becoming more detailed as they grow older, and that it is these more detailed representations that, in turn, feed into their rapid drawings of these object categories.   If this is the case, then children's abilities to depict certain object categories may patterns with their object categorization errors. For example,  older (vs. younger) children may be better able to draw cats vs. rabbits and better able to distinguish between cats vs. rabbits. Future work that links children's categorization abilities with their visual production behaviors may begin to answer this question.
+Ultimately, we hope to understand the degree to which changes in children's drawings of object categories reflect changes in children's representations of object categories. Throughout childhood, children certainly acquire a wealth of experience with the objects in the world around them, and this experience likely helps build more detailed internal representations of the categories. Thus, one possibility is that children's internal representations that they map to the words "rabbit", "chair", and "couch" are becoming more detailed as they grow older, and that it is these more detailed representations that, in turn, feed into their rapid drawings of these object categories. If this is the case, then children's abilities to depict certain object categories may patterns with their object categorization errors. For example,  older (vs. younger) children may be better able to draw cats vs. rabbits and better able to distinguish between cats vs. rabbits. Future work that links children's categorization abilities with their visual production behaviors may begin to answer this question.
 
 In sum, this work begins a developmental project examining children's object representations using a common production task--drawing. An understanding of how we produce efficient graphical abstractions of the objects in our everyday world may help uncover the building blocks of our object category representations.
 
