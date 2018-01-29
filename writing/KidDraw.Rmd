@@ -44,9 +44,11 @@ theme_set(theme_few())
 ```
 
 # Introduction
+<<<<<<< HEAD
 One of our oldest uniquely human behaviors is drawing: cave decorations in Cauvet and Lascaux [@bataille1955lascaux; @chalmin2004blasons] have been dated to 40,000 years old  [@pike2012u;@valladas1992direct] and contains drawings likely made by both children and adults [@sharpe2006study]. What do drawings reveal about the way we represent the world around us--and how might this change throughout childhood? 
 
 For example, consider what one has to do in order to draw a phone – one needs to access the mental representation of “a phone”, distill this into a pictorial format, and plan a sequence of hand movements to effectively communicate this visual concept.  Our drawings of objects thus reflect how we represent them: the phones that we might draw today (e.g., smartphones) are likely quite different from the phones drawn even ten or twenty years ago (e.g., landlines). 
+>>>>>>> 44c90be7f7af475b31a4a540847f33107d28745b
 
 Recent computational work suggests that drawings are tightly linked to the same internal representations that allow us to recognize objects over dramatic changes in lighting, pose, and orientation [@cox2007]. A deep neural network model trained to recognize photographs of objects can also recognize drawings made by non-expert adults, as drawings and photographs generated similar representations in later layers of these models [@fan2015common]. Furthermore, adults both prefer to view photographs of objects and to draw objects relative to their size in the real-world, suggesting that the way in which we experience object categories is directly reflected in our drawings of them  [@konkle2011canonical]. Thus, drawings capture perceptual similarity relationships between object categories: two objects that are perceptually similar (e.g., cups and mugs)  are likely to be drawn in similar ways.  Common, internal object representations support both the our ability to produce drawings of objects and to recognize them. 
  
