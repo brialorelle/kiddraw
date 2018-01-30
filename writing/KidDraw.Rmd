@@ -337,7 +337,7 @@ Together, this work integrates novel methods from the study of object recognitio
 
 
 # Acknowledgements
-We thank Jacqueline Quirke for help with piloting and data collection. We thank  members of Stanford Language and Cognition lab. This work was partially funded by an NSF SPRF-FR (1714726) grant to BLL. We also gratefully acknowledge those who made the Google QuickDraw database  avaliable.
+We thank Jacqueline Quirke for help with piloting and data collection. We thank members of Stanford Language and Cognition lab. This work was partially funded by an NSF SPRF-FR (1714726) grant to BLL. We also gratefully acknowledge those who made the Google QuickDraw database available.
 
 # References
 
