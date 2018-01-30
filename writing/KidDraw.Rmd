@@ -62,7 +62,7 @@ grid::grid.raster(img)
 
 Here we examine children's drawings as a window into how they represent familiar visual object categories, and how this representation changes across childhood. We ask children to draw a variety of object categories on a digital tablet. Then, we examine if children produce more recognizable drawings as they get older, after factoring out low-level covariates related to motor production, such as how long they spend drawing and how many strokes they use. Second, we compare the perceptual features of child and adult drawings by comparing their representations in a pre-trained deep convolutional neural network model, allowing us to visualize the representational layout of object categories across age groups using a common feature basis.
 
-# Part 1: How does the
+# Part 1: Adult recognition of children's drawings
 First, children (ages 3-10 years) produced drawings of 16 common object categories in a simple drawing game. Then, naïve adults attempted to recognize these drawings in a forced-choice recognition task.
 
 ## Methods
@@ -261,7 +261,7 @@ ggarrange(p4,p1,p2,p3, nrow=1)
 
 Thus, these results suggest that the ability to quickly produce graphical representations of object categories increases with age, controlling for low-level covariates.
 
-# Part 2: How similar are child and adult drawings?  
+# Part 2: Model-based feature analyses of children's drawings
 To what degree are children's drawings similar to those of adults? While younger children often produced drawings that were unrecognizable at the basic-level, these recognizability ratings may underestimate the perceptual content depicted in children’s drawings. For example, children may not be able to depict the visual differences between a bunny and a frog, but they still may capture many of the essential perceptual features needed to depict an animal. Here, we turn to deep neural network models of object recognition to quantify the similarities between children’s and adults drawings. While the earliest layers of this network tend to capture similarities in low-level features (e.g., spatial frequency, edges), intermediate and higher layers tend to capture similarities in mid- to high-level visual features, including overall object shape and the presence of diagnostic object parts (e.g., legs, handles) [@gucclu2015deep] and predict neural responses in object-selective cortex [@gucclu2015deep; @yamins2014performance].
 
 We thus examine the feature similarity between children and adult's drawings at each layer of a deep convolutional neural network optimized for object recognition--called VGG-19 [@simonyan2014very]. Prior work has found that adults drawings of objects tend to be the most similar to photos of these objects in terms of higher-level layers of deep CNNs [@fan2015common]. Thus, if children's drawings also exhibit high-level perceptual similarities to adults' drawings, then we should expect feature similarity to reach a peak in later, higher layers of the network. However, if children's drawings do not contain these more diagnostic features, then we might expect similarity to peak in earlier convolutional layers. We perform these analyses separately for two age groups, roughly "young children" (ages 3-6) and "older children" (ages 7-10).
