@@ -126,14 +126,8 @@ ageCorrOut<-joint %>%
 
 ```
 
-### Low-level covariates.
-The use of a digital interface for drawing allowed us to quickly and easily assess the contribution of several low-level factors that may co-vary with drawing ability.
-
-
-
-Our goal is to measure how semantic information in drawings, but we anticipated that drawings may also vary
-
-For each drawing, we quantified the amount of time spent drawing, the number of strokes used, and the overall intensity of the drawing (e.g., amount of ink). Descriptives plots describing the output of these variables can be seen in Figure \ref{fig:covDescriptives}.
+### Low-level covariates related to motor production.
+Our goal is to measure semantic information in children's drawings, but we anticipated that drawings may also vary along other dimensions more directly related to the motor production demands of the task, such as the amount of time spent drawing, the number of strokes used, and amount of ink (i.e., mean pixel intensity of sketch). See Figure \ref{fig:covDescriptives}.
 
 ###  GLMM procedure.
 We aimed to assess whether children’s ability to produce recognizable drawings increased with age, independent of low-level covariates. To do so, we used a generalized logistic mixed effect model, with age (specified in years), drawing duration, amount of ink used, and number of strokes as fixed effects, and with random intercepts for each individual child drawer and object category. The dependent variable was whether the proportion of adults that recognized a given drawing. This was specified in the lme4 r package as: glmer(correct ~ scale(age) +  scale(draw_duration) +  scale(mean_intensity) +  scale(num_strokes) +(1|session_id) + (1|category), family = "binomial")
@@ -259,7 +253,7 @@ p3<-ggplot(ms, aes(x = draw_duration, y=meanCorrect, color=age)) +
 ggarrange(p4,p1,p2,p3, nrow=1)
 ```
 
-Thus, these results suggest that the ability to quickly produce graphical representations of object categories increases with age, controlling for low-level covariates.
+Thus, these results suggest that the ability to quickly produce graphical representations of object categories increases with age, controlling for low-level covariates related to motor production.
 
 # Part 2: Model-based feature analyses of children's drawings
 To what degree are children's drawings similar to those of adults? While younger children often produced drawings that were unrecognizable at the basic-level, these recognizability ratings may underestimate the perceptual content depicted in children’s drawings. For example, children may not be able to depict the visual differences between a bunny and a frog, but they still may capture many of the essential perceptual features needed to depict an animal. Here, we turn to deep neural network models of object recognition to quantify the similarities between children’s and adults drawings. While the earliest layers of this network tend to capture similarities in low-level features (e.g., spatial frequency, edges), intermediate and higher layers tend to capture similarities in mid- to high-level visual features, including overall object shape and the presence of diagnostic object parts (e.g., legs, handles) [@gucclu2015deep] and predict neural responses in object-selective cortex [@gucclu2015deep; @yamins2014performance].
