@@ -63,7 +63,7 @@ grid::grid.raster(img)
 Here we examine children's drawings as a window into how they represent familiar visual object categories, and how this representation changes across childhood. We ask children to draw a variety of object categories on a digital tablet. Then, we examine if children produce more recognizable drawings as they get older, after factoring out low-level covariates related to motor production, such as how long they spend drawing and how many strokes they use. Second, we compare the perceptual features of child and adult drawings by comparing their representations in a pre-trained deep convolutional neural network model, allowing us to visualize the representational layout of object categories across age groups using a common feature basis.
 
 # Part 1: Adult recognition of children's drawings
-First, children (ages 3-10 years) produced drawings of 16 common object categories in a simple drawing game. Then, naïve adults attempted to recognize these drawings in a forced-choice recognition task.
+How do children's ability to convey semantic information in their drawings change across childhood? First, children (ages 3-10 years) produced drawings of 16 common object categories in a simple drawing game. Then, other participants (naïve adults) attempted to recognize these drawings in a forced-choice recognition task.
 
 ## Methods
 
