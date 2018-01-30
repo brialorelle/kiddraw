@@ -45,11 +45,13 @@ theme_set(theme_few())
 
 # Introduction
 
-As humans, we have a variety of powerful tools to externalize what we know, including language and gesture. One tool that has been particularly transformative for human cognition and culture is graphical representation, which allows people to encode their thoughts in a visible, durable format. Drawing is an important case study in graphical representation, being a technique that dates back at least 40,000 years [@pike2012u;@valladas1992direct], well before the emergence of symbolic writing systems [@clottes2008cave], and practiced in many cultures [@gombrich1989story].
+As humans, we have many powerful tools to externalize what we know, including language and gesture. One tool that has been particularly transformative for human cognition and culture is graphical representation, which allows people to encode their thoughts in a visible, durable format. Drawing is an important case study in graphical representation, being a technique that dates back at least 40,000 years [@pike2012u], well before the emergence of symbolic writing systems [@clottes2008cave], and is practiced in many cultures [@gombrich1989story].
 
-In modern times, drawings are produced prolifically by children from an early age [@kellogg1969analyzing], providing a rich source of potential insight into their understanding of the visual world. On the one hand, children quickly reach a remarkable degree of sophistication in forming abstract perceptual representations of the objects they frequently encounter, leveraging shape information (in conjunction with linguistic cues) to learn the composition of object categories (best citation here? [@landau1988importance]). When presented with a target object to draw in which a prominent feature is occluded (e.g., the handle of a mug is turned away), children as young as 5 years of age frequently include the occluded object part in their drawing anyway, demonstrating the robustness of their internal representation to variation in viewpoint [@davis1983contextual].
+In modern times, drawings are produced prolifically by children from an early age [@kellogg1969analyzing], providing a rich source of potential insight into their emerging understanding of the visual world. For example, as children learn the diagnostic properties of objects they encounter, they might express this knowledge in the drawings they make. How can we leverage this natural behavior to understand how they learn abstractions over their perceptual experience, such as object categories?
 
-Meanwhile, important developmental changes in perceptual processing continue throughout childhood (for reviews, see @nishimura2009; @juttner2016developmental). The ability to process the relationship between objects' parts has a protracted developmental trajectory: For example, young children have a bias to categorize novel objects on the basis of part-specific information, older children rely more on the relationship between the object parts [@mash2006]; and even older children have difficulty detecting changes in the proportions of an object's parts in familiar categories (i.e., animals; [@juttner2014late; @juttner2013developmental; @davidoff2002]). This is resonant with evidence from the drawings they make: drawings by children between 4-8 years of age reveal rapid changes in how they encode semantically relevant information in their drawings: younger children tend to include fewer cues in their drawings to differentiate between target concepts (e.g., adult vs. child) than older children, who enrich their drawings with more diagnostic part [@sitton1992drawing] or relational [@light1983effects] information, especially when they know their goal is to make their drawings recognizable to someone else.
+We know that children quickly reach a remarkable degree of sophistication in forming abstract perceptual representations of the objects they frequently encounter, leveraging shape information (in conjunction with linguistic cues) to learn about invariant properties of object categories [@smith2002object]. Traditionally, such learning is measured using discrete choices between stimuli that vary along dimensions chosen by the experimenter; by contrast, drawing tasks permit children to include any information they consider relevant for conveying information about an object. For example, when presented with a target object to draw in which a prominent feature is occluded (e.g., the handle of a mug is turned away), children as young as 5 years of age frequently include the occluded object part in their drawing anyway, displaying the robustness of their internal representation to variation in viewpoint [@davis1983contextual].
+
+Meanwhile, important developmental changes in perceptual processing continue throughout childhood (for reviews, see @nishimura2009; @juttner2016developmental). For example, young children have a bias to categorize novel objects on the basis of part-specific information, older children rely more on the relationship between the object parts [@mash2006]. This is resonant with evidence from the drawings they make: drawings by children between 4-8 years of age reveal rapid changes in how they encode semantically relevant information in their drawings: younger children tend to include fewer cues in their drawings to differentiate between target concepts (e.g., adult vs. child) than older children, who enrich their drawings with more diagnostic part [@sitton1992drawing] or relational [@light1983effects] information, especially when they know their goal is to make their drawings recognizable to someone else.
 
 Figurative drawing tasks have long provided inspiration for scientists investigating the representation of object concepts in early life [@minsky1972artificial]. However, a major barrier to understanding has been the lack of principled, quantitative measures of high-level semantic information in drawings. As such, previous studies employing drawing tasks have typically relied on qualitative assessments [@kosslyn1977children; @karmiloff1990constraints], ad hoc quantitative criteria [@davis1983contextual], and/or quantitative measures of low-level visual properties, such as pixel distance and area [@Perdreau:db; @JohnTchalenko:2009gp].
 
@@ -215,7 +217,7 @@ p4<-ggplot(joint, aes(age, meanCorrect)) +
   geom_smooth(method="lm",span=2, alpha=.1,color="orange") +
   theme_few() +
   ylim(0,1) +
-  labs(y = "Prop. recognized", x = "Age (years)") 
+  labs(y = "Prop. recognized", x = "Age (years)")
 
 p1<-ggplot(ms, aes(x = num_strokes, y=meanCorrect, color=age)) +
   geom_jitter(alpha=.7) +
@@ -227,7 +229,7 @@ p1<-ggplot(ms, aes(x = num_strokes, y=meanCorrect, color=age)) +
         axis.text.y=element_blank(),
         axis.ticks.y=element_blank()) +
   theme(legend.position="none") +
-  labs(y = "", x = "Number of strokes") 
+  labs(y = "", x = "Number of strokes")
 
 p2<-ggplot(ms, aes(x = mean_intensity, y=meanCorrect, color=age)) +
   geom_jitter(alpha=.7) +
@@ -239,7 +241,7 @@ p2<-ggplot(ms, aes(x = mean_intensity, y=meanCorrect, color=age)) +
         axis.text.y=element_blank(),
         axis.ticks.y=element_blank()) +
   theme(legend.position="none") +
-  labs(y = "", x = "'Ink' used") 
+  labs(y = "", x = "'Ink' used")
 p3<-ggplot(ms, aes(x = draw_duration, y=meanCorrect, color=age)) +
   geom_jitter(alpha=.7) +
   ylim(0,1) +
@@ -249,7 +251,7 @@ p3<-ggplot(ms, aes(x = draw_duration, y=meanCorrect, color=age)) +
   theme(axis.title.y=element_blank(),
         axis.text.y=element_blank(),
         axis.ticks.y=element_blank()) +
-  labs(y = "", x = "Drawing time (s)") 
+  labs(y = "", x = "Drawing time (s)")
 
 ggarrange(p4,p1,p2,p3, nrow=1)
 ```
@@ -339,7 +341,7 @@ However, a first obvious future direction concerns how children's fine motor con
 Together, this work integrates novel methods to investigate children's internal representations of object categories and how they are linked to their developing perceptual, cognitive, and motor abilities. We propose that a full understanding of how we come to produce visual abstractions will help uncover the primary factors that shape how we represent our adult object representations.
 
 # Acknowledgements
-We thank Jacqueline Quirke for help with piloting and data collection. We thank  members of Stanford Language and Cognition lab. This work was partially funded by an NSF SPRF-FR (1714726) grant to BLL. We also gratefully acknowledge those who made the Google QuickDraw database avaliable.
+We thank Jacqueline Quirke for help with piloting and data collection. We thank  members of Stanford Language and Cognition lab. This work was partially funded by an NSF SPRF-FR (1714726) grant to BLL. We also gratefully acknowledge those who made the Google QuickDraw database available.
 
 
 # References
