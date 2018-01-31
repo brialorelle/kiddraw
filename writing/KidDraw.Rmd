@@ -23,6 +23,8 @@ output: cogsci2016::cogsci_paper
 # Some of the figures need improving here - colors are off between two of the age plots
 ```
 
+\widowpenalty=50
+
 ```{r global_options, include=FALSE}
 rm(list=ls())
 knitr::opts_chunk$set(fig.width=3, fig.height=3, fig.crop = F, fig.pos = "tb", fig.path='figs/',
@@ -153,6 +155,30 @@ mod_covariates_2 <- glmer(correct ~ (scale(age) +
 modelOut=summary(mod_covariates)
 modelOut_Int=summary(mod_covariates_2)
 ```
+
+## Results
+We found that recognizability of drawings generally increased with age (see Figure \ref{fig:covDescriptives}), although there was substantial variability across categories in how well children could produce recognizable drawings. For example, children of all ages produced drawings of cats that were readily recognizable as "cats", but few children of any age produced drawings that were recognizable as "shoes" (see Figure \ref{fig:recognizabilityByItem}).
+
+Was this increase due to an increase in high-level semantic properties of older children's drawings, or to the possibility that older children may have put more time and effort into their drawings? To address this question, we fit a generalized linear mixed-effects model that included
+various low-level covariates related to time and effort: drawing duration, number of strokes, and amount of ink used.
+
+This analysis revealed that recognizability of drawings reliably increased when controlling for these low-level covariates — the amount of time spent drawing, the number of strokes, and total ink used (b = `r format(modelOut$coefficients[2,1],digits=2)`, SE = `r format(modelOut$coefficients[2,2],digits=2) `, Z = `r format(modelOut$coefficients[2,3],digits=2)`), and accounting for variation across object categories and individual children. All model coefficients can be seen in Table 1. Adding interaction terms between age and these low-level covariates did little to decrease the effect of age on recognizability (b = `r format(modelOut_Int$coefficients[2,1],digits=2)`, SE = `r format(modelOut_Int$coefficients[2,2],digits=2) `, Z = `r format(modelOut_Int$coefficients[2,3],digits=2)`).  
+
+\begin{table}[H]
+\centering
+\begin{tabular}{rrrrr}
+  \hline
+ & Estimate & Std. Error & z value & Pr($>$$|$z$|$) \\
+  \hline
+(Intercept) & 0.861 & 0.321 & 2.680 & 0.007 \\
+  Age & 0.956 & 0.174 & 5.497 & 0.000 \\
+  Drawing time & 0.338 & 0.109 & 3.105 & 0.002 \\
+  Amount of ink & 0.014 & 0.080 & 0.179 & 0.858 \\
+  Num. strokes & -0.289 & 0.098 & -2.959 & 0.003 \\
+   \hline
+\end{tabular}
+\caption{Model coefficients of a GLMM predicting the recognizability of each  drawing.}
+\end{table}
 ```{r recognizabilityByItem, fig.env="figure", fig.pos = "H", fig.align = "center", fig.width=3, fig.height=2.5, fig.cap = "Proportion of drawings recognized in each object category. The dashed line represents chance performance. Error bars represent non-parametric 95 percent confidence intervals, estimated using the langcog r package. " }
 
 ms <- joint %>%
@@ -173,29 +199,6 @@ ggplot(ms, aes(x = category, y = mean, col = age_group)) +
   geom_hline(yintercept=c(chance), linetype="dotted")
 
 ```
-## Results
-We found that recognizability of drawings generally increased with age (see Figure \ref{fig:covDescriptives}), although there was substantial variability across categories in how well children could produce recognizable drawings. For example, children of all ages produced drawings of cats that were readily recognizable as "cats", but few children of any age produced drawings that were recognizable as "shoes" (see Figure \ref{fig:recognizabilityByItem}).
-
-\begin{table}[H]
-\centering
-\begin{tabular}{rrrrr}
-  \hline
- & Estimate & Std. Error & z value & Pr($>$$|$z$|$) \\
-  \hline
-(Intercept) & 0.861 & 0.321 & 2.680 & 0.007 \\
-  Age & 0.956 & 0.174 & 5.497 & 0.000 \\
-  Drawing time & 0.338 & 0.109 & 3.105 & 0.002 \\
-  Amount of ink & 0.014 & 0.080 & 0.179 & 0.858 \\
-  Num. strokes & -0.289 & 0.098 & -2.959 & 0.003 \\
-   \hline
-\end{tabular}
-\caption{Model coefficients of a GLMM predicting the recognizability of each  drawing.}
-\end{table}
-
-Was this increase due to an increase in high-level semantic properties of older children's drawings, or to the possibility that older children may have put more time and effort into their drawings? To address this question, we fit a generalized linear mixed-effects model that included
-various low-level covariates related to time and effort: drawing duration, number of strokes, and amount of ink used.
-
-This analysis revealed that recognizability of drawings reliably increased when controlling for these low-level covariates — the amount of time spent drawing, the number of strokes, and total ink used (b = `r format(modelOut$coefficients[2,1],digits=2)`, SE = `r format(modelOut$coefficients[2,2],digits=2) `, Z = `r format(modelOut$coefficients[2,3],digits=2)`), and accounting for variation across object categories and individual children. All model coefficients can be seen in Table 1. Adding interaction terms between age and these low-level covariates did little to decrease the effect of age on recognizability (b = `r format(modelOut_Int$coefficients[2,1],digits=2)`, SE = `r format(modelOut_Int$coefficients[2,2],digits=2) `, Z = `r format(modelOut_Int$coefficients[2,3],digits=2)`).  
 
 <!-- ```{r modelCoefficients, results="asis"} -->
 <!-- tab1 <- xtable::xtable(summary(mod_covariates)$coef, digits=3,  -->
@@ -319,7 +322,7 @@ cohortSim <- read.csv("vggOutputs/CohortSimilarity.csv") %>%
   mutate(LayerNum = as.numeric(X)+1)  %>%
   gather(key = cohortType, value = correlation, c(CorrOldAdult,CorrYoungAdult)) %>%
   gather(key = cohortTypeSEM, value = SEM, c(SEMOldAdult,SEMYoungAdult)) %>%
-  bind_rows(noiseCeiling) %>%
+  # bind_rows(noiseCeiling) %>% # leaving out adult-adult for now as we recheck/redo
   select(-c(X, cohortTypeSEM)) %>%
   mutate(se_lower = correlation - SEM, se_upper = correlation + SEM)
 ```
@@ -333,7 +336,7 @@ ggplot(cohortSim, aes(x = LayerNum, y = correlation, col=cohortType)) +
  labs(y = "Speraman's correlation", x = "Layer Number") +
  scale_x_continuous(breaks = c(1,2,3,4,5,6,7)) +
  theme(legend.position = c(0.8, 0.2), legend.text = element_text(size=6), legend.key.size = unit(1,"line"),  legend.background = element_rect(fill=alpha('white', 0))) +
- scale_color_viridis(discrete=TRUE, begin=0, end=.8, direction = -1, "",      labels=c("Adult-Adult","OlderKids-Adults","Younger-Adults"))
+ scale_color_viridis(discrete=TRUE, begin=0, end=.8, direction = -1, "",      labels=c("OlderKids-Adults","YoungerKids-Adults"))
 ```
 ### Layer-wise feature similarity
 We first examined the featural similarities between sketches produced by adults and children at each layer of VGG-19. Overall, we found that the similarity between older children and adults' drawings increased in each subsequent layer of the network, reaching a peak in the final layers of the network (see Figure \ref{fig:layerWise}). For younger children, we found a similar pattern of results, though similarity to adult drawings was overall lower. The RDMs for the final layer of the network (where similarity was the highest; FC7) are shown in Figure \ref{fig:RSAAllCat}. 
