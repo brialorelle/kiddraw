@@ -123,13 +123,10 @@ ageCorrOut<-joint %>%
 
 ```
 
-### Low-level covariates related to motor production
-Our goal was to measure semantic information in children's drawings, but we anticipated that their drawings may also vary along other dimensions more directly related to the motor production demands of the task, such as the amount of time spent drawing, the number of strokes used, and amount of ink (i.e., mean pixel intensity of sketch). See Figure \ref{fig:covDescriptives}.
-
-###  GLMM procedure
+###  Model Fitting
 Our goal was to measure how children's ability to convey semantically relevant information in their drawings changes with age. We anticipated that their drawings may also vary along other dimensions more directly related to the motor production demands of the task, such as the amount of time spent drawing, the number of strokes used, and amount of ink (i.e., mean pixel intensity of sketch). See Figure \ref{fig:covDescriptives}.
 
-In order to assess whether children’s ability to produce recognizable drawings increased with age, independent of these low-level covariates, we used a generalized logistic mixed effect model, with age (specified in years), drawing duration, amount of ink used, and number of strokes as fixed effects, and with random intercepts for each individual child drawer and object category. The dependent variable was whether the proportion of adults that recognized a given drawing. This was specified in the lme4 r package as: glmer(correct ~ scale(age) +  scale(draw_duration) +  scale(mean_intensity) +  scale(num_strokes) +(1|session_id) + (1|category), family = "binomial").
+In order to assess whether children’s ability to produce recognizable drawings increased with age, independent of these low-level covariates, we fit a generalized linear mixed-effects model, with age (specified in years), drawing duration, amount of ink used, and number of strokes as fixed effects, and with random intercepts for each individual child drawer and object category. The dependent variable was whether the proportion of adults that recognized a given drawing. This was specified in the lme4 r package as: glmer(correct ~ scale(age) +  scale(draw_duration) +  scale(mean_intensity) +  scale(num_strokes) +(1|session_id) + (1|category), family = "binomial").
 
 ``` {r include=FALSE, echo=FALSE}
 ## GLMM procedure
@@ -341,7 +338,6 @@ Together, this work integrates novel methods to investigate children's internal 
 
 # Acknowledgements
 We thank Jacqueline Quirke for help with piloting and data collection. We thank  members of Stanford Language and Cognition lab. This work was partially funded by an NSF SPRF-FR (1714726) grant to BLL. We also gratefully acknowledge those who made the Google QuickDraw database available.
-
 
 # References
 ```{r}
