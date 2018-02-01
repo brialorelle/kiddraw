@@ -312,7 +312,7 @@ ggplot(cohortSim, aes(x = LayerNum, y = correlation, col=cohortType)) +
  geom_pointrange(aes(ymin = se_lower, ymax = se_upper),  position = position_dodge(width = .1)) +
  geom_line() +
  theme_few() +
- labs(y = "Speraman's correlation", x = "Layer Number") +
+ labs(y = "Spearman correlation", x = "Layer Number") +
  scale_x_continuous(breaks = c(1,2,3,4,5,6,7)) +
  theme(legend.position = c(0.78, 0.2), legend.text = element_text(size=6), legend.key.size = unit(1,"line"),   legend.background = element_rect(fill=alpha('white', 0))) +
  scale_color_viridis(discrete=TRUE, begin=0, end=.8, direction = -1, "",      labels=c("OlderKids-Adults","YoungerKids-Adults"))
