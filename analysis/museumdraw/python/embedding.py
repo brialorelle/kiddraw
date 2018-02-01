@@ -72,7 +72,7 @@ class VGG19Embeddings(nn.Module):
         
 class FeatureExtractor():
     
-    def __init__(self,paths,layer=6, use_cuda=True, imsize=224, batch_size=64, cuda_device=3, cohort='kid'):
+    def __init__(self,paths,layer=6, use_cuda=True, imsize=224, batch_size=64, cuda_device=2, cohort='kid'):
         self.layer = layer
         self.paths = paths
         self.num_sketches = len(self.paths)
@@ -134,6 +134,7 @@ class FeatureExtractor():
             vgg19 = models.vgg19(pretrained=True).cuda(self.cuda_device)        
             vgg19 = VGG19Embeddings(vgg19,layer_index)
             vgg19.eval()  # freeze dropout
+            print('CUDA DEVICE NUM: {}'.format(self.cuda_device))
 
             # freeze each parameter
             for p in vgg19.parameters():
