@@ -295,10 +295,10 @@ noiseCeiling <- read.csv("vggOutputs/adultReliability.csv") %>%
 cohortSim <- read.csv("vggOutputs/CohortSimilarity15x15.csv") %>%
   as.tibble() %>%
   mutate(LayerNum = as.numeric(X)+1)  %>%
-  gather(key = cohortType, value = correlation, c(CorrOldAdult,CorrYoungAdult)) 
+  gather(key = cohortType, value = correlation, c(CorrOldAdult,CorrYoungAdult))
   # gather(key = cohortTypeSEM, value = SEM, c(SEMOldAdult,SEMYoungAdult)) %>%
   # bind_rows(noiseCeiling) %>% # leaving out adult-adult for now as we recheck/redo
-  # select(-c(X, cohortTypeSEM)) 
+  # select(-c(X, cohortTypeSEM))
   # mutate(se_lower = correlation - SEM, se_upper = correlation + SEM)
 ```
 
