@@ -295,15 +295,15 @@ noiseCeiling <- read.csv("vggOutputs/adultReliability.csv") %>%
 cohortSim <- read.csv("vggOutputs/CohortSimilarity15x15.csv") %>%
   as.tibble() %>%
   mutate(LayerNum = as.numeric(X)+1)  %>%
-  gather(key = cohortType, value = correlation, c(CorrOldAdult,CorrYoungAdult)) 
+  gather(key = cohortType, value = correlation, c(CorrOldAdult,CorrYoungAdult))
   # gather(key = cohortTypeSEM, value = SEM, c(SEMOldAdult,SEMYoungAdult)) %>%
   # bind_rows(noiseCeiling) %>% # leaving out adult-adult for now as we recheck/redo
-  # select(-c(X, cohortTypeSEM)) 
+  # select(-c(X, cohortTypeSEM))
   # mutate(se_lower = correlation - SEM, se_upper = correlation + SEM)
 ```
 
 ## Results
-We examined the feature similarities between sketches produced by adults and children at each layer of VGG-19. For older children, we found that the similarity between drawings made by children and adults increased as a function of model layer, reaching a peak in the final layers (see Figure \ref{fig:layerWise}). For younger children, we found a noisier pattern of results, as similarity to adult drawings was lower overall in higher layers. However, due to the small size of our current dataset, we caution against strong interpretations of particular layer-wise estimates. Nonetheless, adults' and children's drawings were dissimilar in pixel space for both age groups (adults vs. older children, r = .06; vs. younger children, r = .02). 
+We examined the feature similarities between sketches produced by adults and children at each layer of VGG-19. For older children, we found that the similarity between drawings made by children and adults increased as a function of model layer, reaching a peak in the final layers (see Figure \ref{fig:layerWise}). For younger children, we found a noisier pattern of results, as similarity to adult drawings was lower overall in higher layers. However, due to the small size of our current dataset, we caution against strong interpretations of particular layer-wise estimates. Nonetheless, adults' and children's drawings were dissimilar in pixel space for both age groups (adults vs. older children, r = .06; vs. younger children, r = .02).
 
 The RDMs for the final layer of the network (where similarity was the highest; FC7) are shown in Figure \ref{fig:RSAAllCat}. Here, each cell represents the correlation distance between two categories in this layer of the network; lighter colors indicate pairs of categories that are further apart in feature space; darker colors indicate pairs of categories that are closer. For visualization purposes, categories are ordered according to the clusters that appear in the data.
 ```{r layerWise, fig.env = "figure", fig.pos = "H", fig.align='center', fig.width=3, fig.height=2.5, set.cap.width=T, num.cols.cap=1, fig.cap = "Spearman's correlation between representational dissimilarity matrices (RDMs) of drawings produced by adults vs. other adults, adults vs. older children, and between adults vs. younger children at each layer of VGG-19. Error bars represent standard error of the mean obtained by a jacknife re-sampling procedure (see Methods)."}
