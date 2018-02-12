@@ -21,5 +21,8 @@ auth.txt
 auth.json
 history.csv
 .Rproj.user
+writing/old/
 experiments/museumdraw/node_modules/.DS_Store
 experiments/museumdraw/.DS_Store
+analysis/museumdraw/python/plots/*
+analysis/museumdraw/python/features/*
