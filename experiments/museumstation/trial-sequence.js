@@ -116,8 +116,7 @@ function progress(timeleft, timetotal, $element) {
     }
     else if(timeleft == 0 & clickedSubmit==0){
         console.log("trial timed out")
-        // saveSketchData();
-        readyOrNot();
+		increaseTrial();
         $element.find('div').width(totalBarWidth)
         return; //  get out of here
     }
@@ -223,6 +222,12 @@ function endExperiment(){
     $('#thanksPage').fadeIn('fast');
 }
 
+function increaseTrial(){
+    curTrial=curTrial+1; // increase counter
+    saveSketchData()
+    readyOrNot();
+}
+
 window.onload = function() {
 
     $('#startConsent').click(function(e) {
@@ -241,12 +246,11 @@ window.onload = function() {
         }
     });
 
+    // gets called whenever you click/touch the submit button
     $('#submit').click(function (e) {
         event.preventDefault(e)
-        clickedSubmit=1; // indicate that we submitted
-        curTrial=curTrial+1; // increase counter
-        saveSketchData()
-        readyOrNot();
+        clickedSubmit=1; // indicate that we submitted - global variable
+		increaseTrial(); // save data and increase trial counter
     });
 
     $('#keepGoing').click(function(e) {
