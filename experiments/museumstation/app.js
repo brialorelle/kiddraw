@@ -76,7 +76,6 @@ var writeDataToMongo = function(data) {
         if (!error && res.statusCode === 200) {
             console.log(`sent data to store`);
         } else {
-            console.log(res.statusCode)
             console.log(`error sending data to store: ${error} ${body}`);
         }
     });
