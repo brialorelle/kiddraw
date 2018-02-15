@@ -230,6 +230,10 @@ function increaseTrial(){
 
 window.onload = function() {
 
+    document.ontouchmove = function(event){
+        event.preventDefault();
+    }
+
     $('#startConsent').click(function(e) {
         event.preventDefault(e)
         showConsentPage();
