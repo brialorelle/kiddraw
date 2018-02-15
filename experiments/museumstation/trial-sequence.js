@@ -291,50 +291,92 @@ window.onload = function() {
     // Drawing related tools
     paper.setup('sketchpad');
 
-    with (paper){
-    // Create a simple drawing tool:
-    var tool = new Tool();
-    tool.minDistance = 10;
-    var path;
+    // with (paper){
+    // // Create a simple drawing tool:
+    // var tool = new Tool();
+    // tool.minDistance = 10;
+    // var path;
 
-    // Define a mousedown and mousedrag handler
-    tool.onMouseDown = function(event) {
-        path = new Path();
-        path.strokeColor = '#000000';
-        path.strokeCap = 'round';
-        path.strokeWidth = 10;
-        path.add(event.point);
-    }
+    // // Define a mousedown and mousedrag handler
+    // tool.onTouchDown = function(event) {
+    //     path = new Path();
+    //     path.strokeColor = '#000000';
+    //     path.strokeCap = 'round';
+    //     path.strokeWidth = 10;
+    //     path.add(event.point);
+    // }
 
-    tool.onMouseDrag = function(event) {
-        path.add(event.point);
-    }
+    // tool.onTouchDrag = function(event) {
+    //     path.add(event.point);
+    // }
 
-    tool.onMouseUp = function(event) {
-        path.selected = false;
-        path.simplify(2);
+    // tool.onTouchUp = function(event) {
+    //     path.selected = false;
+    //     path.simplify(2);
 
-        var svgString = path.exportSVG({asString: true});
-        var category = stimListTest[curTrial].category;
-        var readable_date = new Date();
+    //     var svgString = path.exportSVG({asString: true});
+    //     var category = stimListTest[curTrial].category;
+    //     var readable_date = new Date();
 
-        stroke_data = {
-            dataType: 'stroke',
-            sessionId: sessionId,
-            svg: svgString,
-            category: category,
-            dbname:'kiddraw',
-            colname:'stationPilot0',
-            trialNum: curTrial,
-            time: Date.now(),
-            date: readable_date
-        };
+    //     stroke_data = {
+    //         dataType: 'stroke',
+    //         sessionId: sessionId,
+    //         svg: svgString,
+    //         category: category,
+    //         dbname:'kiddraw',
+    //         colname:'stationPilot0',
+    //         trialNum: curTrial,
+    //         time: Date.now(),
+    //         date: readable_date
+    //     };
 
-        // send stroke data to server
-        socket.emit('stroke',stroke_data); // not for demo
+    //     // send stroke data to server
+    //     socket.emit('stroke',stroke_data); // not for demo
 
-    }
-    } // with paper
+    // }
+    // } // with paper
+
+        var paths = [];
+
+        function touchStart(ev) {
+            console.log("boop");
+            var touches = ev.touches;
+            // Create new path per touch
+            var path = new Path();
+            path.strokeColor = 'black';
+            path.strokeCap = 'round'
+            path.strokeWidth = 10;
+            paths.push(path);
+        }
+
+        function touchMove(ev) {
+            console.log("beep");
+            var touches = ev.touches;
+            // Prevents touch bubbling
+            if(touches.length === paths.length) {
+                for(var i = 0; i < touches.length; i++){
+                    var path = paths[i];
+                    var point = view.getEventPoint(touches[i]);
+                    path.add(point);
+                    view.draw();
+                }
+            }
+        }
+
+        function touchEnd(ev){
+            console.log("bopp");
+            var touches = ev.touches;
+            // Empty paths array to start process over
+            if(touches.length === 0){
+                paths = [];
+            }
+        }
+
+        targetSketch = document.getElementById("sketchpad");
+        targetSketch.addEventListener('touchstart', touchStart, false);
+        targetSketch.addEventListener('touchmove', touchMove, false);
+        targetSketch.addEventListener('touchend', touchEnd, false);
+
 } // on document load
 
 
