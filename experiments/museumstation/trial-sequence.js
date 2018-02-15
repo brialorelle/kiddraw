@@ -291,10 +291,11 @@ window.onload = function() {
     // Drawing related tools
     paper.setup('sketchpad');
 
+    with (paper){
     // Create a simple drawing tool:
     var tool = new Tool();
     tool.minDistance = 10;
-    var path, path2;
+    var path;
 
     // Define a mousedown and mousedrag handler
     tool.onMouseDown = function(event) {
@@ -311,10 +312,8 @@ window.onload = function() {
 
     tool.onMouseUp = function(event) {
         path.selected = false;
-        // path.simplify(2);
-        finalPoint = path._segments.slice(-1)[0];
+        path.simplify(2);
 
-        // var jsonString = path.exportJSON({asString: true});
         var svgString = path.exportSVG({asString: true});
         var category = stimListTest[curTrial].category;
         var readable_date = new Date();
@@ -332,10 +331,11 @@ window.onload = function() {
         };
 
         // send stroke data to server
-        // socket.emit('stroke',stroke_data); / not for demo
+        socket.emit('stroke',stroke_data); // not for demo
 
     }
-}
+    } // with paper
+} // on document load
 
 
 
