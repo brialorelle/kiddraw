@@ -195,18 +195,22 @@ function saveConsentData(){
 
 // experiment navigation functions
 function showConsentPage(){
-    $('#landingPage').fadeOut('fast');
-    $('#consentPage').fadeIn('fast');
+    $('#landingPage').hide();
+    $('#consentPage').show();
+    $('#parent-email').attr('placeholder', 'Input your email address here').val('');
+    $('#email-form').show();
+    $('#email-sent').hide();
+
 }
 
 function restartExperiment() {
     project.activeLayer.removeChildren();
-    $('.progress').hide();
-    $('#mainExp').fadeOut('fast');
-    $('#consentPage').fadeIn('fast'); // fade in consent screen
+    curTrial=0;
+    clickedSubmit=0;
+    $('.ageButton').removeClass('active');
+    $('#thanksPage').fadeOut('fast');
+    $('#landingPage').fadeIn('fast'); // fade in the landing page
     $('#checkConsent').prop('checked', false); // uncheck consent box
-    $('#submit_div').fadeOut('fast'); // fade out sketchpad etc
-    $('#sketchpad').fadeOut('fast');
 }
 
 function readyOrNot(){
@@ -259,6 +263,12 @@ window.onload = function() {
         event.preventDefault(e)
         console.log('touched endExperiment  button');
         endExperiment()
+    });
+
+    $('#endRestart').click(function(e){
+        event.preventDefault(e)
+        console.log('restart to the landing page')
+        restartExperiment()
     });
 
     $('#sendEmail').click(function(e){
