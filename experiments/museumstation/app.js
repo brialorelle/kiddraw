@@ -95,7 +95,14 @@ function sendEmail(req,res) {
         from: 'kiddrawsanjose@gmail.com',
         to: req.query.email,
         subject: 'Informed Consent',
-        text: 'Email'
+        text: "Dear parents, the consent form of the kid drawing psychology experiment conducted in San Jose Children's Discovery " +
+        "Museum is attached to this email.",
+        attachments: [
+        {
+            filename: 'consent.pdf',
+            path:'consent.pdf',
+            contentType: 'application/pdf'
+        }]
     };
 
     console.log(mailOptions);

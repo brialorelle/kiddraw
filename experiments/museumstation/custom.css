@@ -1,6 +1,5 @@
 body {
     font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-    background-color:#17b8ab14;
 }
 
 button {
@@ -58,6 +57,18 @@ button[disabled] {
     bottom: 5%;
     width:280px;
     text-align: center;
+}
+
+.imageButton{
+    cursor:pointer;
+    width:15vw;
+    height:auto;
+}
+
+.buttonDescription{
+    font-family: Schoolbell,cursive;
+    font-size: 4vw;
+    text-align:center;
 }
 
 #consent {
@@ -252,6 +263,15 @@ button[disabled] {
 #allDone {
     margin-top:10vw;
     text-align:center;
+    font-size: 4vw;
+    font-family: Schoolbell,cursive;
+}
+
+#restartExp{
+    margin-top:10vw;
+    text-align:center;
+    font-size: 4vw;
+    font-family: Schoolbell,cursive;
 }
 
 
@@ -259,7 +279,9 @@ button[disabled] {
     margin-top:10vw;
     font-size: 4vw;
     text-align:center;
+    font-family: Schoolbell,cursive;
 }
+
 
 #startConsent {
     width: 50%;
@@ -297,13 +319,6 @@ button[disabled] {
     font-style: italic;
 }
 
-#restart{
-    cursor:pointer;
-}
-
-#end{
-    cursor:pointer;
-}
 /*.video-js .vjs-control-bar {
   display:none!important; 
 }*/

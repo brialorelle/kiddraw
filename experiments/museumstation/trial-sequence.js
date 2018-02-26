@@ -206,24 +206,25 @@ function restartExperiment() {
     project.activeLayer.removeChildren();
     curTrial=0;
     clickedSubmit=0;
+    var sessionId='stationPilot0_' + Date.now().toString()
     $('.ageButton').removeClass('active');
-    $('#thanksPage').fadeOut('fast');
-    $('#landingPage').fadeIn('fast'); // fade in the landing page
+    $('#thanksPage').hide();
+    $('#landingPage').show(); // fade in the landing page
     $('#checkConsent').prop('checked', false); // uncheck consent box
 }
 
 function readyOrNot(){
     project.activeLayer.removeChildren();
-    $('#readyOrNotPage').fadeIn('fast');
-    $('#mainExp').fadeOut('fast');
+    $('#readyOrNotPage').show();
+    $('#mainExp').hide();
     $('.progress').hide();
-    $('#submit_div').fadeOut('fast'); // fade out sketchpad etc
-    $('#sketchpad').fadeOut('fast');
+    $('#submit_div').hide(); // fade out sketchpad etc
+    $('#sketchpad').hide();
 }
 
 function endExperiment(){
-    $('#readyOrNotPage').fadeOut('fast');
-    $('#thanksPage').fadeIn('fast');
+    $('#readyOrNotPage').hide();
+    $('#thanksPage').show();
 }
 
 function increaseTrial(){
