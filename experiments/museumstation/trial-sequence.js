@@ -168,6 +168,8 @@ function saveSketchData(){
 
     dataURL = dataURL.replace('data:image/png;base64,','');
     var category = stimListTest[curTrial].category;
+    var age = document.getElementById('years').value;
+
 
     // test stirng
     readable_date = new Date();
@@ -180,7 +182,8 @@ function saveSketchData(){
         colname:'stationPilot0',
         trialNum: curTrial,
         time: Date.now(),
-        date: readable_date};
+        date: readable_date
+        age: age};
 
     // send data to server to write to database
     socket.emit('current_data', current_data);
