@@ -31,6 +31,8 @@ var maxTrials = stimListTest.length-1; //
 var clickedSubmit=0;
 var timeLimit=30;
 //helpfuls
+
+
 function shuffle (a)
 {
     var o = [];
@@ -175,15 +177,15 @@ function saveSketchData(){
     readable_date = new Date();
     current_data = {
         dataType: 'finalImage',
-        sessionId: sessionId,
+        sessionId: sessionId, // each child
         imgData: dataURL,
         category: category,
         dbname:'kiddraw',
-        colname:'stationPilot0',
+        colname:'stationPilot0', // station version
         trialNum: curTrial,
         time: Date.now(),
         date: readable_date
-        age: age};
+        age: age}; // age
 
     // send data to server to write to database
     socket.emit('current_data', current_data);
@@ -298,53 +300,33 @@ window.onload = function() {
     // Drawing related tools
     paper.setup('sketchpad');
 
-    // with (paper){
-    // // Create a simple drawing tool:
-    // var tool = new Tool();
-    // tool.minDistance = 10;
-    // var path;
+    function sendStrokeData(ev) {
+        path.selected = false;
+        path.simplify(2);
 
-    // // Define a mousedown and mousedrag handler
-    // tool.onTouchDown = function(event) {
-    //     path = new Path();
-    //     path.strokeColor = '#000000';
-    //     path.strokeCap = 'round';
-    //     path.strokeWidth = 10;
-    //     path.add(event.point);
-    // }
+        var svgString = path.exportSVG({asString: true});
+        var category = stimListTest[curTrial].category;
+        var readable_date = new Date();
+            var age = document.getElementById('years').value;
 
-    // tool.onTouchDrag = function(event) {
-    //     path.add(event.point);
-    // }
+        stroke_data = {
+            dataType: 'stroke',
+            sessionId: sessionId,
+            svg: svgString,
+            category: category,
+            dbname:'kiddraw',
+            colname:'stationPilot0',
+            trialNum: curTrial,
+            time: Date.now(),
+            date: readable_date
+        };
 
-    // tool.onTouchUp = function(event) {
-    //     path.selected = false;
-    //     path.simplify(2);
+        // send stroke data to server
+        socket.emit('stroke',stroke_data); // not for demo
 
-    //     var svgString = path.exportSVG({asString: true});
-    //     var category = stimListTest[curTrial].category;
-    //     var readable_date = new Date();
-
-    //     stroke_data = {
-    //         dataType: 'stroke',
-    //         sessionId: sessionId,
-    //         svg: svgString,
-    //         category: category,
-    //         dbname:'kiddraw',
-    //         colname:'stationPilot0',
-    //         trialNum: curTrial,
-    //         time: Date.now(),
-    //         date: readable_date
-    //     };
-
-    //     // send stroke data to server
-    //     socket.emit('stroke',stroke_data); // not for demo
-
-    // }
-    // } // with paper
+    }
 
         var paths = [];
-
         function touchStart(ev) {
             console.log("boop");
             var touches = ev.touches;
@@ -357,7 +339,7 @@ window.onload = function() {
         }
 
         function touchMove(ev) {
-            console.log("beep");
+            console.log("touch move");
             var touches = ev.touches;
             // Prevents touch bubbling
             if(touches.length === paths.length) {
@@ -371,12 +353,13 @@ window.onload = function() {
         }
 
         function touchEnd(ev){
-            console.log("bopp");
+            console.log("touch end");
             var touches = ev.touches;
             // Empty paths array to start process over
             if(touches.length === 0){
                 paths = [];
             }
+            sendStrokeData(ev) // send stoke data to database
         }
 
         targetSketch = document.getElementById("sketchpad");
