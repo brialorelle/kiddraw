@@ -277,6 +277,12 @@ window.onload = function() {
         event.preventDefault(e)
         console.log('touched endExperiment  button');
         endExperiment()
+        //wait for 30 second and restart
+        setTimeout(function(){
+            console.log("restart after 30 second");
+            restartExperiment()
+        }, 30000);
+
     });
 
     $('#endRestart').click(function(e){
