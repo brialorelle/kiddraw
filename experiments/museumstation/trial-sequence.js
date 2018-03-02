@@ -170,8 +170,8 @@ function saveSketchData(){
 
     dataURL = dataURL.replace('data:image/png;base64,','');
     var category = stimListTest[curTrial].category;
-    var age = document.getElementById('years').value;
-
+    var age = $('.active').attr('id');
+    console.log('age' + age);
 
     // test stirng
     readable_date = new Date();
@@ -184,7 +184,7 @@ function saveSketchData(){
         colname:'stationPilot0', // station version
         trialNum: curTrial,
         time: Date.now(),
-        date: readable_date
+        date: readable_date,
         age: age}; // age
 
     // send data to server to write to database
@@ -211,7 +211,7 @@ function restartExperiment() {
     project.activeLayer.removeChildren();
     curTrial=0;
     clickedSubmit=0;
-    var sessionId='stationPilot0_' + Date.now().toString()
+    sessionId='stationPilot0_' + Date.now().toString()
     $('.ageButton').removeClass('active');
     $('#thanksPage').hide();
     $('#landingPage').show(); // fade in the landing page
