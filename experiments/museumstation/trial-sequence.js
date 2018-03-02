@@ -54,7 +54,7 @@ function startDrawing(){
         beginTrial()
     }
     else if (curTrial>0 && curTrial<maxTrials) {
-        $('#readyOrNotPage').fadeOut('fast'); // fade out age screen
+        $('#readyOrNotPage').hide(); // fade out age screen
         beginTrial()
     }
     else if (curTrial==maxTrials){
@@ -67,11 +67,34 @@ function beginTrial(){
     clickedSubmit=0; //reset this variable
     loadNextVideo(curTrial) // change video
     document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[curTrial].category + " ?"; // change cue
-    //
+    document.getElementById("drawingCue").innerHTML = stimListTest[curTrial].category; // change drawing cue
+
     setTimeout(function() {showCue();},1000);
-    setTimeout(function() {hideCue();},5000);  // Take cues away after 5 - after video ends
-    setTimeout(function() {showSubmit();},6000); // some minimum amount of time before "I'm done button"
+    var video = $('video');
     timestamp_cueOnset = new Date().getTime();
+}
+
+// video player functions
+function playVideo(){
+    videojs("cueVideo").ready(function(){ // need to wait until video is ready
+        var player = this;
+        player.play();
+        this.on('ended',function(){
+            console.log('video ends and drawing starts');
+            hideCue();
+            //dispose the old video and related eventlistener. Add a new video
+            this.dispose();
+            $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' preload='auto' playsinline> <source src='videos/rabbit.mp4' type='video/mp4'> </video>");
+        });
+    });
+}
+
+function loadNextVideo(){
+    var player=videojs('cueVideo');
+    player.pause();
+    console.log(stimListTest[curTrial].video)
+    player.src({ type: "video/mp4", src: "videos/" + stimListTest[curTrial].video });
+    player.load();
 }
 
 // show cue without canvas
@@ -84,13 +107,13 @@ function showCue() {
 
 // hide cue and show sketchpad canvas
 function hideCue() {
-    $('#cue').fadeOut('fast'); // fade out cue
+    $('#cue').hide(); // fade out cue
     $('#cueVideoDiv').hide(); //show video html - this can be a variable later?
     setUpDrawing()
 }
 
 function setUpDrawing(){
-    $('#sketchpad').fadeIn('fast');
+    $('#drawing').show()
     monitorProgress(); // since we now have a timeout function 
 };
 
@@ -106,7 +129,8 @@ function monitorProgress(){
 //  monitoring progress spent on a trial and triggering next events
 function progress(timeleft, timetotal, $element) {
     var progressBarWidth = timeleft * $element.width()/ timetotal;
-    var totalBarWidth = timetotal * $element.width();
+    //var totalBarWidth = timetotal * $element.width();
+    var totalBarWidth = $element.width();
     $element.find('.progress-bar').attr("aria-valuenow", timeleft).text(timeleft)
     $element.find('.progress-bar').animate({ width: progressBarWidth }, timeleft == timetotal ? 0 : 1000, "linear");
     console.log("clicked submit = " + clickedSubmit)
@@ -119,36 +143,15 @@ function progress(timeleft, timetotal, $element) {
     else if(timeleft == 0 & clickedSubmit==0){
         console.log("trial timed out")
 		increaseTrial();
-        $element.find('div').width(totalBarWidth)
+        $element.find('.progress-bar').width(totalBarWidth)
         return; //  get out of here
     }
     else if (clickedSubmit==1){
         console.log("exiting out of progress function")
-        $element.find('div').width(totalBarWidth)
+        $element.find('.progress-bar').width(totalBarWidth)
         return; //  get out of here, data being saved by other button
     }
 };
-
-
-function showSubmit() {
-    $('#submit_div').fadeIn('fast');
-}
-
-// video player functions
-function playVideo(){
-    videojs("cueVideo").ready(function(){ // need to wait until video is ready
-        var player = this;
-        player.play();
-    });
-}
-
-function loadNextVideo(){
-    var player=videojs('cueVideo');
-    player.pause();
-    console.log(stimListTest[curTrial].video)
-    player.src({ type: "video/mp4", src: "videos/" + stimListTest[curTrial].video });
-    player.load();
-}
 
 // saving data functions
 function saveSketchData(){
@@ -170,8 +173,7 @@ function saveSketchData(){
 
     dataURL = dataURL.replace('data:image/png;base64,','');
     var category = stimListTest[curTrial].category;
-    var age = document.getElementById('years').value;
-
+    var age = $('.active').attr('id');
 
     // test stirng
     readable_date = new Date();
@@ -184,7 +186,7 @@ function saveSketchData(){
         colname:'stationPilot0', // station version
         trialNum: curTrial,
         time: Date.now(),
-        date: readable_date
+        date: readable_date,
         age: age}; // age
 
     // send data to server to write to database
@@ -199,38 +201,55 @@ function saveConsentData(){
 
 // experiment navigation functions
 function showConsentPage(){
-    $('#landingPage').fadeOut('fast');
-    $('#consentPage').fadeIn('fast');
+    $('#landingPage').hide();
+    $('#consentPage').show();
+    $('#parent-email').attr('placeholder', 'Input your email address here').val('');
+    $('#email-form').show();
+    $('#email-sent').hide();
+
 }
 
 function restartExperiment() {
     project.activeLayer.removeChildren();
-    $('.progress').hide();
-    $('#mainExp').fadeOut('fast');
-    $('#consentPage').fadeIn('fast'); // fade in consent screen
+    curTrial=0;
+    clickedSubmit=0;
+    sessionId='stationPilot0_' + Date.now().toString()
+    $('.ageButton').removeClass('active');
+    $('#thanksPage').hide();
+    $('#landingPage').show(); // fade in the landing page
     $('#checkConsent').prop('checked', false); // uncheck consent box
-    $('#submit_div').fadeOut('fast'); // fade out sketchpad etc
-    $('#sketchpad').fadeOut('fast');
 }
 
 function readyOrNot(){
     project.activeLayer.removeChildren();
-    $('#readyOrNotPage').fadeIn('fast');
-    $('#mainExp').fadeOut('fast');
-    $('.progress').hide();
-    $('#submit_div').fadeOut('fast'); // fade out sketchpad etc
-    $('#sketchpad').fadeOut('fast');
+    $('#readyOrNotPage').show();
+    $('#mainExp').hide();
+    $('#drawing').hide();
 }
 
 function endExperiment(){
-    $('#readyOrNotPage').fadeOut('fast');
-    $('#thanksPage').fadeIn('fast');
+    $('#thanksPage').show();
+    curTrial = -1;
+        //wait for 15 second and restart
+        setTimeout(function(){
+            if(curTrial == -1) {
+                console.log("restart after 15 second");
+                restartExperiment()
+            }
+        }, 15000);
 }
 
 function increaseTrial(){
     curTrial=curTrial+1; // increase counter
     saveSketchData()
-    readyOrNot();
+    if (curTrial==maxTrials){
+        project.activeLayer.removeChildren();
+        $('#mainExp').hide();
+        $('#drawing').hide();
+        endExperiment();
+    }else {
+        readyOrNot();
+    }
 }
 
 window.onload = function() {
@@ -271,7 +290,15 @@ window.onload = function() {
     $('#allDone').click(function(e) {
         event.preventDefault(e)
         console.log('touched endExperiment  button');
-        endExperiment()
+        $('#readyOrNotPage').hide();
+        endExperiment();
+
+    });
+
+    $('#endRestart').click(function(e){
+        event.preventDefault(e)
+        console.log('restart to the landing page')
+        restartExperiment()
     });
 
     $('#sendEmail').click(function(e){

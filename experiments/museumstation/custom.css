@@ -1,6 +1,5 @@
 body {
     font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-    background-color:#17b8ab14;
 }
 
 button {
@@ -60,6 +59,18 @@ button[disabled] {
     text-align: center;
 }
 
+.imageButton{
+    cursor:pointer;
+    width:15vw;
+    height:auto;
+}
+
+.buttonDescription{
+    font-family: Schoolbell,cursive;
+    font-size: 4vw;
+    text-align:center;
+}
+
 #consent {
     text-align: left;
     height: 420px;
@@ -96,7 +107,8 @@ button[disabled] {
 
 .welcomeHeader {
     margin: auto;
-    top: 20vh;
+    margin-top: 2vh;
+    margin-bottom:3vh;
     text-align: center;
 }
 
@@ -142,20 +154,33 @@ button[disabled] {
 }
 
 #submit_div {
-    margin: auto;
     text-align:center;
     /*top:5%;*/
     left:0;
     right:0;
+    margin-top:4vh;
     /*position:absolute;*/
 }
 
 #cue {
-    font-size: 4vw;
+    font-size: 5vw;
     text-align:center;
     left: 0;
     right: 0;
     margin: auto;
+    font-family: Schoolbell,cursive;
+    margin-top:3vh;
+    margin-bottom:2vh;
+}
+
+#drawingCue{
+    font-size: 5vw;
+    text-align:center;
+    left: 0;
+    right: 0;
+    margin: auto;
+    margin-bottom:1vh;
+    font-family: Schoolbell,cursive;
 }
 
 #cueVideo {
@@ -252,6 +277,15 @@ button[disabled] {
 #allDone {
     margin-top:10vw;
     text-align:center;
+    font-size: 4vw;
+    font-family: Schoolbell,cursive;
+}
+
+#restartExp{
+    margin-top:10vw;
+    text-align:center;
+    font-size: 4vw;
+    font-family: Schoolbell,cursive;
 }
 
 
@@ -259,7 +293,9 @@ button[disabled] {
     margin-top:10vw;
     font-size: 4vw;
     text-align:center;
+    font-family: Schoolbell,cursive;
 }
+
 
 #startConsent {
     width: 50%;
@@ -297,13 +333,6 @@ button[disabled] {
     font-style: italic;
 }
 
-#restart{
-    cursor:pointer;
-}
-
-#end{
-    cursor:pointer;
-}
 /*.video-js .vjs-control-bar {
   display:none!important; 
 }*/

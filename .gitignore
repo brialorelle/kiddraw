@@ -26,3 +26,4 @@ experiments/museumdraw/node_modules/.DS_Store
 experiments/museumdraw/.DS_Store
 analysis/museumdraw/python/plots/*
 analysis/museumdraw/python/features/*
+.idea
