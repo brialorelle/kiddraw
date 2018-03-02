@@ -107,7 +107,8 @@ button[disabled] {
 
 .welcomeHeader {
     margin: auto;
-    top: 20vh;
+    margin-top: 2vh;
+    margin-bottom:3vh;
     text-align: center;
 }
 
@@ -153,30 +154,32 @@ button[disabled] {
 }
 
 #submit_div {
-    margin: auto;
     text-align:center;
     /*top:5%;*/
     left:0;
     right:0;
-    margin-top:5vw;
+    margin-top:4vh;
     /*position:absolute;*/
 }
 
 #cue {
-    font-size: 4vw;
+    font-size: 5vw;
     text-align:center;
     left: 0;
     right: 0;
     margin: auto;
     font-family: Schoolbell,cursive;
+    margin-top:3vh;
+    margin-bottom:2vh;
 }
 
 #drawingCue{
-    font-size: 4vw;
+    font-size: 5vw;
     text-align:center;
     left: 0;
     right: 0;
     margin: auto;
+    margin-bottom:1vh;
     font-family: Schoolbell,cursive;
 }
 

@@ -228,8 +228,15 @@ function readyOrNot(){
 }
 
 function endExperiment(){
-    $('#readyOrNotPage').hide();
     $('#thanksPage').show();
+    curTrial = -1;
+        //wait for 15 second and restart
+        setTimeout(function(){
+            if(curTrial == -1) {
+                console.log("restart after 15 second");
+                restartExperiment()
+            }
+        }, 15000);
 }
 
 function increaseTrial(){
@@ -239,7 +246,7 @@ function increaseTrial(){
         project.activeLayer.removeChildren();
         $('#mainExp').hide();
         $('#drawing').hide();
-        $('#thanksPage').show();
+        endExperiment();
     }else {
         readyOrNot();
     }
@@ -283,15 +290,8 @@ window.onload = function() {
     $('#allDone').click(function(e) {
         event.preventDefault(e)
         console.log('touched endExperiment  button');
-        endExperiment()
-        curTrial = -1;
-        //wait for 15 second and restart
-        setTimeout(function(){
-            if(curTrial == -1) {
-                console.log("restart after 15 second");
-                restartExperiment()
-            }
-        }, 5000);
+        $('#readyOrNotPage').hide();
+        endExperiment();
 
     });
 
