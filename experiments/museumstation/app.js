@@ -10,7 +10,7 @@ var
     parser        = require('xmldom').DOMParser,
     XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest,
     sendPostRequest = require('request').post;
-nodemailer = require('nodemailer');
+    nodemailer = require('nodemailer');
 
 var gameport;
 
