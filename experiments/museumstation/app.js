@@ -94,8 +94,8 @@ function sendEmail(req,res) {
     var mailOptions = {
         from: 'kiddrawsanjose@gmail.com',
         to: req.query.email,
-        subject: 'Copy of Consent Form - Stanford Language and Cognition Lab'
-        text: "Dear parents, Please find attached the copy of the consent form from the drawing station at the CDM. Thank you!",
+        subject: 'Copy of Consent Form - Stanford Language and Cognition Lab',
+        text: "Dear parents, Please find attached the copy of the consent form from the drawing station at the CDM. Thank you!!",
         attachments: [
         {
             filename: 'consentForm.pdf',
