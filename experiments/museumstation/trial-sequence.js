@@ -322,7 +322,7 @@ window.onload = function() {
     // Drawing related tools
     paper.setup('sketchpad');
 
-    function sendStrokeData(ev) {
+    function sendStrokeData(path) {
         alert('sending stroke data')
         path.selected = false;
         
