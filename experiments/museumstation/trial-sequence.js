@@ -324,13 +324,13 @@ window.onload = function() {
 
     function sendStrokeData(ev) {
         alert('sending stroke data')
-        path.selected = false;
-        path.simplify(2);
+        // path.selected = false;
+        // path.simplify(2);
 
         var svgString = path.exportSVG({asString: true});
         var category = stimListTest[curTrial].category;
         var readable_date = new Date();
-            var age = document.getElementById('years').value;
+        var age = $('.active').attr('id');
 
         stroke_data = {
             dataType: 'stroke',
@@ -345,6 +345,7 @@ window.onload = function() {
         };
 
         // send stroke data to server
+        console.log(stroke_data)
         socket.emit('stroke',stroke_data); 
 
     }
