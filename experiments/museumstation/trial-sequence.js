@@ -325,6 +325,7 @@ window.onload = function() {
     function sendStrokeData() {
         for(var i = 0; i < paths.length; i++){
             var path = paths[i];
+            path.selected = false
   
         var svgString = path.exportSVG({asString: true});
         var category = stimListTest[curTrial].category;
