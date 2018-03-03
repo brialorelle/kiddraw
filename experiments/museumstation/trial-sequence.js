@@ -325,9 +325,7 @@ window.onload = function() {
     function sendStrokeData() {
         for(var i = 0; i < paths.length; i++){
             var path = paths[i];
-            var point = view.getEventPoint(touches[i]);
   
-
         var svgString = path.exportSVG({asString: true});
         var category = stimListTest[curTrial].category;
         var readable_date = new Date();
