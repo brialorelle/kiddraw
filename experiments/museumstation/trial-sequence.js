@@ -323,8 +323,11 @@ window.onload = function() {
     paper.setup('sketchpad');
 
     function sendStrokeData() {
-        // alert('sending stroke data')
-        path=paths[1]
+        for(var i = 0; i < paths.length; i++){
+            var path = paths[i];
+            var point = view.getEventPoint(touches[i]);
+  
+
         var svgString = path.exportSVG({asString: true});
         var category = stimListTest[curTrial].category;
         var readable_date = new Date();
@@ -344,8 +347,8 @@ window.onload = function() {
 
         // send stroke data to server
         console.log(stroke_data)
-        socket.emit('stroke',stroke_data); 
-
+        socket.emit('stroke',stroke_data);         
+        }
     }
 
         var paths = [];
