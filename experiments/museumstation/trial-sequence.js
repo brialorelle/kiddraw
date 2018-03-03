@@ -92,7 +92,7 @@ function playVideo(){
             console.log('video ends and drawing starts');
             hideCue();            
             this.dispose(); //dispose the old video and related eventlistener. Add a new video
-            // $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' preload='auto' playsinline> </video>");
+            $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' preload='auto' playsinline> </video>");
         });
     });
 }
