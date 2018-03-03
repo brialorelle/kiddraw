@@ -29,7 +29,7 @@ stimListTest.push(lastTrial)
 stimListTest.unshift(firstTrial)
 var curTrial=0 // global variable, trial counter
 var sessionId='stationPilot0_' + Date.now().toString()
-var maxTrials = stimListTest.length-1; // 
+var maxTrials = stimListTest.length; // 
 
 // set global variables
 var clickedSubmit=0;
