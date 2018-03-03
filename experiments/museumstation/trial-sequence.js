@@ -90,7 +90,7 @@ function playVideo(){
         player.play();
         this.on('ended',function(){
             console.log('video ends and drawing starts');
-            hideCue();            
+            hideCue();
             this.dispose(); //dispose the old video and related eventlistener. Add a new video
             $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' preload='auto' playsinline> </video>");
         });
@@ -141,7 +141,7 @@ function progress(timeleft, timetotal, $element) {
     }
     else if(timeleft == 0 & clickedSubmit==0){
         console.log("trial timed out")
-		increaseTrial();
+        increaseTrial();
         $element.find('.progress-bar').width(totalBarWidth)
         clickedSubmit =1 // it's as if we clicked submt
         return; //  get out of here
@@ -220,19 +220,19 @@ function readyOrNot(){
 function endExperiment(){
     $('#thanksPage').show();
     curTrial = -1;
-        //wait for 15 second and restart
-        setTimeout(function(){
-            if(curTrial == -1) {
-                console.log("restart after 15 second");
-                restartExperiment()
-            }
-        }, 15000);
+    //wait for 15 second and restart
+    setTimeout(function(){
+        if(curTrial == -1) {
+            console.log("restart after 15 second");
+            restartExperiment()
+        }
+    }, 15000);
 }
 
 function increaseTrial(){
     saveSketchData() // save first!
     curTrial=curTrial+1; // increase counter
-    
+
     if (curTrial==maxTrials){
         project.activeLayer.removeChildren();
         $('#mainExp').hide();
@@ -243,6 +243,20 @@ function increaseTrial(){
     }
 }
 
+function isDoubleClicked(element) {
+    //if already clicked return TRUE to indicate this click is not allowed
+    if (element.data("isclicked")) return true;
+
+    //mark as clicked for 1 second
+    element.data("isclicked", true);
+    setTimeout(function () {
+        element.removeData("isclicked");
+    }, 2000);
+
+    //return FALSE to indicate this click was allowed
+    return false;
+}
+
 window.onload = function() {
 
     document.ontouchmove = function(event){
@@ -250,36 +264,41 @@ window.onload = function() {
     }
 
     $('#startConsent').click(function(e) {
-        event.preventDefault(e)
+        e.preventDefault()
         showConsentPage();
     });
 
-    $('#startExp').click(function(e) {
-        event.preventDefault(e)
+    $('#startExp').click(function (e) {
+        e.preventDefault()
+        if (isDoubleClicked($(this))) return;
         console.log('touched start button');
-        if ($("#checkConsent").is(':checked')){
+        if ($("#checkConsent").is(':checked')) {
             startDrawing();
         }
         else {
             alert("Can we use your child's drawings? If so, please click the box above to start drawing!")
         }
+
     });
 
     // gets called whenever you click/touch the submit button
     $('#submit').click(function (e) {
-        event.preventDefault(e)
+        e.preventDefault()
+        if (isDoubleClicked($(this))) return;
         clickedSubmit=1; // indicate that we submitted - global variable
-		increaseTrial(); // save data and increase trial counter
+        increaseTrial(); // save data and increase trial counter
     });
 
     $('#keepGoing').click(function(e) {
-        event.preventDefault(e)
+        e.preventDefault()
+        if (isDoubleClicked($(this))) return;
         console.log('touched next trial button');
         startDrawing();
     });
 
     $('#allDone').click(function(e) {
-        event.preventDefault(e)
+        e.preventDefault()
+        if (isDoubleClicked($(this))) return;
         console.log('touched endExperiment  button');
         $('#readyOrNotPage').hide();
         endExperiment();
@@ -287,13 +306,16 @@ window.onload = function() {
     });
 
     $('#endRestart').click(function(e){
-        event.preventDefault(e)
+        e.preventDefault()
+        if (isDoubleClicked($(this))) return;
         console.log('restart to the landing page')
         restartExperiment()
     });
 
+
     $('#sendEmail').click(function(e){
-        event.preventDefault(e)
+        e.preventDefault()
+        if (isDoubleClicked($(this))) return;
         var email = $('#parent-email').val()
         $.get("/send", {email:email}, function(data){
             if(data=="sent"){
@@ -304,7 +326,7 @@ window.onload = function() {
     });
 
     $('.ageButton').click(function(e){
-        event.preventDefault(e)
+        e.preventDefault()
         $('.ageButton').removeClass('active')
         $(this).addClass('active')
     });
@@ -322,71 +344,71 @@ window.onload = function() {
         for(var i = 0; i < paths.length; i++){
             var path = paths[i];
             path.selected = false
-  
-        var svgString = path.exportSVG({asString: true});
-        var category = stimListTest[curTrial].category;
-        var readable_date = new Date();
-        var age = $('.active').attr('id');
 
-        stroke_data = {
-            dataType: 'stroke',
-            sessionId: sessionId,
-            svg: svgString,
-            category: category,
-            dbname:'kiddraw',
-            colname:'stationPilot0',
-            trialNum: curTrial,
-            time: Date.now(),
-            date: readable_date
-        };
+            var svgString = path.exportSVG({asString: true});
+            var category = stimListTest[curTrial].category;
+            var readable_date = new Date();
+            var age = $('.active').attr('id');
 
-        // send stroke data to server
-        console.log(stroke_data)
-        socket.emit('stroke',stroke_data);         
+            stroke_data = {
+                dataType: 'stroke',
+                sessionId: sessionId,
+                svg: svgString,
+                category: category,
+                dbname:'kiddraw',
+                colname:'stationPilot0',
+                trialNum: curTrial,
+                time: Date.now(),
+                date: readable_date
+            };
+
+            // send stroke data to server
+            console.log(stroke_data)
+            socket.emit('stroke',stroke_data);
         }
     }
 
-        var paths = [];
-        function touchStart(ev) {
-            console.log("touch start");
-            var touches = ev.touches;
-            // Create new path per touch
-            var path = new Path();
-            path.strokeColor = 'black';
-            path.strokeCap = 'round'
-            path.strokeWidth = 10;
-            paths.push(path);
-        }
+    var paths = [];
+    function touchStart(ev) {
+        console.log("touch start");
+        var touches = ev.touches;
+        // Create new path per touch
+        var path = new Path();
+        path.strokeColor = 'black';
+        path.strokeCap = 'round'
+        path.strokeWidth = 10;
+        paths.push(path);
+    }
 
-        function touchMove(ev) {
-            console.log("touch move");
-            var touches = ev.touches;
-            // Prevents touch bubbling
-            if(touches.length === paths.length) {
-                for(var i = 0; i < touches.length; i++){
-                    var path = paths[i];
-                    var point = view.getEventPoint(touches[i]);
-                    path.add(point);
-                    view.draw();
-                }
+    function touchMove(ev) {
+        console.log("touch move");
+        var touches = ev.touches;
+        // Prevents touch bubbling
+        if(touches.length === paths.length) {
+            for(var i = 0; i < touches.length; i++){
+                var path = paths[i];
+                var point = view.getEventPoint(touches[i]);
+                path.add(point);
+                view.draw();
             }
         }
+    }
 
-        function touchEnd(ev){
-            console.log("touch end");
-            sendStrokeData()
-            var touches = ev.touches; // if not touching anymore
-            // Empty paths array to start process over
-            if(touches.length === 0){
-                paths = [];
-            }
-            
+    function touchEnd(ev){
+        console.log("touch end");
+        sendStrokeData()
+        var touches = ev.touches; // if not touching anymore
+        // Empty paths array to start process over
+        if(touches.length === 0){
+            paths = [];
         }
 
-        targetSketch = document.getElementById("sketchpad");
-        targetSketch.addEventListener('touchstart', touchStart, false);
-        targetSketch.addEventListener('touchmove', touchMove, false);
-        targetSketch.addEventListener('touchend', touchEnd, false);
+    }
+
+    targetSketch = document.getElementById("sketchpad");
+    targetSketch.addEventListener('touchstart', touchStart, false);
+    targetSketch.addEventListener('touchmove', touchMove, false);
+    targetSketch.addEventListener('touchend', touchEnd, false);
 
 } // on document load
 
