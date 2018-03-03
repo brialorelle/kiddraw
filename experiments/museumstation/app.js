@@ -94,13 +94,13 @@ function sendEmail(req,res) {
     var mailOptions = {
         from: 'kiddrawsanjose@gmail.com',
         to: req.query.email,
-        subject: 'Informed Consent',
-        text: "Dear parents, the consent form of the kid drawing psychology experiment conducted in San Jose Children's Discovery " +
-        "Museum is attached to this email.",
+        subject: 'Copy of Consent Form - Stanford Language and Cognition Lab'
+        text: "Dear parents, Please find attached the copy of the consent form from the drawing station at the CDM" +
+        "is attached to this email.",
         attachments: [
         {
-            filename: 'consent.pdf',
-            path:'consent.pdf',
+            filename: 'consentForm.pdf',
+            path:'consentForm.pdf',
             contentType: 'application/pdf'
         }]
     };
