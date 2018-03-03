@@ -67,7 +67,6 @@ function startDrawing(){
 
 function beginTrial(){
     //
-    clickedSubmit=0; //reset this variable
     loadNextVideo(curTrial) // change video
     document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[curTrial].category + " ?"; // change cue
     document.getElementById("drawingCue").innerHTML = stimListTest[curTrial].category; // change drawing cue
@@ -247,7 +246,7 @@ function isDoubleClicked(element) {
     //if already clicked return TRUE to indicate this click is not allowed
     if (element.data("isclicked")) return true;
 
-    //mark as clicked for 1 second
+    //mark as clicked for 2 second
     element.data("isclicked", true);
     setTimeout(function () {
         element.removeData("isclicked");
@@ -284,8 +283,8 @@ window.onload = function() {
     // gets called whenever you click/touch the submit button
     $('#submit').click(function (e) {
         e.preventDefault()
-        if (isDoubleClicked($(this))) return;
         clickedSubmit=1; // indicate that we submitted - global variable
+        if (isDoubleClicked($(this))) return;
         increaseTrial(); // save data and increase trial counter
     });
 
