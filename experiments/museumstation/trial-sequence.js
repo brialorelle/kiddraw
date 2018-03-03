@@ -17,12 +17,16 @@ paper.install(window);
 socket = io.connect();
 
 // 1. Setup trial order and randomize it!
-var stimListTest = [{"category": "rabbit", "video": "rabbit.mp4"},
+firstTrial = {"category": "circle", "video": "circle.mp4"}
+lastTrial = {"category": "love", "video": "love.mp4"}
+var stimListTest = [{"category": "dog", "video": "dog.mp4"},
     {"category": "boat", "video": "boat.mp4"},
-    {"category": "cup", "video": "cup.mp4"},
-    {"category": "banana", "video": "banana.mp4"}]
+    {"category": "key", "video": "key.mp4"},
+    {"category": "tiger", "video": "tiger.mp4"}]
 
 var stimListTest = shuffle(stimListTest)
+stimListTest.push(lastTrial)
+stimListTest.unshift(firstTrial)
 var curTrial=0 // global variable, trial counter
 var sessionId='stationPilot0_' + Date.now().toString()
 var maxTrials = stimListTest.length-1; // 
