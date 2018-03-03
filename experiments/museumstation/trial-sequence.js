@@ -92,7 +92,7 @@ function playVideo(){
             console.log('video ends and drawing starts');
             hideCue();            
             this.dispose(); //dispose the old video and related eventlistener. Add a new video
-            $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' preload='auto' playsinline> </video>");
+            // $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' preload='auto' playsinline> </video>");
         });
     });
 }
@@ -143,6 +143,7 @@ function progress(timeleft, timetotal, $element) {
         console.log("trial timed out")
 		increaseTrial();
         $element.find('.progress-bar').width(totalBarWidth)
+        clickedSubmit =1 // it's as if we clicked submt
         return; //  get out of here
     }
     else if (clickedSubmit==1){
