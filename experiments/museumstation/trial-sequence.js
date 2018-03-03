@@ -324,9 +324,7 @@ window.onload = function() {
 
     function sendStrokeData() {
         // alert('sending stroke data')
-        path=paths[i]
-        path.selected = false;
-        console.log(path)
+        path=paths[1]
         var svgString = path.exportSVG({asString: true});
         var category = stimListTest[curTrial].category;
         var readable_date = new Date();
