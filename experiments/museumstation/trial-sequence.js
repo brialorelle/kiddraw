@@ -49,7 +49,6 @@ function shuffle (a)
 // for each time we start drawings
 function startDrawing(){
     if (curTrial==0){
-        saveConsentData();
         $('#consentPage').fadeOut('fast'); // fade out age screen
         beginTrial()
     }
