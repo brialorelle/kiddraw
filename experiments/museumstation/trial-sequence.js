@@ -18,7 +18,7 @@ socket = io.connect();
 
 // 1. Setup trial order and randomize it!
 firstTrial = {"category": "circle", "video": "circle.mp4"}
-lastTrial = {"category": "love", "video": "love.mp4"}
+lastTrial = {"category": "something you love", "video": "love.mp4"}
 var stimListTest = [{"category": "dog", "video": "dog.mp4"},
     {"category": "boat", "video": "boat.mp4"},
     {"category": "key", "video": "key.mp4"},
@@ -73,23 +73,35 @@ function beginTrial(){
     document.getElementById("drawingCue").innerHTML = stimListTest[curTrial].category; // change drawing cue
 
     setTimeout(function() {showCue();},1000);
-    var video = $('video');
-    timestamp_cueOnset = new Date().getTime();
+    setTimeout(function() {playVideo();},1000);
+}
+
+// show cue without canvas
+function showCue() {
+    $('#mainExp').fadeIn('fast'); // fade in exp
+    $('#cue').fadeIn('fast'); // text cue associated with trial
 }
 
 // video player functions
 function playVideo(){
+    $('#cueVideoDiv').show(); // show video div
     videojs("cueVideo").ready(function(){ // need to wait until video is ready
         var player = this;
         player.play();
         this.on('ended',function(){
             console.log('video ends and drawing starts');
-            hideCue();
-            //dispose the old video and related eventlistener. Add a new video
-            this.dispose();
-            $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' preload='auto' playsinline> <source src='videos/rabbit.mp4' type='video/mp4'> </video>");
+            hideCue();            
+            this.dispose(); //dispose the old video and related eventlistener. Add a new video
+            $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' preload='auto' playsinline> </video>");
         });
     });
+}
+
+// hide cue and show sketchpad canvas
+function hideCue() {
+    $('#cue').hide(); // fade out cue
+    $('#cueVideoDiv').hide(); //show video html - this can be a variable later?
+    setUpDrawing()
 }
 
 function loadNextVideo(){
@@ -100,26 +112,10 @@ function loadNextVideo(){
     player.load();
 }
 
-// show cue without canvas
-function showCue() {
-    $('#mainExp').fadeIn('fast'); // fade in exp
-    $('#cue').fadeIn('fast'); //text cue associated with trial
-    $('#cueVideoDiv').show(); //show video div
-    playVideo();
-}
-
-// hide cue and show sketchpad canvas
-function hideCue() {
-    $('#cue').hide(); // fade out cue
-    $('#cueVideoDiv').hide(); //show video html - this can be a variable later?
-    setUpDrawing()
-}
-
 function setUpDrawing(){
     $('#drawing').show()
     monitorProgress(); // since we now have a timeout function 
 };
-
 
 function monitorProgress(){
     clickedSubmit=0;
@@ -169,11 +165,6 @@ function saveSketchData(){
     destCtx.drawImage(canvas, 0,0,150,150)
 
     var dataURL = tmpCanvas.toDataURL();
-    //var dataURL = canvas.toDataURL();
-    // console.log(dataURLTest.length)
-    // console.log("should be longer" +dataURL.length)
-
-
     dataURL = dataURL.replace('data:image/png;base64,','');
     var category = stimListTest[curTrial].category;
     var age = $('.active').attr('id');
