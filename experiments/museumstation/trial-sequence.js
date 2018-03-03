@@ -324,9 +324,8 @@ window.onload = function() {
 
     function sendStrokeData(ev) {
         alert('sending stroke data')
-        // path.selected = false;
-        // path.simplify(2);
-
+        path.selected = false;
+        
         var svgString = path.exportSVG({asString: true});
         var category = stimListTest[curTrial].category;
         var readable_date = new Date();
@@ -352,7 +351,7 @@ window.onload = function() {
 
         var paths = [];
         function touchStart(ev) {
-            console.log("boop");
+            console.log("touch start");
             var touches = ev.touches;
             // Create new path per touch
             var path = new Path();
@@ -378,12 +377,15 @@ window.onload = function() {
 
         function touchEnd(ev){
             console.log("touch end");
+            for(var i = 0; i < paths.length; i++){
+                sendStrokeData(paths[i]) // send stoke data to database
+            }
             var touches = ev.touches;
             // Empty paths array to start process over
             if(touches.length === 0){
                 paths = [];
             }
-            sendStrokeData(ev) // send stoke data to database
+            
         }
 
         targetSketch = document.getElementById("sketchpad");
