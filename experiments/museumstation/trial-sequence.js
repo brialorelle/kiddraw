@@ -193,11 +193,6 @@ function saveSketchData(){
     socket.emit('current_data', current_data);
 };
 
-function saveConsentData(){
-    console.log(' saving consent "form" to database')
-    // save sketch png
-    // get age and consent placeholder
-}
 
 // experiment navigation functions
 function showConsentPage(){
@@ -240,8 +235,9 @@ function endExperiment(){
 }
 
 function increaseTrial(){
+    saveSketchData() // save first!
     curTrial=curTrial+1; // increase counter
-    saveSketchData()
+    
     if (curTrial==maxTrials){
         project.activeLayer.removeChildren();
         $('#mainExp').hide();
@@ -328,6 +324,7 @@ window.onload = function() {
     paper.setup('sketchpad');
 
     function sendStrokeData(ev) {
+        alert('sending stroke data')
         path.selected = false;
         path.simplify(2);
 
@@ -349,7 +346,7 @@ window.onload = function() {
         };
 
         // send stroke data to server
-        socket.emit('stroke',stroke_data); // not for demo
+        socket.emit('stroke',stroke_data); 
 
     }
 
