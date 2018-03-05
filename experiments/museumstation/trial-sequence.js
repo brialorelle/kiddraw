@@ -406,22 +406,26 @@ window.onload = function() {
 
     }
 
-    function preventZoom(event){
-    if(event.touches.length > 1){
-        //the event is multi-touch
-        //you can then prevent the behavior
-        event.preventDefault()
-        console.log("trying to prevent zoom")
-    }
-    }
+    // function preventZoom(event){
+    // if(event.touches.length > 1){
+    //     //the event is multi-touch
+    //     //you can then prevent the behavior
+    //     event.preventDefault()
+    //     console.log("trying to prevent zoom")
+    // }
+    // }
 
     targetSketch = document.getElementById("sketchpad");
     targetSketch.addEventListener('touchstart', touchStart, false);
     targetSketch.addEventListener('touchmove', touchMove, false);
     targetSketch.addEventListener('touchend', touchEnd, false);
 
+
+
     videoBox = document.getElementById("cueVideo");
-    videoBox.addEventListener("touchstart", preventZoom, false);
+    $('videoBox').bind('touchmove', false);
+
+    // videoBox.addEventListener("touchstart", preventZoom, false);
 
     // videojs("cueVideo",{controlBar: {fullscreenToggle: false}}).ready(function(){
     //     myPlayer = this;
