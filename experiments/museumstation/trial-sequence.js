@@ -320,6 +320,8 @@ window.onload = function() {
             if(data=="sent"){
                 $('#email-form').hide()
                 $('#email-sent').show()
+            }else{
+                alert('invalid email')
             }
         });
     });
