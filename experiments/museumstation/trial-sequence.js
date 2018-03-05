@@ -412,15 +412,15 @@ window.onload = function() {
         //you can then prevent the behavior
         event.preventDefault()
     }
-}
+    }
 
     targetSketch = document.getElementById("sketchpad");
     targetSketch.addEventListener('touchstart', touchStart, false);
     targetSketch.addEventListener('touchmove', touchMove, false);
     targetSketch.addEventListener('touchend', touchEnd, false);
 
-    targetSketch = document.getElementById("videoDiv");
-    targetSketch.addEventListener("touchstart", preventZoom, false);
+    videoBox = document.getElementById("videoDiv");
+    videoBox.addEventListener("touchstart", preventZoom, false);
 
 
 } // on document load
