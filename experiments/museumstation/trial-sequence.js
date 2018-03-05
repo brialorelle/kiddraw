@@ -412,7 +412,7 @@ window.onload = function() {
         //you can then prevent the behavior
         event.preventDefault()
         console.log("trying to prevent zoom")
-        }, {passive: false})
+        }, {passive: false}
     }
 
     targetSketch = document.getElementById("sketchpad");
