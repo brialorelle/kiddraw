@@ -419,7 +419,7 @@ window.onload = function() {
     targetSketch.addEventListener('touchmove', touchMove, false);
     targetSketch.addEventListener('touchend', touchEnd, false);
 
-    videoBox = document.getElementById("videoDiv");
+    videoBox = document.getElementById("cueVideoDiv");
     videoBox.addEventListener("touchstart", preventZoom, false);
 
 
