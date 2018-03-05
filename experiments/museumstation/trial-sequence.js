@@ -411,6 +411,7 @@ window.onload = function() {
         //the event is multi-touch
         //you can then prevent the behavior
         event.preventDefault()
+        console.log("trying to prevent zoom")
     }
     }
 
