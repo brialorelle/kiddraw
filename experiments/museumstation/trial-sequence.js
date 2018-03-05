@@ -422,8 +422,9 @@ window.onload = function() {
 
 
 
-    videoBox = document.getElementById("cueVideo");
-    $('videoBox').bind('touchmove', false);
+    // videoBox = document.getElementById("cueVideo");
+    $('cueVideo').bind('touchmove', false);
+    $('cueVideoDiv').bind('touchmove', false);
 
     // videoBox.addEventListener("touchstart", preventZoom, false);
 
