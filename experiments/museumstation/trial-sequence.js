@@ -17,12 +17,12 @@ paper.install(window);
 socket = io.connect();
 
 // 1. Setup trial order and randomize it!
-firstTrial = {"category": "circle", "video": "circle.mp4"}
+firstTrial = {"category": "a circle", "video": "circle.mp4"}
 lastTrial = {"category": "something you love", "video": "love.mp4"}
-var stimListTest = [{"category": "dog", "video": "dog.mp4"},
-    {"category": "boat", "video": "boat.mp4"},
-    {"category": "key", "video": "key.mp4"},
-    {"category": "tiger", "video": "tiger.mp4"}]
+var stimListTest = [{"category": "a dog", "video": "dog.mp4"},
+    {"category": "a boat", "video": "boat.mp4"},
+    {"category": "a key", "video": "key.mp4"},
+    {"category": "a tiger", "video": "tiger.mp4"}]
 
 var stimListTest = shuffle(stimListTest)
 stimListTest.push(lastTrial)
@@ -68,7 +68,7 @@ function startDrawing(){
 function beginTrial(){
     //
     loadNextVideo(curTrial) // change video
-    document.getElementById("cue").innerHTML = "Can you draw a "  + stimListTest[curTrial].category + " ?"; // change cue
+    document.getElementById("cue").innerHTML = "Can you draw"  + stimListTest[curTrial].category + " ?"; // change cue
     document.getElementById("drawingCue").innerHTML = stimListTest[curTrial].category; // change drawing cue
 
     setTimeout(function() {showCue();},1000);
