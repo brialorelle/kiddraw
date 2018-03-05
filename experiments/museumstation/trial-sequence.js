@@ -420,14 +420,12 @@ window.onload = function() {
     targetSketch.addEventListener('touchmove', touchMove, false);
     targetSketch.addEventListener('touchend', touchEnd, false);
 
-
-
-    // 
+     
     // $('cueVideo').bind('touchmove', false);
     // $('cueVideoDiv').bind('touchmove', false);
     
     videoBox = document.getElementById("cueVideo");
-    videoBox.addEventListener("touchstart", preventZoom, false);
+    // videoBox.addEventListener("touchstart", preventZoom, false);
 
     videojs("cueVideo",{controlBar: {fullscreenToggle: false}}).ready(function(){
         myPlayer = this;
