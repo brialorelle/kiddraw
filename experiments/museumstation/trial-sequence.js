@@ -420,8 +420,18 @@ window.onload = function() {
     targetSketch.addEventListener('touchmove', touchMove, false);
     targetSketch.addEventListener('touchend', touchEnd, false);
 
-    videoBox = document.getElementById("cueVideoDiv");
-    videoBox.addEventListener("touchstart", preventZoom, false);
+    // videoBox = document.getElementById("cueVideoDiv");
+    // videoBox.addEventListener("touchstart", preventZoom, false);
+
+    videojs("cueVideo",{controlBar: {fullscreenToggle: false}}).ready(function(){
+        myPlayer = this;
+        myPlayer.on("fullscreenchange", function(){
+            if(myPlayer.isFullscreen()){
+                myPlayer.exitFullscreen();
+                console.log("prevented fullscreen")
+            }
+        });
+    });
 
 
 } // on document load
