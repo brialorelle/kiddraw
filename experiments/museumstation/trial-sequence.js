@@ -406,14 +406,14 @@ window.onload = function() {
 
     }
 
-    function preventZoom(event){
-    if(event.touches.length > 1){
-        //the event is multi-touch
-        //you can then prevent the behavior
-        event.preventDefault()
-        console.log("trying to prevent zoom")
-        }, {passive: false}
-    }
+    // function preventZoom(event){
+    // if(event.touches.length > 1){
+    //     //the event is multi-touch
+    //     //you can then prevent the behavior
+    //     event.preventDefault()
+    //     console.log("trying to prevent zoom")
+    //     }, {passive: false}
+    // }
 
     targetSketch = document.getElementById("sketchpad");
     targetSketch.addEventListener('touchstart', touchStart, false);
@@ -424,18 +424,18 @@ window.onload = function() {
     // $('cueVideo').bind('touchmove', false);
     // $('cueVideoDiv').bind('touchmove', false);
     
-    videoBox = document.getElementById("cueVideo");
-    // videoBox.addEventListener("touchstart", preventZoom, false);
+    // videoBox = document.getElementById("cueVideo");
+    // // videoBox.addEventListener("touchstart", preventZoom, false);
 
-    videojs("cueVideo",{controlBar: {fullscreenToggle: false}}).ready(function(){
-        myPlayer = this;
-        myPlayer.on("fullscreenchange", function(){
-            if(myPlayer.isFullscreen()){
-                myPlayer.exitFullscreen();
-                console.log("prevented fullscreen")
-            }
-        });
-    });
+    // videojs("cueVideo",{controlBar: {fullscreenToggle: false}}).ready(function(){
+    //     myPlayer = this;
+    //     myPlayer.on("fullscreenchange", function(){
+    //         if(myPlayer.isFullscreen()){
+    //             myPlayer.exitFullscreen();
+    //             console.log("prevented fullscreen")
+    //         }
+    //     });
+    // });
 
 
 } // on document load
