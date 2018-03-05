@@ -335,6 +335,8 @@ button[disabled] {
     font-style: italic;
 }
 
-
+.vjs-fullscreen-control { 
+    display: none; 
+} 
 
 
