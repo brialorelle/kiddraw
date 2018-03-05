@@ -191,6 +191,7 @@ button[disabled] {
     top:0;
     bottom:0;
     margin:auto;
+    touch-action: none;
 }
 
 .videoDiv {
@@ -200,6 +201,7 @@ button[disabled] {
     left:0;
     top:0;
     bottom:0;
+    touch-action: none;
 }
 
 #ready {
@@ -333,13 +335,6 @@ button[disabled] {
     font-style: italic;
 }
 
-/*.video-js .vjs-control-bar {
-  display:none!important; 
-}*/
-
-/*.video-js .vjs-big-play-button {
-    display: none;
-}*/
 
 
 
