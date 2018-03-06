@@ -68,7 +68,7 @@ function startDrawing(){
 function beginTrial(){
     //
     loadNextVideo(curTrial) // change video
-    document.getElementById("cue").innerHTML = "Can you draw"  + stimListTest[curTrial].category + " ?"; // change cue
+    document.getElementById("cue").innerHTML = "Can you draw "  + stimListTest[curTrial].category + " ?"; // change cue
     document.getElementById("drawingCue").innerHTML = stimListTest[curTrial].category; // change drawing cue
 
     setTimeout(function() {showCue();},1000);
