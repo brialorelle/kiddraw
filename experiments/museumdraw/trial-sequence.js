@@ -50,29 +50,53 @@ function shuffle (a)
 // 	{"category": "car"},
 // ]
 
-// round 2
+// round 2 - optimistic version
+// var stimListTest = [{"category": "airplane"},
+//   {"category": "bus"},
+//   {"category": "bike"},
+//   {"category": "piano"},
+//     {"category": "table"},
+//     {"category": "door"},
+//     {"category": "bed"},
+//     {"category": "fork"},
+//     {"category": "keys"},
+//   {"category": "hat"},
+//   {"category": "apple"},
+//   {"category": "cookie"},
+//   {"category": "mushroom"},
+//   {"category": "horse"},
+//   {"category": "dog"},
+//   {"category": "sheep"},
+//   {"category": "bear"},
+//   {"category": "fish"},
+//   {"category": "bird"},
+//   {"category": "spider"},
+//   {"category": "shark"},
+//   {"category": "duck"}
+// ]
+
+
+// justNeedOld = fish, bear, bird, bus, airplane, cookie, hat, sheep, table, apple, piano
+// justNeedYoung = cat
+// almostThereForBoth = bike, dog, fork, keys, shark
+// getRidOf = bed, door, duck, horse, mushroom, spider
+
 var stimListTest = [{"category": "airplane"},
   {"category": "bus"},
   {"category": "bike"},
   {"category": "piano"},
     {"category": "table"},
-    {"category": "door"},
-    {"category": "bed"},
     {"category": "fork"},
     {"category": "keys"},
   {"category": "hat"},
   {"category": "apple"},
   {"category": "cookie"},
-  {"category": "mushroom"},
-  {"category": "horse"},
   {"category": "dog"},
   {"category": "sheep"},
   {"category": "bear"},
   {"category": "fish"},
   {"category": "bird"},
-  {"category": "spider"},
   {"category": "shark"},
-  {"category": "duck"}
 ]
 
 
