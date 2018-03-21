@@ -1,95 +1,97 @@
 body {
-  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; }
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
 }
 
 button {
-  font-family: "Schoolbell", cursive; 
-  background: url(images/button-gradient.png);
-  border: 1px solid #999;
-  border-top: 1px solid #e0e0e0;
-  border-left: 1px solid #e0e0e0;
-  margin: 10px;
-  padding-left: 5px;
-  padding-right: 5px;
-  height: 50px;
-  min-width: 70px;
+    font-family: "Schoolbell", cursive;
+    /*background: url(images/button-gradient.png);*/
+    border: 1px solid #999;
+    border-top: 1px solid #e0e0e0;
+    border-left: 1px solid #e0e0e0;
+    padding-left: 5px;
+    padding-right: 5px;
+    /*height: 50px;*/
+    min-width: 150px;
 }
 
 button:active {
-  border-left: 1px solid #c9c9c9;
-  border-top: 1px solid #c9c9c9;
-  background: none;
-  background-color: #c9c9c9;
+    border-left: 1px solid #c9c9c9;
+    border-top: 1px solid #c9c9c9;
+    background: none;
+    background-color: #c9c9c9;
 }
 
 button[disabled] {
-  background: url(zen-button.png);
-  border: 1px solid #999;
-  border-top: 1px solid #e0e0e0;
-  border-left: 1px solid #e0e0e0;
-  cursor: not-allowed;
+    background: url(zen-button.png);
+    border: 1px solid #999;
+    border-top: 1px solid #e0e0e0;
+    border-left: 1px solid #e0e0e0;
+    cursor: not-allowed;
 }
 
+.square{
+    padding-top:15px;
+    padding-bottom:15px;
+}
 .ageButton {
-  font-size: 36pt; 
-  text-align:center;
-  font-family: Schoolbell,cursive; 
-  font-style: italic
+    font-size: 4vw;
+    text-align:center;
+    font-family: Schoolbell,cursive;
+    font-style: italic;
+    margin: 10px;
 }
 
+.btn-warning{
+    background-color:#F7E293;
+}
 
-#logo-text {
-  font-weight: bold;
-  font-style: italic;
+.progress-bar{
+    -webkit-transition: none !important;
+    transition: none !important;
 }
 
 .slideButton {
-   position: absolute;
-   margin: auto;
-   right:0;left:0;
-   bottom: 5%;
-   width:280px;
-   text-align: center;
+    /*position: absolute;*/
+    margin: auto;
+    right:0;left:0;
+    bottom: 5%;
+    width:280px;
+    text-align: center;
+}
+
+.imageButton{
+    cursor:pointer;
+    width:15vw;
+    height:auto;
+}
+
+.buttonDescription{
+    font-family: Schoolbell,cursive;
+    font-size: 4vw;
+    text-align:center;
 }
 
 #consent {
-  text-align: left;
-  height: 420px;
-  width: 700px;
-  position: relative;
-  margin: auto;
-  float:top;
-  top: 20vh;
-  border: solid 5px #999;
-}
-
-.videoDiv {
+    text-align: left;
+    height: 420px;
+    width: 700px;
+    position: relative;
     margin: auto;
-    position: absolute;
-    top: 12vh;
-    right:0;left:0;
-    background: #ffffff;
+    float:top;
+    top: 20vh;
     border: solid 5px #999;
-    width: 300px;
-    height: 200px;
 }
-
-.video-js {
-    width: 300px;
-    height: 200px;
-}
-
 
 .bufferSlides {
-	height: auto;
-	width: auto;
-	text-align: center;
-	margin-left: auto;
-	margin-right: auto;
-	margin-bottom: auto ;
-	left:0; right:0; top:10%; bottom: 0;
-  font-size: 1em;
-	position: absolute;
+    height: auto;
+    width: auto;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: auto ;
+    left:0; right:0; top:10%; bottom: 0;
+    font-size: 1em;
+    position: absolute;
 }
 
 #drawingIcon {
@@ -98,25 +100,29 @@ button[disabled] {
 }
 
 #consentText {
-    position: absolute;
     bottom: 15%;
+    font-size: 2vw;
+    padding: 4vw;
 }
 
 .welcomeHeader {
     margin: auto;
-    top: 20vh;
+    margin-top: 2vh;
+    margin-bottom:3vh;
     text-align: center;
 }
 
 #sketchpad {
-    position: absolute;
-    top: 20vh;
-    left: 2.5%;
+    /*position: absolute;*/
+    /*top: 20vh;*/
+    /*left: 2.5%;*/
     border: solid 5px #999;
+    display:block;
+    margin:0 auto;
 }
 
 #kidConsent {
-    position: absolute;
+    /*position: absolute;*/
     top: 20vh;
     width: 95%;
     left: 0;
@@ -148,46 +154,72 @@ button[disabled] {
 }
 
 #submit_div {
-    margin: auto;
-    text-align:center
-    top:5%;
+    text-align:center;
+    /*top:5%;*/
     left:0;
     right:0;
-    position:absolute;
+    margin-top:4vh;
+    /*position:absolute;*/
 }
 
 #cue {
-    position:absolute;
-    font-size: 3em;
+    font-size: 5vw;
     text-align:center;
     left: 0;
     right: 0;
     margin: auto;
+    font-family: Schoolbell,cursive;
+    margin-top:3vh;
+    margin-bottom:2vh;
+}
+
+#drawingCue{
+    font-size: 5vw;
+    text-align:center;
+    left: 0;
+    right: 0;
+    margin: auto;
+    margin-bottom:1vh;
+    font-family: Schoolbell,cursive;
 }
 
 #cueVideo {
-    position:absolute;
+    width:60vw;
+    height:45vw;
     left: 0;
     right: 0;
+    top:0;
+    bottom:0;
     margin:auto;
+    touch-action: none;
+}
+
+.videoDiv {
+    margin: auto;
+    top: 3vw;
+    right:0;
+    left:0;
+    top:0;
+    bottom:0;
+    touch-action: none;
 }
 
 #ready {
-   font-size: 1em;
-   position:absolute;
-   left:40%;
-   top: 25%;
+    font-size: 1em;
+    position:absolute;
+    left:40%;
+    top: 25%;
 }
 
 #iam {
-  position:absolute;
-   left:28%;
-   top: 5%;
+    position:absolute;
+    left:28%;
+    top: 5%;
 }
 
 
 #checkConsent {
-    position: absolute;
+    /*position: absolute;*/
     background: #ffffff;
     left: 25%;
     bottom: 10%;
@@ -198,78 +230,113 @@ button[disabled] {
 
 
 #yearsold {
-  position:absolute;
-   left:55%;
-   top: 5%;
+    position:absolute;
+    left:55%;
+    top: 5%;
 }
 
 #mainExp {
-  position:absolute;
-  height: 100%;
-  width: 100%;
+    position:absolute;
+    height: 100%;
+    width: 100%;
 }
 
 
 #progressBar {
-  width: 90%;
-  margin: 10px auto;
-  height: 22px;
-  background-color: #0A5F44;
-  position: absolute;
-  left: 0;
-  right:0;
-  bottom: 2%;
+    width: 90%;
+    margin: 3vw;
+    height: 2vw;
+    background-color: #0A5F44;
+    position: absolute;
+    left: 0;
+    right:0;
+    bottom: 2%;
 }
 
 #progressBar div {
-  height: 100%;
-  text-align: right;
-  padding: 0 10px;
-  line-height: 22px; /* same as #progressBar height if we want text middle aligned */
-  width: 0;
-  background-color: #CBEA00;
-  box-sizing: border-box;
-  position: absolute;
-  left: 0;
-  right:0;
-  bottom: 2%;
+    height: 100%;
+    text-align: right;
+    padding: 0 10px;
+    line-height: 1vw; /* same as #progressBar height if we want text middle aligned */
+    width: 0;
+    background-color: #CBEA00;
+    box-sizing: border-box;
+    left: 0;
+    right:0;
+    bottom: 2%;
 
 }
 
+.progress{
+    padding-left:0px;
+    padding-right:0px;
+    height: 2vw;
+    margin-bottom: 2vw;
+    margin-top: 2vw;
+    font-size:2vw
+}
+
 #allDone {
-  height:300px;
-  width:300px;
-  top: 60vh;
-  left:35%;
-  right:0%;
-  position:absolute;
+    margin-top:10vw;
+    text-align:center;
+    font-size: 4vw;
+    font-family: Schoolbell,cursive;
+}
+
+#restartExp{
+    margin-top:10vw;
+    text-align:center;
+    font-size: 4vw;
+    font-family: Schoolbell,cursive;
 }
 
 
 #keepGoing {
-  height:300px;
-  width:300px;
-  top: 10vh;
-  left:35%;
-  right:0%;
-  position:absolute;
+    margin-top:10vw;
+    font-size: 4vw;
+    text-align:center;
+    font-family: Schoolbell,cursive;
 }
+
 
 #startConsent {
-  height:300px;
-  width:300px;
-  top: 60vh;
-  width: 50%;
-  display: block;
-  margin: auto;
+    width: 50%;
+    display: block;
+    margin: auto;
+    cursor:pointer
 }
-/*.video-js .vjs-control-bar {
-  display:none!important; 
-}*/
 
-/*.video-js .vjs-big-play-button {
-    display: none;
-}*/
+#logo-text {
+    font-weight: bold;
+    font-style: italic;
+    font-size:3vw;
+}
+#stanfordLogo{
+    text-align:center;
+    width:20vw;
+    padding-top:3vw;
+}
 
+#parent-email{
+    font-size:2vw;
+}
+
+#sendEmail{
+    font-size:2vw;
+}
+
+#email-sent{
+    font-size:2vw;
+}
+
+#startExp{
+    font-size: 4vw;
+    font-family: Schoolbell,cursive;
+    font-style: italic;
+}
+
+.vjs-fullscreen-control { 
+    display: none; 
+} 
 
 

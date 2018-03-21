@@ -312,8 +312,9 @@ window.onload = function() {
       date: readable_date,    
       age: age};
 
-    // console.log(stroke_data);
+    
     // send stroke data to server
+    console.log(stroke_data);
     socket.emit('stroke',stroke_data);
     
   }
