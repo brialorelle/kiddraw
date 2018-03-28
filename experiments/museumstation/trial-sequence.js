@@ -17,12 +17,12 @@ paper.install(window);
 socket = io.connect();
 
 // 1. Setup trial order and randomize it!
-firstTrial = {"category": "a circle", "video": "circle.mp4"}
-lastTrial = {"category": "something you love", "video": "love.mp4"}
-var stimListTest = [{"category": "a dog", "video": "dog.mp4"},
-    {"category": "a boat", "video": "boat.mp4"},
-    {"category": "a key", "video": "key.mp4"},
-    {"category": "a tiger", "video": "tiger.mp4"}]
+firstTrial = {"category": "a circle", "video": "circle_smaller.mp4"}
+lastTrial = {"category": "something you love", "video": "love_smaller.mp4"}
+var stimListTest = [{"category": "a dog", "video": "dog_smaller.mp4"},
+    {"category": "a boat", "video": "boat_smaller.mp4"},
+    {"category": "a key", "video": "key_smaller.mp4"},
+    {"category": "a tiger", "video": "tiger_smaller.mp4"}]
 
 var stimListTest = shuffle(stimListTest)
 stimListTest.push(lastTrial)
