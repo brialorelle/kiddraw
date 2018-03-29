@@ -17,18 +17,18 @@ paper.install(window);
 socket = io.connect();
 
 // 1. Setup trial order and randomize it!
-firstTrial = {"category": "a circle", "video": "circle.mp4"}
-lastTrial = {"category": "something you love", "video": "love.mp4"}
-var stimListTest = [{"category": "a dog", "video": "dog.mp4"},
-    {"category": "a boat", "video": "boat.mp4"},
-    {"category": "a key", "video": "key.mp4"},
-    {"category": "a tiger", "video": "tiger.mp4"}]
+firstTrial = {"category": "a circle", "video": "circle_smaller.mp4"}
+lastTrial = {"category": "something you love", "video": "love_smaller.mp4"}
+var stimListTest = [{"category": "a dog", "video": "dog_smaller.mp4"},
+    {"category": "a boat", "video": "boat_smaller.mp4"},
+    {"category": "a key", "video": "key_smaller.mp4"},
+    {"category": "a tiger", "video": "tiger_smaller.mp4"}]
 
 var stimListTest = shuffle(stimListTest)
 stimListTest.push(lastTrial)
 stimListTest.unshift(firstTrial)
 var curTrial=0 // global variable, trial counter
-var sessionId='stationPilot0_' + Date.now().toString()
+var sessionId='stationPilot1_' + Date.now().toString()
 var maxTrials = stimListTest.length; // 
 
 // set global variables
@@ -177,7 +177,7 @@ function saveSketchData(){
         imgData: dataURL,
         category: category,
         dbname:'kiddraw',
-        colname:'stationPilot0', // station version
+        colname:'stationPilot1', // station version
         trialNum: curTrial,
         time: Date.now(),
         date: readable_date,
@@ -202,7 +202,7 @@ function restartExperiment() {
     project.activeLayer.removeChildren();
     curTrial=0;
     clickedSubmit=0;
-    sessionId='stationPilot0_' + Date.now().toString()
+    sessionId='stationPilot1_' + Date.now().toString()
     $('.ageButton').removeClass('active');
     $('#thanksPage').hide();
     $('#landingPage').show(); // fade in the landing page
@@ -357,7 +357,7 @@ window.onload = function() {
                 svg: svgString,
                 category: category,
                 dbname:'kiddraw',
-                colname:'stationPilot0',
+                colname:'stationPilot1',
                 trialNum: curTrial,
                 time: Date.now(),
                 date: readable_date

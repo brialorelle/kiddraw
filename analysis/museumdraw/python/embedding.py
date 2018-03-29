@@ -106,18 +106,22 @@ class FeatureExtractor():
             im = Image.open(path)
             im = RGBA2RGB(im)
             
-            # crop to sketch only (eliminate white space)
+            # crop to sketch only (reduce white space)
             arr = np.asarray(im)
             w,h,d = np.where(arr<255) # where the image is not white
             if len(h)==0:
-                print(path)            
-            xlb = min(h)
-            xub = max(h)
-            ylb = min(w)
-            yub = max(w)
-            lb = min([xlb,ylb])
-            ub = max([xub,yub])            
-            im = im.crop((lb, lb, ub, ub))            
+                print(path)  
+            try:
+                xlb = min(h)
+                xub = max(h)
+                ylb = min(w)
+                yub = max(w)
+                lb = min([xlb,ylb])
+                ub = max([xub,yub])            
+                im = im.crop((lb, lb, ub, ub))
+            except ValueError:
+                print('Blank image {}'.format(path))
+                pass
 
             loader = transforms.Compose([
                 transforms.Pad(padding),                
