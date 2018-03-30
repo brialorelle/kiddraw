@@ -14,6 +14,15 @@ from torch.autograd import Variable
 
 from PIL import Image
 
+## feature dimensions by layer_ind
+## 0: [64, 112, 112] = 802,816
+## 1: [128, 56, 56] = 401,408
+## 2: [256, 28, 28] = 200,704
+## 3: [512, 14, 14] = 100,352
+## 4: [512, 7, 7] = 50,176
+## 5: [1, 4096]
+## 6: [1, 4096]
+
 use_cuda = torch.cuda.is_available()
 
 class VGG19Embeddings(nn.Module):
@@ -22,7 +31,7 @@ class VGG19Embeddings(nn.Module):
 
     :param vgg19: traditional vgg19 model
     """
-    def __init__(self, vgg19, layer_index=-1):
+    def __init__(self, vgg19, layer_index=-1, spatial_avg=True):
         super(VGG19Embeddings, self).__init__()
         self.conv1 = nn.Sequential(*(list(vgg19.features.children())[slice(0, 5)]))
         self.conv2 = nn.Sequential(*(list(vgg19.features.children())[slice(5, 10)]))
@@ -35,9 +44,12 @@ class VGG19Embeddings(nn.Module):
         layer_index = int(float(layer_index)) # bll 
         assert layer_index >= -1 and layer_index < 8
         self.layer_index = layer_index
+        self.spatial_avg = spatial_avg
 
     def _flatten(self, x):
-        return x.view(x.size(0), -1)
+        if (self.spatial_avg==True) & (self.layer_index<5):
+            x = x.mean(3).mean(2)
+        return x.view(x.size(0), -1)   
 
     def forward(self, x):
         # build in this ugly way so we don't have to evaluate things we don't need to.
@@ -72,7 +84,7 @@ class VGG19Embeddings(nn.Module):
         
 class FeatureExtractor():
     
-    def __init__(self,paths,layer=6, use_cuda=True, imsize=224, batch_size=64, cuda_device=0, cohort='kid'):
+    def __init__(self,paths,layer=6, use_cuda=True, imsize=224, batch_size=64, cuda_device=0, cohort='kid',spatial_avg=True):
         self.layer = layer
         self.paths = paths
         self.num_sketches = len(self.paths)
@@ -82,7 +94,8 @@ class FeatureExtractor():
         self.batch_size = batch_size
         self.cuda_device = cuda_device
         self.cohort = cohort ## 'kid' if analyzing kids' drawings; 'adult' if analyzing adults' drawings
-
+        self.spatial_avg = spatial_avg ## if true, collapse across spatial dimensions to just preserve channel activation
+        
     def extract_feature_matrix(self):
         
         def RGBA2RGB(image, color=(255, 255, 255)):
@@ -136,7 +149,7 @@ class FeatureExtractor():
         
         def load_vgg19(layer_index=self.layer,use_cuda=True,cuda_device=self.cuda_device):
             vgg19 = models.vgg19(pretrained=True).cuda(self.cuda_device)        
-            vgg19 = VGG19Embeddings(vgg19,layer_index)
+            vgg19 = VGG19Embeddings(vgg19,layer_index,spatial_avg=self.spatial_avg)
             vgg19.eval()  # freeze dropout
             print('CUDA DEVICE NUM: {}'.format(self.cuda_device))
 

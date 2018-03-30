@@ -90,7 +90,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', type=str, help='full path to sketches', default='../sketches')
     parser.add_argument('--layer_ind', help='fc6 = 5, fc7 = 6', default=6)
-    parser.add_argument('--cohort', help='"kid" or "adult"', default='kid')    
+    parser.add_argument('--cohort', help='"kid" or "adult"', default='kid')
+    parser.add_argument('--spatial_avg', type=bool, help='collapse over spatial dimensions, preserving channel activation only if true', default=True)     
+    parser.add_argument('--test', type=bool, help='testing only, do not save features', default=False)    
+
     args = parser.parse_args()
     
     ## get list of all sketch paths
@@ -103,7 +106,7 @@ if __name__ == "__main__":
     
     ## extract features
     layers = ['P1','P2','P3','P4','P5','FC6','FC7']
-    extractor = FeatureExtractor(sketch_paths,layer=args.layer_ind,cohort=args.cohort)
+    extractor = FeatureExtractor(sketch_paths,layer=args.layer_ind,cohort=args.cohort,spatial_avg=args.spatial_avg)
     Features, Labels, Ages, Sessions = extractor.extract_feature_matrix()
     
     ## handle trials where we didn't have age information
@@ -118,5 +121,6 @@ if __name__ == "__main__":
     if args.cohort=='kid':
         _Features, _Y = remove_nans(_Features, _Y) 
 
-    layer = save_features(_Features, _Y, args.layer_ind, args.cohort)
+    if args.test==False:
+        layer = save_features(_Features, _Y, args.layer_ind, args.cohort)
        
