@@ -17,7 +17,7 @@ paper.install(window);
 socket = io.connect();
 
 // 1. Setup trial order and randomize it!
-firstTrial = {"category": "a circle", "video": "circle_smaller.mp4"}
+firstTrial = {"category": "this circle", "video": "circle_smaller.mp4", "image":"images/circle.png"}
 lastTrial = {"category": "something you love", "video": "love_smaller.mp4"}
 trace1 = {"category":"square", "video": "boat_smaller.mp4", "image":"images/square.png"}
 trace2 = {"category":"shape", "video": "boat_smaller.mp4","image":"images/shape.png"}
@@ -127,14 +127,31 @@ function loadNextVideo(){
 }
 
 function setUpDrawing(){
+    var imgSize = "70%";
+
     if (tracing){
+        //for all tracing trials, show the tracing image on the canvas
+
         var imageurl = "url('" + stimListTest[curTrial].image + "')";
-        var size = "70%";
         $('#sketchpad').css("background-image", imageurl)
-            .css("background-size",size)
+            .css("background-size",imageSize)
             .css("background-repeat", "no-repeat")
             .css("background-position","center center");
+
+    }else if(stimListTest[curTrial].category == 'this circle'){
+        //for the circle trial, show the circle image for 2s and hide it.
+
+        var imageurl = "url('" + stimListTest[curTrial].image + "')";
+        $('#sketchpad').css("background-image", imageurl)
+            .css("background-size",imgSize)
+            .css("background-repeat", "no-repeat")
+            .css("background-position","center center");
+
+        setTimeout(function() {
+            $('#sketchpad').css("background-image", "");
+        }, 2000);
     }
+
     $('#drawing').show()
     monitorProgress(); // since we now have a timeout function 
 };
@@ -238,6 +255,14 @@ function readyOrNot(){
     $('#readyOrNotPage').show();
     $('#mainExp').hide();
     $('#drawing').hide();
+
+    //wait for 30 seconds. If no reaction, restart
+    setTimeout(function(){
+        if(curTrial == -1) {
+            console.log("restart after 15 second");
+            restartExperiment()
+        }
+    }, 30000);
 }
 
 function endExperiment(){
