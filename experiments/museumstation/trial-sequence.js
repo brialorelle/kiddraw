@@ -17,8 +17,10 @@ paper.install(window);
 socket = io.connect();
 
 // 1. Setup trial order and randomize it!
-firstTrial = {"category": "a circle", "video": "circle_smaller.mp4"}
+firstTrial = {"category": "a circle", "video": "circle_smaller.mp4", "image":"images/circle.png"}
 lastTrial = {"category": "something you love", "video": "love_smaller.mp4"}
+trace1 = {"category":"square", "video": "boat_smaller.mp4", "image":"images/square.png"}
+trace2 = {"category":"shape", "video": "boat_smaller.mp4","image":"images/shape.png"}
 var stimListTest = [{"category": "a dog", "video": "dog_smaller.mp4"},
     {"category": "a boat", "video": "boat_smaller.mp4"},
     {"category": "a key", "video": "key_smaller.mp4"},
@@ -27,16 +29,22 @@ var stimListTest = [{"category": "a dog", "video": "dog_smaller.mp4"},
 var stimListTest = shuffle(stimListTest)
 stimListTest.push(lastTrial)
 stimListTest.unshift(firstTrial)
+stimListTest.unshift(trace2)
+stimListTest.unshift(trace1)
 var curTrial=0 // global variable, trial counter
 var sessionId='stationPilot1_' + Date.now().toString()
-var maxTrials = stimListTest.length; // 
+var maxTrials = stimListTest.length; //
+
 
 // set global variables
-var clickedSubmit=0;
-var timeLimit=30;
-//helpfuls
+var clickedSubmit=0; // whether an image is submitted or not
+var tracing = true; //whether the user is in tracing trials or not
+var maxTraceTrial = 2; //the max number of tracing trials
+var timeLimit=10;
+var disableDrawing = false; //whether touch drawing is disabled or not
+var mode = "CDM" // CDM or Bing
 
-
+// shuffle the order of drawing trials
 function shuffle (a)
 {
     var o = [];
@@ -49,7 +57,6 @@ function shuffle (a)
     return o;
 }
 
-
 // for each time we start drawings
 function startDrawing(){
     if (curTrial==0){
@@ -57,7 +64,10 @@ function startDrawing(){
         beginTrial()
     }
     else if (curTrial>0 && curTrial<maxTrials) {
-        $('#readyOrNotPage').hide(); // fade out age screen
+        if (curTrial == maxTraceTrial){
+            tracing = false
+            $('#sketchpad').css('background-image','');
+        }
         beginTrial()
     }
     else if (curTrial==maxTrials){
@@ -65,11 +75,18 @@ function startDrawing(){
     }
 }
 
+//
 function beginTrial(){
     //
-    loadNextVideo(curTrial) // change video
-    document.getElementById("cue").innerHTML = "Can you draw "  + stimListTest[curTrial].category + " ?"; // change cue
-    document.getElementById("drawingCue").innerHTML = stimListTest[curTrial].category; // change drawing cue
+    loadNextVideo(curTrial); // change video
+    if (tracing){
+        var traceCue = "Can you trace the "  + stimListTest[curTrial].category + " on the canvas ?";
+        document.getElementById("cue").innerHTML = traceCue;
+        document.getElementById("drawingCue").innerHTML = traceCue;
+    }else {
+        document.getElementById("cue").innerHTML = "Can you draw " + stimListTest[curTrial].category + " ?"; // change cue
+        document.getElementById("drawingCue").innerHTML = stimListTest[curTrial].category; // change drawing cue
+    }
 
     setTimeout(function() {showCue();},1000);
     setTimeout(function() {playVideo();},1000);
@@ -100,7 +117,7 @@ function playVideo(){
 function hideCue() {
     $('#cue').hide(); // fade out cue
     $('#cueVideoDiv').hide(); //show video html - this can be a variable later?
-    setUpDrawing()
+    setUpDrawing();
 }
 
 function loadNextVideo(){
@@ -112,6 +129,33 @@ function loadNextVideo(){
 }
 
 function setUpDrawing(){
+    var imgSize = "70%";
+    project.activeLayer.removeChildren();
+    disableDrawing = false;
+
+    if (tracing){
+        //for all tracing trials, show the tracing image on the canvas
+
+        var imageurl = "url('" + stimListTest[curTrial].image + "')";
+        $('#sketchpad').css("background-image", imageurl)
+            .css("background-size",imgSize)
+            .css("background-repeat", "no-repeat")
+            .css("background-position","center center");
+
+    }else if(stimListTest[curTrial].category == 'a circle'){
+        //for the circle trial, show the circle image for 2s and hide it.
+
+        var imageurl = "url('" + stimListTest[curTrial].image + "')";
+        $('#sketchpad').css("background-image", imageurl)
+            .css("background-size",imgSize)
+            .css("background-repeat", "no-repeat")
+            .css("background-position","center center");
+
+        setTimeout(function() {
+            $('#sketchpad').css("background-image", "");
+        }, 2000);
+    }
+
     $('#drawing').show()
     monitorProgress(); // since we now have a timeout function 
 };
@@ -127,12 +171,12 @@ function monitorProgress(){
 //  monitoring progress spent on a trial and triggering next events
 function progress(timeleft, timetotal, $element) {
     var progressBarWidth = timeleft * $element.width()/ timetotal;
-    //var totalBarWidth = timetotal * $element.width();
     var totalBarWidth = $element.width();
     $element.find('.progress-bar').attr("aria-valuenow", timeleft).text(timeleft)
     $element.find('.progress-bar').animate({ width: progressBarWidth }, timeleft == timetotal ? 0 : 1000, "linear");
     console.log("clicked submit = " + clickedSubmit)
     console.log("time left = " + timeleft)
+
     if(timeleft > 0 & clickedSubmit==0) {
         setTimeout(function() {
             progress(timeleft - 1, timetotal, $element);
@@ -141,8 +185,9 @@ function progress(timeleft, timetotal, $element) {
     else if(timeleft == 0 & clickedSubmit==0){
         console.log("trial timed out")
         increaseTrial();
-        $element.find('.progress-bar').width(totalBarWidth)
-        clickedSubmit =1 // it's as if we clicked submt
+        clickedSubmit =1 // it's as if we clicked submit
+        disableDrawing = true
+        $('#keepGoing').addClass('bounce')
         return; //  get out of here
     }
     else if (clickedSubmit==1){
@@ -185,6 +230,9 @@ function saveSketchData(){
 
     // send data to server to write to database
     socket.emit('current_data', current_data);
+
+    //change the color of current drawing in the sketchpad as grey
+
 };
 
 
@@ -202,18 +250,12 @@ function restartExperiment() {
     project.activeLayer.removeChildren();
     curTrial=0;
     clickedSubmit=0;
+    tracing = true
     sessionId='stationPilot1_' + Date.now().toString()
     $('.ageButton').removeClass('active');
     $('#thanksPage').hide();
     $('#landingPage').show(); // fade in the landing page
     $('#checkConsent').prop('checked', false); // uncheck consent box
-}
-
-function readyOrNot(){
-    project.activeLayer.removeChildren();
-    $('#readyOrNotPage').show();
-    $('#mainExp').hide();
-    $('#drawing').hide();
 }
 
 function endExperiment(){
@@ -225,7 +267,7 @@ function endExperiment(){
             console.log("restart after 15 second");
             restartExperiment()
         }
-    }, 15000);
+    }, 60000);
 }
 
 function increaseTrial(){
@@ -237,8 +279,6 @@ function increaseTrial(){
         $('#mainExp').hide();
         $('#drawing').hide();
         endExperiment();
-    }else {
-        readyOrNot();
     }
 }
 
@@ -280,26 +320,30 @@ window.onload = function() {
 
     });
 
-    // gets called whenever you click/touch the submit button
-    $('#submit').click(function (e) {
-        e.preventDefault()
-        clickedSubmit=1; // indicate that we submitted - global variable
-        if (isDoubleClicked($(this))) return;
-        increaseTrial(); // save data and increase trial counter
-    });
-
     $('#keepGoing').click(function(e) {
         e.preventDefault()
         if (isDoubleClicked($(this))) return;
+        $('#keepGoing').removeClass('bounce')
+
         console.log('touched next trial button');
+        if(clickedSubmit==0){// if the current trial has not timed out yet
+            clickedSubmit=1; // indicate that we submitted - global variable
+            increaseTrial(); // save data and increase trial counter
+        }
+
+        $('#drawing').hide();
         startDrawing();
     });
 
     $('#allDone').click(function(e) {
         e.preventDefault()
         if (isDoubleClicked($(this))) return;
+
         console.log('touched endExperiment  button');
-        $('#readyOrNotPage').hide();
+        clickedSubmit=1; // indicate that we submitted - global variable
+        increaseTrial(); // save data and increase trial counter
+        $('#mainExp').hide();
+        $('#drawing').hide();
         endExperiment();
 
     });
@@ -338,6 +382,7 @@ window.onload = function() {
     canvas.height = window.innerWidth*.80;
     canvas.width = canvas.height;
 
+
     // Drawing related tools
     paper.setup('sketchpad');
 
@@ -371,6 +416,10 @@ window.onload = function() {
 
     var paths = [];
     function touchStart(ev) {
+        if(disableDrawing){
+            return;
+        }
+
         console.log("touch start");
         var touches = ev.touches;
         // Create new path per touch
@@ -382,6 +431,10 @@ window.onload = function() {
     }
 
     function touchMove(ev) {
+        if(disableDrawing){
+            return;
+        }
+
         console.log("touch move");
         var touches = ev.touches;
         // Prevents touch bubbling
@@ -396,6 +449,10 @@ window.onload = function() {
     }
 
     function touchEnd(ev){
+        if(disableDrawing){
+            return;
+        }
+
         console.log("touch end");
         sendStrokeData()
         var touches = ev.touches; // if not touching anymore
@@ -406,6 +463,15 @@ window.onload = function() {
 
     }
 
+
+    targetSketch = document.getElementById("sketchpad");
+    targetSketch.addEventListener('touchstart', touchStart, false);
+    targetSketch.addEventListener('touchmove', touchMove, false);
+    targetSketch.addEventListener('touchend', touchEnd, false);
+
+
+
+
     // function preventZoom(event){
     // if(event.touches.length > 1){
     //     //the event is multi-touch
@@ -414,12 +480,6 @@ window.onload = function() {
     //     console.log("trying to prevent zoom")
     //     }, {passive: false}
     // }
-
-    targetSketch = document.getElementById("sketchpad");
-    targetSketch.addEventListener('touchstart', touchStart, false);
-    targetSketch.addEventListener('touchmove', touchMove, false);
-    targetSketch.addEventListener('touchend', touchEnd, false);
-
      
     // $('cueVideo').bind('touchmove', false);
     // $('cueVideoDiv').bind('touchmove', false);

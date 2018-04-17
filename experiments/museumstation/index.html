@@ -51,6 +51,7 @@
             <button class="btn btn-light ageButton" id="age8"> &nbsp 8 &nbsp </button>
             <button class="btn btn-light ageButton" id="age9"> &nbsp 9 &nbsp </button>
             <button class="btn btn-light ageButton" id="age10"> &nbsp 10+ &nbsp </button>
+            <button class="btn btn-light ageButton" id="adult"> &nbsp Adult &nbsp </button>
             <p style="font-family: Schoolbell,cursive; font-size: 4vw; text-align:center"> <input id="checkConsent" type="checkbox"> YOU CAN USE MY DRAWING </p>
         </div>
         <div id="consentText">
@@ -82,42 +83,48 @@
                 <source src="videos/love.mp4" type="video/mp4">
             </video>
         </div>
+
         <div id="drawing" style="display:none">
-            <div id="submit_div">
-                <button class="btn btn-info" id="submit" style="font-size: 4vw; font-family: Schoolbell,cursive; border: none;margin:2vw"> ALL DONE !</button>
-            </div>
+
             <div id="drawingCue" style="padding:2vw;"></div>
-            <!--<div class="row" id="progressBar" style="display:none">-->
-            <!--<div class="bar"></div>-->
-            <!--</div>-->
-            <canvas id="sketchpad"></canvas>
-            <div class="progress row offset-md-2 col-md-8" style="display:none">
+
+            <div class="progress offset-md-2 col-md-8" style="display:none">
                 <div class="progress-bar bg-info" role="progressbar" aria-valuenow="100"
-                     aria-valuemin="0" aria-valuemax="100" style="width:100%">
-                    100%
+                     aria-valuemin="0" aria-valuemax="100" style="width:100%;font-family: Schoolbell,cursive">30
                 </div>
             </div>
+
+
+            <canvas id="sketchpad"></canvas>
+
+            <div class="row" id="submit_div">
+
+                <div class = "offset-md-2 col-md-4" id="keepGoing">
+                    <p class="drawingButton"> Play Again </p>
+                    <img id="restart" style="width:10vw;height:auto" src="images/play.png"></img>
+                </div>
+                <div class="col-md-4" id="allDone">
+                    <p class="drawingButton"> Stop </p>
+                    <img id="end" style="width:10vw;height:auto" src="images/stop.png" ></img>
+                </div>
+            </div>
+
         </div>
+
     </div>
 
 </div>
 
 
 <div id="readyOrNotPage" style="display:none">
-    <div id="keepGoing">
-        <p class="buttonDescription"> LET'S KEEP DRAWING! </p>
-        <img class="imageButton" id="restart" src="images/play.png"></img>
-    </div>
-    <div id="allDone">
-        <p class="buttonDescription"> I'M ALL DONE! </p>
-        <img class="imageButton" id="end" src="images/stop.png" ></img>
-    </div>
+
+
 </div>
 
 <div id="thanksPage" style="display:none">
     <div class="welcomeHeader">
-            <img src="images/stanford.png" alt="Stanford University" id="stanfordLogo"></img>
-            <p id='logo-text'>Stanford Language and Cognition Lab</p>
+        <img src="images/stanford.png" alt="Stanford University" id="stanfordLogo"></img>
+        <p id='logo-text'>Stanford Language and Cognition Lab</p>
     </div>
     <p style="font-family: Schoolbell,cursive; font-size: 24pt; text-align:center"> THANK YOU! </p>
     <p style="font-family: Schoolbell,cursive; font-size: 18pt; text-align:center"> To learn more, visit our lab's web page at langcog.stanford.edu. For any questions about the study, please contact Dr. Bria Long at bria@stanford.edu or Dr. Michael C. Frank at mcfrank@stanford.edu. </p>
