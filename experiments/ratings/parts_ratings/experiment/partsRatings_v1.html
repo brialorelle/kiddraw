@@ -8,7 +8,7 @@
   <title>Judge some drawings !</title>
   <script src="jquery-1.11.2.min.js"></script>
   <script src="mmturkey-0.6.js"></script>
-   <script src="papaparse.min.js"></script>
+   <script src="papaparse.js"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="uptake_style.css" />
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
@@ -21,14 +21,16 @@
     <br>
     <img src="images/stanford.png" alt="Stanford University">
     <p id='logo-text'>Stanford Language and Cognition Lab</p>
-    <br>
-    <br>
-    <p align="center"><b>PLEASE ONLY COMPLETE THIS HIT IF YOU HAVE A CHILD BETWEEN THE AGES OF 1-2 YEARS</b></p>
+    <p class="block-text">
+    In this survey, you'll be asked to judge how 300 different sketches were made.   Sometimes, we may draw something by constructing an outline of the entire object (see examples on left). Sometimes, we can make drawings by first drawing common shapes, like circles, and then putting them together (see examples on right). Your job is to rate the degree to which a sketch was made using by drawing outlines vs. putting simple shapes together.
+    </p>
+    <img src="examples/rating_examples.jpeg" style="width:40%">
+
 <br>
     <button type="button" onclick="this.blur(); experiment.next();">Start</button>
 
     <p class="block-text">
-      <br> <b> Note: you won't be able to preview this HIT before accepting it because it's so short. </b></p>
+      <br> <b> Note: you won't be able to preview this HIT before accepting it. </b></p>
 
     <p class="block-text" id="legal">By answering the following questions, you are participating in a study being performed by cognitive scientists in the Stanford Department of Psychology. If you have questions about this research, please contact us at <a href="mailto://languagecoglab@gmail.com.">languagecoglab@gmail.com</a>.
       You must be at least 18 years old to participate. Your participation in this research is voluntary. You may decline to answer any or all of the following questions. You may decline further participation, at any time, without adverse consequences.
@@ -45,9 +47,9 @@
 </div>
 
 
-<!-- Questionnaire slide 1 - Familiarity Ratings -->
+<!-- Questionnaire slide 1 - Distinct Parts Ratings -->
 
-<div class="slide" id="qualityRatingsSlide">
+<div class="slide" id="partsRatingsSlide">
   <br>
   <div align="center">
     <h4>
@@ -67,7 +69,7 @@
     <!-- Next button and "please make a response" message -->
     <table align="center"><tr>
       <td align="center">
-        <button type="button" id="nextButton_QualRatings" onClick="experiment.log_response()"> next</button>
+        <button type="button" id="nextButton_QualRatings" onClick="this.blur(); experiment.next()"> next</button>
       </td> 
       <tr><td align="center">
         <div id="testMessage_att"> </div>
@@ -76,28 +78,18 @@
   </div>
 </div>
 
- <!-- Debriefing slide-->
+  <!-- Debriefing slide-->
   <div class="slide" id="debriefing">
       <p><b>Do you have any comments about this survey?</b></p>
       <p>
         <input type="text" id="comments" name="comments" style="width:40%" value="">
         </textarea>
+        <button type="button" id="debriefsubmit" onClick="experiment.submit_comments()">Submit</button>
   </p> 
+</div>
 
-  <table align="center">
-    <tr>
-       <td align="center">
-          <button type="button" onClick="this.blur(); experiment.next()"> Continue</button>
-        </td>
-        <tr>
-          <td align="center">
-
-          </td>
-        </tr>
-  </table>
   
-  </div>
-<script src="qualityRatings.js"></script>
+<script src="partsRatings.js"></script>
 </body>
 
 </html>

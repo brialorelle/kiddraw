@@ -19,6 +19,8 @@ socket = io.connect();
 // 1. Setup trial order and randomize it!
 firstTrial = {"category": "a circle", "video": "circle_smaller.mp4"}
 lastTrial = {"category": "something you love", "video": "love_smaller.mp4"}
+trace1 = {"category":"square", "video": "boat_smaller.mp4", "image":"images/square.png"}
+trace2 = {"category":"shape", "video": "boat_smaller.mp4","image":"images/shape.png"}
 var stimListTest = [{"category": "a dog", "video": "dog_smaller.mp4"},
     {"category": "a boat", "video": "boat_smaller.mp4"},
     {"category": "a key", "video": "key_smaller.mp4"},
@@ -27,12 +29,16 @@ var stimListTest = [{"category": "a dog", "video": "dog_smaller.mp4"},
 var stimListTest = shuffle(stimListTest)
 stimListTest.push(lastTrial)
 stimListTest.unshift(firstTrial)
+stimListTest.unshift(trace2)
+stimListTest.unshift(trace1)
 var curTrial=0 // global variable, trial counter
 var sessionId='stationPilot1_' + Date.now().toString()
-var maxTrials = stimListTest.length; // 
+var maxTrials = stimListTest.length; //
 
 // set global variables
 var clickedSubmit=0;
+var tracing = true;
+var maxTraceTrial = 2;
 var timeLimit=30;
 //helpfuls
 
@@ -49,7 +55,6 @@ function shuffle (a)
     return o;
 }
 
-
 // for each time we start drawings
 function startDrawing(){
     if (curTrial==0){
@@ -58,6 +63,10 @@ function startDrawing(){
     }
     else if (curTrial>0 && curTrial<maxTrials) {
         $('#readyOrNotPage').hide(); // fade out age screen
+        if (curTrial == maxTraceTrial){
+            tracing = false
+            $('#sketchpad').css('background-image','');
+        }
         beginTrial()
     }
     else if (curTrial==maxTrials){
@@ -67,9 +76,15 @@ function startDrawing(){
 
 function beginTrial(){
     //
-    loadNextVideo(curTrial) // change video
-    document.getElementById("cue").innerHTML = "Can you draw "  + stimListTest[curTrial].category + " ?"; // change cue
-    document.getElementById("drawingCue").innerHTML = stimListTest[curTrial].category; // change drawing cue
+    loadNextVideo(curTrial); // change video
+    if (tracing){
+        var traceCue = "Can you trace the "  + stimListTest[curTrial].category + " on the canvas ?";
+        document.getElementById("cue").innerHTML = traceCue;
+        document.getElementById("drawingCue").innerHTML = traceCue;
+    }else {
+        document.getElementById("cue").innerHTML = "Can you draw " + stimListTest[curTrial].category + " ?"; // change cue
+        document.getElementById("drawingCue").innerHTML = stimListTest[curTrial].category; // change drawing cue
+    }
 
     setTimeout(function() {showCue();},1000);
     setTimeout(function() {playVideo();},1000);
@@ -100,7 +115,7 @@ function playVideo(){
 function hideCue() {
     $('#cue').hide(); // fade out cue
     $('#cueVideoDiv').hide(); //show video html - this can be a variable later?
-    setUpDrawing()
+    setUpDrawing();
 }
 
 function loadNextVideo(){
@@ -112,6 +127,14 @@ function loadNextVideo(){
 }
 
 function setUpDrawing(){
+    if (tracing){
+        var imageurl = "url('" + stimListTest[curTrial].image + "')";
+        var size = "70%";
+        $('#sketchpad').css("background-image", imageurl)
+            .css("background-size",size)
+            .css("background-repeat", "no-repeat")
+            .css("background-position","center center");
+    }
     $('#drawing').show()
     monitorProgress(); // since we now have a timeout function 
 };
@@ -202,6 +225,7 @@ function restartExperiment() {
     project.activeLayer.removeChildren();
     curTrial=0;
     clickedSubmit=0;
+    tracing = true
     sessionId='stationPilot1_' + Date.now().toString()
     $('.ageButton').removeClass('active');
     $('#thanksPage').hide();
