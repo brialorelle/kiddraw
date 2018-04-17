@@ -71,6 +71,13 @@ button[disabled] {
     text-align:center;
 }
 
+.drawingButton{
+    font-family: Schoolbell,cursive;
+    font-size: 3vw;
+    text-align:center;
+    cursor:pointer;
+}
+
 #consent {
     text-align: left;
     height: 420px;
@@ -271,13 +278,11 @@ button[disabled] {
     padding-left:0px;
     padding-right:0px;
     height: 2vw;
-    margin-bottom: 2vw;
-    margin-top: 2vw;
+    margin-bottom: 4vw;
     font-size:2vw
 }
 
 #allDone {
-    margin-top:10vw;
     text-align:center;
     font-size: 4vw;
     font-family: Schoolbell,cursive;
@@ -292,7 +297,6 @@ button[disabled] {
 
 
 #keepGoing {
-    margin-top:10vw;
     font-size: 4vw;
     text-align:center;
     font-family: Schoolbell,cursive;
@@ -337,6 +341,17 @@ button[disabled] {
 
 .vjs-fullscreen-control { 
     display: none; 
-} 
+}
+
+.bounce {
+  -webkit-animation:bounce 1s infinite;
+}
+
+@-webkit-keyframes bounce {
+  0%       { bottom:5px; }
+  25%, 75% { bottom:15px; }
+  50%      { bottom:20px; }
+  100%     {bottom:0;}
+}
 
 
