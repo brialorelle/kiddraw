@@ -40,7 +40,7 @@ var maxTrials = stimListTest.length; //
 var clickedSubmit=0; // whether an image is submitted or not
 var tracing = true; //whether the user is in tracing trials or not
 var maxTraceTrial = 2; //the max number of tracing trials
-var timeLimit=10;
+var timeLimit=30;
 var disableDrawing = false; //whether touch drawing is disabled or not
 var mode = "CDM" // CDM or Bing
 
@@ -151,9 +151,10 @@ function setUpDrawing(){
             .css("background-repeat", "no-repeat")
             .css("background-position","center center");
 
-        setTimeout(function() {
+        setTimeout(function () {
             $('#sketchpad').css("background-image", "");
         }, 2000);
+
     }
 
     $('#drawing').show()
@@ -261,7 +262,7 @@ function restartExperiment() {
 function endExperiment(){
     $('#thanksPage').show();
     curTrial = -1;
-    //wait for 15 second and restart
+    //wait for 1min and restart
     setTimeout(function(){
         if(curTrial == -1) {
             console.log("restart after 15 second");
@@ -344,6 +345,7 @@ window.onload = function() {
         increaseTrial(); // save data and increase trial counter
         $('#mainExp').hide();
         $('#drawing').hide();
+        $('#keepGoing').removeClass('bounce')
         endExperiment();
 
     });
@@ -469,7 +471,22 @@ window.onload = function() {
     targetSketch.addEventListener('touchmove', touchMove, false);
     targetSketch.addEventListener('touchend', touchEnd, false);
 
+    //Refresh if no user activities in 60 seconds
+    var time = new Date().getTime();
+     $(document.body).bind("touchstart touchmove touchend click", function(e) {
+         time = new Date().getTime();
+     });
 
+     var refreshTime = 60000
+     function refresh() {
+         if(new Date().getTime() - time >= refreshTime) {
+             window.location.reload(true);
+             console.log("No user activities. Reload.")
+         } else {
+             setTimeout(refresh, refreshTime);}
+     }
+
+     setTimeout(refresh, refreshTime);
 
 
     // function preventZoom(event){
