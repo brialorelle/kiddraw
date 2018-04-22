@@ -353,8 +353,8 @@ button[disabled] {
     font-style: italic;
 }
 
-.vjs-fullscreen-control { 
-    display: none; 
+.vjs-nofull .vjs-fullscreen-control {
+    display:none;
 }
 
 .bounce {
