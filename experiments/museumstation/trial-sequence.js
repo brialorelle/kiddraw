@@ -42,7 +42,9 @@ var tracing = true; //whether the user is in tracing trials or not
 var maxTraceTrial = 2; //the max number of tracing trials
 var timeLimit=30;
 var disableDrawing = false; //whether touch drawing is disabled or not
-var mode = "CDM" // CDM or Bing
+var mode = "Bing";// CDM or Bing
+var consentPage = '#consentBing';
+var thanksPage = "#thanksBing";
 
 // shuffle the order of drawing trials
 function shuffle (a)
@@ -60,7 +62,7 @@ function shuffle (a)
 // for each time we start drawings
 function startDrawing(){
     if (curTrial==0){
-        $('#consentPage').fadeOut('fast'); // fade out age screen
+        $(consentPage).fadeOut('fast'); // fade out age screen
         beginTrial()
     }
     else if (curTrial>0 && curTrial<maxTrials) {
@@ -130,8 +132,8 @@ function loadNextVideo(){
 
 function setUpDrawing(){
     var imgSize = "70%";
-    project.activeLayer.removeChildren();
     disableDrawing = false;
+    $('#sketchpad').css({"background": "", "opacity":""});
 
     if (tracing){
         //for all tracing trials, show the tracing image on the canvas
@@ -141,6 +143,8 @@ function setUpDrawing(){
             .css("background-size",imgSize)
             .css("background-repeat", "no-repeat")
             .css("background-position","center center");
+        $("#submit_div").show();
+        $("#lastTrial").hide();
 
     }else if(stimListTest[curTrial].category == 'a circle'){
         //for the circle trial, show the circle image for 2s and hide it.
@@ -155,6 +159,9 @@ function setUpDrawing(){
             $('#sketchpad').css("background-image", "");
         }, 2000);
 
+    }else if(curTrial == maxTrials-1){
+        $("#submit_div").hide();
+        $("#lastTrial").show();
     }
 
     $('#drawing').show()
@@ -188,7 +195,12 @@ function progress(timeleft, timetotal, $element) {
         increaseTrial();
         clickedSubmit =1 // it's as if we clicked submit
         disableDrawing = true
-        $('#keepGoing').addClass('bounce')
+        if($("#lastTrial").css("display")!="none"){
+            $('#endGame').addClass('bounce')
+        }else {
+            $('#keepGoing').addClass('bounce')
+        }
+        $("#sketchpad").css({"background":"linear-gradient(#17a2b81f, #17a2b81f)", "opacity":"0.5"});
         return; //  get out of here
     }
     else if (clickedSubmit==1){
@@ -240,7 +252,7 @@ function saveSketchData(){
 // experiment navigation functions
 function showConsentPage(){
     $('#landingPage').hide();
-    $('#consentPage').show();
+    $(consentPage).show();
     $('#parent-email').attr('placeholder', 'Input your email address here').val('');
     $('#email-form').show();
     $('#email-sent').hide();
@@ -254,13 +266,15 @@ function restartExperiment() {
     tracing = true
     sessionId='stationPilot1_' + Date.now().toString()
     $('.ageButton').removeClass('active');
-    $('#thanksPage').hide();
+    $('#endGame').removeClass('bounce');
+    $(thanksPage).hide();
     $('#landingPage').show(); // fade in the landing page
     $('#checkConsent').prop('checked', false); // uncheck consent box
+    $(".nameInput").val("");
 }
 
 function endExperiment(){
-    $('#thanksPage').show();
+    $(thanksPage).show();
     curTrial = -1;
     //wait for 1min and restart
     setTimeout(function(){
@@ -275,12 +289,12 @@ function increaseTrial(){
     saveSketchData() // save first!
     curTrial=curTrial+1; // increase counter
 
-    if (curTrial==maxTrials){
-        project.activeLayer.removeChildren();
-        $('#mainExp').hide();
-        $('#drawing').hide();
-        endExperiment();
-    }
+    // if (curTrial==maxTrials){
+    //     project.activeLayer.removeChildren();
+    //     $('#mainExp').hide();
+    //     $('#drawing').hide();
+    //     endExperiment();
+    // }
 }
 
 function isDoubleClicked(element) {
@@ -308,15 +322,30 @@ window.onload = function() {
         showConsentPage();
     });
 
-    $('#startExp').click(function (e) {
+    $('.startExp').click(function (e) {
         e.preventDefault()
         if (isDoubleClicked($(this))) return;
         console.log('touched start button');
-        if ($("#checkConsent").is(':checked')) {
-            startDrawing();
-        }
-        else {
-            alert("Can we use your child's drawings? If so, please click the box above to start drawing!")
+
+        if (mode == "Bing"){
+            console.log("Bing");
+
+            if ($("#firstName").val().trim().length==0 ) {
+                alert("Please enter your first name.");
+            }else if($("#lastName").val().trim().length==0){
+                alert("Please enter your last name.");
+            }else{
+                startDrawing();
+            }
+
+        }else{
+            console.log("CDM");
+            if ($("#checkConsent").is(':checked')) {
+                startDrawing();
+            }
+            else {
+                alert("Can we use your child's drawings? If so, please click the box above to start drawing!")
+            }
         }
 
     });
@@ -333,16 +362,19 @@ window.onload = function() {
         }
 
         $('#drawing').hide();
+        project.activeLayer.removeChildren();
         startDrawing();
     });
 
-    $('#allDone').click(function(e) {
+    $('.allDone').click(function(e) {
         e.preventDefault()
         if (isDoubleClicked($(this))) return;
 
         console.log('touched endExperiment  button');
-        clickedSubmit=1; // indicate that we submitted - global variable
-        increaseTrial(); // save data and increase trial counter
+        if(clickedSubmit==0){// if the current trial has not timed out yet
+            clickedSubmit=1; // indicate that we submitted - global variable
+            increaseTrial(); // save data and increase trial counter
+        }
         $('#mainExp').hide();
         $('#drawing').hide();
         $('#keepGoing').removeClass('bounce')
@@ -350,7 +382,7 @@ window.onload = function() {
 
     });
 
-    $('#endRestart').click(function(e){
+    $('.endRestart').click(function(e){
         e.preventDefault()
         if (isDoubleClicked($(this))) return;
         console.log('restart to the landing page')
@@ -473,20 +505,28 @@ window.onload = function() {
 
     //Refresh if no user activities in 60 seconds
     var time = new Date().getTime();
-     $(document.body).bind("touchstart touchmove touchend click", function(e) {
-         time = new Date().getTime();
-     });
+    $(document.body).bind("touchstart touchmove touchend click", function(e) {
+        time = new Date().getTime();
+    });
 
-     var refreshTime = 60000
-     function refresh() {
-         if(new Date().getTime() - time >= refreshTime) {
-             window.location.reload(true);
-             console.log("No user activities. Reload.")
-         } else {
-             setTimeout(refresh, refreshTime);}
-     }
+    var refreshTime = 60000
+    function refresh() {
+        if (new Date().getTime() - time >= refreshTime) {
+            if($("#landingPage").css("display")=="none") {
+                window.location.reload(true);
+                console.log("No user activities. Reload.")
+            }else{
+                //if the current page is the landingPage, reset time and wait again
+                time = new Date().getTime();
+                setTimeout(refresh, refreshTime);
+            }
+        } else {
+            setTimeout(refresh, refreshTime);
+        }
 
-     setTimeout(refresh, refreshTime);
+    }
+
+    setTimeout(refresh, refreshTime);
 
 
     // function preventZoom(event){
@@ -497,10 +537,10 @@ window.onload = function() {
     //     console.log("trying to prevent zoom")
     //     }, {passive: false}
     // }
-     
+
     // $('cueVideo').bind('touchmove', false);
     // $('cueVideoDiv').bind('touchmove', false);
-    
+
     // videoBox = document.getElementById("cueVideo");
     // // videoBox.addEventListener("touchstart", preventZoom, false);
 

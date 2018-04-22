@@ -57,6 +57,7 @@ button[disabled] {
     bottom: 5%;
     width:280px;
     text-align: center;
+    margin-top:8vw;
 }
 
 .startButton{
@@ -292,7 +293,7 @@ button[disabled] {
     font-size:2vw
 }
 
-#allDone {
+.allDone {
     text-align:center;
     font-size: 4vw;
     font-family: Schoolbell,cursive;
@@ -346,7 +347,7 @@ button[disabled] {
     font-size:2vw;
 }
 
-#startExp{
+.startExp{
     font-size: 4vw;
     font-family: Schoolbell,cursive;
     font-style: italic;
@@ -367,4 +368,33 @@ button[disabled] {
   100%     {bottom:0;}
 }
 
+.nameInput{
+    width: 30vw;
+    margin: auto;
+    font-size: 4vw;
+    color: #128395;
+}
 
+.nameForm{
+    margin-top:5vw;
+    margin-top: 5vw;
+    margin-bottom: 5vw;
+}
+
+#bingName{
+    font-family: Schoolbell,cursive;
+    font-size:4vw;
+    text-align:center
+}
+
+#smile{
+    width:60vw;
+    height:auto;
+    margin:auto;
+}
+
+#bingRestart{
+    font-family: Schoolbell,cursive;
+    font-size:4vw;
+    text-align:center
+}
