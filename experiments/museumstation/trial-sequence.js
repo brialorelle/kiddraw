@@ -32,7 +32,7 @@ stimListTest.unshift(firstTrial)
 stimListTest.unshift(trace2)
 stimListTest.unshift(trace1)
 var curTrial=0 // global variable, trial counter
-var sessionId='stationPilot1_' + Date.now().toString()
+var sessionId='cdm_run_v1' + Date.now().toString()
 var maxTrials = stimListTest.length; //
 
 
@@ -43,6 +43,7 @@ var maxTraceTrial = 2; //the max number of tracing trials
 var timeLimit=30;
 var disableDrawing = false; //whether touch drawing is disabled or not
 var mode = "CDM";// CDM or Bing
+var version ="cdm_run_v1"
 
 if(mode=='Bing') {
     var consentPage = '#consentBing';
@@ -244,7 +245,8 @@ function saveSketchData(){
         imgData: dataURL,
         category: category,
         dbname:'kiddraw',
-        colname:'stationPilot1', // station version
+        colname: version,
+        location: mode,
         trialNum: curTrial,
         time: Date.now(),
         date: readable_date,
@@ -444,10 +446,12 @@ window.onload = function() {
                 svg: svgString,
                 category: category,
                 dbname:'kiddraw',
-                colname:'stationPilot1',
+                colname: version,
+                location: mode,
                 trialNum: curTrial,
                 time: Date.now(),
                 date: readable_date
+                age: age
             };
 
             // send stroke data to server
