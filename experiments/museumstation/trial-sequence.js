@@ -17,7 +17,7 @@ paper.install(window);
 socket = io.connect();
 
 // 1. Setup trial order and randomize it!
-firstTrial = {"category": "this circle", "video": "circle_copy.mp4", "image":"images/circle.png"}
+firstTrial = {"category": "this circle", "video": "circle.mp4", "image":"images/circle.png"}
 lastTrial = {"category": "something you love", "video": "love.mp4"}
 trace1 = {"category":"square", "video": "square.mp4", "image":"images/square.png"}
 trace2 = {"category":"shape", "video": "shape.mp4","image":"images/shape.png"}
@@ -93,7 +93,7 @@ function beginTrial(){
     //
     loadNextVideo(curTrial); // change video
     if (tracing){
-        var traceCue = "Can you trace the "  + stimListTest[curTrial].category + " on the canvas ?";
+        var traceCue = "Can you trace the "  + stimListTest[curTrial].category + "?";
         document.getElementById("cue").innerHTML = traceCue;
         document.getElementById("drawingCue").innerHTML = traceCue;
     }else {
