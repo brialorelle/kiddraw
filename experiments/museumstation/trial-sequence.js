@@ -451,7 +451,7 @@ window.onload = function() {
                 location: mode,
                 trialNum: curTrial,
                 time: Date.now(),
-                date: readable_date
+                date: readable_date,
                 age: age
             };
 
