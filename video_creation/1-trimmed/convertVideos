@@ -1,0 +1,11 @@
+
+FILES=/Users/brialong/Documents/GitHub/kiddraw/video_creation/1-trimmed/*
+FORMAT=".mp4"
+for f in $FILES
+do
+    c=$f$FORMAT
+    echo $c
+    ffmpeg -i $f -vcodec libx264 -crf 20 $c
+done
+
+    
