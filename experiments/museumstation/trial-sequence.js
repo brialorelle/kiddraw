@@ -42,9 +42,15 @@ var tracing = true; //whether the user is in tracing trials or not
 var maxTraceTrial = 2; //the max number of tracing trials
 var timeLimit=30;
 var disableDrawing = false; //whether touch drawing is disabled or not
-var mode = "Bing";// CDM or Bing
-var consentPage = '#consentBing';
-var thanksPage = "#thanksBing";
+var mode = "CDM";// CDM or Bing
+
+if(mode=='Bing') {
+    var consentPage = '#consentBing';
+    var thanksPage = "#thanksBing";
+}else{
+    var consentPage = '#consentCDM';
+    var thanksPage = "#thanksPage";
+}
 
 // shuffle the order of drawing trials
 function shuffle (a)
@@ -312,7 +318,6 @@ function isDoubleClicked(element) {
 }
 
 window.onload = function() {
-
     document.ontouchmove = function(event){
         event.preventDefault();
     }
