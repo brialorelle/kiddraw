@@ -86,7 +86,7 @@ function startDrawing(){
 //
 function beginTrial(){
     //
-    loadNextVideo(curTrial); // change video
+    var player = loadNextVideo(curTrial); // change video
     if (tracing){
         var traceCue = "Can you trace the "  + stimListTest[curTrial].category + " on the canvas ?";
         document.getElementById("cue").innerHTML = traceCue;
@@ -97,7 +97,7 @@ function beginTrial(){
     }
 
     setTimeout(function() {showCue();},1000);
-    setTimeout(function() {playVideo();},1000);
+    setTimeout(function() {playVideo(player);},1000);
 }
 
 // show cue without canvas
@@ -107,16 +107,16 @@ function showCue() {
 }
 
 // video player functions
-function playVideo(){
+function playVideo(player){
     $('#cueVideoDiv').show(); // show video div
-    videojs("cueVideo").ready(function(){ // need to wait until video is ready
-        var player = this;
-        player.play();
+    player.ready(function(){ // need to wait until video is ready
+        this.play();
         this.on('ended',function(){
             console.log('video ends and drawing starts');
             hideCue();
             this.dispose(); //dispose the old video and related eventlistener. Add a new video
-            $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' preload='auto' playsinline> </video>");
+            $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline> </video>");
+            //preload='auto'
         });
     });
 }
@@ -129,11 +129,14 @@ function hideCue() {
 }
 
 function loadNextVideo(){
-    var player=videojs('cueVideo');
+    var player=videojs('cueVideo',{
+      controls: false
+    });
     player.pause();
     console.log(stimListTest[curTrial].video)
     player.src({ type: "video/mp4", src: "videos/" + stimListTest[curTrial].video });
     player.load();
+    return player;
 }
 
 function setUpDrawing(){
