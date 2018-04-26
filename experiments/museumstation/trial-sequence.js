@@ -160,7 +160,7 @@ function setUpDrawing(){
         $("#submit_div").show();
         $("#lastTrial").hide();
 
-    }else if(stimListTest[curTrial].category == 'a circle'){
+    }else if(stimListTest[curTrial].category == 'this circle'){
         //for the circle trial, show the circle image for 2s and hide it.
 
         var imageurl = "url('" + stimListTest[curTrial].image + "')";
