@@ -97,8 +97,15 @@ function beginTrial(){
         document.getElementById("cue").innerHTML = traceCue;
         document.getElementById("drawingCue").innerHTML = traceCue;
     }else {
-        document.getElementById("cue").innerHTML = "Can you draw " + stimListTest[curTrial].category + " ?"; // change cue
-        document.getElementById("drawingCue").innerHTML = stimListTest[curTrial].category; // change drawing cue
+        if (stimListTest[curTrial].category == 'this circle'){
+            var circleCue = "Can you trace "  + stimListTest[curTrial].category + "?";
+            document.getElementById("cue").innerHTML = circleCue;
+            document.getElementById("drawingCue").innerHTML = circleCue;
+        }else{
+            document.getElementById("cue").innerHTML = "Can you draw " + stimListTest[curTrial].category + " ?"; // change cue
+            document.getElementById("drawingCue").innerHTML = stimListTest[curTrial].category; // change drawing cue
+        }
+
     }
 
     setTimeout(function() {showCue();},1000);
@@ -120,7 +127,7 @@ function playVideo(player){
             console.log('video ends and drawing starts');
             hideCue();
             this.dispose(); //dispose the old video and related eventlistener. Add a new video
-            $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' preload='none' playsinline> </video>");
+            $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline> </video>");
         });
     });
 }
@@ -134,8 +141,7 @@ function hideCue() {
 
 function loadNextVideo(){
     var player=videojs('cueVideo',{
-        "controls": false,
-        "preload":"none"
+        "controls": false
     });
     player.pause();
     console.log(stimListTest[curTrial].video)
