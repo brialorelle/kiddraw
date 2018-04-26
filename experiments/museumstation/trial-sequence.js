@@ -109,15 +109,14 @@ function showCue() {
 
 // video player functions
 function playVideo(player){
-    $('#cueVideoDiv').show(); // show video div
+    $('#cueVideoDiv').fadeIn(); // show video div
     player.ready(function(){ // need to wait until video is ready
         this.play();
         this.on('ended',function(){
             console.log('video ends and drawing starts');
             hideCue();
             this.dispose(); //dispose the old video and related eventlistener. Add a new video
-            $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline> </video>");
-            //preload='auto'
+            $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' preload='none' playsinline> </video>");
         });
     });
 }
@@ -131,7 +130,8 @@ function hideCue() {
 
 function loadNextVideo(){
     var player=videojs('cueVideo',{
-      controls: false
+        "controls": false,
+        "preload":"none"
     });
     player.pause();
     console.log(stimListTest[curTrial].video)
@@ -350,11 +350,13 @@ window.onload = function() {
 
         }else{
             console.log("CDM");
-            if ($("#checkConsent").is(':checked')) {
-                startDrawing();
+            if (!$("#checkConsent").is(':checked')) {
+                alert("Can we use your child's drawings? If so, please click the box above to start drawing!")
+            }else if($(".active").val()==undefined){
+                alert("Please select your age group.")
             }
             else {
-                alert("Can we use your child's drawings? If so, please click the box above to start drawing!")
+                startDrawing();
             }
         }
 
@@ -450,7 +452,7 @@ window.onload = function() {
                 location: mode,
                 trialNum: curTrial,
                 time: Date.now(),
-                date: readable_date
+                date: readable_date,
                 age: age
             };
 
