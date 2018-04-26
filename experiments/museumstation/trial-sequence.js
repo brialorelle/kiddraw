@@ -47,7 +47,7 @@ var maxTraceTrial = 2; //the max number of tracing trials
 var timeLimit=30;
 var disableDrawing = false; //whether touch drawing is disabled or not
 var mode = "CDM";// CDM or Bing
-var version ="cdm_run_v1"
+var version ="cdm_run_test"
 
 if(mode=='Bing') {
     var consentPage = '#consentBing';
