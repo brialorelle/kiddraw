@@ -301,10 +301,10 @@ function endExperiment(){
     //wait for 1min and restart
     setTimeout(function(){
         if(curTrial == -1) {
-            console.log("restart after 15 second");
+            console.log("restart after 60 seconds");
             restartExperiment()
         }
-    }, 120000);
+    }, 60000);
 }
 
 function increaseTrial(){
@@ -487,6 +487,16 @@ window.onload = function() {
         path.strokeCap = 'round'
         path.strokeWidth = 10;
         paths.push(path);
+
+        // Prevents touch bubbling
+        if(touches.length === paths.length) {
+            for(var i = 0; i < touches.length; i++){
+                var path = paths[i];
+                var point = view.getEventPoint(touches[i]);
+                path.add(point);
+                view.draw();
+            }
+        }
     }
 
     function touchMove(ev) {
@@ -534,7 +544,7 @@ window.onload = function() {
         time = new Date().getTime();
     });
 
-    var refreshTime = 60000
+    var refreshTime = 90000
     function refresh() {
         if (new Date().getTime() - time >= refreshTime) {
             if($("#landingPage").css("display")=="none") {
