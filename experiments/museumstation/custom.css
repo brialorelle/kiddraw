@@ -340,11 +340,11 @@ button[disabled] {
 }
 
 #sendEmail{
-    font-size:2vw;
+    font-size:1.5vw;
 }
 
 #email-sent{
-    font-size:2vw;
+    font-size:1.5vw;
 }
 
 .startExp{
