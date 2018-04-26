@@ -375,7 +375,7 @@ window.onload = function() {
 
     $('#keepGoing').click(function(e) {
         e.preventDefault()
-        if (isDoubleClicked($(this))) return;
+        // if (isDoubleClicked($(this))) return;
         $('#keepGoing').removeClass('bounce')
 
         console.log('touched next trial button');
@@ -391,7 +391,7 @@ window.onload = function() {
 
     $('.allDone').click(function(e) {
         e.preventDefault()
-        if (isDoubleClicked($(this))) return;
+        // if (isDoubleClicked($(this))) return;
 
         console.log('touched endExperiment  button');
         if(clickedSubmit==0){// if the current trial has not timed out yet
@@ -407,7 +407,7 @@ window.onload = function() {
 
     $('.endRestart').click(function(e){
         e.preventDefault()
-        if (isDoubleClicked($(this))) return;
+        // if (isDoubleClicked($(this))) return;
         console.log('restart to the landing page')
         restartExperiment()
     });
@@ -415,7 +415,7 @@ window.onload = function() {
 
     $('#sendEmail').click(function(e){
         e.preventDefault()
-        if (isDoubleClicked($(this))) return;
+        // if (isDoubleClicked($(this))) return;
         var email = $('#parent-email').val()
         $.get("/send", {email:email}, function(data){
             if(data=="sent"){
