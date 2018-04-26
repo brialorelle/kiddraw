@@ -54,7 +54,7 @@ button[disabled] {
     /*position: absolute;*/
     margin: auto;
     right:0;left:0;
-    bottom: 5%;
+    bottom: 10%;
     width:280px;
     text-align: center;
     /*margin-top:8vw;*/
