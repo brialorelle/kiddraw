@@ -338,12 +338,12 @@ window.onload = function() {
         event.preventDefault();
     }
 
-    $('#startConsent').ontouchstart(function(e) {
+    $('#startConsent').touchstart(function(e) {
         e.preventDefault()
         showConsentPage();
     });
 
-    $('.startExp').ontouchstart(function (e) {
+    $('.startExp').touchstart(function (e) {
         e.preventDefault()
         // if (isDoubleClicked($(this))) return;
         console.log('touched start button');
@@ -373,7 +373,7 @@ window.onload = function() {
 
     });
 
-    $('#keepGoing').ontouchstart(function(e) {
+    $('#keepGoing').touchstart(function(e) {
         e.preventDefault()
         // if (isDoubleClicked($(this))) return;
         $('#keepGoing').removeClass('bounce')
@@ -389,7 +389,7 @@ window.onload = function() {
         startDrawing();
     });
 
-    $('.allDone').ontouchstart(function(e) {
+    $('.allDone').touchstart(function(e) {
         e.preventDefault()
         // if (isDoubleClicked($(this))) return;
 
@@ -405,7 +405,7 @@ window.onload = function() {
 
     });
 
-    $('.endRestart').ontouchstart(function(e){
+    $('.endRestart').touchstart(function(e){
         e.preventDefault()
         // if (isDoubleClicked($(this))) return;
         console.log('restart to the landing page')
@@ -413,7 +413,7 @@ window.onload = function() {
     });
 
 
-    $('#sendEmail').ontouchstart(function(e){
+    $('#sendEmail').touchstart(function(e){
         e.preventDefault()
         // if (isDoubleClicked($(this))) return;
         var email = $('#parent-email').val()
@@ -427,7 +427,7 @@ window.onload = function() {
         });
     });
 
-    $('.ageButton').ontouchstart(function(e){
+    $('.ageButton').touchstart(function(e){
         e.preventDefault()
         $('.ageButton').removeClass('active')
         $(this).addClass('active')
