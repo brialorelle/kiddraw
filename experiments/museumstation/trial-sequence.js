@@ -148,7 +148,7 @@ function loadNextVideo(){
         "preload":"auto"
     });
     player.pause();
-    player.volume(1);
+    player.volume(1); // set volume to max 
     console.log(stimListTest[curTrial].video)
     player.src({ type: "video/mp4", src: "videos_smaller/" + stimListTest[curTrial].video });
     player.load();
@@ -338,14 +338,14 @@ window.onload = function() {
         event.preventDefault();
     }
 
-    $('#startConsent').click(function(e) {
+    $('#startConsent').ontouchstart(function(e) {
         e.preventDefault()
         showConsentPage();
     });
 
-    $('.startExp').click(function (e) {
+    $('.startExp').ontouchstart(function (e) {
         e.preventDefault()
-        if (isDoubleClicked($(this))) return;
+        // if (isDoubleClicked($(this))) return;
         console.log('touched start button');
 
         if (mode == "Bing"){
@@ -373,7 +373,7 @@ window.onload = function() {
 
     });
 
-    $('#keepGoing').click(function(e) {
+    $('#keepGoing').ontouchstart(function(e) {
         e.preventDefault()
         // if (isDoubleClicked($(this))) return;
         $('#keepGoing').removeClass('bounce')
@@ -389,7 +389,7 @@ window.onload = function() {
         startDrawing();
     });
 
-    $('.allDone').click(function(e) {
+    $('.allDone').ontouchstart(function(e) {
         e.preventDefault()
         // if (isDoubleClicked($(this))) return;
 
@@ -405,7 +405,7 @@ window.onload = function() {
 
     });
 
-    $('.endRestart').click(function(e){
+    $('.endRestart').ontouchstart(function(e){
         e.preventDefault()
         // if (isDoubleClicked($(this))) return;
         console.log('restart to the landing page')
@@ -413,7 +413,7 @@ window.onload = function() {
     });
 
 
-    $('#sendEmail').click(function(e){
+    $('#sendEmail').ontouchstart(function(e){
         e.preventDefault()
         // if (isDoubleClicked($(this))) return;
         var email = $('#parent-email').val()
@@ -427,7 +427,7 @@ window.onload = function() {
         });
     });
 
-    $('.ageButton').click(function(e){
+    $('.ageButton').ontouchstart(function(e){
         e.preventDefault()
         $('.ageButton').removeClass('active')
         $(this).addClass('active')
