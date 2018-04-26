@@ -135,7 +135,7 @@ function hideCue() {
 function loadNextVideo(){
     var player=videojs('cueVideo',{
         "controls": false,
-        "preload":"none"
+        "preload":"auto"
     });
     player.pause();
     console.log(stimListTest[curTrial].video)
