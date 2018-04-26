@@ -139,7 +139,7 @@ function loadNextVideo(){
     });
     player.pause();
     console.log(stimListTest[curTrial].video)
-    player.src({ type: "video/mp4", src: "videos/" + stimListTest[curTrial].video });
+    player.src({ type: "video/mp4", src: "videos_smaller/" + stimListTest[curTrial].video });
     player.load();
     return player;
 }
