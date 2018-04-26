@@ -36,7 +36,6 @@ stimListTest.unshift(firstTrial)
 stimListTest.unshift(trace2)
 stimListTest.unshift(trace1)
 var curTrial=0 // global variable, trial counter
-var sessionId='cdm_run_test' + Date.now().toString()
 var maxTrials = stimListTest.length; //
 
 
@@ -46,8 +45,12 @@ var tracing = true; //whether the user is in tracing trials or not
 var maxTraceTrial = 2; //the max number of tracing trials
 var timeLimit=30;
 var disableDrawing = false; //whether touch drawing is disabled or not
+
+// current mode and session info
 var mode = "CDM";// CDM or Bing
 var version ="cdm_run_v2"
+var sessionId= version + Date.now().toString()
+
 
 if(mode=='Bing') {
     var consentPage = '#consentBing';
@@ -145,6 +148,7 @@ function loadNextVideo(){
         "preload":"auto"
     });
     player.pause();
+    player.volume(1);
     console.log(stimListTest[curTrial].video)
     player.src({ type: "video/mp4", src: "videos_smaller/" + stimListTest[curTrial].video });
     player.load();
@@ -265,9 +269,6 @@ function saveSketchData(){
 
     // send data to server to write to database
     socket.emit('current_data', current_data);
-
-    //change the color of current drawing in the sketchpad as grey
-
 };
 
 
@@ -275,10 +276,9 @@ function saveSketchData(){
 function showConsentPage(){
     $('#landingPage').hide();
     $(consentPage).show();
-    $('#parent-email').attr('placeholder', 'Input your email address here').val('');
+    $('#parent-email').attr('placeholder', 'If you would like a copy of the consent form, input your email address here.').val('');
     $('#email-form').show();
     $('#email-sent').hide();
-
 }
 
 function restartExperiment() {
@@ -286,7 +286,7 @@ function restartExperiment() {
     curTrial=0;
     clickedSubmit=0;
     tracing = true
-    sessionId='stationPilot1_' + Date.now().toString()
+    sessionId=version + Date.now().toString()
     $('.ageButton').removeClass('active');
     $('#endGame').removeClass('bounce');
     $(thanksPage).hide();
@@ -489,14 +489,13 @@ window.onload = function() {
         paths.push(path);
 
         // Prevents touch bubbling
-        if(touches.length === paths.length) {
-            for(var i = 0; i < touches.length; i++){
-                var path = paths[i];
-                var point = view.getEventPoint(touches[i]);
-                path.add(point);
-                view.draw();
-            }
+        for(var i = 0; i < touches.length; i++){
+            var path = paths[i];
+            var point = view.getEventPoint(touches[i]);
+            path.add(point);
+            view.draw();
         }
+        
     }
 
     function touchMove(ev) {
