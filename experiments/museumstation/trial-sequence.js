@@ -98,7 +98,7 @@ function beginTrial(){
         document.getElementById("drawingCue").innerHTML = traceCue;
     }else {
         if (stimListTest[curTrial].category == 'this circle'){
-            var circleCue = "Can you trace "  + stimListTest[curTrial].category + "?";
+            var circleCue = "Can you copy "  + stimListTest[curTrial].category + "?";
             document.getElementById("cue").innerHTML = circleCue;
             document.getElementById("drawingCue").innerHTML = circleCue;
         }else{
