@@ -47,7 +47,7 @@ var maxTraceTrial = 2; //the max number of tracing trials
 var timeLimit=30;
 var disableDrawing = false; //whether touch drawing is disabled or not
 var mode = "CDM";// CDM or Bing
-var version ="cdm_run_v1"
+var version ="cdm_run_test"
 
 if(mode=='Bing') {
     var consentPage = '#consentBing';
@@ -145,7 +145,7 @@ function loadNextVideo(){
     });
     player.pause();
     console.log(stimListTest[curTrial].video)
-    player.src({ type: "video/mp4", src: "videos/" + stimListTest[curTrial].video });
+    player.src({ type: "video/mp4", src: "videos_smaller/" + stimListTest[curTrial].video });
     player.load();
     return player;
 }
