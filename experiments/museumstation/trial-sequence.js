@@ -36,7 +36,7 @@ stimListTest.unshift(firstTrial)
 stimListTest.unshift(trace2)
 stimListTest.unshift(trace1)
 var curTrial=0 // global variable, trial counter
-var sessionId='cdm_run_v1' + Date.now().toString()
+var sessionId='cdm_run_test' + Date.now().toString()
 var maxTrials = stimListTest.length; //
 
 

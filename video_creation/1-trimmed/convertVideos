@@ -1,5 +1,5 @@
 
-FILES=/Users/brialong/Documents/GitHub/kiddraw/video_creation/1-trimmed/*
+FILES=/Users/brialong/Documents/GitHub/kiddraw/video_creation/temp/*
 FORMAT=".mp4"
 for f in $FILES
 do
