@@ -304,7 +304,7 @@ function endExperiment(){
             console.log("restart after 15 second");
             restartExperiment()
         }
-    }, 60000);
+    }, 120000);
 }
 
 function increaseTrial(){
