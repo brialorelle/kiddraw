@@ -285,7 +285,7 @@ function restartExperiment() {
     project.activeLayer.removeChildren();
     curTrial=0;
     clickedSubmit=0;
-    tracing = true
+    tracing = true;
     sessionId=version + Date.now().toString()
     $('.ageButton').removeClass('active');
     $('#endGame').removeClass('bounce');
@@ -340,12 +340,14 @@ window.onload = function() {
 
     $('#startConsent').bind('touchstart mousedown',function(e) {
         e.preventDefault()
+        // if (isDoubleClicked($(this))) return;
         showConsentPage();
     });
 
     $('.startExp').bind('touchstart mousedown',function (e) {
         e.preventDefault()
         // if (isDoubleClicked($(this))) return;
+
         console.log('touched start button');
 
         if (mode == "Bing"){
@@ -376,6 +378,7 @@ window.onload = function() {
     $('#keepGoing').bind('touchstart mousedown',function(e) {
         e.preventDefault()
         // if (isDoubleClicked($(this))) return;
+
         $('#keepGoing').removeClass('bounce')
 
         console.log('touched next trial button');
@@ -408,6 +411,7 @@ window.onload = function() {
     $('.endRestart').bind('touchstart mousedown',function(e){
         e.preventDefault()
         // if (isDoubleClicked($(this))) return;
+
         console.log('restart to the landing page')
         restartExperiment()
     });
@@ -415,6 +419,7 @@ window.onload = function() {
 
     $('#sendEmail').bind('touchstart mousedown',function(e){
         e.preventDefault()
+
         // if (isDoubleClicked($(this))) return;
         var email = $('#parent-email').val()
         $.get("/send", {email:email}, function(data){
