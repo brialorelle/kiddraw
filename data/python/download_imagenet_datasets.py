@@ -54,8 +54,8 @@ def download_images_by_synset(synsets, num_per_synset=100, path=None,
             '&release=latest'
       print '{} | {}'.format(i, url)
       label = imagenet_to_labels[s]
-      SIDICT = oc.sketch_imagenet_dict
-      label = SIDICT[label]
+      # SIDICT = oc.sketch_imagenet_dict
+      # label = SIDICT[label]
       url_file = urlopen(url)
       counter = 0
       for f in url_file:
@@ -63,7 +63,9 @@ def download_images_by_synset(synsets, num_per_synset=100, path=None,
           f1 = (f)
           try:
             img_data = requests.get(f1, stream=True).content
-            filename = os.path.join(path,label + '_{0:03d}.jpg'.format(counter))
+            if not os.path.exists(os.path.join(path,label)):
+                os.makedirs(os.path.join(path,label))
+            filename = os.path.join(path,label, '{0:04d}.jpg'.format(counter))
             with open(filename, 'wb') as handler:
                 handler.write(img_data)
                 # validate image before moving on
