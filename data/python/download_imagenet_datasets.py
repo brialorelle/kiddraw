@@ -83,7 +83,7 @@ def download_images_by_synset(synsets, num_per_synset=100, path=None,
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--num_per_synset', type=int, default=10)
+    parser.add_argument('--num_per_synset', type=int, default=100)
     args = parser.parse_args()
 
     ## get list of synsets
