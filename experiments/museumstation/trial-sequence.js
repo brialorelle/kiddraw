@@ -47,18 +47,12 @@ var timeLimit=30;
 var disableDrawing = false; //whether touch drawing is disabled or not
 
 // current mode and session info
-var mode = "CDM";// CDM or Bing
-var version ="cdm_run_v2"
-var sessionId= version + Date.now().toString()
+var mode = "CDM";
+var version ="cdm_run_v2";
+var sessionId= version + Date.now().toString();
 
-
-if(mode=='Bing') {
-    var consentPage = '#consentBing';
-    var thanksPage = "#thanksBing";
-}else{
-    var consentPage = '#consentCDM';
-    var thanksPage = "#thanksPage";
-}
+var consentPage = '#consentCDM';
+var thanksPage = "#thanksPage";
 
 // shuffle the order of drawing trials
 function shuffle (a)
@@ -271,6 +265,39 @@ function saveSketchData(){
     socket.emit('current_data', current_data);
 };
 
+function saveSketchBing(){
+    // downsamplesketchpad before saveing
+    var canvas = document.getElementById("sketchpad"),
+        ctx=canvas.getContext("2d");
+
+    tmpCanvas = document.createElement("canvas");
+    tmpCanvas.width=150;
+    tmpCanvas.height=150;
+    destCtx = tmpCanvas.getContext('2d');
+    destCtx.drawImage(canvas, 0,0,150,150)
+
+    var dataURL = tmpCanvas.toDataURL();
+    dataURL = dataURL.replace('data:image/png;base64,','');
+    var category = stimListTest[curTrial].category;
+
+    // test stirng
+    readable_date = new Date();
+    current_data = {
+        dataType: 'finalImage',
+        sessionId: sessionId, // each child
+        imgData: dataURL,
+        category: category,
+        dbname:'kiddraw',
+        colname: version,
+        location: mode,
+        trialNum: curTrial,
+        time: Date.now(),
+        date: readable_date};
+
+    // send data to server to write to database
+    socket.emit('current_data', current_data);
+};
+
 
 // experiment navigation functions
 function showConsentPage(){
@@ -334,6 +361,19 @@ function isDoubleClicked(element) {
 }
 
 window.onload = function() {
+    $.get("/mode", function(data){
+        mode = data.mode;
+        if(mode=='Bing') {
+            consentPage = '#consentBing';
+            thanksPage = "#thanksBing";
+            console.log(" mode Bing")
+        }else if(mode=="CDM"){
+            consentPage = '#consentCDM';
+            thanksPage = "#thanksPage";
+            console.log("mode CDM")
+        }
+    });
+
     document.ontouchmove = function(event){
         event.preventDefault();
     }
