@@ -118,7 +118,7 @@ class FeatureExtractor():
         def load_image(path, imsize=224, padding=self.padding, volatile=True, use_cuda=False):
             im = Image.open(path)
             
-            if self.cohort != "images":
+            if self.cohort!='images':
                 im = RGBA2RGB(im)
                 
                 # crop to sketch only (reduce white space)
@@ -134,9 +134,9 @@ class FeatureExtractor():
                     lb = min([xlb,ylb])
                     ub = max([xub,yub])            
                     im = im.crop((lb, lb, ub, ub))
-            except ValueError:
-                print('Blank image {}'.format(path))
-                pass
+                except ValueError:
+                    print('Blank image {}'.format(path))
+                    pass
 
             loader = transforms.Compose([
                 transforms.Pad(padding),                
