@@ -402,3 +402,17 @@ button[disabled] {
     text-align:center;
     margin-top:5vh;
 }
+
+#langOptions{
+    text-align:center;
+    padding:5vh;
+}
+
+.langButton{
+    margin:auto;
+    margin-top:2vh;
+    margin-bottom:2vh;
+    font-size:5vh;
+    font-family: Schoolbell,cursive;
+    width: 40vw;
+}

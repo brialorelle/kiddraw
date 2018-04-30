@@ -45,6 +45,7 @@ var tracing = true; //whether the user is in tracing trials or not
 var maxTraceTrial = 2; //the max number of tracing trials
 var timeLimit=30;
 var disableDrawing = false; //whether touch drawing is disabled or not
+var language = "English";
 
 // current mode and session info
 var mode = "CDM";
@@ -245,6 +246,10 @@ function saveSketchData(){
     dataURL = dataURL.replace('data:image/png;base64,','');
     var category = stimListTest[curTrial].category;
     var age = $('.active').attr('id');
+    var firstName = $('#firstName').val();
+    var lastName = $('#lastName').val();
+    var name = firstName.toUpperCase() + ' ' + lastName.toUpperCase()
+
 
     // test stirng
     readable_date = new Date();
@@ -259,49 +264,21 @@ function saveSketchData(){
         trialNum: curTrial,
         time: Date.now(),
         date: readable_date,
-        age: age}; // age
+        age: age,
+        kidName: name}; // age
 
     // send data to server to write to database
     socket.emit('current_data', current_data);
 };
 
-function saveSketchBing(){
-    // downsamplesketchpad before saveing
-    var canvas = document.getElementById("sketchpad"),
-        ctx=canvas.getContext("2d");
 
-    tmpCanvas = document.createElement("canvas");
-    tmpCanvas.width=150;
-    tmpCanvas.height=150;
-    destCtx = tmpCanvas.getContext('2d');
-    destCtx.drawImage(canvas, 0,0,150,150)
+function setLanguage(lang){
 
-    var dataURL = tmpCanvas.toDataURL();
-    dataURL = dataURL.replace('data:image/png;base64,','');
-    var category = stimListTest[curTrial].category;
-
-    // test stirng
-    readable_date = new Date();
-    current_data = {
-        dataType: 'finalImage',
-        sessionId: sessionId, // each child
-        imgData: dataURL,
-        category: category,
-        dbname:'kiddraw',
-        colname: version,
-        location: mode,
-        trialNum: curTrial,
-        time: Date.now(),
-        date: readable_date};
-
-    // send data to server to write to database
-    socket.emit('current_data', current_data);
-};
-
+}
 
 // experiment navigation functions
 function showConsentPage(){
-    $('#landingPage').hide();
+    $("#chooseLang").hide();
     $(consentPage).show();
     $('#parent-email').attr('placeholder', 'If you would like a copy of the consent form, input your email address here.').val('');
     $('#email-form').show();
@@ -380,7 +357,15 @@ window.onload = function() {
 
     $('#startConsent').bind('touchstart mousedown',function(e) {
         e.preventDefault()
+        $("#chooseLang").show();
+        $("#landingPage").hide();
+    });
+
+    $('.langButton').bind('touchstart mousedown',function(e) {
+        e.preventDefault()
         // if (isDoubleClicked($(this))) return;
+        language = $(this).attr('id');
+        setLanguage(language);
         showConsentPage();
     });
 
@@ -497,6 +482,9 @@ window.onload = function() {
             var category = stimListTest[curTrial].category;
             var readable_date = new Date();
             var age = $('.active').attr('id');
+            var firstName = $('#firstName').val();
+            var lastName = $('#lastName').val();
+            var name = firstName.toUpperCase() + ' ' + lastName.toUpperCase()
 
             stroke_data = {
                 dataType: 'stroke',
@@ -509,7 +497,8 @@ window.onload = function() {
                 trialNum: curTrial,
                 time: Date.now(),
                 date: readable_date,
-                age: age
+                age: age,
+                kidName: name
             };
 
             // send stroke data to server
