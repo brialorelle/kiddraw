@@ -144,7 +144,7 @@ class FeatureExtractor():
                 transforms.ToTensor()])
 
             im = Variable(loader(im), volatile=volatile)
-            im = im.unsqueeze(0)
+            # im = im.unsqueeze(0)
             if use_cuda:
                 im = im.cuda(self.cuda_device)
             return im        
@@ -172,6 +172,7 @@ class FeatureExtractor():
             elif self.cohort == 'images':
                 age = 'images'
                 session = 'unknown'
+                print('Setting age/session dummy variables for images...')
             else:
                 print('Need to specify a cohort: "kid" or "adult"!')
                 age = 'unknown'
