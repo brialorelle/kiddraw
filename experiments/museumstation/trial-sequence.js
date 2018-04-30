@@ -248,8 +248,10 @@ function saveSketchData(){
     var age = $('.active').attr('id');
     var firstName = $('#firstName').val();
     var lastName = $('#lastName').val();
-    var name = firstName.toUpperCase() + ' ' + lastName.toUpperCase()
-
+    var name;
+    if (firstName != "") {
+        name = firstName.toUpperCase() + ' ' + lastName.toUpperCase()
+    }
 
     // test stirng
     readable_date = new Date();
@@ -278,7 +280,8 @@ function setLanguage(lang){
 
 // experiment navigation functions
 function showConsentPage(){
-    $("#chooseLang").hide();
+    //$("#chooseLang").hide();
+    $("#landingPage").hide();
     $(consentPage).show();
     $('#parent-email').attr('placeholder', 'If you would like a copy of the consent form, input your email address here.').val('');
     $('#email-form').show();
@@ -357,8 +360,9 @@ window.onload = function() {
 
     $('#startConsent').bind('touchstart mousedown',function(e) {
         e.preventDefault()
-        $("#chooseLang").show();
-        $("#landingPage").hide();
+        // $("#chooseLang").show();
+        // $("#landingPage").hide();
+        showConsentPage();
     });
 
     $('.langButton').bind('touchstart mousedown',function(e) {
@@ -484,7 +488,10 @@ window.onload = function() {
             var age = $('.active').attr('id');
             var firstName = $('#firstName').val();
             var lastName = $('#lastName').val();
-            var name = firstName.toUpperCase() + ' ' + lastName.toUpperCase()
+            var name;
+            if (firstName != "") {
+                name = firstName.toUpperCase() + ' ' + lastName.toUpperCase()
+            }
 
             stroke_data = {
                 dataType: 'stroke',
