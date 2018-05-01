@@ -59,7 +59,8 @@ def download_images_by_synset(synsets, num_per_synset=100, path=None,
       # label = SIDICT[label]
       url_file = urlopen(url)
       counter = 0
-      for f in url_file:
+      for u,f in enumerate(url_file):
+          print '{} | {}'.format(u,f)
         if counter<num_per_synset:
           f1 = (f)
           try:
