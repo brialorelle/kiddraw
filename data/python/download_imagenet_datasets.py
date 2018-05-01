@@ -7,6 +7,7 @@ from random import sample
 import pymongo as pm
 import requests
 import object_correspondences as oc
+from PIL import Image
 
 def build_imagenet_to_labels_dict():
   # define mapping from imagenet synset to common labels
@@ -62,7 +63,7 @@ def download_images_by_synset(synsets, num_per_synset=100, path=None,
         if counter<num_per_synset:
           f1 = (f)
           try:
-            img_data = requests.get(f1, stream=True).content
+            img_data = requests.get(f1, stream=True, timeout=(5, 5)).content
             if not os.path.exists(os.path.join(path,label)):
                 os.makedirs(os.path.join(path,label))
             filename = os.path.join(path,label, '{0:04d}.jpg'.format(counter))
@@ -71,10 +72,15 @@ def download_images_by_synset(synsets, num_per_synset=100, path=None,
                 # validate image before moving on
                 filesize = os.stat(filename).st_size
                 #print label, counter, filesize
-                if filesize<100000: # smaller than some threshold filesize
-                  os.remove(filename)
-                else:
-                  counter += 1
+                try:
+                    x = Image.open(filename)
+                    if filesize<100000: # smaller than some threshold filesize
+                      os.remove(filename)
+                    else:
+                      counter += 1
+                except IOError:
+                    os.remove(filename)
+                    pass
           except Exception as e:
             print e
             pass
