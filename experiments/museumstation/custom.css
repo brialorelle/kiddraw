@@ -198,6 +198,7 @@ button[disabled] {
     right: 0;
     margin: auto;
     margin-bottom:1vh;
+    margin-top:2vh;
     font-family: Schoolbell,cursive;
 }
 
@@ -328,6 +329,8 @@ button[disabled] {
     font-weight: bold;
     font-style: italic;
     font-size:3vw;
+    margin-top:1vh;
+
 }
 #stanfordLogo{
     text-align:center;
@@ -396,5 +399,20 @@ button[disabled] {
 #bingRestart{
     font-family: Schoolbell,cursive;
     font-size:4vw;
-    text-align:center
+    text-align:center;
+    margin-top:5vh;
+}
+
+#langOptions{
+    text-align:center;
+    padding:5vh;
+}
+
+.langButton{
+    margin:auto;
+    margin-top:2vh;
+    margin-bottom:2vh;
+    font-size:5vh;
+    font-family: Schoolbell,cursive;
+    width: 40vw;
 }

@@ -22,6 +22,16 @@ if(argv.gameport) {
     console.log('no gameport specified: using 8880\nUse the --gameport flag to change');
 }
 
+var mode;
+if(argv.mode) {
+    mode = argv.mode;
+    console.log('using mode ' + mode);
+} else {
+    mode = "CDM";
+    console.log('no mode specified: using CDM\nUse the --mode flag to change');
+}
+
+
 try {
     var privateKey  = fs.readFileSync('/etc/apache2/ssl/rxdhawkins.me.key'),
         certificate = fs.readFileSync('/etc/apache2/ssl/rxdhawkins.me.crt'),
@@ -38,6 +48,8 @@ try {
 app.get('/*', (req, res) => {
     serveFile(req, res);
 });
+
+
 
 // var socket = io.connect('http://localhost:8001');
 
@@ -62,7 +74,10 @@ var serveFile = function(req, res) {
     if (fileName == "send"){
         console.log('sending the consent form to the parent email');
         sendEmail(req,res);
-    }else {
+    }else if(fileName == "mode"){
+        console.log ("mode: " + mode);
+        res.send({'mode':mode});
+    } else{
         console.log('\t :: Express :: file requested: ' + fileName);
         return res.sendFile(fileName, {root: __dirname});
     }

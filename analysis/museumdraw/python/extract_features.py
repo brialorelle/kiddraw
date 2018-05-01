@@ -92,12 +92,13 @@ if __name__ == "__main__":
     parser.add_argument('--layer_ind', help='fc6 = 5, fc7 = 6', default=6)
     parser.add_argument('--cohort', help='"kid" or "adult"', default='kid')
     parser.add_argument('--spatial_avg', type=bool, help='collapse over spatial dimensions, preserving channel activation only if true', default=True)     
-    parser.add_argument('--test', type=bool, help='testing only, do not save features', default=False)    
+    parser.add_argument('--test', type=bool, help='testing only, do not save features', default=False)  
+    parser.add_argument('--ext', type=str, help='image extension type (e.g., "png")', default="png")    
 
     args = parser.parse_args()
     
     ## get list of all sketch paths
-    sketch_paths = sorted(list_files(args.data))
+    sketch_paths = sorted(list_files(args.data,args.ext))
     print('Length of sketch_paths before filtering: {}'.format(len(sketch_paths)))
     
     ## filter out invalid sketches

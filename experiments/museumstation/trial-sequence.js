@@ -45,20 +45,15 @@ var tracing = true; //whether the user is in tracing trials or not
 var maxTraceTrial = 2; //the max number of tracing trials
 var timeLimit=30;
 var disableDrawing = false; //whether touch drawing is disabled or not
+var language = "English";
 
 // current mode and session info
-var mode = "CDM";// CDM or Bing
-var version ="cdm_run_v2"
-var sessionId= version + Date.now().toString()
+var mode = "CDM";
+var version ="cdm_run_v2";
+var sessionId= version + Date.now().toString();
 
-
-if(mode=='Bing') {
-    var consentPage = '#consentBing';
-    var thanksPage = "#thanksBing";
-}else{
-    var consentPage = '#consentCDM';
-    var thanksPage = "#thanksPage";
-}
+var consentPage = '#consentCDM';
+var thanksPage = "#thanksPage";
 
 // shuffle the order of drawing trials
 function shuffle (a)
@@ -251,6 +246,12 @@ function saveSketchData(){
     dataURL = dataURL.replace('data:image/png;base64,','');
     var category = stimListTest[curTrial].category;
     var age = $('.active').attr('id');
+    var firstName = $('#firstName').val();
+    var lastName = $('#lastName').val();
+    var name;
+    if (firstName != "") {
+        name = firstName.toUpperCase() + ' ' + lastName.toUpperCase()
+    }
 
     // test stirng
     readable_date = new Date();
@@ -265,16 +266,22 @@ function saveSketchData(){
         trialNum: curTrial,
         time: Date.now(),
         date: readable_date,
-        age: age}; // age
+        age: age,
+        kidName: name}; // age
 
     // send data to server to write to database
     socket.emit('current_data', current_data);
 };
 
 
+function setLanguage(lang){
+
+}
+
 // experiment navigation functions
 function showConsentPage(){
-    $('#landingPage').hide();
+    //$("#chooseLang").hide();
+    $("#landingPage").hide();
     $(consentPage).show();
     $('#parent-email').attr('placeholder', 'If you would like a copy of the consent form, input your email address here.').val('');
     $('#email-form').show();
@@ -285,7 +292,7 @@ function restartExperiment() {
     project.activeLayer.removeChildren();
     curTrial=0;
     clickedSubmit=0;
-    tracing = true
+    tracing = true;
     sessionId=version + Date.now().toString()
     $('.ageButton').removeClass('active');
     $('#endGame').removeClass('bounce');
@@ -334,18 +341,42 @@ function isDoubleClicked(element) {
 }
 
 window.onload = function() {
+    $.get("/mode", function(data){
+        mode = data.mode;
+        if(mode=='Bing') {
+            consentPage = '#consentBing';
+            thanksPage = "#thanksBing";
+            console.log(" mode Bing")
+        }else if(mode=="CDM"){
+            consentPage = '#consentCDM';
+            thanksPage = "#thanksPage";
+            console.log("mode CDM")
+        }
+    });
+
     document.ontouchmove = function(event){
         event.preventDefault();
     }
 
     $('#startConsent').bind('touchstart mousedown',function(e) {
         e.preventDefault()
+        // $("#chooseLang").show();
+        // $("#landingPage").hide();
+        showConsentPage();
+    });
+
+    $('.langButton').bind('touchstart mousedown',function(e) {
+        e.preventDefault()
+        // if (isDoubleClicked($(this))) return;
+        language = $(this).attr('id');
+        setLanguage(language);
         showConsentPage();
     });
 
     $('.startExp').bind('touchstart mousedown',function (e) {
         e.preventDefault()
         // if (isDoubleClicked($(this))) return;
+
         console.log('touched start button');
 
         if (mode == "Bing"){
@@ -376,6 +407,7 @@ window.onload = function() {
     $('#keepGoing').bind('touchstart mousedown',function(e) {
         e.preventDefault()
         // if (isDoubleClicked($(this))) return;
+
         $('#keepGoing').removeClass('bounce')
 
         console.log('touched next trial button');
@@ -408,6 +440,7 @@ window.onload = function() {
     $('.endRestart').bind('touchstart mousedown',function(e){
         e.preventDefault()
         // if (isDoubleClicked($(this))) return;
+
         console.log('restart to the landing page')
         restartExperiment()
     });
@@ -415,6 +448,7 @@ window.onload = function() {
 
     $('#sendEmail').bind('touchstart mousedown',function(e){
         e.preventDefault()
+
         // if (isDoubleClicked($(this))) return;
         var email = $('#parent-email').val()
         $.get("/send", {email:email}, function(data){
@@ -452,6 +486,12 @@ window.onload = function() {
             var category = stimListTest[curTrial].category;
             var readable_date = new Date();
             var age = $('.active').attr('id');
+            var firstName = $('#firstName').val();
+            var lastName = $('#lastName').val();
+            var name;
+            if (firstName != "") {
+                name = firstName.toUpperCase() + ' ' + lastName.toUpperCase()
+            }
 
             stroke_data = {
                 dataType: 'stroke',
@@ -464,7 +504,8 @@ window.onload = function() {
                 trialNum: curTrial,
                 time: Date.now(),
                 date: readable_date,
-                age: age
+                age: age,
+                kidName: name
             };
 
             // send stroke data to server
