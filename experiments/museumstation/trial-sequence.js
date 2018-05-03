@@ -37,7 +37,25 @@ stimListTest.unshift(trace2)
 stimListTest.unshift(trace1)
 var curTrial=0 // global variable, trial counter
 var maxTrials = stimListTest.length; //
-
+var stimLang = {
+    "this circle": "this circle",
+    "square": "square",
+    "shape": "shape",
+    "a car": "a car",
+    "a fish": "a fish",
+    "a boat": "a boat",
+    "a house": "a house",
+    "a dog": "a dog",
+    "a cup": "a cup",
+    "a tree": "a tree",
+    "a person": "a person",
+    "something you love": "something you love"}
+var cuesLang = {
+    "trace": "Can you trace the ",
+    "copy": "Can you copy ",
+    "draw": "Can you draw ",
+    "endQuestion": " ?"
+}
 
 // set global variables
 var clickedSubmit=0; // whether an image is submitted or not
@@ -91,17 +109,17 @@ function beginTrial(){
     //
     var player = loadNextVideo(curTrial); // change video
     if (tracing){
-        var traceCue = "Can you trace the "  + stimListTest[curTrial].category + "?";
+        var traceCue = cuesLang["trace"]  + stimLang[stimListTest[curTrial].category] + cuesLang["endQuestion"];
         document.getElementById("cue").innerHTML = traceCue;
         document.getElementById("drawingCue").innerHTML = traceCue;
     }else {
         if (stimListTest[curTrial].category == 'this circle'){
-            var circleCue = "Can you copy "  + stimListTest[curTrial].category + "?";
+            var circleCue = cuesLang["copy"]  + stimLang[stimListTest[curTrial].category] + cuesLang["endQuestion"];
             document.getElementById("cue").innerHTML = circleCue;
             document.getElementById("drawingCue").innerHTML = circleCue;
         }else{
-            document.getElementById("cue").innerHTML = "Can you draw " + stimListTest[curTrial].category + " ?"; // change cue
-            document.getElementById("drawingCue").innerHTML = stimListTest[curTrial].category; // change drawing cue
+            document.getElementById("cue").innerHTML = cuesLang["draw"] + stimLang[stimListTest[curTrial].category] + cuesLang["endQuestion"]; // change cue
+            document.getElementById("drawingCue").innerHTML = stimLang[stimListTest[curTrial].category]; // change drawing cue
         }
 
     }
@@ -275,31 +293,45 @@ function saveSketchData(){
 
 
 function setLanguage(lang){
+    //If the user choose English, no change on the webpage
+    if (lang=="English") return;
 
+    //If the user choose other langauges
+    var filename = "language/"+lang +".json";
+    $.getJSON(filename, function( data ) {
+        var items = [];
+        $.each( data.webpage, function( key, val ) {
+            if (key=="parentEmail"){
+                $("#parentEmail").attr("placeholder",val);
+            }else {
+                var id = "#" + key;
+                $(id).text(val);
+            }
+        });
+        $.each( data.stimulus, function( key, val ) {
+            stimLang[key] = val;
+        });
+        $.each( data.cues, function( key, val ) {
+            cuesLang[key] = val;
+        });
+    });
 }
 
 // experiment navigation functions
 function showConsentPage(){
-    //$("#chooseLang").hide();
-    $("#landingPage").hide();
-    $(consentPage).show();
-    $('#parent-email').attr('placeholder', 'If you would like a copy of the consent form, input your email address here.').val('');
+    if (mode == "CDM") {
+        $("#chooseLang").hide();
+    }else {
+        $("#landingPage").hide();
+    }
+    $('#parentEmail').val('');
     $('#email-form').show();
-    $('#email-sent').hide();
+    $('#emailSent').hide();
+    $(consentPage).fadeIn();
 }
 
 function restartExperiment() {
-    project.activeLayer.removeChildren();
-    curTrial=0;
-    clickedSubmit=0;
-    tracing = true;
-    sessionId=version + Date.now().toString()
-    $('.ageButton').removeClass('active');
-    $('#endGame').removeClass('bounce');
-    $(thanksPage).hide();
-    $('#landingPage').show(); // fade in the landing page
-    $('#checkConsent').prop('checked', false); // uncheck consent box
-    $(".nameInput").val("");
+    window.location.reload(true);
 }
 
 function endExperiment(){
@@ -317,13 +349,6 @@ function endExperiment(){
 function increaseTrial(){
     saveSketchData() // save first!
     curTrial=curTrial+1; // increase counter
-
-    // if (curTrial==maxTrials){
-    //     project.activeLayer.removeChildren();
-    //     $('#mainExp').hide();
-    //     $('#drawing').hide();
-    //     endExperiment();
-    // }
 }
 
 function isDoubleClicked(element) {
@@ -360,9 +385,12 @@ window.onload = function() {
 
     $('#startConsent').bind('touchstart mousedown',function(e) {
         e.preventDefault()
-        // $("#chooseLang").show();
-        // $("#landingPage").hide();
-        showConsentPage();
+        if (mode=="CDM") {
+            $("#chooseLang").show();
+            $("#landingPage").hide();
+        }else {
+            showConsentPage();
+        }
     });
 
     $('.langButton').bind('touchstart mousedown',function(e) {
@@ -450,11 +478,11 @@ window.onload = function() {
         e.preventDefault()
 
         // if (isDoubleClicked($(this))) return;
-        var email = $('#parent-email').val()
+        var email = $('#parentEmail').val()
         $.get("/send", {email:email}, function(data){
             if(data=="sent"){
                 $('#email-form').hide()
-                $('#email-sent').show()
+                $('#emailSent').show()
             }else{
                 alert('invalid email')
             }
@@ -536,7 +564,7 @@ window.onload = function() {
             path.add(point);
             view.draw();
         }
-        
+
     }
 
     function touchMove(ev) {
