@@ -6,3 +6,5 @@ for i in {0..6}
 	echo 'extracting adult features from layer ' $i
 	python extract_features.py --data='/data2/jefan/quickDraw/png_micro' --layer_ind=$i --cohort='adult'
     done
+
+

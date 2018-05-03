@@ -117,24 +117,26 @@ class FeatureExtractor():
 
         def load_image(path, imsize=224, padding=self.padding, volatile=True, use_cuda=False):
             im = Image.open(path)
-            im = RGBA2RGB(im)
             
-            # crop to sketch only (reduce white space)
-            arr = np.asarray(im)
-            w,h,d = np.where(arr<255) # where the image is not white
-            if len(h)==0:
-                print(path)  
-            try:
-                xlb = min(h)
-                xub = max(h)
-                ylb = min(w)
-                yub = max(w)
-                lb = min([xlb,ylb])
-                ub = max([xub,yub])            
-                im = im.crop((lb, lb, ub, ub))
-            except ValueError:
-                print('Blank image {}'.format(path))
-                pass
+            if self.cohort!='images':
+                im = RGBA2RGB(im)
+                
+                # crop to sketch only (reduce white space)
+                arr = np.asarray(im)
+                w,h,d = np.where(arr<255) # where the image is not white
+                if len(h)==0:
+                    print(path)  
+                try:
+                    xlb = min(h)
+                    xub = max(h)
+                    ylb = min(w)
+                    yub = max(w)
+                    lb = min([xlb,ylb])
+                    ub = max([xub,yub])            
+                    im = im.crop((lb, lb, ub, ub))
+                except ValueError:
+                    print('Blank image {}'.format(path))
+                    pass
 
             loader = transforms.Compose([
                 transforms.Pad(padding),                
@@ -142,7 +144,7 @@ class FeatureExtractor():
                 transforms.ToTensor()])
 
             im = Variable(loader(im), volatile=volatile)
-            im = im.unsqueeze(0)
+            # im = im.unsqueeze(0)
             if use_cuda:
                 im = im.cuda(self.cuda_device)
             return im        
@@ -167,6 +169,10 @@ class FeatureExtractor():
             elif self.cohort == 'adult':
                 age = 'adult'
                 session = 'unknown'
+            elif self.cohort == 'images':
+                age = 'images'
+                session = 'unknown'
+                print('Setting age/session dummy variables for images...')
             else:
                 print('Need to specify a cohort: "kid" or "adult"!')
                 age = 'unknown'
