@@ -71,16 +71,20 @@ io.on('connection', function (socket) {
 
 var serveFile = function(req, res) {
     var fileName = req.params[0];
+
     if (fileName == "send"){
         console.log('sending the consent form to the parent email');
         sendEmail(req,res);
+
     }else if(fileName == "mode"){
         console.log ("mode: " + mode);
         res.send({'mode':mode});
-    } else{
+
+    }else{
         console.log('\t :: Express :: file requested: ' + fileName);
         return res.sendFile(fileName, {root: __dirname});
     }
+
 };
 
 var writeDataToMongo = function(data) {

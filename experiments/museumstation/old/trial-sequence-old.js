@@ -269,11 +269,11 @@ window.onload = function() {
 
     $('#sendEmail').click(function(e){
         event.preventDefault(e)
-        var email = $('#parent-email').val()
+        var email = $('#parentEmail').val()
         $.get("/send", {email:email}, function(data){
             if(data=="sent"){
                 $('#email-form').hide()
-                $('#email-sent').show()
+                $('#emailSent').show()
             }
         });
     });
