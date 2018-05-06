@@ -562,7 +562,7 @@ window.onload = function() {
         var path = new Path();
         path.strokeColor = 'black';
         path.strokeCap = 'round'
-        path.strokeWidth = 10;
+        path.strokeWidth = 5;
         paths.push(path);
 
         // Prevents touch bubbling
