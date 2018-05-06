@@ -66,8 +66,8 @@ var disableDrawing = false; //whether touch drawing is disabled or not
 var language = "English";
 
 // current mode and session info
-var mode = "CDM";
-var version ="cdm_run_v2";
+var mode = "Bing";
+var version =mode + "run" + "_v1"
 var sessionId= version + Date.now().toString();
 
 var consentPage = '#consentCDM';
