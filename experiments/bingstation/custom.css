@@ -55,7 +55,7 @@ button[disabled] {
     margin: auto;
     right:0;left:0;
     bottom: 10%;
-    width:280px;
+    /*width:280px;*/
     text-align: center;
     /*margin-top:8vw;*/
 }
@@ -82,6 +82,7 @@ button[disabled] {
     font-size: 3vw;
     text-align:center;
     cursor:pointer;
+    margin-top: 20vh;
 }
 
 .drawingButton>img{
@@ -295,7 +296,6 @@ button[disabled] {
 }
 
 .allDone {
-    margin-left: 2vw;
     font-size: 4vw;
     font-family: Schoolbell,cursive;
     cursor:pointer
@@ -365,10 +365,9 @@ button[disabled] {
 }
 
 @-webkit-keyframes bounce {
-  0%       { bottom:5px; }
-  25%, 75% { bottom:15px; }
-  50%      { bottom:20px; }
-  100%     {bottom:0;}
+  0%, 50%, 100%       {transform: translateY(0vh);}
+  25%      {transform: translateY(-2.5vh);}
+  75%      {transform: translateY(2.5vh);}
 }
 
 .nameInput{

@@ -70,8 +70,8 @@ var mode = "Bing";
 var version =mode + "run" + "_v1"
 var sessionId= version + Date.now().toString();
 
-var consentPage = '#consentCDM';
-var thanksPage = "#thanksPage";
+var consentPage = '#consentBing';
+var thanksPage = "#thanksBing";
 
 // shuffle the order of drawing trials
 function shuffle (a)
@@ -181,8 +181,9 @@ function setUpDrawing(){
             .css("background-size",imgSize)
             .css("background-repeat", "no-repeat")
             .css("background-position","center center");
-        $("#submit_div").show();
-        $("#lastTrial").hide();
+        $("#endMiddle").show();
+        $("#keepGoing").show();
+        $("#endGame").hide();
 
     }else if(stimListTest[curTrial].category == 'this circle'){
         //for the circle trial, show the circle image for 2s and hide it.
@@ -198,8 +199,9 @@ function setUpDrawing(){
         }, 2000);
 
     }else if(curTrial == maxTrials-1){
-        $("#submit_div").hide();
-        $("#lastTrial").show();
+        $("#endMiddle").hide();
+        $("#keepGoing").hide();
+        $("#endGame").show();
     }
 
     $('#drawing').show()
