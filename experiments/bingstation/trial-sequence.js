@@ -235,7 +235,7 @@ function progress(timeleft, timetotal, $element) {
         increaseTrial();
         clickedSubmit =1 // it's as if we clicked submit
         disableDrawing = true
-        if($("#lastTrial").css("display")!="none"){
+        if($("#endGame").css("display")!="none"){
             $('#endGame').addClass('bounce')
         }else {
             $('#keepGoing').addClass('bounce')
