@@ -319,11 +319,11 @@ function setLanguage(lang){
 
 // experiment navigation functions
 function showConsentPage(){
-    if (mode == "CDM") {
-        $("#chooseLang").hide();
-    }else {
+    // if (mode == "CDM") {
+    //     $("#chooseLang").hide();
+    // }else {
         $("#landingPage").hide();
-    }
+    // }
     $('#parentEmail').val('');
     $('#email-form').show();
     $('#emailSent').hide();
@@ -385,12 +385,12 @@ window.onload = function() {
 
     $('#startConsent').bind('touchstart mousedown',function(e) {
         e.preventDefault()
-        if (mode=="CDM") {
-            $("#chooseLang").show();
-            $("#landingPage").hide();
-        }else {
+        // if (mode=="CDM") {
+        //     $("#chooseLang").show();
+        //     $("#landingPage").hide();
+        // }else {
             showConsentPage();
-        }
+        // }
     });
 
     $('.langButton').bind('touchstart mousedown',function(e) {
@@ -607,29 +607,29 @@ window.onload = function() {
     targetSketch.addEventListener('touchend', touchEnd, false);
 
     //Refresh if no user activities in 60 seconds
-    var time = new Date().getTime();
-    $(document.body).bind("touchstart touchmove touchend click", function(e) {
-        time = new Date().getTime();
-    });
+    // var time = new Date().getTime();
+    // $(document.body).bind("touchstart touchmove touchend click", function(e) {
+    //     time = new Date().getTime();
+    // });
 
-    var refreshTime = 90000
-    function refresh() {
-        if (new Date().getTime() - time >= refreshTime) {
-            if($("#landingPage").css("display")=="none") {
-                window.location.reload(true);
-                console.log("No user activities. Reload.")
-            }else{
-                //if the current page is the landingPage, reset time and wait again
-                time = new Date().getTime();
-                setTimeout(refresh, refreshTime);
-            }
-        } else {
-            setTimeout(refresh, refreshTime);
-        }
+    // var refreshTime = 90000
+    // function refresh() {
+    //     if (new Date().getTime() - time >= refreshTime) {
+    //         if($("#landingPage").css("display")=="none") {
+    //             window.location.reload(true);
+    //             console.log("No user activities. Reload.")
+    //         }else{
+    //             //if the current page is the landingPage, reset time and wait again
+    //             time = new Date().getTime();
+    //             setTimeout(refresh, refreshTime);
+    //         }
+    //     } else {
+    //         setTimeout(refresh, refreshTime);
+    //     }
 
-    }
+    // }
 
-    setTimeout(refresh, refreshTime);
+    // setTimeout(refresh, refreshTime);
 
 
     // function preventZoom(event){
