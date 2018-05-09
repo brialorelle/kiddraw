@@ -108,6 +108,10 @@ function startDrawing(){
 function beginTrial(){
     //
     var player = loadNextVideo(curTrial); // change video
+    // set volume again
+    var video = document.getElementById('player');
+    video.volume = 1;
+    //
     if (tracing){
         var traceCue = cuesLang["trace"]  + stimLang[stimListTest[curTrial].category] + cuesLang["endQuestion"];
         document.getElementById("cue").innerHTML = traceCue;
