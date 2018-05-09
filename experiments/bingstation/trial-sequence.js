@@ -616,30 +616,30 @@ window.onload = function() {
     targetSketch.addEventListener('touchmove', touchMove, false);
     targetSketch.addEventListener('touchend', touchEnd, false);
 
-    //Refresh if no user activities in 60 seconds
-    var time = new Date().getTime();
-    $(document.body).bind("touchstart touchmove touchend click", function(e) {
-        time = new Date().getTime();
-    });
+    // //Refresh if no user activities in 90 seconds
+    // var time = new Date().getTime();
+    //     $(document.body).bind("touchstart touchmove touchend click", function(e) {
+    //     time = new Date().getTime();
+    // });
 
-    var refreshTime = 90000
-    function refresh() {
-        if (new Date().getTime() - time >= refreshTime) {
-            if($("#landingPage").css("display")=="none") {
-                window.location.reload(true);
-                console.log("No user activities. Reload.")
-            }else{
-                //if the current page is the landingPage, reset time and wait again
-                time = new Date().getTime();
-                setTimeout(refresh, refreshTime);
-            }
-        } else {
-            setTimeout(refresh, refreshTime);
-        }
+    // var refreshTime = 120000
+    // function refresh() {
+    //     if (new Date().getTime() - time >= refreshTime) {
+    //         if($("#landingPage").css("display")=="none") {
+    //             window.location.reload(true);
+    //             console.log("No user activities. Reload.")
+    //         }else{
+    //             //if the current page is the landingPage, reset time and wait again
+    //             time = new Date().getTime();
+    //             setTimeout(refresh, refreshTime);
+    //         }
+    //     } else {
+    //         setTimeout(refresh, refreshTime);
+    //     }
 
-    }
+    // }
 
-    setTimeout(refresh, refreshTime);
+    // setTimeout(refresh, refreshTime);
 
 
     // function preventZoom(event){
