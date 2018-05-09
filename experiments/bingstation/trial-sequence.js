@@ -161,7 +161,7 @@ function loadNextVideo(){
         "preload":"auto"
     });
     player.pause();
-    player.volume(1); // set volume to max 
+    player.volume(.8); // set volume to max 
     console.log(stimListTest[curTrial].video)
     player.src({ type: "video/mp4", src: "videos_smaller/" + stimListTest[curTrial].video });
     player.load();
