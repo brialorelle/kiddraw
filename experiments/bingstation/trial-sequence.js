@@ -109,7 +109,7 @@ function beginTrial(){
     //
     var player = loadNextVideo(curTrial); // change video
     // set volume again
-    var video = document.getElementById('player');
+    var video = document.getElementById('cueVideo');
     video.volume = 1;
     //
     if (tracing){
