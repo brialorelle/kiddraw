@@ -150,7 +150,7 @@ mod_covariates_2 <- glmer(correct ~ (scale(age) +
 modelOut=summary(mod_covariates)
 modelOut_Int=summary(mod_covariates_2)
 
-# xtable::xtable(summary(mod_covariates)$coef, digits=3, caption = "Model coefficients of a GLMM predicting the recognziability of each 
+# xtable::xtable(summary(mod_covariates)$coef, digits=3, caption = "Model coefficients of a GLMM predicting the recognziability of each drawing")
 ```
 
 
@@ -260,9 +260,9 @@ To evaluate whether these high-level features are necessary to capture semantica
 Participants included those who participated in the first round of data collection, as well as an additional 37 children recruited in the same way as in Part 1.
 
 ### Drawing dataset
-In our second round of data collection, our goal was to expand the number of categories included in our model-based feature analyses, so we included an additional 22 categories. Across both rounds of data collection, we recorded 374 drawings from 78 children across a broad age range. However, due to the limited amount of data in each category for each age, in subsequent analyses we divide drawing data into two coarse age categories: younger children (aged 3-6 years) and older children (aged 7-10 years). We thus restricted the following analyses to the 15 categories where we had at least 3 drawings in both younger and older age groups, yielding 113 drawings by younger children and 157 drawings by older children. Including a minimum number of drawings per class and age category ensured robust estimates of category-level feature information in drawings.
+In our second round of data collection, our goal was to expand the number of categories included in our model-based feature analyses, so we included an additional 22 categories. Across both rounds of data collection, we recorded 462 drawings from 66 children across a broad age range. However, due to the limited amount of data in each category for each age, in subsequent analyses we divide drawing data into two coarse age categories: younger children (aged 3-6 years) and older children (aged 7-10 years). We thus restricted the following analyses to the 27 categories where we had at least 3 drawings in both younger and older age groups, yielding 191 drawings by younger children and 205 drawings by older children. Including a minimum number of drawings per class and age category ensured robust estimates of category-level feature information in drawings.
 
-To complement the children's drawing dataset, we obtained a random sample of 500 adult drawings from each of the categories above from the Google Quickdraw dataset (https://quickdraw.withgoogle.com/data). Prior to analysis, we cropped all sketch images to contain only the sketch, applied uniform padding (10px), and rescaled them to the same size (3x224x224).
+To complement the children's drawing dataset, we obtained a random sample of 100 adult drawings from each of the categories above from the Google Quickdraw dataset (https://quickdraw.withgoogle.com/data). Prior to analysis, we cropped all sketch images to contain only the sketch, applied uniform padding (10px), and rescaled them to the same size (3x224x224).
 
 ### Deep convolutional neural network model
 We used a standard, pre-trained implementation of the VGG-19 architecture [@simonyan2014very] to extract features from sketches at layers across several depths in the network. Specifically, we analyzed feature activations in the first five pooling layers, as well as the first two fully-connected layers. Each image elicits a pattern of feature activations at every layer in the model, where each pattern is equivalent to a vector in a feature space with the same number of dimensions as units in that layer.
@@ -273,34 +273,44 @@ grid::grid.raster(img)
 ```
 
 ### Representational Similarity Analyses
-Separately for the younger children, older children, and adult drawing datasets, we averaged the feature vectors within each object category in both pixel space and for a given layer of VGG-19 and then computed a layer-specific matrix of the Pearson correlation distances between these average vectors across categories [@kriegeskorte2008RSA]. Formally, this entailed computing: $$RDM(R)_{ij} = 1- \frac{cov(\vec{r}_{i}, \vec{r}_{j})}{\sqrt{var(\vec{r}_{i}) \cdot var(\vec{r}_{j})}},$$ where $\vec{r}_{i}$ and $\vec{r}_{j}$ are the mean feature vectors for the $i$th and $j$th object categories, respectively, where R represents the correlation between two categories (e.g., rabbits and shoes). Each of these 15x15 representational dissimilarity matrices (RDM) provides a compact description of the layout of objects in the high-dimensional feature space inherent to each layer of the model. Following @kriegeskorte2008RSA, we measured the similarity between object representations in different layers by computing the Spearman rank correlations between the RDMs for those corresponding layers.
+Separately for the younger children, older children, and adult drawing datasets, we averaged the feature vectors within each object category in both pixel space and for a given layer of VGG-19 and then computed a layer-specific matrix of the Pearson correlation distances between these average vectors across categories [@kriegeskorte2008RSA]. Formally, this entailed computing: $$RDM(R)_{ij} = 1- \frac{cov(\vec{r}_{i}, \vec{r}_{j})}{\sqrt{var(\vec{r}_{i}) \cdot var(\vec{r}_{j})}},$$ where $\vec{r}_{i}$ and $\vec{r}_{j}$ are the mean feature vectors for the $i$th and $j$th object categories, respectively, where R represents the correlation between two categories (e.g., rabbits and shoes). Each of these 27x27 representational dissimilarity matrices (RDM) provides a compact description of the layout of objects in the high-dimensional feature space inherent to each layer of the model. Following @kriegeskorte2008RSA, we measured the similarity between object representations in different layers by computing the Spearman rank correlations between the RDMs for those corresponding layers.
 
-<!-- Estimates of standard error for the Spearman correlation between RDMs (i.e., between domains or between layers) were generated by jackknife resampling of the 15 object categories. This estimate of standard error allows us to construct 95\% confidence intervals and compute two-sided p-values for specific comparisons [@Efron:1979ts; @Tukey:1958wn]. This entails iterating through each of the 15 subsamples that exclude a single class, computing the correlation on each iteration, then aggregating these values. Specifically, the jackknife estimate of the standard error can be computed as: $s.e._{(jackknife)} = \sqrt{\frac{n-1}{n} \sum_{i=1}^{n} (\bar{x}_{i} - \bar{x}_{(.)})^{2}}$, where $\bar{x}_{i}$ is the correlation based on leaving out the $i$th object class and $\bar{x}_{(.)} = \frac{1}{n} \sum_{i}^{n} \bar{x}_{i}$, the mean correlation across all subsamples (of size 15). -->
+Estimates of standard error for the Spearman correlation between RDMs (i.e., between domains or between layers) were generated by jackknife resampling of the 27 object categories. This estimate of standard error allows us to construct 95\% confidence intervals and compute two-sided p-values for specific comparisons [@Efron:1979ts; @Tukey:1958wn]. This entails iterating through each of the 27 subsamples that exclude a single class, computing the correlation on each iteration, then aggregating these values. Specifically, the jackknife estimate of the standard error can be computed as: $s.e._{(jackknife)} = \sqrt{\frac{n-1}{n} \sum_{i=1}^{n} (\bar{x}_{i} - \bar{x}_{(.)})^{2}}$, where $\bar{x}_{i}$ is the correlation based on leaving out the $i$th object class and $\bar{x}_{(.)} = \frac{1}{n} \sum_{i}^{n} \bar{x}_{i}$, the mean correlation across all subsamples (of size 27).
 
 ```{r echo=FALSE, include=FALSE}
-cohortSim <- read.csv("vggOutputs/CohortSimilarity15x15.csv") %>%
+## surprisingly hard to wrangle these data formats into tidy data....probably could be done better, but double checked.
+cohortSim <- read.csv("python-vgg19-outputs/CohortSimilarity_VGG19_27x27.csv") %>%
   as.tibble() %>%
   mutate(LayerNum = as.numeric(X)+1)  %>%
-  gather(key = cohortType, value = correlation, c(CorrOldAdult,CorrYoungAdult))
-  # gather(key = cohortTypeSEM, value = SEM, c(SEMOldAdult,SEMYoungAdult)) %>%
-  # select(-c(X, cohortTypeSEM)) %>%
-  # mutate(se_lower = correlation - SEM, se_upper = correlation + SEM)
+  select(-c(SEMOldAdult,SEMYoungAdult,SEMAdultAdult)) %>%
+  gather(key = cohortType, value = correlation, c(CorrOldAdult,CorrYoungAdult,CorrAdultAdult)) %>%
+  mutate(cohortName = substr(cohortType,5,length(cohortType)))  
+  
+cohortSim_SE <- read.csv("python-vgg19-outputs/CohortSimilarity_VGG19_27x27.csv") %>%
+  mutate(LayerNum = as.numeric(X)+1)  %>%
+  select(-c(CorrAdultAdult,CorrOldAdult,CorrYoungAdult)) %>%
+  gather(key = cohortTypeSEM, value = SEM, c(SEMOldAdult,SEMYoungAdult,SEMAdultAdult)) %>%
+  mutate(cohortName = substr(cohortTypeSEM,4,length(cohortTypeSEM))) %>%
+  left_join(cohortSim) %>%
+  select(-c(cohortTypeSEM, cohortType)) %>%
+  mutate(se_lower = correlation - SEM, se_upper = correlation + SEM)
 ```
 
 ## Results
 To compare the representational layout of object categories across age groups, we examined the similarity between RDMs for each age group (i.e., younger children, older children, and adults) at each layer of VGG-19. We found that the similarity between older children's and adults' RDMs increased as a function of model layer, reaching a peak in the final layers (see Figure \ref{fig:layerWise}). In younger children, we found a similar pattern of results, but similarity to adult RDMs was lower overall in higher layers. However, due to the small size of our current dataset, we caution against strong interpretations of particular layer-wise estimates. Nonetheless, adults' and children's drawings were dissimilar in pixel space for both age groups (adults vs. older children, r = .06; vs. younger children, r = .02).
 
-```{r layerWise, fig.env = "figure", fig.pos = "H", fig.align='center', fig.width=3, fig.height=2.5, set.cap.width=T, num.cols.cap=1, fig.cap = "Spearman's correlation between representational dissimilarity matrices (RDMs) of drawings produced by adults vs. other adults, adults vs. older children, and between adults vs. younger children at each layer of VGG-19. "}
+```{r layerWise, fig.env = "figure", fig.pos = "H", fig.align='center', fig.width=3, fig.height=3, set.cap.width=T, num.cols.cap=1, fig.cap = "Spearman's correlation between representational dissimilarity matrices (RDMs) of drawings produced by adults vs. other adults, adults vs. older children, and between adults vs. younger children at each layer of VGG-19. "}
 
-ggplot(cohortSim, aes(x = LayerNum, y = correlation, col=cohortType)) +
+ggplot(cohortSim_SE, aes(x = LayerNum, y = correlation, col=cohortName)) +
  geom_point(position = position_dodge(width = .1)) +
+ geom_pointrange(aes(ymin = se_lower, ymax = se_upper)) +
  geom_line() +
  theme_few() +
- labs(y = "Spearman correlation", x = "Layer Number") +
+ labs(y = "Cohort Similarity (r)", x = "Layer Number") +
  scale_x_continuous(breaks = c(1,2,3,4,5,6,7)) +
  theme(legend.position = c(0.78, 0.2), legend.text = element_text(size=6), legend.key.size = unit(1,"line"),   legend.background = element_rect(fill=alpha('white', 0))) +
-  ylim(0,.8) +
- scale_color_viridis(discrete=TRUE, begin=0, end=.4, direction = -1, "",      labels=c("OlderKids-Adults","YoungerKids-Adults"))
+ ylim(0,1) +
+ scale_color_viridis(discrete=TRUE, begin=0, end=.4, direction = -1,"",labels=c("Adults-Adults","OlderKids-Adults","YoungerKids-Adults"))
 ```
 The RDMs for the final layer of the network (where similarity was the highest; FC7) are shown in Figure \ref{fig:RSAAllCat}. Here, each cell represents the correlation distance between two categories in this layer of the network; lighter colors indicate pairs of categories that are further apart in feature space; darker colors indicate pairs of categories that are closer. For visualization purposes, categories are ordered according to the clusters that appear in the data.
 
