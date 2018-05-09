@@ -17,18 +17,18 @@ paper.install(window);
 socket = io.connect();
 
 // 1. Setup trial order and randomize it!
-firstTrial = {"category": "this circle", "video": "circle.mp4", "image":"images/circle.png"}
-lastTrial = {"category": "something you love", "video": "love.mp4"}
-trace1 = {"category":"square", "video": "square.mp4", "image":"images/square.png"}
-trace2 = {"category":"shape", "video": "shape.mp4","image":"images/shape.png"}
-var stimListTest = [{"category": "a boat", "video": "boat.mp4"},
-    {"category": "a car", "video": "car.mp4"},
-    {"category": "a cup", "video": "cup.mp4"},
-    {"category": "a dog", "video": "dog.mp4"},
-    {"category": "a fish", "video": "fish.mp4"},
-    {"category": "a house", "video": "house.mp4"},
-    {"category": "a tree", "video": "tree.mp4"},
-    {"category": "a person", "video": "person.mp4"} ]
+firstTrial = {"category": "this circle", "video": "circle.mp4louder.mp4", "image":"images/circle.png"}
+lastTrial = {"category": "something you love", "video": "love.mp4louder.mp4"}
+trace1 = {"category":"square", "video": "square.mp4louder.mp4", "image":"images/square.png"}
+trace2 = {"category":"shape", "video": "shape.mp4louder.mp4","image":"images/shape.png"}
+var stimListTest = [{"category": "a boat", "video": "boat.mp4louder.mp4"},
+    {"category": "a car", "video": "car.mp4louder.mp4"},
+    {"category": "a cup", "video": "cup.mp4louder.mp4"},
+    {"category": "a dog", "video": "dog.mp4louder.mp4"},
+    {"category": "a fish", "video": "fish.mp4louder.mp4"},
+    {"category": "a house", "video": "house.mp4louder.mp4"},
+    {"category": "a tree", "video": "tree.mp4louder.mp4"},
+    {"category": "a person", "video": "person.mplouder.mp4"} ]
 
 var stimListTest = shuffle(stimListTest)
 stimListTest.push(lastTrial)
@@ -167,7 +167,7 @@ function loadNextVideo(){
     player.pause();
     player.volume(.8); // set volume to max 
     console.log(stimListTest[curTrial].video)
-    player.src({ type: "video/mp4", src: "videos_smaller/" + stimListTest[curTrial].video });
+    player.src({ type: "video/mp4", src: "videos_louder/" + stimListTest[curTrial].video });
     player.load();
     return player;
 }

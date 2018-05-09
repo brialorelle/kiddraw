@@ -1,0 +1,11 @@
+
+FILES=/Users/brialong/Documents/GitHub/kiddraw/experiments/bingstation/videos_louder/*
+$EXT = "louder"
+for f in $FILES
+do
+    c=$f$FORMAT
+    echo $f
+	ffmpeg -i $f -filter:a "volume=10dB" $f
+done
+
+    
