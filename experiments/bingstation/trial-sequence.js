@@ -196,7 +196,7 @@ function setUpDrawing(){
 
         setTimeout(function () {
             $('#sketchpad').css("background-image", "");
-        }, 2000);
+        }, 1000);
 
     }else if(curTrial == maxTrials-1){
         $("#endMiddle").hide();
