@@ -28,7 +28,7 @@ var stimListTest = [{"category": "a boat", "video": "boat.mp4louder.mp4"},
     {"category": "a fish", "video": "fish.mp4louder.mp4"},
     {"category": "a house", "video": "house.mp4louder.mp4"},
     {"category": "a tree", "video": "tree.mp4louder.mp4"},
-    {"category": "a person", "video": "person.mplouder.mp4"} ]
+    {"category": "a person", "video": "person.mp4louder.mp4"} ]
 
 var stimListTest = shuffle(stimListTest)
 stimListTest.push(lastTrial)
