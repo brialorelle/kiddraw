@@ -293,37 +293,20 @@ function saveSketchData(){
 
 
 function setLanguage(lang){
-    //If the user choose English, no change on the webpage
-    if (lang=="English") return;
-
     //If the user choose other langauges
     var filename = "language/"+lang +".json";
     $.getJSON(filename, function( data ) {
         var items = [];
-        $.each( data.webpage, function( key, val ) {
-            if (key=="parentEmail"){
-                $("#parentEmail").attr("placeholder",val);
-            }else {
+        $.each( data, function( key, val ) {
                 var id = "#" + key;
                 $(id).text(val);
-            }
-        });
-        $.each( data.stimulus, function( key, val ) {
-            stimLang[key] = val;
-        });
-        $.each( data.cues, function( key, val ) {
-            cuesLang[key] = val;
         });
     });
 }
 
 // experiment navigation functions
 function showConsentPage(){
-    if (mode == "CDM") {
-        $("#chooseLang").hide();
-    }else {
-        $("#landingPage").hide();
-    }
+    $("#landingPage").hide();
     $('#parentEmail').val('');
     $('#email-form').show();
     $('#emailSent').hide();
@@ -384,13 +367,9 @@ window.onload = function() {
     }
 
     $('#startConsent').bind('touchstart mousedown',function(e) {
-        e.preventDefault()
-        if (mode=="CDM") {
-            $("#chooseLang").show();
-            $("#landingPage").hide();
-        }else {
-            showConsentPage();
-        }
+        e.preventDefault();
+        showConsentPage();
+
     });
 
     $('.langButton').bind('touchstart mousedown',function(e) {
@@ -398,7 +377,6 @@ window.onload = function() {
         // if (isDoubleClicked($(this))) return;
         language = $(this).attr('id');
         setLanguage(language);
-        showConsentPage();
     });
 
     $('.startExp').bind('touchstart mousedown',function (e) {
