@@ -1,11 +1,12 @@
 
 FILES=/Users/brialong/Documents/GitHub/kiddraw/experiments/bingstation/videos_louder/*
-$EXT = "louder"
+MOD="louder"
+EXT=".mp4"
 for f in $FILES
 do
-    c=$f$FORMAT
+    c=$f$MOD$EXT
     echo $f
-	ffmpeg -i $f -filter:a "volume=10dB" $f
+	ffmpeg -i $f -filter:a "volume=10dB" $c
 done
 
     
