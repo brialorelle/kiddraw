@@ -156,12 +156,16 @@ function hideCue() {
 }
 
 function loadNextVideo(){
-    var player=videojs('cueVideo',{
+    var player=videojs('cueVideo',
+        {
         "controls": false,
         "preload":"auto"
-    });
+        },
+        function() {
+            this.volume(1);
+        }
+    );
     player.pause();
-    player.volume(1); // set volume to max 
     console.log(stimListTest[curTrial].video)
     player.src({ type: "video/mp4", src: "videos_smaller/" + stimListTest[curTrial].video });
     player.load();
@@ -310,12 +314,6 @@ function setLanguage(lang){
                 $(id).text(val);
             }
         });
-        $.each( data.stimulus, function( key, val ) {
-            stimLang[key] = val;
-        });
-        $.each( data.cues, function( key, val ) {
-            cuesLang[key] = val;
-        });
     });
 }
 
@@ -380,6 +378,7 @@ window.onload = function() {
             console.log("mode CDM")
         }
     });
+
 
     document.ontouchmove = function(event){
         event.preventDefault();
