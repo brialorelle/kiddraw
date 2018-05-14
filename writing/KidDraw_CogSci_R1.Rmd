@@ -23,7 +23,7 @@ output: cogsci2016::cogsci_paper
 ```{r global_options, include=FALSE}
 rm(list=ls())
 knitr::opts_chunk$set(fig.width=3, fig.height=3, fig.crop = F, fig.pos = "tb", fig.path='figs/',
-                      echo=F, warning=F, cache=F, message=F, sanitize = T)
+                      echo=F, warning=F, cache=F, message=F, sanitize = T, dev = "cairo_pdf")
 ```
 
 ```{r, libraries}
