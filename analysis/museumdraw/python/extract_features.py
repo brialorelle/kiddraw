@@ -25,7 +25,7 @@ def list_files(path, ext='png'):
     result = [y for x in os.walk(path) for y in glob(os.path.join(x[0], '*.%s' % ext))]
     return result
 
-def check_invalid_sketch(filenames,invalids_path='drawings_to_exclude_clean.txt'):    
+def check_invalid_sketch(filenames,invalids_path='images_to_exclude.txt'):    
     if not os.path.exists(invalids_path):
         print('No file containing invalid paths at {}'.format(invalids_path))
         invalids = []        
@@ -34,8 +34,8 @@ def check_invalid_sketch(filenames,invalids_path='drawings_to_exclude_clean.txt'
         x.columns = ['filenames']
         invalids = list(x.filenames.values)
     valids = []   
-    basenames = [f.split('/')[-1] for f in filenames]
-    for i,f in enumerate(basenames):
+    # basenames = [f.split('/')[-1] for f in filenames]
+    for i,f in enumerate(filenames):
         if f not in invalids:
             valids.append(filenames[i])
     return valids
@@ -58,11 +58,11 @@ def preprocess_features(Features, Y):
     _Y = _Y.reset_index(drop=True) # reset pandas dataframe index
     return _Features, _Y
 
-def save_features(Features, Y, layer_num, cohort):
+def save_features(Features, Y, layer_num, cohort,spatial_avg):
     if not os.path.exists('./features'):
         os.makedirs('./features')
     layers = ['P1','P2','P3','P4','P5','FC6','FC7']
-    np.save('/data2/jefan/kiddraw/features/FEATURES_{}_{}.npy'.format(layers[int(layer_num)], cohort), Features)
+    np.save('/data2/jefan/kiddraw/features/FEATURES_{}_{}_Spatial_{}.npy'.format(layers[int(layer_num)], cohort,spatial_avg), Features)
     Y.to_csv('/data2/jefan/kiddraw/features/METADATA_{}.csv'.format(cohort))
     return layers[int(layer_num)]
 
@@ -123,5 +123,5 @@ if __name__ == "__main__":
         _Features, _Y = remove_nans(_Features, _Y) 
 
     if args.test==False:
-        layer = save_features(_Features, _Y, args.layer_ind, args.cohort)
+        layer = save_features(_Features, _Y, args.layer_ind, args.cohort,args.spatial_avg)
        

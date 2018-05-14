@@ -17,18 +17,18 @@ paper.install(window);
 socket = io.connect();
 
 // 1. Setup trial order and randomize it!
-firstTrial = {"category": "this circle", "video": "circle.mp4", "image":"images/circle.png"}
-lastTrial = {"category": "something you love", "video": "love.mp4"}
-trace1 = {"category":"square", "video": "square.mp4", "image":"images/square.png"}
-trace2 = {"category":"shape", "video": "shape.mp4","image":"images/shape.png"}
-var stimListTest = [{"category": "a boat", "video": "boat.mp4"},
-    {"category": "a car", "video": "car.mp4"},
-    {"category": "a cup", "video": "cup.mp4"},
-    {"category": "a dog", "video": "dog.mp4"},
-    {"category": "a fish", "video": "fish.mp4"},
-    {"category": "a house", "video": "house.mp4"},
-    {"category": "a tree", "video": "tree.mp4"},
-    {"category": "a person", "video": "person.mp4"} ]
+firstTrial = {"category": "this circle", "video": "circle.mp4louder.mp4", "image":"images/circle.png"}
+lastTrial = {"category": "something you love", "video": "love.mp4louder.mp4"}
+trace1 = {"category":"square", "video": "square.mp4louder.mp4", "image":"images/square.png"}
+trace2 = {"category":"shape", "video": "shape.mp4louder.mp4","image":"images/shape.png"}
+var stimListTest = [{"category": "a boat", "video": "boat.mp4louder.mp4"},
+    {"category": "a car", "video": "car.mp4louder.mp4"},
+    {"category": "a cup", "video": "cup.mp4louder.mp4"},
+    {"category": "a dog", "video": "dog.mp4louder.mp4"},
+    {"category": "a fish", "video": "fish.mp4louder.mp4"},
+    {"category": "a house", "video": "house.mp4louder.mp4"},
+    {"category": "a tree", "video": "tree.mp4louder.mp4"},
+    {"category": "a person", "video": "person.mp4louder.mp4"} ]
 
 var stimListTest = shuffle(stimListTest)
 stimListTest.push(lastTrial)
@@ -108,6 +108,10 @@ function startDrawing(){
 function beginTrial(){
     //
     var player = loadNextVideo(curTrial); // change video
+    // set volume again
+    var video = document.getElementById('cueVideo');
+    video.volume = 1;
+    //
     if (tracing){
         var traceCue = cuesLang["trace"]  + stimLang[stimListTest[curTrial].category] + cuesLang["endQuestion"];
         document.getElementById("cue").innerHTML = traceCue;
@@ -166,8 +170,9 @@ function loadNextVideo(){
         }
     );
     player.pause();
+    player.volume(1); // set volume to max
     console.log(stimListTest[curTrial].video)
-    player.src({ type: "video/mp4", src: "videos_smaller/" + stimListTest[curTrial].video });
+    player.src({ type: "video/mp4", src: "videos_louder/" + stimListTest[curTrial].video });
     player.load();
     return player;
 }
@@ -200,7 +205,7 @@ function setUpDrawing(){
 
         setTimeout(function () {
             $('#sketchpad').css("background-image", "");
-        }, 2000);
+        }, 1000);
 
     }else if(curTrial == maxTrials-1){
         $("#endMiddle").hide();
@@ -615,30 +620,30 @@ window.onload = function() {
     targetSketch.addEventListener('touchmove', touchMove, false);
     targetSketch.addEventListener('touchend', touchEnd, false);
 
-    //Refresh if no user activities in 60 seconds
-    var time = new Date().getTime();
-    $(document.body).bind("touchstart touchmove touchend click", function(e) {
-        time = new Date().getTime();
-    });
+    // //Refresh if no user activities in 90 seconds
+    // var time = new Date().getTime();
+    //     $(document.body).bind("touchstart touchmove touchend click", function(e) {
+    //     time = new Date().getTime();
+    // });
 
-    var refreshTime = 90000
-    function refresh() {
-        if (new Date().getTime() - time >= refreshTime) {
-            if($("#landingPage").css("display")=="none") {
-                window.location.reload(true);
-                console.log("No user activities. Reload.")
-            }else{
-                //if the current page is the landingPage, reset time and wait again
-                time = new Date().getTime();
-                setTimeout(refresh, refreshTime);
-            }
-        } else {
-            setTimeout(refresh, refreshTime);
-        }
+    // var refreshTime = 120000
+    // function refresh() {
+    //     if (new Date().getTime() - time >= refreshTime) {
+    //         if($("#landingPage").css("display")=="none") {
+    //             window.location.reload(true);
+    //             console.log("No user activities. Reload.")
+    //         }else{
+    //             //if the current page is the landingPage, reset time and wait again
+    //             time = new Date().getTime();
+    //             setTimeout(refresh, refreshTime);
+    //         }
+    //     } else {
+    //         setTimeout(refresh, refreshTime);
+    //     }
 
-    }
+    // }
 
-    setTimeout(refresh, refreshTime);
+    // setTimeout(refresh, refreshTime);
 
 
     // function preventZoom(event){

@@ -67,7 +67,10 @@ var language = "English";
 
 // current mode and session info
 var mode = "CDM";
-var version ="cdm_run_v2";
+var version ="cdm_run_v3"; 
+// initial version: piloting at museum
+// v2: first run
+// v3: circle timeout to 1 second
 var sessionId= version + Date.now().toString();
 
 var consentPage = '#consentCDM';
@@ -306,7 +309,15 @@ function setLanguage(lang){
 
 // experiment navigation functions
 function showConsentPage(){
+<<<<<<< HEAD
     $("#landingPage").hide();
+=======
+    // if (mode == "CDM") {
+    //     $("#chooseLang").hide();
+    // }else {
+        $("#landingPage").hide();
+    // }
+>>>>>>> 31ca2d2e526757cfe4ba17c597d312501a44df6e
     $('#parentEmail').val('');
     $('#email-form').show();
     $('#emailSent').hide();
@@ -367,9 +378,19 @@ window.onload = function() {
     }
 
     $('#startConsent').bind('touchstart mousedown',function(e) {
+<<<<<<< HEAD
         e.preventDefault();
         showConsentPage();
 
+=======
+        e.preventDefault()
+        // if (mode=="CDM") {
+        //     $("#chooseLang").show();
+        //     $("#landingPage").hide();
+        // }else {
+            showConsentPage();
+        // }
+>>>>>>> 31ca2d2e526757cfe4ba17c597d312501a44df6e
     });
 
     $('.langButton').bind('touchstart mousedown',function(e) {
@@ -584,7 +605,7 @@ window.onload = function() {
     targetSketch.addEventListener('touchmove', touchMove, false);
     targetSketch.addEventListener('touchend', touchEnd, false);
 
-    //Refresh if no user activities in 60 seconds
+    // Refresh if no user activities in 60 seconds
     var time = new Date().getTime();
     $(document.body).bind("touchstart touchmove touchend click", function(e) {
         time = new Date().getTime();

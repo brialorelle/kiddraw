@@ -22,7 +22,7 @@ theme_set(theme_few())
 ## Read in data outputs from python - stroke numbers, intensity, bounding boc, etc.
 # get rid of drwaings without age - these were when we were testing the interface.
 # make new variable name with image name for joining with recognition data
-d <- read_csv("usage_data/May4th_usage.csv") %>%
+d <- read_csv("usage_data/May8th_usage.csv") %>%
   select(-X1) %>%
   filter(!is.na(age)) %>%
   mutate(imNameShort = paste0(category, '_sketch', '_', age,'_', session_id, '.png')) %>%
@@ -61,5 +61,31 @@ count_ages <- uniqueSubs %>%
 hist(count_ages$age_numeric)
 
 ```
+```{r}
+imPerCatPerAge <- d %>%
+  filter(age!='adult') %>%
+  filter(!is.element(category,c("this circle","square","shape"))) %>%
+  mutate(category = as.factor(category)) %>%
+  mutate(age_group = cut(age_numeric, c(1.9, 6, 10.1), labels = c("younger","older"))) %>%
+  group_by(category,age_group) %>%
+  summarize(numDrawings = length(session_id)) 
 
+imPerCat <- d %>%
+  filter(age!='adult') %>%
+  filter(!is.element(category,c("this circle","square","shape"))) %>%
+  mutate(category = as.factor(category)) %>%
+  group_by(category) %>%
+  summarize(numDrawings = length(session_id)) 
+
+kable(imPerCatPerAge)
+
+d_filtered <- d %>%
+  filter(age!='adult') %>%
+  filter(!is.element(category,c("this circle","square","shape"))) 
+
+
+# %>%
+#   filter(is.element(category,c("this circle","square","shape"))
+  
+```
 

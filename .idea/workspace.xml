@@ -2,9 +2,66 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4651c07f-e5b6-4575-983c-c5a8f4b496c8" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/analysis/museumdraw/python/outputs-cogsci/RDM_adult_Layer_6.pdf" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/analysis/museumdraw/python/outputs-cogsci/RDM_kid_Layer_6.pdf" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/analysis/museumdraw/python/outputs-cogsci/RDM_older_Layer_6.pdf" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/analysis/museumdraw/python/outputs-cogsci/RDM_younger_Layer_6.pdf" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/bingstation/videos_louder/boat.mp4louder.mp4" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/bingstation/videos_louder/car.mp4louder.mp4" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/bingstation/videos_louder/circle.mp4louder.mp4" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/bingstation/videos_louder/cup.mp4louder.mp4" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/bingstation/videos_louder/dog.mp4louder.mp4" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/bingstation/videos_louder/fish.mp4louder.mp4" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/bingstation/videos_louder/house.mp4louder.mp4" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/bingstation/videos_louder/love.mp4louder.mp4" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/bingstation/videos_louder/person.mp4louder.mp4" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/bingstation/videos_louder/shape.mp4louder.mp4" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/bingstation/videos_louder/square.mp4louder.mp4" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/bingstation/videos_louder/tree.mp4louder.mp4" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/writing/KidDraw_CogSci_R1.pdf" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/writing/figs/RDMs_all.pdf" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/writing/figs/z-old/RSAAllCat-1.pdf" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/writing/python-vgg19-outputs/RDM_adult_Layer_6.pdf" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/writing/python-vgg19-outputs/RDM_kid_Layer_6.pdf" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/writing/python-vgg19-outputs/RDM_older_Layer_6.pdf" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/writing/python-vgg19-outputs/RDM_younger_Layer_6.pdf" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/analysis/museumdraw/python/analyze_features_museumdraw_cogsci_archive.ipynb" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/analysis/museumdraw/python/images_to_exclude.txt" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/analysis/museumdraw/python/outputs-cogsci/CohortSimilarity_VGG19_27x27.csv" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/analysis/museumstation/python/pixel-wise-f-score" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/analysis/museumstation/python/usage_data/May8th_usage.csv" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/bingstation/videos_louder/makeVideosLouder" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/writing/KidDraw_CogSci_R1.tex" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/writing/python-vgg19-outputs/CohortSimilarity_VGG19_27x27.csv" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/kiddrawnotes" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/logistics/serverRestart.rtf" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/writing/figs/RDM_all.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/writing/figs/recByAge-1.pdf" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/writing/vggOutputs/CohortSimilarity15x15.csv" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/analysis/museumstation/preprocess_museumstation_firstday.ipynb" afterPath="$PROJECT_DIR$/analysis/bingstation/preprocess_bingstation.ipynb" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/writing/KidDraw.Rmd" afterPath="$PROJECT_DIR$/writing/v1/KidDraw.Rmd" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/writing/KidDraw.tex" afterPath="$PROJECT_DIR$/writing/v1/KidDraw.tex" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/writing/LongFanFrank_Drawings.pdf" afterPath="$PROJECT_DIR$/writing/v1/LongFanFrank_Drawings.pdf" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/writing/Long_2_1.pdf" afterPath="$PROJECT_DIR$/writing/v1/Long_2_1.pdf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/writing/figs/RDMs_all.key" afterPath="$PROJECT_DIR$/writing/figs/RDMs_all.key" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/writing/figs/RSAAllCat-1.pdf" afterPath="$PROJECT_DIR$/writing/figs/RSAAllCat-1.pdf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/writing/figs/covDescriptives-1.pdf" afterPath="$PROJECT_DIR$/writing/figs/covDescriptives-1.pdf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/writing/figs/exampleDrawings-1.pdf" afterPath="$PROJECT_DIR$/writing/figs/exampleDrawings-1.pdf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/writing/figs/layerWise-1.pdf" afterPath="$PROJECT_DIR$/writing/figs/layerWise-1.pdf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/writing/figs/recognizabilityByItem-1.pdf" afterPath="$PROJECT_DIR$/writing/figs/recognizabilityByItem-1.pdf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/analysis/museumdraw/python/analyze_features_museumdraw_e1-pixelCopy.ipynb" afterPath="$PROJECT_DIR$/analysis/museumdraw/python/analyze_features_museumdraw_e1-pixelCopy.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/analysis/museumdraw/python/extractPixels.ipynb" afterPath="$PROJECT_DIR$/analysis/museumdraw/python/extractPixels.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/analysis/museumdraw/python/extract_all_images.sh" afterPath="$PROJECT_DIR$/analysis/museumdraw/python/extract_all_images.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/analysis/museumdraw/python/extract_features.py" afterPath="$PROJECT_DIR$/analysis/museumdraw/python/extract_features.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/analysis/museumstation/python/preprocess_museumstation_firstday.ipynb" afterPath="$PROJECT_DIR$/analysis/museumstation/python/preprocess_museumstation_firstday.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/analysis/museumstation/python/station_usage.Rmd" afterPath="$PROJECT_DIR$/analysis/museumstation/python/station_usage.Rmd" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/analysis/museumstation/python/station_usage.html" afterPath="$PROJECT_DIR$/analysis/museumstation/python/station_usage.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/experiments/bingstation/index.html" afterPath="$PROJECT_DIR$/experiments/bingstation/index.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/experiments/bingstation/trial-sequence.js" afterPath="$PROJECT_DIR$/experiments/bingstation/trial-sequence.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/experiments/museumstation/trial-sequence.js" afterPath="$PROJECT_DIR$/experiments/museumstation/trial-sequence.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/writing/KidDraw_CogSci_R1.Rmd" afterPath="$PROJECT_DIR$/writing/KidDraw_CogSci_R1.Rmd" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/writing/kiddraw.bib" afterPath="$PROJECT_DIR$/writing/kiddraw.bib" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -14,7 +71,39 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file leaf-file-name="trial-sequence.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/experiments/bingstation/trial-sequence.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="213">
+              <caret line="185" column="41" lean-forward="false" selection-start-line="185" selection-start-column="40" selection-end-line="185" selection-end-column="41" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/experiments/bingstation/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="521">
+              <caret line="256" column="0" lean-forward="true" selection-start-line="256" selection-start-column="0" selection-end-line="256" selection-end-column="0" />
+              <folding>
+                <element signature="n#style#0;n#div#1;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="preprocess_museumstation_firstday.ipynb" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/analysis/museumstation/python/preprocess_museumstation_firstday.ipynb">
+          <provider selected="true" editor-type-id="ipnb-editor">
+            <state>
+              <selected id="0" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -44,6 +133,7 @@
       <find>parent</find>
       <find>emailInfo</find>
       <find>setLang</find>
+      <find>Head</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -53,7 +143,6 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/experiments/bingstation/custom.css" />
-        <option value="$PROJECT_DIR$/experiments/bingstation/trial-sequence.js" />
         <option value="$PROJECT_DIR$/experiments/bingstation/index.html" />
         <option value="$PROJECT_DIR$/experiments/museumstation/trial-sequence.js" />
         <option value="$PROJECT_DIR$/experiments/museumstation/language/Chinese.json" />
@@ -62,6 +151,7 @@
         <option value="$PROJECT_DIR$/experiments/museumstation/custom.css" />
         <option value="$PROJECT_DIR$/experiments/museumstation/language/Spanish.json" />
         <option value="$PROJECT_DIR$/experiments/museumstation/language/Vietnamese.json" />
+        <option value="$PROJECT_DIR$/experiments/bingstation/trial-sequence.js" />
       </list>
     </option>
   </component>
@@ -77,8 +167,8 @@
     <handled-path value="$PROJECT_DIR$/experiments/museumstation/node_modules" />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="78" />
-    <option name="y" value="47" />
+    <option name="x" value="96" />
+    <option name="y" value="273" />
     <option name="width" value="1288" />
     <option name="height" value="815" />
   </component>
@@ -107,13 +197,25 @@
             <path>
               <item name="kiddraw" type="b2602c69:ProjectViewProjectNode" />
               <item name="kiddraw" type="462c0819:PsiDirectoryNode" />
-              <item name="experiments" type="462c0819:PsiDirectoryNode" />
+              <item name="analysis" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="kiddraw" type="b2602c69:ProjectViewProjectNode" />
+              <item name="kiddraw" type="462c0819:PsiDirectoryNode" />
+              <item name="analysis" type="462c0819:PsiDirectoryNode" />
+              <item name="museumstation" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="kiddraw" type="b2602c69:ProjectViewProjectNode" />
+              <item name="kiddraw" type="462c0819:PsiDirectoryNode" />
+              <item name="analysis" type="462c0819:PsiDirectoryNode" />
+              <item name="museumstation" type="462c0819:PsiDirectoryNode" />
+              <item name="python" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="kiddraw" type="b2602c69:ProjectViewProjectNode" />
               <item name="kiddraw" type="462c0819:PsiDirectoryNode" />
               <item name="experiments" type="462c0819:PsiDirectoryNode" />
-              <item name="bingstation" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -161,9 +263,9 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="78" y="47" width="1288" height="815" extended-state="0" />
+    <frame x="96" y="273" width="1288" height="815" extended-state="0" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18138042" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.29373997" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
@@ -341,33 +443,35 @@
         <state relative-caret-position="330">
           <caret line="22" column="6" lean-forward="true" selection-start-line="22" selection-start-column="6" selection-end-line="22" selection-end-column="6" />
           <folding>
-            <element signature="n#style#0;n#div#1;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#1;n#div#1;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#p#0;n#div#3;n#div#1;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#1;n#div#0;n#body#0;n#html#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#div#1;n#div#1;n#div#0;n#body#0;n#html#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#p#0;n#div#3;n#div#1;n#div#0;n#body#0;n#html#0;n#!!top" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/experiments/bingstation/trial-sequence.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4650">
-          <caret line="315" column="11" lean-forward="false" selection-start-line="315" selection-start-column="11" selection-end-line="315" selection-end-column="11" />
+        <state relative-caret-position="213">
+          <caret line="185" column="41" lean-forward="false" selection-start-line="185" selection-start-column="40" selection-end-line="185" selection-end-column="41" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/experiments/bingstation/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="765">
-          <caret line="51" column="14" lean-forward="true" selection-start-line="51" selection-start-column="14" selection-end-line="51" selection-end-column="14" />
+        <state relative-caret-position="521">
+          <caret line="256" column="0" lean-forward="true" selection-start-line="256" selection-start-column="0" selection-end-line="256" selection-end-column="0" />
           <folding>
             <element signature="n#style#0;n#div#1;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#div#2;n#div#5;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#1;n#div#1;n#div#1;n#div#2;n#div#5;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#2;n#div#2;n#div#5;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#p#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#p#0;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/analysis/museumstation/python/preprocess_museumstation_firstday.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="0" />
         </state>
       </provider>
     </entry>
