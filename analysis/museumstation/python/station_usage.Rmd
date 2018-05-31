@@ -22,11 +22,20 @@ theme_set(theme_few())
 ## Read in data outputs from python - stroke numbers, intensity, bounding boc, etc.
 # get rid of drwaings without age - these were when we were testing the interface.
 # make new variable name with image name for joining with recognition data
-d <- read_csv("usage_data/May8th_usage.csv") %>%
+d_v3 <- read_csv("usage_data/May31th_usage.csv") %>%
   select(-X1) %>%
   filter(!is.na(age)) %>%
   mutate(imNameShort = paste0(category, '_sketch', '_', age,'_', session_id, '.png')) %>%
   mutate(age_numeric = as.numeric(substr(age,4,6))) 
+
+d_firstrun <- read_csv("usage_data/May14th_usage.csv") %>%
+  select(-X1) %>%
+  filter(!is.na(age)) %>%
+  mutate(imNameShort = paste0(category, '_sketch', '_', age,'_', session_id, '.png')) %>%
+  mutate(age_numeric = as.numeric(substr(age,4,6))) 
+
+d <- d_v3 %>%
+  full_join(d_firstrun) 
 
 ```
 
