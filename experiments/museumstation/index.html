@@ -61,7 +61,7 @@
         </div>
 
         <div id="kidConsent">
-            <p style="font-family: Schoolbell,cursive; text-align:center; font-size: 4vw;"> HOW OLD ARE YOU ? <p>
+            <p id="age" style="font-family: Schoolbell,cursive; text-align:center; font-size: 4vw;"> HOW OLD ARE YOU ? <p>
 
             <button class="btn btn-light ageButton" id="age2"> &nbsp 2 &nbsp </button>
             <button class="btn btn-light ageButton" id="age3"> &nbsp 3 &nbsp </button>
@@ -73,10 +73,10 @@
             <button class="btn btn-light ageButton" id="age9"> &nbsp 9 &nbsp </button>
             <button class="btn btn-light ageButton" id="age10"> &nbsp 10+ &nbsp </button>
             <button class="btn btn-light ageButton" id="adult"> &nbsp Adult &nbsp </button>
-            <p style="font-family: Schoolbell,cursive; font-size: 4vw; text-align:center"> <input id="checkConsent" type="checkbox"> YOU CAN USE MY DRAWING </p>
+            <p style="font-family: Schoolbell,cursive; font-size: 4vw; text-align:center"> <input id="checkConsent" type="checkbox"> <span id="useDrawing"> YOU CAN USE MY DRAWING</span> </p>
         </div>
         <div id="consentText">
-            <p style="font-family: Schoolbell,cursive; text-align:center; font-size: 4vw;">
+            <p id="notice" style="font-family: Schoolbell,cursive; text-align:center; font-size: 4vw;">
             Please note -- this drawing game is only for one person at a time! Please only draw if it is your turn.
             </p>
             
@@ -84,13 +84,13 @@
 
                 The drawing data collected here will be used for research purposes by the Stanford Language and Cognition Lab and the San Jose Children's Discovery Museum, and will be displayed on the Museum's website on a future date. There are no risks or benefits to participating: no identifying information will be collected, so you and your child’s identity will remain anonymous. Your child can stop drawing at any time or choose not to answer any question without penalty. For more information, email the Stanford lab at langcoglab@stanford.edu, or call 650-721-9270. If you are not satisfied with how this study is being conducted, or if you have any concerns, complaints, or general questions about the research or your rights as a participant, please contact the Stanford Institutional Review Board (IRB) to speak to someone independent of the research team at (650)-723-2480 or toll free at 1-866-680-2906.  You can also write to the Stanford IRB, Stanford University, 3000 El Camino Real, Five Palo Alto Square, 4th Floor, Palo Alto, CA 94306.
             <div class="input-group mb-3 row" id="email-form">
-                <input type="email" id="parent-email" class="form-control" aria-describedby="emailHelp" placeholder="Input your email address here if you'd like a copy" aria-label="Recipient's username">
+                <input type="email" id="parentEmail" class="form-control" aria-describedby="emailHelp" placeholder="Input your email address here if you'd like a copy" aria-label="Recipient's username">
                 <div class="input-group-append">
                     <button id="sendEmail" class="btn btn-info" type="button">Email me the consent form</button>
                 </div>
             </div>
             <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-            <div class="alert alert-info" id="email-sent" role="alert" style="display:none">
+            <div class="alert alert-info" id="emailSent" role="alert" style="display:none">
                 Email Sent!
             </div>
             </p>
@@ -130,13 +130,13 @@
 
                 The drawing data collected here will be used for research purposes by the Stanford Language and Cognition Lab and the San Jose Children's Discovery Museum, and will be displayed on the Museum's website on a future date. There are no risks or benefits to participating: no identifying information will be collected, so you and your child’s identity will remain anonymous. Your child can stop drawing at any time or choose not to answer any question without penalty. For more information, email the Stanford lab at langcoglab@stanford.edu, or call 650-721-9270. If you are not satisfied with how this study is being conducted, or if you have any concerns, complaints, or general questions about the research or your rights as a participant, please contact the Stanford Institutional Review Board (IRB) to speak to someone independent of the research team at (650)-723-2480 or toll free at 1-866-680-2906.  You can also write to the Stanford IRB, Stanford University, 3000 El Camino Real, Five Palo Alto Square, 4th Floor, Palo Alto, CA 94306.
             <div class="input-group mb-3 row" id="email-form">
-                <input type="email" id="parent-email" class="form-control" aria-describedby="emailHelp" placeholder="Input your email address here if you'd like a copy" aria-label="Recipient's username">
+                <input type="email" id="parentEmail" class="form-control" aria-describedby="emailHelp" placeholder="Input your email address here if you'd like a copy" aria-label="Recipient's username">
                 <div class="input-group-append">
                     <button id="sendEmail" class="btn btn-info" type="button">Email me the consent form</button>
                 </div>
             </div>
             <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-            <div class="alert alert-info" id="email-sent" role="alert" style="display:none">
+            <div class="alert alert-info" id="emailSent" role="alert" style="display:none">
                 Email Sent!
             </div>
             </p>
@@ -192,21 +192,21 @@
 
             <canvas id="sketchpad"></canvas>
 
-            <div class="row" id="submit_div">
+            <div class="row" id="submit_div" style="width:100%;">
 
                 <div class = "offset-md-2 col-md-4 drawingButton imageButton" id="keepGoing">
-                    <p> Next </p>
+                    <p id="next"> Next </p>
                     <img src="images/play.jpg"></img>
                 </div>
                 <div class="col-md-4 drawingButton imageButton allDone">
-                    <p> Stop </p>
+                    <p id="stop"> Stop </p>
                     <img src="images/stop.jpg" ></img>
                 </div>
             </div>
 
             <div id="lastTrial" class="row" style="text-align:center; margin-top:4vh;display:none">
                 <div class="col-md-4 drawingButton imageButton allDone" id="endGame" style="margin:auto">
-                    <p> End Game </p>
+                    <p id="end"> End Game </p>
                     <img src="images/stop.jpg" ></img>
                 </div>
             </div>
@@ -224,10 +224,10 @@
         <img src="images/stanfordlogo.png" alt="Stanford University" id="stanfordLogo"></img>
         <p id='logo-text'>Stanford Language and Cognition Lab</p>
     </div>
-    <p style="font-family: Schoolbell,cursive; font-size: 24pt; text-align:center"> THANK YOU! </p>
-    <p style="font-family: Schoolbell,cursive; font-size: 18pt; text-align:center"> To learn more, visit our lab's web page at langcog.stanford.edu. For any questions about the study, please contact Dr. Bria Long at bria@stanford.edu or Dr. Michael C. Frank at mcfrank@stanford.edu. </p>
+    <p id="thanks" style="font-family: Schoolbell,cursive; font-size: 24pt; text-align:center"> THANK YOU! </p>
+    <p id="endInfo" style="font-family: Schoolbell,cursive; font-size: 18pt; text-align:center; padding:2vw"> To learn more, visit our lab's web page at langcog.stanford.edu. For any questions about the study, please contact Dr. Bria Long at bria@stanford.edu or Dr. Michael C. Frank at mcfrank@stanford.edu. </p>
     <div class="imageButton endRestart" style="text-align:center">
-        <p class="buttonDescription"> Restart </p>
+        <p id="restart" class="buttonDescription"> Restart </p>
         <img class="startButton" src="images/play.jpg"></img>
     </div>
     <br></br>

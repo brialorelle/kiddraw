@@ -1,4 +1,5 @@
-# kiddraw
+# kiddraw project
+### Drawings as a window into developmental changes in object representations
 
 Inspired by the availability of this large and public dataset containing drawings of various visual concepts (Google quickdraw-75: https://github.com/googlecreativelab/quickdraw-dataset), this project asks how the ability to express these visual concepts in drawings develops.
 
@@ -20,7 +21,7 @@ Many scripts require access to GPUs to extract features from VGG-19 efficiently.
 
 --preprocess_musemdraw_e1.ipynb.ipynb  ##Pulls drawings from server, renders pngs, computes low-level covariates (drawing time, number of strokes, mean intensity), saves out
 
---analyze_features_museumdraw_e1.ipynb ## Jupyter notebook that analyzes vgg-19 features from pool 1-5 and fc6/fc7. Creates layerwise and RDM figures for use in R code in kiddraw/writing. 
+--analyze_features_museumdraw_cogsci_archive.ipynb ## Jupyter notebook that analyzes vgg-19 features from pool 1-5 and fc6/fc7. Creates layerwise and RDM figures for use in R code in kiddraw/writing. 
 
 4. Writing:
 
