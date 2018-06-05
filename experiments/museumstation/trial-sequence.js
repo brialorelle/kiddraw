@@ -21,14 +21,27 @@ firstTrial = {"category": "this circle", "video": "circle.mp4", "image":"images/
 lastTrial = {"category": "something you love", "video": "love.mp4"}
 trace1 = {"category":"square", "video": "square.mp4", "image":"images/square.png"}
 trace2 = {"category":"shape", "video": "shape.mp4","image":"images/shape.png"}
-var stimListTest = [{"category": "a boat", "video": "boat.mp4"},
-    {"category": "a car", "video": "car.mp4"},
-    {"category": "a cup", "video": "cup.mp4"},
-    {"category": "a dog", "video": "dog.mp4"},
-    {"category": "a fish", "video": "fish.mp4"},
-    {"category": "a house", "video": "house.mp4"},
-    {"category": "a tree", "video": "tree.mp4"},
-    {"category": "a person", "video": "person.mp4"} ]
+
+// round 1 -- finished June 1, 2018
+// var stimListTest = [{"category": "a boat", "video": "boat.mp4"},
+//     {"category": "a car", "video": "car.mp4"},
+//     {"category": "a cup", "video": "cup.mp4"},
+//     {"category": "a dog", "video": "dog.mp4"},
+//     {"category": "a fish", "video": "fish.mp4"},
+//     {"category": "a house", "video": "house.mp4"},
+//     {"category": "a tree", "video": "tree.mp4"},
+//     {"category": "a person", "video": "person.mp4"} ]
+
+// round 1 -- started June 1, 2018
+var stimListTest = [{"category": "an airplane", "video": "airplane.mp4"},
+    {"category": "a bike", "video": "bike.mp4"},
+    {"category": "a bird", "video": "bird.mp4"},
+    {"category": "a bowl", "video": "bowl.mp4"},
+    {"category": "a chair", "video": "chair.mp4"},
+    {"category": "a couch", "video": "couch.mp4"},
+    {"category": "a phone", "video": "phone.mp4"},
+    {"category": "a rabbit", "video": "rabbit.mp4"} ]
+
 
 var stimListTest = shuffle(stimListTest)
 stimListTest.push(lastTrial)
@@ -37,19 +50,34 @@ stimListTest.unshift(trace2)
 stimListTest.unshift(trace1)
 var curTrial=0 // global variable, trial counter
 var maxTrials = stimListTest.length; //
+// var stimLang = {
+//     "this circle": "this circle",
+//     "square": "square",
+//     "shape": "shape",
+//     "a car": "a car",
+//     "a fish": "a fish",
+//     "a boat": "a boat",
+//     "a house": "a house",
+//     "a dog": "a dog",
+//     "a cup": "a cup",
+//     "a tree": "a tree",
+//     "a person": "a person",
+//     "something you love": "something you love"}
+
 var stimLang = {
     "this circle": "this circle",
     "square": "square",
     "shape": "shape",
-    "a car": "a car",
-    "a fish": "a fish",
-    "a boat": "a boat",
-    "a house": "a house",
-    "a dog": "a dog",
-    "a cup": "a cup",
-    "a tree": "a tree",
-    "a person": "a person",
+    "an airplane": "an airplane",
+    "a bike": "a bike",
+    "a bird": "a bird",
+    "a bowl": "a bowl",
+    "a chair": "a chair",
+    "a couch": "a couch",
+    "a phone": "a phone",
+    "a rabbit": "a rabbit",
     "something you love": "something you love"}
+
 var cuesLang = {
     "trace": "Can you trace the ",
     "copy": "Can you copy ",
