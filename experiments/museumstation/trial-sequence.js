@@ -56,6 +56,8 @@ var cuesLang = {
     "draw": "Can you draw ",
     "endQuestion": " ?"
 }
+var checkBoxAlert = "Can we use your child's drawings? If so, please click the box above to start drawing!";
+var ageAlert = "Please select your age group.";
 
 // set global variables
 var clickedSubmit=0; // whether an image is submitted or not
@@ -198,7 +200,7 @@ function setUpDrawing(){
 
         setTimeout(function () {
             $('#sketchpad').css("background-image", "");
-        }, 2000);
+        }, 30000);
 
     }else if(curTrial == maxTrials-1){
         $("#submit_div").hide();
@@ -299,25 +301,18 @@ function setLanguage(lang){
     //If the user choose other langauges
     var filename = "language/"+lang +".json";
     $.getJSON(filename, function( data ) {
-        var items = [];
         $.each( data, function( key, val ) {
                 var id = "#" + key;
                 $(id).text(val);
         });
+        checkBoxAlert = data["checkBoxAlert"];
+        ageAlert = data["ageAlert"];
     });
 }
 
 // experiment navigation functions
 function showConsentPage(){
-<<<<<<< HEAD
     $("#landingPage").hide();
-=======
-    // if (mode == "CDM") {
-    //     $("#chooseLang").hide();
-    // }else {
-        $("#landingPage").hide();
-    // }
->>>>>>> 31ca2d2e526757cfe4ba17c597d312501a44df6e
     $('#parentEmail').val('');
     $('#email-form').show();
     $('#emailSent').hide();
@@ -378,19 +373,8 @@ window.onload = function() {
     }
 
     $('#startConsent').bind('touchstart mousedown',function(e) {
-<<<<<<< HEAD
         e.preventDefault();
         showConsentPage();
-
-=======
-        e.preventDefault()
-        // if (mode=="CDM") {
-        //     $("#chooseLang").show();
-        //     $("#landingPage").hide();
-        // }else {
-            showConsentPage();
-        // }
->>>>>>> 31ca2d2e526757cfe4ba17c597d312501a44df6e
     });
 
     $('.langButton').bind('touchstart mousedown',function(e) {
@@ -398,6 +382,8 @@ window.onload = function() {
         // if (isDoubleClicked($(this))) return;
         language = $(this).attr('id');
         setLanguage(language);
+        $("#langChosen").text($(this).text());
+        $("#langDrop").removeClass("show");
     });
 
     $('.startExp').bind('touchstart mousedown',function (e) {
@@ -420,9 +406,9 @@ window.onload = function() {
         }else{
             console.log("CDM");
             if (!$("#checkConsent").is(':checked')) {
-                alert("Can we use your child's drawings? If so, please click the box above to start drawing!")
+                alert(checkBoxAlert)
             }else if($(".active").val()==undefined){
-                alert("Please select your age group.")
+                alert(ageAlert)
             }
             else {
                 startDrawing();
