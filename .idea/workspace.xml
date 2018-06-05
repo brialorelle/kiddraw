@@ -2,59 +2,46 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4651c07f-e5b6-4575-983c-c5a8f4b496c8" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/consentForm.pdf" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/old/old_videos/banana.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/old/old_videos/boat.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/old/old_videos/cup.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/old/old_videos/instructions.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/old/old_videos/rabbit.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos/boat.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos/car.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos/circle.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos/cup.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos/dog.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos/fish.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos/house.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos/love.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos/person.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos/shape.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos/square.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos/tree.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos_smaller/boat.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos_smaller/car.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos_smaller/circle.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos_smaller/cup.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos_smaller/dog.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos_smaller/fish.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos_smaller/house.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos_smaller/love.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos_smaller/person.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos_smaller/shape.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos_smaller/square.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/videos_smaller/tree.mp4" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/analysis/museumstation/python/tracing_f1.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/README.md" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/app.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/custom.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/images/play.svg" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/index.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/old/test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/old/todos" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/old/trial-sequence-old.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/store.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/trial-sequence.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/views/consentBing.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/views/consentCDM.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/views/expBing.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/views/expCDM.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/views/thanksBing.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/multstation/views/thanksCDM.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/kiddraw.iml" afterPath="$PROJECT_DIR$/.idea/kiddraw.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/museumstation/videos_smaller/airplane.mp4" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/museumstation/videos_smaller/bike.mp4" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/museumstation/videos_smaller/bird.mp4" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/museumstation/videos_smaller/bowl.mp4" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/museumstation/videos_smaller/chair.mp4" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/museumstation/videos_smaller/couch.mp4" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/museumstation/videos_smaller/phone.mp4" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiments/museumstation/videos_smaller/rabbit.mp4" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/writing/LongFanFrank_CogSci_2018.pdf" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/writing/lit/Panesi_Morra_2018_TOPSYJ.pdf" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/writing/vss-poster/LongFanFrank_VSS_2018.pdf" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/analysis/museumdraw/python/render_svgs_test.ipynb" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/analysis/museumstation/python/usage_data/May14th_usage.csv" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/analysis/museumstation/python/usage_data/May31th_usage.csv" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experiments/museumstation/old/old_videos/banana.mp4" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experiments/museumstation/old/old_videos/boat.mp4" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experiments/museumstation/old/old_videos/cup.mp4" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experiments/museumstation/old/old_videos/instructions.mp4" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experiments/museumstation/old/old_videos/rabbit.mp4" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experiments/museumstation/videos/boat.mp4" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experiments/museumstation/videos/car.mp4" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experiments/museumstation/videos/circle.mp4" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experiments/museumstation/videos/cup.mp4" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experiments/museumstation/videos/dog.mp4" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experiments/museumstation/videos/fish.mp4" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experiments/museumstation/videos/house.mp4" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experiments/museumstation/videos/love.mp4" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experiments/museumstation/videos/person.mp4" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experiments/museumstation/videos/shape.mp4" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experiments/museumstation/videos/square.mp4" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experiments/museumstation/videos/tree.mp4" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/writing/lit/cogsci_drawing_r1.pdf" afterPath="$PROJECT_DIR$/writing/lit/Fan_2015_CogSci.pdf" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/analysis/museumstation/python/May4th_usage.csv" afterPath="$PROJECT_DIR$/analysis/museumstation/python/May4th_usage.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/analysis/bingstation/preprocess_bingstation.ipynb" afterPath="$PROJECT_DIR$/analysis/bingstation/preprocess_bingstation.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/analysis/museumdraw/python/analyze_features_museumdraw_e1_jefan.ipynb" afterPath="$PROJECT_DIR$/analysis/museumdraw/python/analyze_features_museumdraw_e1_jefan.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/analysis/museumdraw/python/preprocess_musemdraw_e1.ipynb" afterPath="$PROJECT_DIR$/analysis/museumdraw/python/preprocess_musemdraw_e1.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/analysis/museumstation/python/preprocess_museumstation_firstday.ipynb" afterPath="$PROJECT_DIR$/analysis/museumstation/python/preprocess_museumstation_firstday.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/experiments/museumstation/custom.css" afterPath="$PROJECT_DIR$/experiments/museumstation/custom.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/analysis/museumstation/python/station_usage.Rmd" afterPath="$PROJECT_DIR$/analysis/museumstation/python/station_usage.Rmd" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/analysis/museumstation/python/station_usage.html" afterPath="$PROJECT_DIR$/analysis/museumstation/python/station_usage.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/experiments/museumstation/index.html" afterPath="$PROJECT_DIR$/experiments/museumstation/index.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/experiments/museumstation/trial-sequence.js" afterPath="$PROJECT_DIR$/experiments/museumstation/trial-sequence.js" />
     </list>
@@ -75,22 +62,133 @@
               <folding>
                 <element signature="n#style#0;n#div#1;n#div#1;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#button#0;n#div#0;n#div#1;n#div#1;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <marker date="1528167604000" expanded="true" signature="13643:14093" ph="..." />
+                <marker date="1528167604000" expanded="true" signature="13758:13879" ph="..." />
+                <marker date="1528167604000" expanded="true" signature="13952:14074" ph="..." />
+                <marker date="1528167604000" expanded="false" signature="14147:14193" ph="..." />
+                <marker date="1528167604000" expanded="true" signature="14194:14444" ph="..." />
+                <marker date="1528167604000" expanded="false" signature="14288:14299" ph="..." />
+                <marker date="1528167604000" expanded="true" signature="14300:14425" ph="..." />
+                <marker date="1528167604000" expanded="false" signature="14513:14544" ph="..." />
+                <marker date="1528167604000" expanded="true" signature="14545:15489" ph="..." />
+                <marker date="1528167604000" expanded="true" signature="14577:14751" ph="..." />
+                <marker date="1528167604000" expanded="false" signature="14779:14846" ph="..." />
+                <marker date="1528167604000" expanded="false" signature="14892:14972" ph="..." />
+                <marker date="1528167604000" expanded="false" signature="15226:15243" ph="..." />
+                <marker date="1528167604000" expanded="true" signature="15244:15381" ph="..." />
+                <marker date="1528167604000" expanded="false" signature="15441:15450" ph="..." />
+                <marker date="1528167604000" expanded="false" signature="15520:15550" ph="..." />
+                <marker date="1528167604000" expanded="true" signature="15551:16055" ph="..." />
+                <marker date="1528167604000" expanded="true" signature="15583:15757" ph="..." />
+                <marker date="1528167604000" expanded="false" signature="15773:15838" ph="..." />
+                <marker date="1528167604000" expanded="true" signature="15935:16047" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="trial-sequence.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="trial-sequence.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/experiments/museumstation/trial-sequence.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="424">
-              <caret line="511" column="31" lean-forward="true" selection-start-line="511" selection-start-column="31" selection-end-line="511" selection-end-column="31" />
-              <folding />
+            <state relative-caret-position="744">
+              <caret line="539" column="31" lean-forward="false" selection-start-line="539" selection-start-column="31" selection-end-line="539" selection-end-column="31" />
+              <folding>
+                <marker date="1528167604000" expanded="true" signature="2738:2858" ph="{&quot;trace&quot;: &quot;Can you trace the &quot;...}" />
+                <marker date="1528167604000" expanded="true" signature="3422:3511" ph="//..." />
+                <marker date="1528167604000" expanded="true" signature="3687:3909" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="3969:4360" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="3991:4082" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="4130:4292" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="4386:5462" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="4469:4718" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="4723:5359" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="4786:5053" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="5057:5352" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="5510:5626" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="5680:6151" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="5759:6147" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="5853:6139" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="6210:6351" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="6377:6718" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="6413:6472" ph="{&quot;preload&quot;: &quot;auto&quot;...}" />
+                <marker date="1528167604000" expanded="true" signature="6743:8025" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="6874:7299" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="7356:7829" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="7745:7813" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="7861:7933" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="8054:8326" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="8446:9745" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="8893:9007" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="8925:8993" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="9053:9519" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="9256:9312" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="9317:9375" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="9550:9743" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="9798:11023" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="10437:10514" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="10586:10917" ph="{&quot;dataType&quot;: 'finalImage'...}" />
+                <marker date="1528167604000" expanded="true" signature="11053:11404" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="11183:11400" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="11228:11308" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="11467:11617" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="11648:11685" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="11711:11957" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="11815:11946" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="11844:11940" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="11983:12067" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="12103:12459" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="12328:12376" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="12523:12861" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="12576:12707" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="12727:12855" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="12907:12946" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="13011:13073" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="13138:13382" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="13446:14249" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="13598:13940" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="13691:13762" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="13808:13878" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="13882:13929" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="13944:14242" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="14120:14167" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="14185:14232" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="14313:14826" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="14517:14719" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="14888:15389" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="15049:15251" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="15453:15616" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="15680:16055" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="15855:16047" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="15885:15979" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="15983:16037" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="16118:16233" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="16505:17675" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="16552:17669" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="16990:17083" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="17111:17531" ph="{&quot;dataType&quot;: 'stroke'...}" />
+                <marker date="1528167604000" expanded="true" signature="17725:18294" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="17753:17784" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="18133:18287" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="18323:18775" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="18351:18382" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="18532:18769" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="18585:18759" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="18802:19108" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="18830:18861" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="18956:19033" ph="//..." />
+                <marker date="1528167604000" expanded="true" signature="19066:19101" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="19532:19576" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="19631:20146" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="19689:20076" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="19748:19868" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="19872:20066" ph="{...}" />
+                <marker date="1528167604000" expanded="true" signature="20082:20139" ph="{...}" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="custom.css" pinned="false" current-in-tab="false">
+      <file leaf-file-name="custom.css" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/experiments/museumstation/custom.css">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="273">
@@ -112,7 +210,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>.all</find>
       <find>sket</find>
       <find>last</find>
       <find>drawingButton</find>
@@ -141,6 +238,7 @@
       <find>background</find>
       <find>circle</find>
       <find>setL</find>
+      <find>stroke</find>
       <find>consentTe</find>
     </findStrings>
   </component>
@@ -155,7 +253,6 @@
         <option value="$PROJECT_DIR$/experiments/museumstation/language/Spanish.json" />
         <option value="$PROJECT_DIR$/experiments/museumstation/language/Vietnamese.json" />
         <option value="$PROJECT_DIR$/experiments/bingstation/trial-sequence.js" />
-        <option value="$PROJECT_DIR$/analysis/museumstation/python/preprocess_museumstation_firstday.ipynb" />
         <option value="$PROJECT_DIR$/experiments/museumstation/language/Chinese.json" />
         <option value="$PROJECT_DIR$/experiments/museumstation/language/English.json" />
         <option value="$PROJECT_DIR$/experiments/multstation/views/thanks.html" />
@@ -168,9 +265,10 @@
         <option value="$PROJECT_DIR$/experiments/multstation/index.html" />
         <option value="$PROJECT_DIR$/experiments/multstation/views/thanksBing.html" />
         <option value="$PROJECT_DIR$/experiments/multstation/views/expBing.html" />
-        <option value="$PROJECT_DIR$/experiments/museumstation/trial-sequence.js" />
         <option value="$PROJECT_DIR$/experiments/museumstation/index.html" />
         <option value="$PROJECT_DIR$/experiments/museumstation/custom.css" />
+        <option value="$PROJECT_DIR$/experiments/museumstation/trial-sequence.js" />
+        <option value="$PROJECT_DIR$/analysis/museumstation/python/preprocess_museumstation_firstday.ipynb" />
       </list>
     </option>
   </component>
@@ -182,11 +280,10 @@
   </component>
   <component name="NodeModulesDirectoryManager">
     <handled-path value="$PROJECT_DIR$/experiments/bingstation/node_modules" />
-    <handled-path value="$PROJECT_DIR$/experiments/multstation/node_modules" />
     <handled-path value="$PROJECT_DIR$/experiments/museumdraw/node_modules" />
     <handled-path value="$PROJECT_DIR$/experiments/museumstation/node_modules" />
   </component>
-  <component name="ProjectFrameBounds" extendedState="1">
+  <component name="ProjectFrameBounds">
     <option name="x" value="66" />
     <option name="y" value="30" />
     <option name="width" value="1323" />
@@ -218,6 +315,19 @@
               <item name="kiddraw" type="b2602c69:ProjectViewProjectNode" />
               <item name="kiddraw" type="462c0819:PsiDirectoryNode" />
               <item name="analysis" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="kiddraw" type="b2602c69:ProjectViewProjectNode" />
+              <item name="kiddraw" type="462c0819:PsiDirectoryNode" />
+              <item name="analysis" type="462c0819:PsiDirectoryNode" />
+              <item name="museumstation" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="kiddraw" type="b2602c69:ProjectViewProjectNode" />
+              <item name="kiddraw" type="462c0819:PsiDirectoryNode" />
+              <item name="analysis" type="462c0819:PsiDirectoryNode" />
+              <item name="museumstation" type="462c0819:PsiDirectoryNode" />
+              <item name="python" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="kiddraw" type="b2602c69:ProjectViewProjectNode" />
@@ -282,7 +392,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="66" y="30" width="1323" height="815" extended-state="1" />
+    <frame x="66" y="30" width="1323" height="815" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25604996" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -495,13 +605,6 @@
         <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/analysis/museumstation/python/preprocess_museumstation_firstday.ipynb">
-      <provider selected="true" editor-type-id="ipnb-editor">
-        <state>
-          <selected id="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/analysis/museumstation/python/Untitled.ipynb">
       <provider selected="true" editor-type-id="ipnb-editor">
         <state>
@@ -612,7 +715,140 @@
           <folding>
             <element signature="n#style#0;n#div#1;n#div#1;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#button#0;n#div#0;n#div#1;n#div#1;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <marker date="1528167604000" expanded="true" signature="13643:14093" ph="..." />
+            <marker date="1528167604000" expanded="true" signature="13758:13879" ph="..." />
+            <marker date="1528167604000" expanded="true" signature="13952:14074" ph="..." />
+            <marker date="1528167604000" expanded="false" signature="14147:14193" ph="..." />
+            <marker date="1528167604000" expanded="true" signature="14194:14444" ph="..." />
+            <marker date="1528167604000" expanded="false" signature="14288:14299" ph="..." />
+            <marker date="1528167604000" expanded="true" signature="14300:14425" ph="..." />
+            <marker date="1528167604000" expanded="false" signature="14513:14544" ph="..." />
+            <marker date="1528167604000" expanded="true" signature="14545:15489" ph="..." />
+            <marker date="1528167604000" expanded="true" signature="14577:14751" ph="..." />
+            <marker date="1528167604000" expanded="false" signature="14779:14846" ph="..." />
+            <marker date="1528167604000" expanded="false" signature="14892:14972" ph="..." />
+            <marker date="1528167604000" expanded="false" signature="15226:15243" ph="..." />
+            <marker date="1528167604000" expanded="true" signature="15244:15381" ph="..." />
+            <marker date="1528167604000" expanded="false" signature="15441:15450" ph="..." />
+            <marker date="1528167604000" expanded="false" signature="15520:15550" ph="..." />
+            <marker date="1528167604000" expanded="true" signature="15551:16055" ph="..." />
+            <marker date="1528167604000" expanded="true" signature="15583:15757" ph="..." />
+            <marker date="1528167604000" expanded="false" signature="15773:15838" ph="..." />
+            <marker date="1528167604000" expanded="true" signature="15935:16047" ph="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/experiments/museumstation/trial-sequence.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="744">
+          <caret line="539" column="31" lean-forward="false" selection-start-line="539" selection-start-column="31" selection-end-line="539" selection-end-column="31" />
+          <folding>
+            <marker date="1528167604000" expanded="true" signature="2738:2858" ph="{&quot;trace&quot;: &quot;Can you trace the &quot;...}" />
+            <marker date="1528167604000" expanded="true" signature="3422:3511" ph="//..." />
+            <marker date="1528167604000" expanded="true" signature="3687:3909" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="3969:4360" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="3991:4082" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="4130:4292" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="4386:5462" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="4469:4718" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="4723:5359" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="4786:5053" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="5057:5352" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="5510:5626" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="5680:6151" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="5759:6147" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="5853:6139" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="6210:6351" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="6377:6718" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="6413:6472" ph="{&quot;preload&quot;: &quot;auto&quot;...}" />
+            <marker date="1528167604000" expanded="true" signature="6743:8025" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="6874:7299" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="7356:7829" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="7745:7813" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="7861:7933" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="8054:8326" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="8446:9745" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="8893:9007" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="8925:8993" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="9053:9519" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="9256:9312" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="9317:9375" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="9550:9743" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="9798:11023" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="10437:10514" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="10586:10917" ph="{&quot;dataType&quot;: 'finalImage'...}" />
+            <marker date="1528167604000" expanded="true" signature="11053:11404" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="11183:11400" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="11228:11308" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="11467:11617" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="11648:11685" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="11711:11957" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="11815:11946" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="11844:11940" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="11983:12067" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="12103:12459" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="12328:12376" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="12523:12861" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="12576:12707" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="12727:12855" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="12907:12946" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="13011:13073" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="13138:13382" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="13446:14249" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="13598:13940" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="13691:13762" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="13808:13878" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="13882:13929" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="13944:14242" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="14120:14167" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="14185:14232" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="14313:14826" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="14517:14719" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="14888:15389" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="15049:15251" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="15453:15616" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="15680:16055" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="15855:16047" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="15885:15979" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="15983:16037" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="16118:16233" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="16505:17675" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="16552:17669" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="16990:17083" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="17111:17531" ph="{&quot;dataType&quot;: 'stroke'...}" />
+            <marker date="1528167604000" expanded="true" signature="17725:18294" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="17753:17784" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="18133:18287" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="18323:18775" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="18351:18382" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="18532:18769" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="18585:18759" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="18802:19108" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="18830:18861" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="18956:19033" ph="//..." />
+            <marker date="1528167604000" expanded="true" signature="19066:19101" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="19532:19576" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="19631:20146" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="19689:20076" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="19748:19868" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="19872:20066" ph="{...}" />
+            <marker date="1528167604000" expanded="true" signature="20082:20139" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/analysis/museumstation/python/preprocess_museumstation_firstday1.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/analysis/museumstation/python/preprocess_museumstation_firstday.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="0" />
         </state>
       </provider>
     </entry>
@@ -620,14 +856,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="273">
           <caret line="123" column="23" lean-forward="false" selection-start-line="123" selection-start-column="23" selection-end-line="123" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/experiments/museumstation/trial-sequence.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="424">
-          <caret line="511" column="31" lean-forward="true" selection-start-line="511" selection-start-column="31" selection-end-line="511" selection-end-column="31" />
           <folding />
         </state>
       </provider>
