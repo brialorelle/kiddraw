@@ -2,11 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4651c07f-e5b6-4575-983c-c5a8f4b496c8" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/analysis/museumstation/python/May28th_usage.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/analysis/museumstation/python/May4th_usage.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/analysis/museumstation/python/tracing_f1.py" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/analysis/museumdraw/python/render_svgs_test.ipynb" afterPath="$PROJECT_DIR$/analysis/museumdraw/python/render_svgs_test.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/analysis/museumstation/python/preprocess_museumstation_firstday.ipynb" afterPath="$PROJECT_DIR$/analysis/museumstation/python/preprocess_museumstation_firstday.ipynb" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/analysis/museumstation/python/render_svgs_test.ipynb" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/analysis/museumstation/python/tracing_F1-svg.ipynb" afterPath="$PROJECT_DIR$/analysis/museumstation/python/tracing_F1-svg.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/analysis/museumstation/python/usage_data/f1_scores_svg.csv" afterPath="$PROJECT_DIR$/analysis/museumstation/python/usage_data/f1_scores_svg.csv" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -17,44 +16,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/experiments/museumstation/index.html">
+      <file leaf-file-name="Spanish.json" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/experiments/museumstation/language/Spanish.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="376">
-              <caret line="58" column="37" lean-forward="false" selection-start-line="58" selection-start-column="37" selection-end-line="58" selection-end-column="37" />
-              <folding>
-                <element signature="n#style#0;n#div#1;n#div#1;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#button#0;n#div#0;n#div#1;n#div#1;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#2;n#div#2;n#div#4;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
-                <marker date="1528167604000" expanded="false" signature="14147:14193" ph="..." />
-                <marker date="1528167604000" expanded="false" signature="14288:14299" ph="..." />
-                <marker date="1528167604000" expanded="false" signature="14513:14544" ph="..." />
-                <marker date="1528167604000" expanded="false" signature="14779:14846" ph="..." />
-                <marker date="1528167604000" expanded="false" signature="14892:14972" ph="..." />
-                <marker date="1528167604000" expanded="false" signature="15226:15243" ph="..." />
-                <marker date="1528167604000" expanded="false" signature="15441:15450" ph="..." />
-                <marker date="1528167604000" expanded="false" signature="15520:15550" ph="..." />
-                <marker date="1528167604000" expanded="false" signature="15773:15838" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="trial-sequence.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/experiments/museumstation/trial-sequence.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="726">
-              <caret line="539" column="31" lean-forward="false" selection-start-line="539" selection-start-column="31" selection-end-line="539" selection-end-column="31" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="custom.css" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/experiments/museumstation/custom.css">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-303">
-              <caret line="55" column="0" lean-forward="false" selection-start-line="55" selection-start-column="0" selection-end-line="55" selection-end-column="0" />
+            <state relative-caret-position="135">
+              <caret line="9" column="126" lean-forward="false" selection-start-line="9" selection-start-column="126" selection-end-line="9" selection-end-column="126" />
               <folding />
             </state>
           </provider>
@@ -112,7 +78,6 @@
       <list>
         <option value="$PROJECT_DIR$/experiments/bingstation/custom.css" />
         <option value="$PROJECT_DIR$/experiments/bingstation/index.html" />
-        <option value="$PROJECT_DIR$/experiments/museumstation/language/Spanish.json" />
         <option value="$PROJECT_DIR$/experiments/museumstation/language/Vietnamese.json" />
         <option value="$PROJECT_DIR$/experiments/bingstation/trial-sequence.js" />
         <option value="$PROJECT_DIR$/experiments/museumstation/language/Chinese.json" />
@@ -131,6 +96,7 @@
         <option value="$PROJECT_DIR$/experiments/museumstation/custom.css" />
         <option value="$PROJECT_DIR$/experiments/museumstation/trial-sequence.js" />
         <option value="$PROJECT_DIR$/analysis/museumstation/python/preprocess_museumstation_firstday.ipynb" />
+        <option value="$PROJECT_DIR$/experiments/museumstation/language/Spanish.json" />
       </list>
     </option>
   </component>
@@ -145,7 +111,7 @@
     <handled-path value="$PROJECT_DIR$/experiments/museumdraw/node_modules" />
     <handled-path value="$PROJECT_DIR$/experiments/museumstation/node_modules" />
   </component>
-  <component name="ProjectFrameBounds" extendedState="1">
+  <component name="ProjectFrameBounds">
     <option name="x" value="66" />
     <option name="y" value="30" />
     <option name="width" value="1323" />
@@ -200,7 +166,7 @@
               <item name="kiddraw" type="462c0819:PsiDirectoryNode" />
               <item name="experiments" type="462c0819:PsiDirectoryNode" />
               <item name="museumstation" type="462c0819:PsiDirectoryNode" />
-              <item name="videos_smaller" type="462c0819:PsiDirectoryNode" />
+              <item name="language" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -254,9 +220,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="66" y="30" width="1323" height="815" extended-state="1" />
+    <frame x="66" y="30" width="1323" height="815" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25604996" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25604996" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
@@ -369,14 +336,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
           <caret line="6" column="30" lean-forward="true" selection-start-line="6" selection-start-column="30" selection-end-line="6" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/experiments/museumstation/language/Spanish.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" column="29" lean-forward="false" selection-start-line="8" selection-start-column="29" selection-end-line="8" selection-end-column="29" />
           <folding />
         </state>
       </provider>
@@ -617,6 +576,14 @@
             <marker date="1528167604000" expanded="false" signature="15520:15550" ph="..." />
             <marker date="1528167604000" expanded="false" signature="15773:15838" ph="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/experiments/museumstation/language/Spanish.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="126" lean-forward="false" selection-start-line="9" selection-start-column="126" selection-end-line="9" selection-end-column="126" />
+          <folding />
         </state>
       </provider>
     </entry>
