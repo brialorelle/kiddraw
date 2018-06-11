@@ -1,0 +1,14 @@
+{
+  "age": "¿Cuantos años tienes?",
+  "adult": "Adulto",
+  "useDrawing": "Puedes usar mi dibujo!",
+  "consentForm":"Al proceder, usted y su hijo/a aceptan participar en esta investigación. Se le pedirá a su hijo/a que dibuje objetos comunes en esta tableta electrónica.  No se grabará audio o video ni se recopilará información personal de nadie. La participación de su hijo se llevará aproximadamente de 30 segundos a 5 minutos, dependiendo de cuánto tiempo elijan dibujar. Los datos de los dibujos recolectados aquí serán utilizados con fines de investigación por el Laboratorio de Lenguas y Cognición de Stanford y el Museo de Descubrimiento de Niños de San José, y se mostrarán en el sitio web del Museo en una fecha posterior. No existen riesgos ni beneficios para usted o su niño por su participación ya que no se retendrá ningún tipo de información personal, por lo que su identidad y la de su hijo permanecerán en el anonimato. Tampoco se aplicará sanción alguna si su hijo deja de dibujar en cualquier momento del proceso, o si decide no contestar alguna pregunta. Para obtener más información, envíe un correo electrónico al laboratorio de Stanford a langcoglab@stanford.edu o llame al 650-721-9270. Si no está satisfecho con la forma en que se realiza este estudio, o si tiene alguna.",
+  "notice": "Por favor, tenga en cuenta de que este juego de dibujos es solo para una persona por vez. Por favor deje que su hijo/a dibuje solo/a.",
+  "sendEmail": "Envíeme el formulario de consentimiento por correo electrónico",
+  "emailHelp": "Si desea recibir una copia del formato de consentimiento, por favor ingrese su correo electrónico aquí. Nunca compartiremos su correo electrónico con nadie más.",
+  "emailSent": "Email enviado!",
+  "checkBoxAlert": "¿Podemos usar los dibujos de su hijo? Si es así, haga clic en el cuadro de arriba para comenzar a dibujar.",
+  "ageAlert": "Por favor seleccione su grupo de edad.",
+  "startCDM": "¡Vamos a dibujar!",
+  "labName": "El Laboratorio de Lenguas y Cognición de Stanford"
+}
