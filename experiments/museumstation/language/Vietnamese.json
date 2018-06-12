@@ -1,0 +1,14 @@
+{
+  "age": "Bạn bao nhiêu tuổi?",
+  "adult": "người lớn",
+  "useDrawing": "Bạn có thể sử dụng những bức vẽ của mình!",
+  "consentForm": "Bằng cách tiếp tục, bạn và con bạn đồng ý tham gia vào chương trình nghiên cứu của chúng tôi. Con bạn sẽ được hỏi để vẽ các vật dụng thường ngày trên máy tính bảng này. Chúng tôi không ghi bất kỳ âm thanh hay hình ảnh nào, cũng sẽ không thu thập thông tin nhận dạng cá nhân. Sự tham gia của con bạn sẽ kéo dài khoảng 30 giây - 5 phút, tuỳ thuộc vào việc bé cần bao lâu để vẽ. Dự liệu tranh vẽ thu thập ở đây sẽ được sử dụng cho mục đích nghiên cứu của Stanford Language and Cognition Lab (Phòng nghiên cứu Ngôn ngữ và Nhận thức tại Stanford) và San Jose Children's Discovery Museum (Bảo tàng khám phá của Trẻ em San Jose), và sẽ được hiển thị trên website của bảo tàng trong tương lai. Không có rủi ro hay lợi ích gì đi kèm việc tham gia: không thông tin nhận dạng nào được thu thập, nên danh tính của con bạn sẽ được bảo vệ. Con bạn có thể ngừng vẽ bất cứ khi nào hoặc chọn không trả lời bất cứ câu hỏi nào mà không phải chịu phạt. Để biết thêm thông tin, email phòng nghiên cứu Stanford tại langcoglab@stanford.edu, hoặc gọi 650-721-9270. Nếu bạn không hài lòng với cách thức tiến hành cuộc nghiên cứu này, hoặc nếu bạn có lo lắng, phàn nàn, hay câu hỏi về chương trình nghiên cứu cũng như quyền lợi của bạn với tư cách là người tham gia, bạn có thể liên hệ Stanford Institutional Review Board (IRB) để nói chuyện với ai đó độc lập với nhóm làm nghiên cứu qua số điện thoại (650)-723-2480 hoặc qua số toll-free tại 1-866-680-2906. Bạn cũng có thể gửi thư đến Stanford IRB, Stanford University, 3000 El Camino Real, Five Palo Alto Square, 4th Floor, Palo Alto, CA 94306.",
+  "notice": "Lưu ý rằng đây là trò một người chơi! Hãy để con bạn tự vẽ.",
+  "sendEmail": "Email cho tôi phiếu cam kết",
+  "emailHelp": "Nếu bạn muốn một bản copy của phiếu cam kết này, hãy điền email của bạn ở đây. Chúng tôi sẽ không chia sẻ email của bạn với bất kỳ ai khác.",
+  "emailSent": "Đã gửi email!",
+  "checkBoxAlert": "Bạn có cho phép chúng tôi sử dụng tranh vẽ của con bạn không? Nếu có thì xin hãy bấm vào khung phía trên!",
+  "ageAlert": "Xin hãy chọn nhóm tuổi của bạn.",
+  "startCDM": "Bắt đầu vẽ !",
+  "labName":"Stanford Language and Cognition Lab"
+}

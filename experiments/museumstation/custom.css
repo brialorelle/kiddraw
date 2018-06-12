@@ -121,6 +121,7 @@ button[disabled] {
     bottom: 15%;
     font-size: 1.5vw;
     padding: 4vw;
+    padding-bottom:3vw;
 }
 
 .welcomeHeader {
@@ -325,7 +326,7 @@ button[disabled] {
     margin-top:4vh;
 }
 
-#logo-text {
+.logo-text {
     font-weight: bold;
     font-style: italic;
     font-size:3vw;
@@ -340,9 +341,16 @@ button[disabled] {
 
 #parentEmail{
     font-size:2vw;
+    white-space: normal;
 }
 
 #sendEmail{
+    font-size: 2vw;
+    white-space: normal;
+    width: 35vw;
+}
+
+#emailHelp{
     font-size:1.5vw;
 }
 
@@ -405,14 +413,11 @@ button[disabled] {
 
 #langOptions{
     text-align:center;
-    padding:5vh;
+    margin-bottom:2vh;
 }
 
 .langButton{
     margin:auto;
-    margin-top:2vh;
-    margin-bottom:2vh;
-    font-size:5vh;
+    font-size:2vh;
     font-family: Schoolbell,cursive;
-    width: 40vw;
 }
