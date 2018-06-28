@@ -28,4 +28,3 @@ analysis/museumdraw/python/plots/*
 analysis/museumdraw/python/features/*
 .idea
 *.png
-*.jpg
