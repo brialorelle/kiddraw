@@ -474,8 +474,8 @@ window.onload = function() {
     }
     // portrait mode -- resize to height
     else if(window.innerWidth < window.innerHeight){
-        canvas.height = window.innerHeight*.80;
-        canvas.width = canvas.height;
+        canvas.width = window.innerWidth*.80;
+        canvas.height = canvas.width;
     }
 
 
@@ -525,7 +525,7 @@ window.onload = function() {
         path = new Path();
         path.strokeColor = 'black';
         path.strokeCap = 'round'
-        path.strokeWidth = 7;
+        path.strokeWidth = 6;
 
         path.add(ev.point);
         view.draw();

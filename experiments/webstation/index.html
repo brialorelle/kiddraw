@@ -58,18 +58,20 @@
                     <p style="font-family: Schoolbell,cursive; font-size: 2.5vw; text-align:center"> <input id="checkConsent" type="checkbox"> <span id="useDrawing"> YOU CAN USE MY DRAWING</span> </p>
                 </div>
                 <p id="notice" style="font-family: Schoolbell,cursive; text-align:center; font-size: 2vw;margin-top:2vw">
-                Please note -- this drawing game is only for one person at a time! Please let your child draw by themselves.
+                    Please note -- this drawing game is only for one person at a time! Please let your child draw by themselves.
                 </p>
             </div>
             <div class="col-md-6" id="consentText" style="margin-right:2vw">
                 <p> By proceeding,  you and your child agree to participate in this research. Your child will be asked to draw pictures of common objects on this tablet. No audio/video taping will occur and no identifiable information will be collection. Your child’s participation will take approximately 30 seconds – 5 minutes, depending on how long they choose to draw.
 
                     The drawing data collected here will be used for research purposes by the Stanford Language and Cognition Lab and the San Jose Children's Discovery Museum, and will be displayed on the Museum's website on a future date. There are no risks or benefits to participating: no identifying information will be collected, so you and your child’s identity will remain anonymous. Your child can stop drawing at any time or choose not to answer any question without penalty. For more information, email the Stanford lab at langcoglab@stanford.edu, or call 650-721-9270. If you are not satisfied with how this study is being conducted, or if you have any concerns, complaints, or general questions about the research or your rights as a participant, please contact the Stanford Institutional Review Board (IRB) to speak to someone independent of the research team at (650)-723-2480 or toll free at 1-866-680-2906.  You can also write to the Stanford IRB, Stanford University, 3000 El Camino Real, Five Palo Alto Square, 4th Floor, Palo Alto, CA 94306.
-                <div id="email-form" style = "text-align:center">
-                <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-                <input type="email" id="parentEmail" class="form-control" aria-describedby="emailHelp" placeholder="Input your email address here if you'd like a copy" aria-label="Recipient's username">
-                    <button id="sendEmail" class="btn btn-info" type="button" style="margin-top:1vh">Email me the consent form</button>
+                <div class="input-group row" id="email-form">
+                    <input type="email" id="parentEmail" class="form-control" aria-describedby="emailHelp" aria-label="Recipient's username">
+                    <div class="input-group-append">
+                        <button id="sendEmail" class="btn btn-info" type="button">Email me the consent form</button>
+                    </div>
                 </div>
+                <small id="emailHelp" class="form-text text-muted">If you would like a copy of the consent form, enter your email address here. We'll never share your email with anyone else.</small>
                 <div class="alert alert-info" id="emailSent" role="alert" style="display:none">
                     Email Sent!
                 </div>
@@ -97,8 +99,8 @@
 
                 <div class="col-md-2" id="trialButtonLeft">
                     <div class="drawingButton imageButton allDone" id="endMiddle">
-                            <p id="stop"> Stop </p>
-                            <img src="images/stop.jpg" ></img>
+                        <p id="stop"> Stop </p>
+                        <img src="images/stop.jpg" ></img>
                     </div>
                 </div>
 
@@ -111,7 +113,7 @@
                     <div class="drawingButton imageButton allDone" id="endGame" style="Display:none">
                         <p id="end"> End Game </p>
                         <img src="images/stop.jpg" ></img>
-                </div>
+                    </div>
                 </div>
             </div>
 
@@ -155,7 +157,7 @@
     <p style="font-family: Schoolbell,cursive; font-size: 6vw;"> THANK YOU! </p>
     <img id="smile" src="images/smile.png"></img>
     <div class="slideButton">
-            <button class="btn btn-info endRestart" id="bingRestart"> &nbsp Play Again ! &nbsp </button>
+        <button class="btn btn-info endRestart" id="bingRestart"> &nbsp Play Again ! &nbsp </button>
     </div>
 
 </div>
