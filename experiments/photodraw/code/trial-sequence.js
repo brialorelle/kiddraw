@@ -179,8 +179,8 @@ function loadNextVideo(){
     );
     player.pause();
     player.volume(1); // set volume to max
-    console.log(stimList[curTrial].video)
-    player.src({ type: "video/mp4", src: "videos_louder/" + stimList[curTrial].video });
+    console.log(stimList[curTrial].stimulus.video)
+    player.src({ type: "video/mp4", src: "videos_louder/" + stimList[curTrial].stimulus.video });
     player.load();
     return player;
 }
@@ -193,7 +193,7 @@ function setUpDrawing(){
     if (tracing){
         //for all tracing trials, show the tracing image on the canvas
 
-        var imageurl = "url('" + stimList[curTrial].image + "')";
+        var imageurl = "url('" + stimList[curTrial].stimulus.image + "')";
         $('#sketchpad').css("background-image", imageurl)
             .css("background-size",imgSize)
             .css("background-repeat", "no-repeat")
@@ -202,10 +202,10 @@ function setUpDrawing(){
         $("#keepGoing").show();
         $("#endGame").hide();
 
-    }else if(stimList[curTrial].category == 'this circle'){
+    }else if(stimList[curTrial].stimulus.category == 'this circle'){
         //for the circle trial, show the circle image for 2s and hide it.
 
-        var imageurl = "url('" + stimList[curTrial].image + "')";
+        var imageurl = "url('" + stimList[curTrial].stimulus.image + "')";
         $('#sketchpad').css("background-image", imageurl)
             .css("background-size",imgSize)
             .css("background-repeat", "no-repeat")
@@ -281,7 +281,7 @@ function saveSketchData(){
 
     var dataURL = tmpCanvas.toDataURL();
     dataURL = dataURL.replace('data:image/png;base64,','');
-    var category = stimList[curTrial].category;
+    var category = stimList[curTrial].stimulus.category;
     var age = $('.active').attr('id');
     var firstName = $('#firstName').val();
     var lastName = $('#lastName').val();
@@ -533,7 +533,7 @@ window.onload = function() {
             path.selected = false
 
             var svgString = path.exportSVG({asString: true});
-            var category = stimList[curTrial].category;
+            var category = stimList[curTrial].stimulus.category;
             var readable_date = new Date();
             var age = $('.active').attr('id');
             var firstName = $('#firstName').val();
