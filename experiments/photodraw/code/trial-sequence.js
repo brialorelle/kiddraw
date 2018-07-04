@@ -56,9 +56,9 @@ var conditions = shuffle(conditions)
 var pracTrial = {"category":"square", "video": "square.mp4louder.mp4", "image":"images/square.png"}
 for(var i = 0; i < conditions.length; i++){
     var currentStimOrder = shuffle(catList)
-    stimList.append({"condition":conditions[i], "stimulus":pracTrial})
+    stimList.push({"condition":conditions[i], "stimulus":pracTrial})
     for(var j = 0; j < currentStimOrder.length; j++){
-        stimList.append({"condition":conditions[i], "stimulus":currentStimOrder[j]})
+        stimList.push({"condition":conditions[i], "stimulus":currentStimOrder[j]})
     }
 }
 stimList.push(lastTrial)
@@ -103,51 +103,47 @@ function startDrawing(){
 //
 function beginTrial(){
 
-    
-    if (tracing){
+
+    if (stimList[curTrial].condition == 'S'){
 
         var player = loadNextVideo(curTrial); // change video
         // set volume again
         var video = document.getElementById('cueVideo');
         video.volume = 1;
+
+        // if (tracing){
+        //     var traceCue = "Can you trace the"  + stimList[curTrial].category + "?";
+        //     document.getElementById("cue").innerHTML = traceCue;
+        //     document.getElementById("drawingCue").innerHTML = traceCue;
+        // }
+
+        // else if (stimList[curTrial].category == 'this circle'){
+        //     var circleCue = "Can you copy "  + stimList[curTrial].category + "?";
+        //     document.getElementById("cue").innerHTML = circleCue;
+        //     document.getElementById("drawingCue").innerHTML = circleCue;
+        // }
+        // else{
+        //     document.getElementById("cue").innerHTML = "Can you draw"  + stimList[curTrial].category + "endQuestion"; // change cue
+        //     document.getElementById("drawingCue").innerHTML = stimList[curTrial].category; // change drawing cue
+        // }
+
+        setTimeout(function() {showCue();},1000);
+        setTimeout(function() {playVideo(player);},1000);
+
+    }
+    else if (stimList[curTrial].condition == 'W'){
         
-        var traceCue = "Can you trace the"  + stimList[curTrial].category + "?";
-        document.getElementById("cue").innerHTML = traceCue;
-        document.getElementById("drawingCue").innerHTML = traceCue;
-    }else {
+    }
+    else{
 
-        if (stimList[curTrial].condition == 'S'){
-
-            var player = loadNextVideo(curTrial); // change video
-            // set volume again
-            var video = document.getElementById('cueVideo');
-            video.volume = 1;
-
-            if (stimList[curTrial].category == 'this circle'){
-                var circleCue = "Can you copy "  + stimList[curTrial].category + "?";
-                document.getElementById("cue").innerHTML = circleCue;
-                document.getElementById("drawingCue").innerHTML = circleCue;
-            }else{
-                document.getElementById("cue").innerHTML = "Can you draw"  + stimList[curTrial].category + "endQuestion"; // change cue
-                document.getElementById("drawingCue").innerHTML = stimList[curTrial].category; // change drawing cue
-            }
-        }
-        else if (stimList[curTrial].condition == 'W'){
-            
-        }
-        else{
-
-        }
     }
 
-    setTimeout(function() {showCue();},1000);
-    setTimeout(function() {playVideo(player);},1000);
 }
 
 // show cue without canvas
 function showCue() {
     $('#mainExp').fadeIn('fast'); // fade in exp
-    $('#cue').fadeIn('fast'); // text cue associated with trial
+  //  $('#cue').fadeIn('fast'); // text cue associated with trial
 }
 
 // video player functions
@@ -166,7 +162,7 @@ function playVideo(player){
 
 // hide cue and show sketchpad canvas
 function hideCue() {
-    $('#cue').hide(); // fade out cue
+  //  $('#cue').hide(); // fade out cue
     $('#cueVideoDiv').hide(); //show video html - this can be a variable later?
     setUpDrawing();
 }
