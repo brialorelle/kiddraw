@@ -294,7 +294,6 @@ button[disabled] {
     height: 2vw;
     margin-bottom: 2vw;
     font-size:2vw;
-    margin-top: 14vh;
 }
 
 .allDone {
@@ -315,7 +314,8 @@ button[disabled] {
     margin-right: 2vw;
     font-size: 4vw;
     font-family: Schoolbell,cursive;
-    cursor:pointer
+    cursor:pointer;
+    margin-top:0vh;
 }
 
 
@@ -368,8 +368,8 @@ button[disabled] {
 
 @-webkit-keyframes bounce {
   0%, 50%, 100%       {transform: translateY(0vh);}
-  25%      {transform: translateY(-2.5vh);}
-  75%      {transform: translateY(2.5vh);}
+  25%      {transform: translateY(-1.5vh);}
+  75%      {transform: translateY(1.5vh);}
 }
 
 .nameInput{
@@ -381,7 +381,7 @@ button[disabled] {
 
 .nameForm{
     margin-top:2vh;
-    margin-bottom: 3vh;
+    margin-bottom: 2vh;
 }
 
 #bingName{
@@ -424,7 +424,7 @@ button[disabled] {
 }
 
 #photocue{
-    width: 60vw;
+    width: auto;
     height: 60vh;
     margin-top: 8vh;
 }
