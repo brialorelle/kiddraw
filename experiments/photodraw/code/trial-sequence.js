@@ -17,10 +17,11 @@ paper.install(window);
 socket = io.connect();
 
 // 1. Setup trial order and randomize it!
-firstTrial = {"condition":"S","stimulus":{"category": "this circle", "video": "circle.mp4louder.mp4", "image":"images/circle.png"}}
-lastTrial = {"condition":"S","stimulus":{"category": "something you love", "video": "love.mp4louder.mp4"}}
-trace1 = {"condition":"S","stimulus":{"category":"square", "video": "square.mp4louder.mp4", "image":"images/square.png"}}
-trace2 = {"condition":"S","stimulus":{"category":"shape", "video": "shape.mp4louder.mp4","image":"images/shape.png"}}
+var firstTrial = {"condition":"S","stimulus":{"category": "this circle", "video": "circle.mp4louder.mp4", "image":"images/circle.png"}}
+var lastTrial = {"condition":"S","stimulus":{"category": "something you love", "video": "love.mp4louder.mp4"}}
+var pracTrial = {"category":"square", "video": "square.mp4louder.mp4", "image":"images/square.png"}
+var trace1 = {"condition":"S","stimulus":{"category":"square", "video": "square.mp4louder.mp4", "image":"images/square.png"}}
+var trace2 = {"condition":"S","stimulus":{"category":"shape", "video": "shape.mp4louder.mp4","image":"images/shape.png"}}
 var catList = [{"category": "a boat", "video": "boat.mp4louder.mp4"},
     {"category": "a car", "video": "car.mp4louder.mp4"},
     {"category": "a cup", "video": "cup.mp4louder.mp4"},
@@ -42,31 +43,39 @@ var language = "English";
 
 // current mode and session info
 var mode = "Bing";
-var version =mode + "photodraw" + "_pilot"
+var version =mode + "photodraw" + "_pilot";
 var sessionId= version + Date.now().toString();
 
 var consentPage = '#consentBing';
 var thanksPage = "#thanksBing";
-
-var conditions = ['W','P','S'];
-var curCondition = 0;
+var maxTrials;
 var stimList = [];
 
-var conditions = shuffle(conditions)
-var pracTrial = {"category":"square", "video": "square.mp4louder.mp4", "image":"images/square.png"}
-for(var i = 0; i < conditions.length; i++){
-    var currentStimOrder = shuffle(catList)
-    stimList.push({"condition":conditions[i], "stimulus":pracTrial})
-    for(var j = 0; j < currentStimOrder.length; j++){
-        stimList.push({"condition":conditions[i], "stimulus":currentStimOrder[j]})
-    }
-}
-stimList.push(lastTrial)
-stimList.unshift(firstTrial)
-stimList.unshift(trace2)
-stimList.unshift(trace1)
-var maxTrials = stimList.length; //
+function getStimuliList (){
+    var conditionDic = {"1":["W","P","S"],
+                        "2":["W","S","P"],
+                        "3":["S","P","W"],
+                        "4":["S","W","P"],
+                        "5":["P","S","W"],
+                        "6":["P","W","S"]}
+    var cbGroup = $('#cbGroup').val();
 
+    var conditions = conditionDic[cbGroup];
+    var curCondition = 0;
+    
+    for(var i = 0; i < conditions.length; i++){
+        var currentStimOrder = shuffle(catList);
+        stimList.push({"condition":conditions[i], "stimulus":pracTrial});
+        for(var j = 0; j < currentStimOrder.length; j++){
+            stimList.push({"condition":conditions[i], "stimulus":currentStimOrder[j]});
+        }
+    }
+    stimList.push(lastTrial);
+    stimList.unshift(firstTrial);
+    stimList.unshift(trace2);
+    stimList.unshift(trace1);
+    maxTrials = stimList.length; //
+}
 
 
 // shuffle the order of drawing trials
@@ -86,6 +95,7 @@ function shuffle (a)
 function startDrawing(){
     if (curTrial==0){
         $(consentPage).fadeOut('fast'); // fade out age screen
+        getStimuliList()
         beginTrial()
     }
     else if (curTrial>0 && curTrial<maxTrials) {
@@ -285,6 +295,7 @@ function saveSketchData(){
     var age = $('.active').attr('id');
     var firstName = $('#firstName').val();
     var lastName = $('#lastName').val();
+    var cbGroup = $('#cbGroup').val();
     var name;
     if (firstName != "") {
         name = firstName.toUpperCase() + ' ' + lastName.toUpperCase()
@@ -304,7 +315,8 @@ function saveSketchData(){
         time: Date.now(),
         date: readable_date,
         age: age,
-        kidName: name}; // age
+        kidName: name,
+        counter_balancing: cbGroup};
 
     // send data to server to write to database
     socket.emit('current_data', current_data);
@@ -428,7 +440,11 @@ window.onload = function() {
                 alert("Please enter your first name.");
             }else if($("#lastName").val().trim().length==0){
                 alert("Please enter your last name.");
-            }else{
+            }
+            else if ($("#cbGroup").val().trim().length==0){
+                alert("Please let the researcher enter your group number.");
+            }
+            else{
                 startDrawing();
             }
 
@@ -514,12 +530,12 @@ window.onload = function() {
         ctx=canvas.getContext("2d");
     //landscape mode 00 inne
     if (window.innerWidth > window.innerHeight){
-        canvas.height = window.innerHeight*.80;
+        canvas.height = window.innerHeight*.68;
         canvas.width = canvas.height;
     }
     // portrait mode -- resize to height
     else if(window.innerWidth < window.innerHeight){ 
-        canvas.height = window.innerHeight*.80;
+        canvas.height = window.innerHeight*.68;
         canvas.width = canvas.height;
     }  
 
@@ -538,6 +554,7 @@ window.onload = function() {
             var age = $('.active').attr('id');
             var firstName = $('#firstName').val();
             var lastName = $('#lastName').val();
+            var cbGroup = $('#cbGroup').val();
             var name;
             if (firstName != "") {
                 name = firstName.toUpperCase() + ' ' + lastName.toUpperCase()
@@ -555,7 +572,8 @@ window.onload = function() {
                 time: Date.now(),
                 date: readable_date,
                 age: age,
-                kidName: name
+                kidName: name,
+                counter_balancing: cbGroup
             };
 
             // send stroke data to server

@@ -164,6 +164,10 @@
                 <label>Last Name</label>
                 <input id="lastName" class="form-control nameInput">
             </div>
+            <div class="form-group nameForm">
+                <label>Group</label>
+                <input id="cbGroup" class="form-control nameInput">
+            </div>
         </div>
         <div class="slideButton">
             <button class="btn btn-info startExp" id="startBing"> &nbsp LET'S DRAW ! &nbsp </button>
@@ -185,17 +189,24 @@
 
             <div id="aroundSketchpad">
 
-                <div class="col-md-2" id="trialButtonLeft">
-                    <div class="drawingButton imageButton allDone" id="endMiddle">
-                            <p id="stop"> Stop </p>
-                            <img src="images/stop.jpg" ></img>
-                    </div>
-                </div>
+    
 
-                <img id="photocue" src="images/thankyou.jpg" ></img> 
+                <img id="photocue" src="images/smile.png" ></img> 
 
 
                 <canvas id="sketchpad"></canvas>
+                
+            </div>
+
+            <div class="row">
+
+                <div class="progress offset-md-1 col-md-8" style="display:none;margin-top:3vh">
+                    <div class="progress-bar bg-info" role="progressbar" aria-valuenow="100"
+                        aria-valuemin="0" aria-valuemax="100" style="width:100%;font-family: Schoolbell,cursive">30
+                    </div>
+
+                </div>
+
                 <div class="col-md-2" id="trialButtonRight">
                     <div class = "drawingButton imageButton" id="keepGoing">
                         <p id="next"> Next </p>
@@ -204,15 +215,8 @@
                     <div class="drawingButton imageButton allDone" id="endGame" style="Display:none">
                         <p id="end"> End Game </p>
                         <img src="images/stop.jpg" ></img>
+                    </div>
                 </div>
-                </div>
-            </div>
-
-            <div class="progress offset-md-2 col-md-8" style="display:none;margin-top:3vh">
-                <div class="progress-bar bg-info" role="progressbar" aria-valuenow="100"
-                     aria-valuemin="0" aria-valuemax="100" style="width:100%;font-family: Schoolbell,cursive">30
-                </div>
-
             </div>
 
         </div>

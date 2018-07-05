@@ -136,8 +136,9 @@ button[disabled] {
     /*top: 20vh;*/
     /*left: 2.5%;*/
     border: solid 5px #999;
-    display:block;
-    margin:0 auto;
+    display: block;
+    margin-right: 3vw;
+    margin-top: 3vh;
 }
 
 #kidConsent {
@@ -292,7 +293,8 @@ button[disabled] {
     padding-right:0px;
     height: 2vw;
     margin-bottom: 2vw;
-    font-size:2vw
+    font-size:2vw;
+    margin-top: 14vh;
 }
 
 .allDone {
@@ -378,9 +380,8 @@ button[disabled] {
 }
 
 .nameForm{
-    margin-top:5vw;
-    margin-top: 5vw;
-    margin-bottom: 5vw;
+    margin-top:2vh;
+    margin-bottom: 3vh;
 }
 
 #bingName{
@@ -422,3 +423,8 @@ button[disabled] {
     justify-content: center;
 }
 
+#photocue{
+    width: 60vw;
+    height: 60vh;
+    margin-top: 8vh;
+}
