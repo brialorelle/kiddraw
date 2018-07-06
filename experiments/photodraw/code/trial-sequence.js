@@ -22,14 +22,12 @@ var lastTrial = {"condition":"S","stimulus":{"category": "something you love", "
 var pracTrial = {"category":"square", "video": "square.mp4louder.mp4", "image":"images/square.png"}
 var trace1 = {"condition":"S","stimulus":{"category":"square", "video": "square.mp4louder.mp4", "image":"images/square.png"}}
 var trace2 = {"condition":"S","stimulus":{"category":"shape", "video": "shape.mp4louder.mp4","image":"images/shape.png"}}
-var catList = [{"category": "a boat", "video": "boat.mp4louder.mp4"},
-    {"category": "a car", "video": "car.mp4louder.mp4"},
-    {"category": "a cup", "video": "cup.mp4louder.mp4"},
-    {"category": "a dog", "video": "dog.mp4louder.mp4"},
-    {"category": "a fish", "video": "fish.mp4louder.mp4"},
-    {"category": "a house", "video": "house.mp4louder.mp4"},
-    {"category": "a tree", "video": "tree.mp4louder.mp4"},
-    {"category": "a person", "video": "person.mp4louder.mp4"} ]
+var catList = [{"category": "a cat", "video": "boat.mp4louder.mp4","image":"images/categories/cat.jpg"},
+    {"category": "a shoe", "video": "car.mp4louder.mp4","image":"images/categories/shoe.jpg"},
+    {"category": "a frog", "video": "cup.mp4louder.mp4","image":"images/categories/frog.jpg"},
+    {"category": "a couch", "video": "dog.mp4louder.mp4","image":"images/categories/couch.jpg"},
+    {"category": "a rabbit", "video": "fish.mp4louder.mp4","image":"images/categories/rabbit.jpg"},
+    {"category": "a train", "video": "house.mp4louder.mp4","image":"images/categories/train.jpg"}]
 
 var curTrial=0 // global variable, trial counter
 
@@ -112,48 +110,46 @@ function startDrawing(){
 
 //
 function beginTrial(){
+    $('#progressBar_Button').hide();
+    $('#sketchpad').hide();
+    $('#mainExp').fadeIn('fast');
 
-
+   
     if (stimList[curTrial].condition == 'S'){
-
+        $('#photocue').hide();
+        $('#cueVideoDiv').fadeIn('fast');
         var player = loadNextVideo(curTrial); // change video
         // set volume again
         var video = document.getElementById('cueVideo');
         video.volume = 1;
-
-        // if (tracing){
-        //     var traceCue = "Can you trace the"  + stimList[curTrial].category + "?";
-        //     document.getElementById("cue").innerHTML = traceCue;
-        //     document.getElementById("drawingCue").innerHTML = traceCue;
-        // }
-
-        // else if (stimList[curTrial].category == 'this circle'){
-        //     var circleCue = "Can you copy "  + stimList[curTrial].category + "?";
-        //     document.getElementById("cue").innerHTML = circleCue;
-        //     document.getElementById("drawingCue").innerHTML = circleCue;
-        // }
-        // else{
-        //     document.getElementById("cue").innerHTML = "Can you draw"  + stimList[curTrial].category + "endQuestion"; // change cue
-        //     document.getElementById("drawingCue").innerHTML = stimList[curTrial].category; // change drawing cue
-        // }
-
-        setTimeout(function() {showCue();},1000);
+        
         setTimeout(function() {playVideo(player);},1000);
 
     }
     else if (stimList[curTrial].condition == 'W'){
-        
+        $('#cueVideoDiv').hide();
+        var imgPath = stimList[curTrial].stimulus.image;
+        $("#photocue").attr("src",imgPath);
+        $('#photocue').fadeIn();
+        setTimeout(
+            function() {
+                $('#photocue').hide()
+                setUpDrawing()
+            },
+            5000)
     }
     else{
-
+        $('#cueVideoDiv').hide();
+        var imgPath = stimList[curTrial].stimulus.image;
+        $("#photocue").attr("src",imgPath);
+        $('#photocue').fadeIn();
+        setTimeout(
+            function() {
+                setUpDrawing()
+            },
+            5000)
     }
-
-}
-
-// show cue without canvas
-function showCue() {
-    $('#mainExp').fadeIn('fast'); // fade in exp
-  //  $('#cue').fadeIn('fast'); // text cue associated with trial
+    
 }
 
 // video player functions
@@ -169,6 +165,8 @@ function playVideo(player){
         });
     });
 }
+
+
 
 // hide cue and show sketchpad canvas
 function hideCue() {
@@ -231,7 +229,8 @@ function setUpDrawing(){
         $("#endGame").show();
     }
 
-    $('#drawing').show()
+    $('#progressBar_Button').show()
+    $('#sketchpad').show()
     monitorProgress(); // since we now have a timeout function 
 };
 

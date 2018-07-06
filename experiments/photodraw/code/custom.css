@@ -80,13 +80,13 @@ button[disabled] {
 .drawingButton{
     font-family: Schoolbell,cursive;
     font-size: 3vw;
+    margin-top:3vh;
     text-align:center;
     cursor:pointer;
-    margin-top: 20vh;
 }
 
 .drawingButton>img{
-    width:10vw;
+    width:7vw;
     height:auto;
 }
 
@@ -137,8 +137,8 @@ button[disabled] {
     /*left: 2.5%;*/
     border: solid 5px #999;
     display: block;
-    margin-right: 3vw;
-    margin-top: 3vh;
+    margin-left: 4vw;
+    margin-top: 4vh;
 }
 
 #kidConsent {
@@ -205,13 +205,14 @@ button[disabled] {
 }
 
 #cueVideo {
-    width:60vw;
+    width:40vw;
     height:40vw;
     left: 0;
     right: 0;
     top:0;
     bottom:0;
-    margin:auto;
+    margin:4vw;
+    margin-top:8vh;
     touch-action: none;
 }
 
@@ -312,10 +313,8 @@ button[disabled] {
 
 #keepGoing {
     margin-right: 2vw;
-    font-size: 4vw;
     font-family: Schoolbell,cursive;
     cursor:pointer;
-    margin-top:0vh;
 }
 
 
