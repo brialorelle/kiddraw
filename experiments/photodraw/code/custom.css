@@ -298,7 +298,7 @@ button[disabled] {
 }
 
 .allDone {
-    font-size: 4vw;
+    font-size: 3vw;
     font-family: Schoolbell,cursive;
     cursor:pointer
 }

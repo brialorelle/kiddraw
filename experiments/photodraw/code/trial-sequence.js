@@ -19,15 +19,15 @@ socket = io.connect();
 // 1. Setup trial order and randomize it!
 var firstTrial = {"condition":"S","stimulus":{"category": "this circle", "video": "circle.mp4louder.mp4", "image":"images/circle.png"}}
 var lastTrial = {"condition":"S","stimulus":{"category": "something you love", "video": "love.mp4louder.mp4"}}
-var pracTrial = {"category":"square", "video": "square.mp4louder.mp4", "image":"images/square.png"}
+var pracTrial = {"category":"square", "video": "square.mp4louder.mp4", "image":"images/square.png", "audio":"audio/test.m4a"}
 var trace1 = {"condition":"S","stimulus":{"category":"square", "video": "square.mp4louder.mp4", "image":"images/square.png"}}
 var trace2 = {"condition":"S","stimulus":{"category":"shape", "video": "shape.mp4louder.mp4","image":"images/shape.png"}}
-var catList = [{"category": "a cat", "video": "boat.mp4louder.mp4","image":"images/categories/cat.jpg"},
-    {"category": "a shoe", "video": "car.mp4louder.mp4","image":"images/categories/shoe.jpg"},
-    {"category": "a frog", "video": "cup.mp4louder.mp4","image":"images/categories/frog.jpg"},
-    {"category": "a couch", "video": "dog.mp4louder.mp4","image":"images/categories/couch.jpg"},
-    {"category": "a rabbit", "video": "fish.mp4louder.mp4","image":"images/categories/rabbit.jpg"},
-    {"category": "a train", "video": "house.mp4louder.mp4","image":"images/categories/train.jpg"}]
+var catList = [{"category": "a cat", "video": "boat.mp4louder.mp4","image":"images/categories/cat.jpg", "audio":"audio/boat.wav"},
+    {"category": "a shoe", "video": "car.mp4louder.mp4","image":"images/categories/shoe.jpg","audio":"audio/boat.wav"},
+    {"category": "a frog", "video": "cup.mp4louder.mp4","image":"images/categories/frog.jpg", "audio":"audio/test.m4a"},
+    {"category": "a couch", "video": "dog.mp4louder.mp4","image":"images/categories/couch.jpg", "audio":"audio/boat.wav"},
+    {"category": "a rabbit", "video": "fish.mp4louder.mp4","image":"images/categories/rabbit.jpg", "audio":"audio/test.m4a"},
+    {"category": "a train", "video": "house.mp4louder.mp4","image":"images/categories/train.jpg", "audio":"audio/boat.wav"}]
 
 var curTrial=0 // global variable, trial counter
 
@@ -72,7 +72,7 @@ function getStimuliList (){
     stimList.unshift(firstTrial);
     stimList.unshift(trace2);
     stimList.unshift(trace1);
-    maxTrials = stimList.length; //
+    maxTrials = stimList.length;
 }
 
 
@@ -131,6 +131,8 @@ function beginTrial(){
         var imgPath = stimList[curTrial].stimulus.image;
         $("#photocue").attr("src",imgPath);
         $('#photocue').fadeIn();
+        var audio = new Audio(stimList[curTrial].stimulus.audio);
+        audio.play();
         setTimeout(
             function() {
                 $('#photocue').hide()
@@ -143,11 +145,13 @@ function beginTrial(){
         var imgPath = stimList[curTrial].stimulus.image;
         $("#photocue").attr("src",imgPath);
         $('#photocue').fadeIn();
+        var audio = new Audio(stimList[curTrial].stimulus.audio);
+        audio.play();
         setTimeout(
             function() {
-                setUpDrawing()
+                setUpDrawing();
             },
-            5000)
+            5000);
     }
     
 }
