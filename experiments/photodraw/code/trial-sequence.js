@@ -18,16 +18,16 @@ socket = io.connect();
 
 // 1. Setup trial order and randomize it!
 var firstTrial = {"condition":"S","stimulus":{"category": "this circle", "video": "copy_circle.mp4", "image":"images/circle.png"}}
-var pracTrial = {"category":"a cat", "video": "cat.mp4", "image":"images/square.png", "audio":"audio/test.m4a"}
+var pracTrial = {"category":"a cat", "video": "cat.mp4", "image":"images/cat.jpg", "audio_perception":"audio_perception/cat.wav", "audio_wm":"audio_wm/cat.wav"}
 
 var trace1 = {"condition":"S","stimulus":{"category":"square", "video": "trace_square.mp4", "image":"images/square.png"}}
 var trace2 = {"condition":"S","stimulus":{"category":"shape", "video": "trace_shape.mp4","image":"images/shape.png"}}
-var catList = [{"category": "a cat", "video": "boat.mp4louder.mp4","image":"images/categories/cat.jpg", "audio":"audio/boat.wav"},
-    {"category": "a shoe", "video": "car.mp4louder.mp4","image":"images/categories/shoe.jpg","audio":"audio/boat.wav"},
-    {"category": "a frog", "video": "cup.mp4louder.mp4","image":"images/categories/frog.jpg", "audio":"audio/test.m4a"},
-    {"category": "a couch", "video": "dog.mp4louder.mp4","image":"images/categories/couch.jpg", "audio":"audio/boat.wav"},
-    {"category": "a rabbit", "video": "fish.mp4louder.mp4","image":"images/categories/rabbit.jpg", "audio":"audio/test.m4a"},
-    {"category": "a train", "video": "house.mp4louder.mp4","image":"images/categories/train.jpg", "audio":"audio/boat.wav"}]
+var catList = [{"category": "a cup", "video": "cup.mp4","image":"images/photocues/cup.jpg", "audio_perception":"audio_perception/cup.wav", "audio_wm":"audio_wm/cup.wav"},
+    {"category": "a shoe", "video": "shoe.mp4","image":"images/photocues/shoe.jpg","audio_perception":"audio_perception/shoe.wav", "audio_wm":"audio_wm/shoe.wav"},
+    {"category": "a frog", "video": "frog.mp4","image":"images/photocues/frog.jpg", "audio_perception":"audio_perception/frog.wav", "audio_wm":"audio_wm/frog.wav"},
+    {"category": "a couch", "video": "couch.mp4","image":"images/photocues/couch.jpg", "audio_perception":"audio_perception/couch.wav", "audio_wm":"audio_wm/couch.wav"},
+    {"category": "a rabbit", "video": "rabbit.mp4","image":"images/photocues/rabbit.jpg", "audio_perception":"audio_perception/rabbit.wav", "audio_wm":"audio_wm/rabbit.wav"},
+    {"category": "a train", "video": "train.mp4","image":"images/photocues/train.jpg", "audio_perception":"audio_perception/train.wav", "audio_wm":"audio_wm/train.wav"}]
 
 var curTrial=0 // global variable, trial counter
 
@@ -114,7 +114,7 @@ function beginTrial(){
     $('#mainExp').fadeIn('fast');
 
    if (stimList[curTrial].stimulus.category == 'a cat') {
-        console.log(" triggered cat trial")
+        console.log("time for something new")
    }
 
 
@@ -134,27 +134,27 @@ function beginTrial(){
         var imgPath = stimList[curTrial].stimulus.image;
         $("#photocue").attr("src",imgPath);
         $('#photocue').fadeIn();
-        var audio = new Audio(stimList[curTrial].stimulus.audio);
+        var audio = new Audio(stimList[curTrial].stimulus.audio_wm);
         audio.play();
         setTimeout(
             function() {
                 $('#photocue').hide()
                 setUpDrawing()
             },
-            5000)
+            6000)
     }
     else{
         $('#cueVideoDiv').hide();
         var imgPath = stimList[curTrial].stimulus.image;
         $("#photocue").attr("src",imgPath);
         $('#photocue').fadeIn();
-        var audio = new Audio(stimList[curTrial].stimulus.audio);
+        var audio = new Audio(stimList[curTrial].stimulus.audio_perception);
         audio.play();
         setTimeout(
             function() {
                 setUpDrawing();
             },
-            5000);
+            6000);
     }
     
 }
@@ -218,7 +218,7 @@ function setUpDrawing(){
         $("#endGame").hide();
 
     }else if(stimList[curTrial].stimulus.category == 'this circle'){
-        //for the circle trial, show the circle image for 2s and hide it.
+        //for the circle trial, show the circle image for 1s and hide it.
 
         var imageurl = "url('" + stimList[curTrial].stimulus.image + "')";
         $('#sketchpad').css("background-image", imageurl)
@@ -311,7 +311,7 @@ function saveSketchData(){
     readable_date = new Date();
     current_data = {
         dataType: 'finalImage',
-        sessionId: sessionId, // each child
+        sessionId: sessionId, // each children's session
         imgData: dataURL,
         category: category,
         dbname:'kiddraw',

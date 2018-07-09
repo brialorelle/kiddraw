@@ -6,7 +6,7 @@ addpath('HelperCode')
 frame       = 440;
 
 % percent of frame area
-visSize      = 20; 
+visSize      = 15; 
 
 % helpers
 frameArea       = frame*frame;
@@ -32,7 +32,7 @@ thresSaveDir = [stimDir '_Thresholds']
 mkdir(thresSaveDir)
 
 % loop through all images:
-categories = {'final_set'}
+categories = {'prac'}
 
 for s=1:length(categories)
     % get list
