@@ -18,7 +18,7 @@ socket = io.connect();
 
 // 1. Setup trial order and randomize it!
 var firstTrial = {"condition":"S","stimulus":{"category": "this circle", "video": "copy_circle.mp4", "image":"images/circle.png"}}
-var pracTrial = {"category":"a cat", "video": "cat.mp4", "image":"images/photocues/cat.jpg", "audio_perception":"audio_perception/cat.wav", "audio_wm":"audio_wm/cat.wav"}
+var pracTrial = {"category":"cat", "video": "cat.mp4", "image":"images/photocues/cat.jpg", "audio_perception":"audio_perception/cat.wav", "audio_wm":"audio_wm/cat.wav"}
 
 
 var trace1 = {"condition":"S","stimulus":{"category":"this square", "video": "trace_square.mp4", "image":"images/square.png"}}
@@ -121,6 +121,7 @@ function showTaskChangeVideo(callback){
     var video = document.getElementById('cueVideo');
     video.volume = 1;
     drawNext = 0;
+    document.getElementById("drawingCue").innerHTML =  ""
     setTimeout(function() {playVideo(player, drawNext);},1000);
 };
 
