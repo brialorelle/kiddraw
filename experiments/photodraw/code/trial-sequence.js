@@ -22,7 +22,7 @@ var pracTrial = {"category":"a cat", "video": "cat.mp4", "image":"images/square.
 
 var trace1 = {"condition":"S","stimulus":{"category":"square", "video": "trace_square.mp4", "image":"images/square.png"}}
 var trace2 = {"condition":"S","stimulus":{"category":"shape", "video": "trace_shape.mp4","image":"images/shape.png"}}
-var catList = [{"category": "a cat", "video": "boat.mp4louder.mp4","image":"images/categories/cat.jpg", "audio":"audio/boat.wav"},
+var catList = [{"category": "a cup", "video": "boat.mp4louder.mp4","image":"images/categories/cat.jpg", "audio":"audio/boat.wav"},
     {"category": "a shoe", "video": "car.mp4louder.mp4","image":"images/categories/shoe.jpg","audio":"audio/boat.wav"},
     {"category": "a frog", "video": "cup.mp4louder.mp4","image":"images/categories/frog.jpg", "audio":"audio/test.m4a"},
     {"category": "a couch", "video": "dog.mp4louder.mp4","image":"images/categories/couch.jpg", "audio":"audio/boat.wav"},
@@ -298,6 +298,7 @@ function saveSketchData(){
     var dataURL = tmpCanvas.toDataURL();
     dataURL = dataURL.replace('data:image/png;base64,','');
     var category = stimList[curTrial].stimulus.category;
+    var condition = stimList[curTrial].condition;
     var age = $('.active').attr('id');
     var firstName = $('#firstName').val();
     var lastName = $('#lastName').val();
@@ -314,6 +315,7 @@ function saveSketchData(){
         sessionId: sessionId, // each child
         imgData: dataURL,
         category: category,
+        condition:condition,
         dbname:'kiddraw',
         colname: version,
         location: mode,
@@ -556,6 +558,7 @@ window.onload = function() {
 
             var svgString = path.exportSVG({asString: true});
             var category = stimList[curTrial].stimulus.category;
+            var condition = stimList[curTrial].condition;
             var readable_date = new Date();
             var age = $('.active').attr('id');
             var firstName = $('#firstName').val();
@@ -571,6 +574,7 @@ window.onload = function() {
                 sessionId: sessionId,
                 svg: svgString,
                 category: category,
+                condition:condition,
                 dbname:'kiddraw',
                 colname: version,
                 location: mode,
