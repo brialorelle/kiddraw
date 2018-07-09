@@ -121,7 +121,7 @@ function showTaskChangeVideo(callback){
     var video = document.getElementById('cueVideo');
     video.volume = 1;
     drawNext = 0;
-    document.getElementById("drawingCue").innerHTML =  ""
+    document.getElementById("drawingCue").innerHTML =  "   "
     setTimeout(function() {playVideo(player, drawNext);},1000);
 };
 
