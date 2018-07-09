@@ -136,12 +136,12 @@ function showTrial(){
             document.getElementById("drawingCue").innerHTML = "a "+ stimList[curTrial].stimulus.category
         }
         $('#photocue').hide();
-        $('#cueVideoDiv').fadeIn('fast');
         var player = loadNextVideo(curTrial); // change video
         // set volume again
         var video = document.getElementById('cueVideo');
         video.volume = 1;
         drawNext = 1;
+        $('#cueVideoDiv').fadeIn('fast');
         setTimeout(function() {playVideo(player, drawNext);},1000);
 
     }
@@ -213,7 +213,7 @@ function playVideo(player, drawNext){
                 // add slight delay between something new and start of new trials
                 setTimeout(function () {
                     showTrial();
-                }, 500);  
+                }, 1000);  
             }
         });
     });
