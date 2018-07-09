@@ -17,11 +17,11 @@ paper.install(window);
 socket = io.connect();
 
 // 1. Setup trial order and randomize it!
-var firstTrial = {"condition":"S","stimulus":{"category": "this circle", "video": "circle.mp4louder.mp4", "image":"images/circle.png"}}
-var lastTrial = {"condition":"S","stimulus":{"category": "something you love", "video": "love.mp4louder.mp4"}}
-var pracTrial = {"category":"square", "video": "square.mp4louder.mp4", "image":"images/square.png", "audio":"audio/test.m4a"}
-var trace1 = {"condition":"S","stimulus":{"category":"square", "video": "square.mp4louder.mp4", "image":"images/square.png"}}
-var trace2 = {"condition":"S","stimulus":{"category":"shape", "video": "shape.mp4louder.mp4","image":"images/shape.png"}}
+var firstTrial = {"condition":"S","stimulus":{"category": "this circle", "video": "copy_circle.mp4", "image":"images/circle.png"}}
+var pracTrial = {"category":"a cat", "video": "cat.mp4", "image":"images/square.png", "audio":"audio/test.m4a"}
+
+var trace1 = {"condition":"S","stimulus":{"category":"square", "video": "trace_square.mp4", "image":"images/square.png"}}
+var trace2 = {"condition":"S","stimulus":{"category":"shape", "video": "trace_shape.mp4","image":"images/shape.png"}}
 var catList = [{"category": "a cat", "video": "boat.mp4louder.mp4","image":"images/categories/cat.jpg", "audio":"audio/boat.wav"},
     {"category": "a shoe", "video": "car.mp4louder.mp4","image":"images/categories/shoe.jpg","audio":"audio/boat.wav"},
     {"category": "a frog", "video": "cup.mp4louder.mp4","image":"images/categories/frog.jpg", "audio":"audio/test.m4a"},
@@ -68,7 +68,6 @@ function getStimuliList (){
             stimList.push({"condition":conditions[i], "stimulus":currentStimOrder[j]});
         }
     }
-    stimList.push(lastTrial);
     stimList.unshift(firstTrial);
     stimList.unshift(trace2);
     stimList.unshift(trace1);
@@ -114,7 +113,11 @@ function beginTrial(){
     $('#sketchpad').hide();
     $('#mainExp').fadeIn('fast');
 
-   
+   if (stimList[curTrial].stimulus.category == 'a cat') {
+        console.log(" triggered cat trial")
+   }
+
+
     if (stimList[curTrial].condition == 'S'){
         $('#photocue').hide();
         $('#cueVideoDiv').fadeIn('fast');
@@ -192,7 +195,7 @@ function loadNextVideo(){
     player.pause();
     player.volume(1); // set volume to max
     console.log(stimList[curTrial].stimulus.video)
-    player.src({ type: "video/mp4", src: "videos_louder/" + stimList[curTrial].stimulus.video });
+    player.src({ type: "video/mp4", src: "videos_new/" + stimList[curTrial].stimulus.video });
     player.load();
     return player;
 }
