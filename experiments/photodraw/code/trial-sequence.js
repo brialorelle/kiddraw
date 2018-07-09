@@ -209,9 +209,9 @@ function playVideo(player, drawNext){
             else{
                 console.log('starting normal trials...something new');
                 this.dispose(); //dispose the old video and related eventlistener. Add a new video
-                $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline> </video>");
                 // add slight delay between something new and start of new trials
                 setTimeout(function () {
+                    $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline> </video>");
                     showTrial();
                 }, 1000);  
             }
