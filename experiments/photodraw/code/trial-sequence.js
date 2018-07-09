@@ -20,15 +20,16 @@ socket = io.connect();
 var firstTrial = {"condition":"S","stimulus":{"category": "this circle", "video": "copy_circle.mp4", "image":"images/circle.png"}}
 var pracTrial = {"category":"a cat", "video": "cat.mp4", "image":"images/photocues/cat.jpg", "audio_perception":"audio_perception/cat.wav", "audio_wm":"audio_wm/cat.wav"}
 
-var trace1 = {"condition":"S","stimulus":{"category":"square", "video": "trace_square.mp4", "image":"images/square.png"}}
-var trace2 = {"condition":"S","stimulus":{"category":"shape", "video": "trace_shape.mp4","image":"images/shape.png"}}
 
-var catList = [{"category": "a cup", "video": "cup.mp4","image":"images/photocues/cup.jpg", "audio_perception":"audio_perception/cup.wav", "audio_wm":"audio_wm/cup.wav"},
-    {"category": "a shoe", "video": "shoe.mp4","image":"images/photocues/shoe.jpg","audio_perception":"audio_perception/shoe.wav", "audio_wm":"audio_wm/shoe.wav"},
-    {"category": "a frog", "video": "frog.mp4","image":"images/photocues/frog.jpg", "audio_perception":"audio_perception/frog.wav", "audio_wm":"audio_wm/frog.wav"},
-    {"category": "a couch", "video": "couch.mp4","image":"images/photocues/couch.jpg", "audio_perception":"audio_perception/couch.wav", "audio_wm":"audio_wm/couch.wav"},
-    {"category": "a rabbit", "video": "rabbit.mp4","image":"images/photocues/rabbit.jpg", "audio_perception":"audio_perception/rabbit.wav", "audio_wm":"audio_wm/rabbit.wav"},
-    {"category": "a train", "video": "train.mp4","image":"images/photocues/train.jpg", "audio_perception":"audio_perception/train.wav", "audio_wm":"audio_wm/train.wav"}]
+var trace1 = {"condition":"S","stimulus":{"category":"this square", "video": "trace_square.mp4", "image":"images/square.png"}}
+var trace2 = {"condition":"S","stimulus":{"category":"this shape", "video": "trace_shape.mp4","image":"images/shape.png"}}
+
+var catList = [{"category": "cup", "video": "cup.mp4","image":"images/photocues/cup.jpg", "audio_perception":"audio_perception/cup.wav", "audio_wm":"audio_wm/cup.wav"},
+    {"category": "shoe", "video": "shoe.mp4","image":"images/photocues/shoe.jpg","audio_perception":"audio_perception/shoe.wav", "audio_wm":"audio_wm/shoe.wav"},
+    {"category": "frog", "video": "frog.mp4","image":"images/photocues/frog.jpg", "audio_perception":"audio_perception/frog.wav", "audio_wm":"audio_wm/frog.wav"},
+    {"category": "couch", "video": "couch.mp4","image":"images/photocues/couch.jpg", "audio_perception":"audio_perception/couch.wav", "audio_wm":"audio_wm/couch.wav"},
+    {"category": "rabbit", "video": "rabbit.mp4","image":"images/photocues/rabbit.jpg", "audio_perception":"audio_perception/rabbit.wav", "audio_wm":"audio_wm/rabbit.wav"},
+    {"category": "train", "video": "train.mp4","image":"images/photocues/train.jpg", "audio_perception":"audio_perception/train.wav", "audio_wm":"audio_wm/train.wav"}]
 
 
 var curTrial=0 // global variable, trial counter
@@ -109,6 +110,7 @@ function startDrawing(){
     }
 }
 
+
 function showTaskChangeVideo(callback){
 
     console.log("time for something new")
@@ -122,9 +124,16 @@ function showTaskChangeVideo(callback){
     setTimeout(function() {playVideo(player, drawNext);},1000);
 };
 
+
 function showTrial(){
     // Semantic trials
     if (stimList[curTrial].condition == 'S'){
+        if (tracing || stimList[curTrial].stimulus.category == "this circle"){
+            document.getElementById("drawingCue").innerHTML =  stimList[curTrial].stimulus.category
+        }
+        else{
+            document.getElementById("drawingCue").innerHTML = "a "+ stimList[curTrial].stimulus.category
+        }
         $('#photocue').hide();
         $('#cueVideoDiv').fadeIn('fast');
         var player = loadNextVideo(curTrial); // change video
@@ -137,6 +146,7 @@ function showTrial(){
     }
     // Working memory trials
     else if (stimList[curTrial].condition == 'W'){
+        document.getElementById("drawingCue").innerHTML = "a "+ stimList[curTrial].stimulus.category
         $('#cueVideoDiv').hide();
         var imgPath = stimList[curTrial].stimulus.image;
         $("#photocue").attr("src",imgPath);
@@ -152,6 +162,7 @@ function showTrial(){
     }
     // Perception trails
     else{
+        document.getElementById("drawingCue").innerHTML = "this "+ stimList[curTrial].stimulus.category
         $('#cueVideoDiv').hide();
         var imgPath = stimList[curTrial].stimulus.image;
         $("#photocue").attr("src",imgPath);
@@ -205,7 +216,7 @@ function playVideo(player, drawNext){
 
 // hide cue and show sketchpad canvas
 function hideCue() {
-  //  $('#cue').hide(); // fade out cue
+    // $('#drawingcue').hide(); // fade out cue
     $('#cueVideoDiv').hide(); //show video html - this can be a variable later?
     setUpDrawing();
 }
@@ -222,10 +233,10 @@ function loadChangeTaskVideo(){
     );
     player.pause();
     player.volume(1); // set volume to max
-    console.log(stimList[curTrial].stimulus.video)
-    player.src({ type: "video/mp4", src: "videos_new/something_new.mp4"});
+
+    player.src({ type: "video/mp4", src: "videos_new/something_new.mp4" });
     player.load();
-    return player; 
+    return player;
 }
 
 function loadNextVideo(){
