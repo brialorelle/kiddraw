@@ -203,7 +203,6 @@ function playVideo(player, drawNext){
             if (drawNext == 1){
                console.log('video ends and drawing starts');
                this.dispose(); //dispose the old video and related eventlistener. Add a new video
-               $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline> </video>");
                hideCue();
             }
             else{
@@ -211,7 +210,7 @@ function playVideo(player, drawNext){
                 this.dispose(); //dispose the old video and related eventlistener. Add a new video
                 // add slight delay between something new and start of new trials
                 setTimeout(function () {
-                    $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline> </video>");
+                    
                     showTrial();
                 }, 1000);  
             }
@@ -227,6 +226,7 @@ function hideCue() {
 }
 
 function loadChangeTaskVideo(){
+    $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline> </video>");
     var player=videojs('cueVideo',
         {
         "controls": false,
@@ -245,6 +245,7 @@ function loadChangeTaskVideo(){
 }
 
 function loadNextVideo(){
+    $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline> </video>");
     var player=videojs('cueVideo',
         {
         "controls": false,
