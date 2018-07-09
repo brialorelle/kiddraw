@@ -32,7 +32,7 @@ thresSaveDir = [stimDir '_Thresholds']
 mkdir(thresSaveDir)
 
 % loop through all images:
-categories = {'prac'}
+categories = {'final_set'}
 
 for s=1:length(categories)
     % get list
@@ -66,7 +66,7 @@ for s=1:length(categories)
         
         saveName = [thisCategory '_' imList(i).name];
         
-        if any(size(mean(im,3))<300) % don't get low-res images
+        if any(size(mean(im,3))<200) % don't get low-res images
             disp('image too small!')
             flag=1
         else
