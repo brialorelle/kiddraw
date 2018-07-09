@@ -129,6 +129,8 @@ function showTaskChangeVideo(callback){
 function showTrial(){
     // Semantic trials
     if (stimList[curTrial].condition == 'S'){
+        var player = loadNextVideo(curTrial); // change video
+
         if (tracing || stimList[curTrial].stimulus.category == "this circle"){
             document.getElementById("drawingCue").innerHTML =  stimList[curTrial].stimulus.category
         }
@@ -136,14 +138,13 @@ function showTrial(){
             document.getElementById("drawingCue").innerHTML = "a "+ stimList[curTrial].stimulus.category
         }
         $('#photocue').hide();
-        var player = loadNextVideo(curTrial); // change video
+        
         // set volume again
         var video = document.getElementById('cueVideo');
         video.volume = 1;
         drawNext = 1;
         $('#cueVideoDiv').fadeIn('fast');
         setTimeout(function() {playVideo(player, drawNext);},1000);
-
     }
     // Working memory trials
     else if (stimList[curTrial].condition == 'W'){
