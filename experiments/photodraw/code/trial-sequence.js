@@ -115,7 +115,6 @@ function showTaskChangeVideo(callback){
 
     console.log("time for something new")
     $('#photocue').hide();
-    $('#cueVideoDiv').fadeIn('fast');
     var player = loadChangeTaskVideo(); // change video
     // set volume again
     var video = document.getElementById('cueVideo');
@@ -143,7 +142,6 @@ function showTrial(){
         var video = document.getElementById('cueVideo');
         video.volume = 1;
         drawNext = 1;
-        $('#cueVideoDiv').fadeIn('fast');
         setTimeout(function() {playVideo(player, drawNext);},1000);
     }
     // Working memory trials
@@ -195,8 +193,9 @@ function beginTrial(){
 
 // video player functions
 function playVideo(player, drawNext){
-    $('#cueVideoDiv').fadeIn(); // show video div
+    
     player.ready(function(){ // need to wait until video is ready
+        $('#cueVideoDiv').fadeIn(); // show video div only after video is ready
         this.play();
         this.on('ended',function(){
             
