@@ -226,7 +226,7 @@ function hideCue() {
 }
 
 function loadChangeTaskVideo(){
-    $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline> </video>");
+    $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline poster='https://dummyimage.com/320x240/ffffff/fff'> </video>");
     var player=videojs('cueVideo',
         {
         "controls": false,
@@ -245,7 +245,7 @@ function loadChangeTaskVideo(){
 }
 
 function loadNextVideo(){
-    $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline> </video>");
+    $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline poster='https://dummyimage.com/320x240/ffffff/fff' >  </video>");
     var player=videojs('cueVideo',
         {
         "controls": false,
