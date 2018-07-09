@@ -184,7 +184,7 @@ function beginTrial(){
     $('#sketchpad').hide();
     $('#mainExp').fadeIn('fast');
 
-    if (stimList[curTrial].stimulus.category == 'a cat') {
+    if (stimList[curTrial].stimulus.category == 'cat') {
         showTaskChangeVideo();
     }
     else{
