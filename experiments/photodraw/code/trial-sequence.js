@@ -18,7 +18,7 @@ socket = io.connect();
 
 // 1. Setup trial order and randomize it!
 var firstTrial = {"condition":"S","stimulus":{"category": "this circle", "video": "copy_circle.mp4", "image":"images/circle.png"}}
-var pracTrial = {"category":"a cat", "video": "cat.mp4", "image":"images/cat.jpg", "audio_perception":"audio_perception/cat.wav", "audio_wm":"audio_wm/cat.wav"}
+var pracTrial = {"category":"a cat", "video": "cat.mp4", "image":"images/photocues/cat.jpg", "audio_perception":"audio_perception/cat.wav", "audio_wm":"audio_wm/cat.wav"}
 
 var trace1 = {"condition":"S","stimulus":{"category":"square", "video": "trace_square.mp4", "image":"images/square.png"}}
 var trace2 = {"condition":"S","stimulus":{"category":"shape", "video": "trace_shape.mp4","image":"images/shape.png"}}
@@ -109,17 +109,21 @@ function startDrawing(){
     }
 }
 
-//
-function beginTrial(){
-    $('#progressBar_Button').hide();
-    $('#sketchpad').hide();
-    $('#mainExp').fadeIn('fast');
+function showTaskChangeVideo(callback){
 
-   if (stimList[curTrial].stimulus.category == 'a cat') {
-        console.log("time for something new")
-   }
+    console.log("time for something new")
+    $('#photocue').hide();
+    $('#cueVideoDiv').fadeIn('fast');
+    var player = loadChangeTaskVideo(); // change video
+    // set volume again
+    var video = document.getElementById('cueVideo');
+    video.volume = 1;
+    drawNext = 0;
+    setTimeout(function() {playVideo(player, drawNext);},1000);
+};
 
-
+function showTrial(){
+    // Semantic trials
     if (stimList[curTrial].condition == 'S'){
         $('#photocue').hide();
         $('#cueVideoDiv').fadeIn('fast');
@@ -127,10 +131,11 @@ function beginTrial(){
         // set volume again
         var video = document.getElementById('cueVideo');
         video.volume = 1;
-        
-        setTimeout(function() {playVideo(player);},1000);
+        drawNext = 1;
+        setTimeout(function() {playVideo(player, drawNext);},1000);
 
     }
+    // Working memory trials
     else if (stimList[curTrial].condition == 'W'){
         $('#cueVideoDiv').hide();
         var imgPath = stimList[curTrial].stimulus.image;
@@ -145,6 +150,7 @@ function beginTrial(){
             },
             6000)
     }
+    // Perception trails
     else{
         $('#cueVideoDiv').hide();
         var imgPath = stimList[curTrial].stimulus.image;
@@ -158,30 +164,68 @@ function beginTrial(){
             },
             6000);
     }
-    
+}
+
+//
+function beginTrial(){
+    $('#progressBar_Button').hide();
+    $('#sketchpad').hide();
+    $('#mainExp').fadeIn('fast');
+
+    if (stimList[curTrial].stimulus.category == 'a cat') {
+        showTaskChangeVideo();
+    }
+    else{
+        showTrial(); 
+    }
 }
 
 // video player functions
-function playVideo(player){
+function playVideo(player, drawNext){
     $('#cueVideoDiv').fadeIn(); // show video div
     player.ready(function(){ // need to wait until video is ready
         this.play();
         this.on('ended',function(){
-            console.log('video ends and drawing starts');
-            hideCue();
+            
+            // only want to start drawing if we are not on the "something new" video
+            if (drawNext == 1){
+               console.log('video ends and drawing starts');
+               hideCue();
+            }
+            else{
+                console.log('starting normal trials...something new');
+                showTrial();
+            }
+            
             this.dispose(); //dispose the old video and related eventlistener. Add a new video
             $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline> </video>");
         });
     });
 }
 
-
-
 // hide cue and show sketchpad canvas
 function hideCue() {
   //  $('#cue').hide(); // fade out cue
     $('#cueVideoDiv').hide(); //show video html - this can be a variable later?
     setUpDrawing();
+}
+
+function loadChangeTaskVideo(){
+    var player=videojs('cueVideo',
+        {
+        "controls": false,
+        "preload":"auto"
+        },
+        function() {
+            this.volume(1);
+        }
+    );
+    player.pause();
+    player.volume(1); // set volume to max
+    console.log(stimList[curTrial].stimulus.video)
+    player.src({ type: "video/mp4", src: "videos_new/something_new.mp4"});
+    player.load();
+    return player; 
 }
 
 function loadNextVideo(){
