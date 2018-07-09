@@ -202,15 +202,16 @@ function playVideo(player, drawNext){
             // only want to start drawing if we are not on the "something new" video
             if (drawNext == 1){
                console.log('video ends and drawing starts');
+                this.dispose(); //dispose the old video and related eventlistener. Add a new video
+                $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline> </video>");
                hideCue();
             }
             else{
                 console.log('starting normal trials...something new');
+                this.dispose(); //dispose the old video and related eventlistener. Add a new video
+                $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline> </video>");
                 showTrial();
             }
-            
-            this.dispose(); //dispose the old video and related eventlistener. Add a new video
-            $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline> </video>");
         });
     });
 }
