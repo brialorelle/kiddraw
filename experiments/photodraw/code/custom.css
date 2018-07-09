@@ -233,10 +233,10 @@ button[disabled] {
 } */
 
 .videoDiv{
-    width: 60vh;
+    width: 53vh;
     overflow:hidden;
     display:block;
-    height: 60vh;
+    height: 53vh;
 
     right:0;
     left:0;
@@ -247,7 +247,7 @@ button[disabled] {
     margin-top:6vh;
 }
 #cueVideo{
-    margin-left: -17vw;
+    margin-left: -19vw;
 }
 
 #ready {
