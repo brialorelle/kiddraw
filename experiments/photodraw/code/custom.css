@@ -204,7 +204,8 @@ button[disabled] {
     font-family: Schoolbell,cursive;
 }
 
-#cueVideo {
+/* #cueVideo {
+
     width:40vw;
     height:40vw;
     left: 0;
@@ -214,6 +215,10 @@ button[disabled] {
     margin:4vw;
     margin-top:8vh;
     touch-action: none;
+    
+    overflow:hidden;
+    display:block;
+
 }
 
 .videoDiv {
@@ -224,6 +229,24 @@ button[disabled] {
     top:0;
     bottom:0;
     touch-action: none;
+} */
+
+.videoDiv{
+    width: 60vh;
+    overflow:hidden;
+    display:block;
+    height: 60vh;
+
+    right:0;
+    left:0;
+    top:0;
+    bottom:0;
+
+    margin-left: 3vw;
+    margin-top:6vh;
+}
+#cueVideo{
+    margin-left: -15vw;
 }
 
 #ready {
