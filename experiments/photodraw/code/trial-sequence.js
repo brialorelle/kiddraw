@@ -22,12 +22,14 @@ var pracTrial = {"category":"a cat", "video": "cat.mp4", "image":"images/cat.jpg
 
 var trace1 = {"condition":"S","stimulus":{"category":"square", "video": "trace_square.mp4", "image":"images/square.png"}}
 var trace2 = {"condition":"S","stimulus":{"category":"shape", "video": "trace_shape.mp4","image":"images/shape.png"}}
+
 var catList = [{"category": "a cup", "video": "cup.mp4","image":"images/photocues/cup.jpg", "audio_perception":"audio_perception/cup.wav", "audio_wm":"audio_wm/cup.wav"},
     {"category": "a shoe", "video": "shoe.mp4","image":"images/photocues/shoe.jpg","audio_perception":"audio_perception/shoe.wav", "audio_wm":"audio_wm/shoe.wav"},
     {"category": "a frog", "video": "frog.mp4","image":"images/photocues/frog.jpg", "audio_perception":"audio_perception/frog.wav", "audio_wm":"audio_wm/frog.wav"},
     {"category": "a couch", "video": "couch.mp4","image":"images/photocues/couch.jpg", "audio_perception":"audio_perception/couch.wav", "audio_wm":"audio_wm/couch.wav"},
     {"category": "a rabbit", "video": "rabbit.mp4","image":"images/photocues/rabbit.jpg", "audio_perception":"audio_perception/rabbit.wav", "audio_wm":"audio_wm/rabbit.wav"},
     {"category": "a train", "video": "train.mp4","image":"images/photocues/train.jpg", "audio_perception":"audio_perception/train.wav", "audio_wm":"audio_wm/train.wav"}]
+
 
 var curTrial=0 // global variable, trial counter
 
@@ -298,6 +300,7 @@ function saveSketchData(){
     var dataURL = tmpCanvas.toDataURL();
     dataURL = dataURL.replace('data:image/png;base64,','');
     var category = stimList[curTrial].stimulus.category;
+    var condition = stimList[curTrial].condition;
     var age = $('.active').attr('id');
     var firstName = $('#firstName').val();
     var lastName = $('#lastName').val();
@@ -314,6 +317,7 @@ function saveSketchData(){
         sessionId: sessionId, // each children's session
         imgData: dataURL,
         category: category,
+        condition:condition,
         dbname:'kiddraw',
         colname: version,
         location: mode,
@@ -556,6 +560,7 @@ window.onload = function() {
 
             var svgString = path.exportSVG({asString: true});
             var category = stimList[curTrial].stimulus.category;
+            var condition = stimList[curTrial].condition;
             var readable_date = new Date();
             var age = $('.active').attr('id');
             var firstName = $('#firstName').val();
@@ -571,6 +576,7 @@ window.onload = function() {
                 sessionId: sessionId,
                 svg: svgString,
                 category: category,
+                condition:condition,
                 dbname:'kiddraw',
                 colname: version,
                 location: mode,
