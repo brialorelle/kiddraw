@@ -535,7 +535,7 @@ window.onload = function() {
 
     $('#keepGoing').bind('touchstart mousedown',function(e) {
         e.preventDefault()
-        // if (isDoubleClicked($(this))) return;
+        if (isDoubleClicked($(this))) return;
 
         $('#keepGoing').removeClass('bounce')
 
