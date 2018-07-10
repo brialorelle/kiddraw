@@ -180,7 +180,8 @@ function beginTrial(){
     $('#sketchpad').hide();
     $('#mainExp').fadeIn('fast');
 
-    if (stimList[curTrial].stimulus.category == 'cat') {
+    // cup is ALWAYS first, as it is the practice trial
+    if (stimList[curTrial].stimulus.category == 'cup') {
         showTaskChangeVideo();
     }
     else{
