@@ -379,6 +379,7 @@ button[disabled] {
     font-size: 4vw;
     font-family: Schoolbell,cursive;
     font-style: italic;
+    margin-top: 4vh;
 }
 
 .vjs-nofull .vjs-fullscreen-control {
