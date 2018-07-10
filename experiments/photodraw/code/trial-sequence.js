@@ -20,7 +20,6 @@ socket = io.connect();
 var firstTrial = {"condition":"S","stimulus":{"category": "this circle", "video": "copy_circle.mp4", "image":"images/circle.png"}}
 var pracTrial = {"category":"cat", "video": "cat.mp4", "image":"images/photocues/cat.jpg", "audio_perception":"audio_perception/cat.wav", "audio_wm":"audio_wm/cat.wav"}
 
-
 var trace1 = {"condition":"S","stimulus":{"category":"this square", "video": "trace_square.mp4", "image":"images/square.png"}}
 var trace2 = {"condition":"S","stimulus":{"category":"this shape", "video": "trace_shape.mp4","image":"images/shape.png"}}
 
@@ -51,6 +50,7 @@ var consentPage = '#consentBing';
 var thanksPage = "#thanksBing";
 var maxTrials;
 var stimList = [];
+var subID = $('#subID').val();
 
 function getStimuliList (){
     var conditionDic = {"1":["W","P","S"],
@@ -60,7 +60,7 @@ function getStimuliList (){
                         "5":["P","S","W"],
                         "6":["P","W","S"]}
     var cbGroup = $('#cbGroup').val();
-
+    
     var conditions = conditionDic[cbGroup];
     var curCondition = 0;
     
@@ -366,6 +366,7 @@ function saveSketchData(){
     var firstName = $('#firstName').val();
     var lastName = $('#lastName').val();
     var cbGroup = $('#cbGroup').val();
+    var subID = $('#subID').val();
     var name;
     if (firstName != "") {
         name = firstName.toUpperCase() + ' ' + lastName.toUpperCase()
@@ -386,6 +387,7 @@ function saveSketchData(){
         time: Date.now(),
         date: readable_date,
         age: age,
+        subID: subID,
         kidName: name,
         counter_balancing: cbGroup};
 
@@ -627,6 +629,7 @@ window.onload = function() {
             var firstName = $('#firstName').val();
             var lastName = $('#lastName').val();
             var cbGroup = $('#cbGroup').val();
+            var subID = $('#subID').val();
             var name;
             if (firstName != "") {
                 name = firstName.toUpperCase() + ' ' + lastName.toUpperCase()
@@ -645,6 +648,7 @@ window.onload = function() {
                 time: Date.now(),
                 date: readable_date,
                 age: age,
+                subID: subID,
                 kidName: name,
                 counter_balancing: cbGroup
             };
