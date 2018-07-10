@@ -24,11 +24,11 @@ var trace1 = {"condition":"S","stimulus":{"category":"this square", "video": "tr
 var trace2 = {"condition":"S","stimulus":{"category":"this shape", "video": "trace_shape.mp4","image":"images/shape.png"}}
 
 var catList = [{"category": "cup", "video": "cup.mp4","image":"images/photocues/cup.jpg", "audio_perception":"audio_perception/cup.wav", "audio_wm":"audio_wm/cup.wav"},
-    {"category": "shoe", "video": "shoe.mp4","image":"images/photocues/shoe.jpg","audio_perception":"audio_perception/shoe.wav", "audio_wm":"audio_wm/shoe.wav"},
-    {"category": "frog", "video": "frog.mp4","image":"images/photocues/frog.jpg", "audio_perception":"audio_perception/frog.wav", "audio_wm":"audio_wm/frog.wav"},
-    {"category": "couch", "video": "couch.mp4","image":"images/photocues/couch.jpg", "audio_perception":"audio_perception/couch.wav", "audio_wm":"audio_wm/couch.wav"},
-    {"category": "rabbit", "video": "rabbit.mp4","image":"images/photocues/rabbit.jpg", "audio_perception":"audio_perception/rabbit.wav", "audio_wm":"audio_wm/rabbit.wav"},
-    {"category": "train", "video": "train.mp4","image":"images/photocues/train.jpg", "audio_perception":"audio_perception/train.wav", "audio_wm":"audio_wm/train.wav"}]
+{"category": "shoe", "video": "shoe.mp4","image":"images/photocues/shoe.jpg","audio_perception":"audio_perception/shoe.wav", "audio_wm":"audio_wm/shoe.wav"},
+{"category": "frog", "video": "frog.mp4","image":"images/photocues/frog.jpg", "audio_perception":"audio_perception/frog.wav", "audio_wm":"audio_wm/frog.wav"},
+{"category": "couch", "video": "couch.mp4","image":"images/photocues/couch.jpg", "audio_perception":"audio_perception/couch.wav", "audio_wm":"audio_wm/couch.wav"},
+{"category": "rabbit", "video": "rabbit.mp4","image":"images/photocues/rabbit.jpg", "audio_perception":"audio_perception/rabbit.wav", "audio_wm":"audio_wm/rabbit.wav"},
+{"category": "train", "video": "train.mp4","image":"images/photocues/train.jpg", "audio_perception":"audio_perception/train.wav", "audio_wm":"audio_wm/train.wav"}]
 
 
 var curTrial=0 // global variable, trial counter
@@ -54,16 +54,16 @@ var subID = $('#subID').val();
 
 function getStimuliList (){
     var conditionDic = {"1":["W","P","S"],
-                        "2":["W","S","P"],
-                        "3":["S","P","W"],
-                        "4":["S","W","P"],
-                        "5":["P","S","W"],
-                        "6":["P","W","S"]}
+        "2":["W","S","P"],
+        "3":["S","P","W"],
+        "4":["S","W","P"],
+        "5":["P","S","W"],
+        "6":["P","W","S"]}
     var cbGroup = $('#cbGroup').val();
-    
+
     var conditions = conditionDic[cbGroup];
     var curCondition = 0;
-    
+
     for(var i = 0; i < conditions.length; i++){
         var currentStimOrder = shuffle(catList);
         stimList.push({"condition":conditions[i], "stimulus":pracTrial});
@@ -137,7 +137,7 @@ function showTrial(){
             document.getElementById("drawingCue").innerHTML = "a "+ stimList[curTrial].stimulus.category
         }
         $('#photocue').hide();
-        
+
         // set volume again
         var video = document.getElementById('cueVideo');
         video.volume = 1;
@@ -187,32 +187,34 @@ function beginTrial(){
         showTaskChangeVideo();
     }
     else{
-        showTrial(); 
+        showTrial();
     }
 }
 
 // video player functions
 function playVideo(player, drawNext){
-    
-    player.ready(function(){ // need to wait until video is ready
+    player.ready(function() { // need to wait until video is ready
         $('#cueVideoDiv').fadeIn(); // show video div only after video is ready
+
         this.play();
-        this.on('ended',function(){
-            
+        this.on('ended', function () {
+
             // only want to start drawing if we are not on the "something new" video
-            if (drawNext == 1){
-               console.log('video ends and drawing starts');
-               this.dispose(); //dispose the old video and related eventlistener. Add a new video
-               hideCue();
-            }
-            else{
-                console.log('starting normal trials...something new');
+            if (drawNext == 1) {
+                console.log('video ends and drawing starts');
                 this.dispose(); //dispose the old video and related eventlistener. Add a new video
+                hideCue();
+            }
+            else {
+                console.log('starting normal trials...something new');
+                $('#cueVideoDiv').hide();
+                this.dispose(); //dispose the old video and related eventlistener. Add a new video
+
                 // add slight delay between something new and start of new trials
                 setTimeout(function () {
-                    
+
                     showTrial();
-                }, 1000);  
+                }, 1000);
             }
         });
     });
@@ -229,8 +231,8 @@ function loadChangeTaskVideo(){
     $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline poster='https://dummyimage.com/320x240/ffffff/fff'> </video>");
     var player=videojs('cueVideo',
         {
-        "controls": false,
-        "preload":"auto"
+            "controls": false,
+            "preload":"auto"
         },
         function() {
             this.volume(1);
@@ -248,8 +250,8 @@ function loadNextVideo(){
     $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline poster='https://dummyimage.com/320x240/ffffff/fff' >  </video>");
     var player=videojs('cueVideo',
         {
-        "controls": false,
-        "preload":"auto"
+            "controls": false,
+            "preload":"auto"
         },
         function() {
             this.volume(1);
@@ -607,10 +609,10 @@ window.onload = function() {
         canvas.width = canvas.height;
     }
     // portrait mode -- resize to height
-    else if(window.innerWidth < window.innerHeight){ 
+    else if(window.innerWidth < window.innerHeight){
         canvas.height = window.innerHeight*.68;
         canvas.width = canvas.height;
-    }  
+    }
 
 
     // Drawing related tools
