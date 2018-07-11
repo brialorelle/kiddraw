@@ -91,7 +91,7 @@ function shuffle (a)
 // for each time we start drawings
 function startDrawing(){
     if (curTrial==0){
-        $(consentPage).fadeOut('fast'); // fade out age screen
+        $(consentPage).hide(); // fade out age screen
         getStimuliList()
         beginTrial()
     }
@@ -200,17 +200,21 @@ function playVideo(player, drawNext){
             // only want to start drawing if we are not on the "something new" video
             if (drawNext == 1) {
                 console.log('video ends and drawing starts');
-                this.dispose(); //dispose the old video and related eventlistener. Add a new video
                 hideCue();
+                setTimeout(function(){
+                    player.dispose(); //dispose the old video and related eventlistener. Add a new video
+                }, 200);
+
             }
             else {
                 console.log('starting normal trials...something new');
-                $('#cueVideoDiv').hide();
-                this.dispose(); //dispose the old video and related eventlistener. Add a new video
+                $('#cueVideoDiv').fadeOut();
+                setTimeout(function(){
+                    player.dispose(); //dispose the old video and related eventlistener. Add a new video
+                }, 200);
 
                 // add slight delay between something new and start of new trials
                 setTimeout(function () {
-
                     showTrial();
                 }, 1000);
             }
@@ -221,7 +225,7 @@ function playVideo(player, drawNext){
 // hide cue and show sketchpad canvas
 function hideCue() {
     // $('#drawingcue').hide(); // fade out cue
-    $('#cueVideoDiv').hide(); //show video html - this can be a variable later?
+    $('#cueVideoDiv').fadeOut(); //show video html - this can be a variable later?
     setUpDrawing();
 }
 
