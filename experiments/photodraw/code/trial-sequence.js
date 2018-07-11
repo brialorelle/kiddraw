@@ -203,7 +203,7 @@ function playVideo(player, drawNext){
                 $('#cueVideoDiv').fadeOut(); 
                 setTimeout(function(){
                     player.dispose(); //dispose the old video and related eventlistener. Add a new video
-                }, 200);
+                }, 500);
                 setUpDrawing();
 
             }
@@ -212,7 +212,7 @@ function playVideo(player, drawNext){
                 $('#cueVideoDiv').fadeOut();
                 setTimeout(function(){
                     player.dispose(); //dispose the old video and related eventlistener. Add a new video
-                }, 200);
+                }, 500);
 
                 // add slight delay between something new and start of new trials
                 setTimeout(function () {
