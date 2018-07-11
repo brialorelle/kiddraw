@@ -200,10 +200,11 @@ function playVideo(player, drawNext){
             // only want to start drawing if we are not on the "something new" video
             if (drawNext == 1) {
                 console.log('video ends and drawing starts');
-                hideCue();
+                ('#cueVideoDiv').fadeOut(); 
                 setTimeout(function(){
                     player.dispose(); //dispose the old video and related eventlistener. Add a new video
                 }, 200);
+                setUpDrawing();
 
             }
             else {
@@ -220,13 +221,6 @@ function playVideo(player, drawNext){
             }
         });
     });
-}
-
-// hide cue and show sketchpad canvas
-function hideCue() {
-    // $('#drawingcue').hide(); // fade out cue
-    $('#cueVideoDiv').fadeOut(); //show video html - this can be a variable later?
-    setUpDrawing();
 }
 
 function loadChangeTaskVideo(){
