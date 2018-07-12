@@ -97,7 +97,7 @@ var language = "English";
 
 // current mode and session info
 var mode = "CDM";
-var version ="cdm_run_v3"; 
+var version ="cdm_run_v3";
 // initial version: piloting at museum
 // v2: first run
 // v3: circle timeout to 1 second
@@ -174,18 +174,16 @@ function playVideo(player){
         this.play();
         this.on('ended',function(){
             console.log('video ends and drawing starts');
-            hideCue();
-            this.dispose(); //dispose the old video and related eventlistener. Add a new video
-            $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline> </video>");
+            $('#cueVideoDiv').fadeOut();
+            setTimeout(function(){
+                $('#cue').hide(); // fade out cue
+                player.dispose(); //dispose the old video and related eventlistener. Add a new video
+                setUpDrawing();
+                $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline> </video>");
+            }, 500);
+
         });
     });
-}
-
-// hide cue and show sketchpad canvas
-function hideCue() {
-    $('#cue').hide(); // fade out cue
-    $('#cueVideoDiv').hide(); //show video html - this can be a variable later?
-    setUpDrawing();
 }
 
 function loadNextVideo(){
@@ -235,7 +233,7 @@ function setUpDrawing(){
         $("#lastTrial").show();
     }
 
-    $('#drawing').show()
+    $('#drawing').fadeIn()
     monitorProgress(); // since we now have a timeout function 
 };
 
@@ -330,8 +328,8 @@ function setLanguage(lang){
     var filename = "language/"+lang +".json";
     $.getJSON(filename, function( data ) {
         $.each( data, function( key, val ) {
-                var id = "#" + key;
-                $(id).text(val);
+            var id = "#" + key;
+            $(id).text(val);
         });
         checkBoxAlert = data["checkBoxAlert"];
         ageAlert = data["ageAlert"];
