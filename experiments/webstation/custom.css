@@ -61,7 +61,7 @@ button[disabled] {
 }
 
 .startButton{
-    width:15vw;
+    width:20vw;
     height:auto;
     margin-top:2vw;
 }
@@ -120,7 +120,8 @@ button[disabled] {
 
 #consentText {
     bottom: 15%;
-    font-size: 1.5vw;
+    font-size: 1.35vw;
+    text-align: justify;
 }
 
 .welcomeHeader {
