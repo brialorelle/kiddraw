@@ -66,12 +66,12 @@ var disableDrawing = false; //whether touch drawing is disabled or not
 var language = "English";
 
 // current mode and session info
-var mode = "Bing";
-var version =mode + "run" + "_v1"
+var mode = "China";
+var version =mode + "_run" + "_v1"
 var sessionId= version + Date.now().toString();
 
-var consentPage = '#consentBing';
-var thanksPage = "#thanksBing";
+consentPage = '#consentCDM';
+thanksPage = "#thanksPage";
 
 // shuffle the order of drawing trials
 function shuffle (a)
@@ -343,18 +343,18 @@ function isDoubleClicked(element) {
 }
 
 window.onload = function() {
-    $.get("/mode", function(data){
-        mode = data.mode;
-        if(mode=='Bing') {
-            consentPage = '#consentBing';
-            thanksPage = "#thanksBing";
-            console.log(" mode Bing")
-        }else if(mode=="CDM"){
-            consentPage = '#consentCDM';
-            thanksPage = "#thanksPage";
-            console.log("mode CDM")
-        }
-    });
+    // $.get("/mode", function(data){
+    //     mode = data.mode;
+    //     if(mode=='Bing') {
+    //         consentPage = '#consentBing';
+    //         thanksPage = "#thanksBing";
+    //         console.log(" mode Bing")
+    //     }else if(mode=="CDM"){
+    //         consentPage = '#consentCDM';
+    //         thanksPage = "#thanksPage";
+    //         console.log("mode CDM")
+    //     }
+    // });
 
 
     $('#startConsent').bind('touchstart mousedown',function(e) {
@@ -375,29 +375,16 @@ window.onload = function() {
         // if (isDoubleClicked($(this))) return;
 
         console.log('touched start button');
-
-        if (mode == "Bing"){
-            console.log("Bing");
-
-            if ($("#firstName").val().trim().length==0 ) {
-                alert("Please enter your first name.");
-            }else if($("#lastName").val().trim().length==0){
-                alert("Please enter your last name.");
-            }else{
-                startDrawing();
-            }
-
-        }else{
-            console.log("CDM");
-            if (!$("#checkConsent").is(':checked')) {
-                alert("Can we use your child's drawings? If so, please click the box above to start drawing!")
-            }else if($(".active").val()==undefined){
-                alert("Please select your age group.")
-            }
-            else {
-                startDrawing();
-            }
+        console.log("China Station");
+        if (!$("#checkConsent").is(':checked')) {
+            alert("Can we use your child's drawings? If so, please click the box above to start drawing!")
+        }else if($(".active").val()==undefined){
+            alert("Please select your age group.")
         }
+        else {
+            startDrawing();
+        }
+
 
     });
 
@@ -469,12 +456,12 @@ window.onload = function() {
         ctx=canvas.getContext("2d");
     //landscape mode 00 inne
     if (window.innerWidth > window.innerHeight){
-        canvas.height = window.innerHeight*.80;
+        canvas.height = window.innerHeight*.75;
         canvas.width = canvas.height;
     }
     // portrait mode -- resize to height
     else if(window.innerWidth < window.innerHeight){
-        canvas.width = window.innerWidth*.80;
+        canvas.width = window.innerWidth*.75;
         canvas.height = canvas.width;
     }
 
