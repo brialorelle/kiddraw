@@ -40,7 +40,7 @@ var language = "English";
 
 // current mode and session info
 var mode = "Bing";
-var version =mode + "photodraw" + "_pilot";
+var version =mode + "_photodraw" + "_e1";
 var sessionId= version + Date.now().toString();
 
 var consentPage = '#consentBing';
