@@ -73,15 +73,15 @@ pre-trained deep convolutional neural network, allowing us to visualize
 the representational layout of object categories across age groups using
 a common feature basis. We found that the organization of object
 categories in older children's drawings were more similar to that of
-adults than younger children's drawings. This correspondence was
-especially strong for higher layers of the neural network, showing that
-older children's drawings tend to capture high-level perceptual features
-critical for adult recognition. We hypothesize that this improvement
-reflects increasing convergence between children's representations of
-object categories and that of adults; future work will examines how
-these age-related changes relate to children's developing perceptual and
-motor capacities. Broadly, these findings point to drawing as a rich
-source of insight into how children represent object concepts.
+adults than younger children's drawings. This correspondence was strong
+in the final layers of the neural network, showing that older children's
+drawings tend to capture the perceptual features critical for adult
+recognition. We hypothesize that this improvement reflects increasing
+convergence between children's representations of object categories and
+that of adults; future work will examine how these age-related changes
+relate to children's developing perceptual and motor capacities.
+Broadly, these findings point to drawing as a rich source of insight
+into how children represent object concepts.
 
 \textbf{Keywords:}
 object representations; drawings; child development
@@ -100,9 +100,9 @@ including language and gesture. One tool that has been transformative
 for human cognition and culture is graphical representation, which
 allows people to encode their thoughts in a visible, durable format.
 Drawing is an important case study in graphical representation, being a
-technique that dates back at least 40,000 years (Pike et al., 2012),
-well before the emergence of symbolic writing systems, and is practiced
-in many cultures.
+technique that dates back 60,000 years (Hoffmann et al., 2018), well
+before the emergence of symbolic writing systems, and is practiced in
+many cultures.
 
 In modern times, drawings are produced prolifically by children from an
 early age, providing a rich source of potential insight into their
@@ -242,8 +242,7 @@ typing their response into a text box. Only labels from a restricted set
 of 21 options were accepted, comprising the 16 drawn categories, 4 foil
 categories (bean, arm, person, rock), and ``cannot tell at all.''
 Drawings were presented in a random order, and participants were not
-informed that these drawings were produced by children or the context in
-which they were produced.
+informed that these drawings were produced by children.
 
 \subsubsection{Model Fitting}\label{model-fitting}
 
@@ -346,34 +345,30 @@ similar to adults' drawings than younger children's drawings. We thus
 extracted the high-level perceptual features of drawings made by
 children and adults using a pre-trained deep convolutional neural
 network (Simonyan \& Zisserman, 2014). These features form a common
-basis for representing shape similarity -- including the presence of
-diagnostic object parts (e.g., legs, handles) -- and a basis from which
-object identity can be easily derived (Kubilius et al., 2016). We then
-use these high-level features to evaluate how similar the
+basis for representing complex shape similarity -- including the
+presence of diagnostic object parts (e.g., legs, handles) -- and a basis
+from which object identity can be easily derived (Kubilius et al.,
+2016). We then use these high-level features to evaluate how similar the
 representational layout of object categories is between children's and
 adults' drawings. Insofar as the similarity of the representational
 layout is higher for older children than younger children, this could
-explain why adults are more accurate in recognizing their drawings.
-
-To evaluate whether these high-level features are necessary to capture
-semantically-relevant perceptual information, we also analyze these
-drawings using features from earlier layers of the model. In DCNN
-models, the earliest layers tend to capture local image statistics,
-including edges and textures, whereas intermediate layers capture
-mid-level features, including curvature (Yamins et al., 2014). While the
-earliest layers are sensitive to the spatial location of certain visual
-features (e.g., whether there are horizontal lines on bottom vs.~the top
-of the canvas), later layers compute representations that are
-increasingly invariant to spatial position. Thus, if adults' and
-children's drawings are most similar in terms of these lower-level
-visual features, similarity should instead peak in these earlier layers.
+explain why adults are more accurate in recognizing their drawings. As a
+sanity check, we also explored how similar children and adult's drawings
+are in each layer of the model. Earlier layers reflect local image
+properties (e.g., edge orientations) which are then successively
+transformed and combined to yield the more abstract mid-level features
+(e.g., curvature) and higher-level features represented in later layers.
+Thus, these layer-wise analyses can reveal how similar children and
+adult's drawings are in terms of more basic statistics---e.g., if both
+childrens' and adult's drawings of phones are ``boxier'' than their
+drawings of apples.
 
 \subsection{Methods}\label{methods-1}
 
 \subsubsection{Participants}\label{participants-1}
 
 Participants included those who participated in the first round of data
-collection, as well as an additional 37 children recruited in the same
+collection, as well as an additional 25 children recruited in the same
 way as in Part 1.
 
 \subsubsection{Drawing dataset}\label{drawing-dataset}
@@ -437,15 +432,18 @@ average vectors across categories (Kriegeskorte, Mur, \& Bandettini,
 where \(\vec{r}_{i}\) and \(\vec{r}_{j}\) are the mean feature vectors
 for the \(i\)th and \(j\)th object categories, respectively, where R
 represents the correlation between two categories (e.g., rabbits and
-shoes). Each of these 27x27 representational dissimilarity matrices
-(RDM) provides a compact description of the layout of objects in the
+shoes).
+
+Each of these 27x27 representational dissimilarity matrices (RDM)
+provides a compact description of the layout of objects in the
 high-dimensional feature space inherent to each layer of the model.
 Following Kriegeskorte et al. (2008), we measured the similarity between
 object representations in different layers by computing the Spearman
 rank correlations between the RDMs for those corresponding layers.
 Estimates of standard error for the Spearman correlation between RDMs
-(i.e., between domains or between layers) were generated by jackknife
-resampling of the 27 object categories.
+were generated by jackknife resampling of the 27 object categories. To
+estimate the noise ceiling, we repeated this same procedure with an
+equivalently sized, random sample of adult drawings.
 
 \begin{CodeChunk}
 \begin{figure}[H]
@@ -462,35 +460,35 @@ resampling of the 27 object categories.
 
 To compare the representational layout of object categories across age
 groups, we examined the similarity between RDMs for each age group
-(i.e., younger children, older children, and adults) at each layer of
-VGG-19. These values are plotted relative to the a comparable
-correlation between two samples of adult drawings, where similarity is
-high across all layers. We found that children's and adults' RDMs were
-more similar than younger children's and adult's RDMs across all layers,
-and that similarity plateaued in middle to high-level layers (see Figure
-\ref{fig:layerWise}). However, due to the small size of our current
-dataset, we caution against strong interpretations of particular
-layer-wise estimates. Nonetheless, adults' and children's drawings were
-dissimilar in pixel space for both age groups (adults vs.~older
-children, r = .07; vs.~younger children, r = .07).
-
-The RDMs for the final layer of the network (where similarity was the
-highest; FC7) are shown in Figure \ref{fig:RSAAllCat}. Here, each cell
+(i.e., younger children, older children, and adults) in the final layer
+of VGG-19, shown in Figure \ref{fig:RSAAllCat}. Here, each cell
 represents the correlation distance between two categories in this layer
 of the network; lighter colors indicate pairs of categories that are
 further apart in feature space; darker colors indicate pairs of
 categories that are closer. For visualization purposes, categories are
 ordered according to the clusters that appear in the data. Inspecting
 the similarity structure for adults, drawings of living things (rabbits,
-frogs, and flowers) elicited the most similar representations, evident
+frogs, flowers, etc.) elicited the most similar representations, evident
 in a cluster in the middle of the RDM. While there are some intuitive
-category pairings (e.g., drawings of cars are somewhat similar to trains
-and buses), other clusters seem less intuitive at first blush
-(carrot--chair--ice cream--fork)---yet note that all four of these
+category clusters (bus--car--train), other clusters seem less intuitive
+at first blush (carrot--chair--ice cream--fork)---yet note that these
 categories tend to have a similar aspect ratio. Importantly, this
 perceptual similarity structure was echoed in children's drawings of
-these same object categories. Children's and adults' drawings appear to
-share many of the perceptual features useful for object recognition.
+these same object categories.
+
+We then examined these correlations between RDMs at each layer of the
+network, which are plotted in Figure \ref{fig:layerWise} relative to the
+comparison between two samples of adult drawings, representing the noise
+ceiling. We found that older children's and adults' RDMs were more
+similar than younger children's and adult's RDMs across all layers, and
+that similarity plateaued in mid-to-high-level convolutional layers (see
+Figure \ref{fig:layerWise}). These results suggest that the particular
+choice of model layer does not affect the relative similarity between
+older children's and adults' RDMs vs.~younger children's and adults'
+RDMs. Nonetheless, adults' and children's drawings were dissimilar in
+pixel space for both age groups (adults vs.~older children, r = .07;
+vs.~younger children, r = .07). Children's and adults' drawings appear
+to share many of the perceptual features useful for object recognition.
 
 \section{General Discussion}\label{general-discussion}
 
@@ -579,6 +577,12 @@ representations through category learning. \emph{Cognition},
 Goodenough, F. L. (1963). \emph{Goodenough-harris drawing test}.
 Harcourt Brace Jovanovich New York.
 
+\hypertarget{ref-hoffmann2018u}{}
+Hoffmann, D. L., Standish, C. D., García-Diez, M., Pettitt, P. B.,
+Milton, J., Zilhão, J., \ldots{} others. (2018). U-th dating of
+carbonate crusts reveals neandertal origin of iberian cave art.
+\emph{Science}, \emph{359}(6378), 912--915.
+
 \hypertarget{ref-juttner2016developmental}{}
 Juttner, M., Wakui, E., Petters, D., \& Davidoff, J. (2016).
 Developmental commonalities between object and face recognition in
@@ -617,12 +621,6 @@ report.
 \hypertarget{ref-nishimura2009}{}
 Nishimura, M., Scherf, S., \& Behrmann, M. (2009). Development of object
 recognition in humans. \emph{F1000 Biology Reports}, \emph{1}.
-
-\hypertarget{ref-pike2012u}{}
-Pike, A. W., Hoffmann, D. L., Garcia-Diez, M., Pettitt, P. B., Alcolea,
-J., De Balbin, R., \ldots{} others. (2012). U-series dating of
-paleolithic art in 11 caves in spain. \emph{Science}, \emph{336}(6087),
-1409--1413.
 
 \hypertarget{ref-simonyan2014very}{}
 Simonyan, K., \& Zisserman, A. (2014). Very deep convolutional networks

@@ -21,14 +21,27 @@ firstTrial = {"category": "this circle", "video": "circle.mp4", "image":"images/
 lastTrial = {"category": "something you love", "video": "love.mp4"}
 trace1 = {"category":"square", "video": "square.mp4", "image":"images/square.png"}
 trace2 = {"category":"shape", "video": "shape.mp4","image":"images/shape.png"}
-var stimListTest = [{"category": "a boat", "video": "boat.mp4"},
-    {"category": "a car", "video": "car.mp4"},
-    {"category": "a cup", "video": "cup.mp4"},
-    {"category": "a dog", "video": "dog.mp4"},
-    {"category": "a fish", "video": "fish.mp4"},
-    {"category": "a house", "video": "house.mp4"},
-    {"category": "a tree", "video": "tree.mp4"},
-    {"category": "a person", "video": "person.mp4"} ]
+
+// round 1 -- finished June 1, 2018
+// var stimListTest = [{"category": "a boat", "video": "boat.mp4"},
+//     {"category": "a car", "video": "car.mp4"},
+//     {"category": "a cup", "video": "cup.mp4"},
+//     {"category": "a dog", "video": "dog.mp4"},
+//     {"category": "a fish", "video": "fish.mp4"},
+//     {"category": "a house", "video": "house.mp4"},
+//     {"category": "a tree", "video": "tree.mp4"},
+//     {"category": "a person", "video": "person.mp4"} ]
+
+// round 1 -- started June 1, 2018
+var stimListTest = [{"category": "an airplane", "video": "airplane.mp4"},
+    {"category": "a bike", "video": "bike.mp4"},
+    {"category": "a bird", "video": "bird.mp4"},
+    {"category": "a bowl", "video": "bowl.mp4"},
+    {"category": "a chair", "video": "chair.mp4"},
+    {"category": "a couch", "video": "couch.mp4"},
+    {"category": "a phone", "video": "phone.mp4"},
+    {"category": "a rabbit", "video": "rabbit.mp4"} ]
+
 
 var stimListTest = shuffle(stimListTest)
 stimListTest.push(lastTrial)
@@ -37,25 +50,42 @@ stimListTest.unshift(trace2)
 stimListTest.unshift(trace1)
 var curTrial=0 // global variable, trial counter
 var maxTrials = stimListTest.length; //
+// var stimLang = {
+//     "this circle": "this circle",
+//     "square": "square",
+//     "shape": "shape",
+//     "a car": "a car",
+//     "a fish": "a fish",
+//     "a boat": "a boat",
+//     "a house": "a house",
+//     "a dog": "a dog",
+//     "a cup": "a cup",
+//     "a tree": "a tree",
+//     "a person": "a person",
+//     "something you love": "something you love"}
+
 var stimLang = {
     "this circle": "this circle",
     "square": "square",
     "shape": "shape",
-    "a car": "a car",
-    "a fish": "a fish",
-    "a boat": "a boat",
-    "a house": "a house",
-    "a dog": "a dog",
-    "a cup": "a cup",
-    "a tree": "a tree",
-    "a person": "a person",
+    "an airplane": "an airplane",
+    "a bike": "a bike",
+    "a bird": "a bird",
+    "a bowl": "a bowl",
+    "a chair": "a chair",
+    "a couch": "a couch",
+    "a phone": "a phone",
+    "a rabbit": "a rabbit",
     "something you love": "something you love"}
+
 var cuesLang = {
     "trace": "Can you trace the ",
     "copy": "Can you copy ",
     "draw": "Can you draw ",
     "endQuestion": " ?"
 }
+var checkBoxAlert = "Can we use your child's drawings? If so, please click the box above to start drawing!";
+var ageAlert = "Please select your age group.";
 
 // set global variables
 var clickedSubmit=0; // whether an image is submitted or not
@@ -198,7 +228,7 @@ function setUpDrawing(){
 
         setTimeout(function () {
             $('#sketchpad').css("background-image", "");
-        }, 2000);
+        }, 1000);
 
     }else if(curTrial == maxTrials-1){
         $("#submit_div").hide();
@@ -296,37 +326,21 @@ function saveSketchData(){
 
 
 function setLanguage(lang){
-    //If the user choose English, no change on the webpage
-    if (lang=="English") return;
-
     //If the user choose other langauges
     var filename = "language/"+lang +".json";
     $.getJSON(filename, function( data ) {
-        var items = [];
-        $.each( data.webpage, function( key, val ) {
-            if (key=="parentEmail"){
-                $("#parentEmail").attr("placeholder",val);
-            }else {
+        $.each( data, function( key, val ) {
                 var id = "#" + key;
                 $(id).text(val);
-            }
         });
-        $.each( data.stimulus, function( key, val ) {
-            stimLang[key] = val;
-        });
-        $.each( data.cues, function( key, val ) {
-            cuesLang[key] = val;
-        });
+        checkBoxAlert = data["checkBoxAlert"];
+        ageAlert = data["ageAlert"];
     });
 }
 
 // experiment navigation functions
 function showConsentPage(){
-    // if (mode == "CDM") {
-    //     $("#chooseLang").hide();
-    // }else {
-        $("#landingPage").hide();
-    // }
+    $("#landingPage").hide();
     $('#parentEmail').val('');
     $('#email-form').show();
     $('#emailSent').hide();
@@ -387,13 +401,8 @@ window.onload = function() {
     }
 
     $('#startConsent').bind('touchstart mousedown',function(e) {
-        e.preventDefault()
-        // if (mode=="CDM") {
-        //     $("#chooseLang").show();
-        //     $("#landingPage").hide();
-        // }else {
-            showConsentPage();
-        // }
+        e.preventDefault();
+        showConsentPage();
     });
 
     $('.langButton').bind('touchstart mousedown',function(e) {
@@ -401,7 +410,8 @@ window.onload = function() {
         // if (isDoubleClicked($(this))) return;
         language = $(this).attr('id');
         setLanguage(language);
-        showConsentPage();
+        $("#langChosen").text($(this).text());
+        $("#langDrop").removeClass("show");
     });
 
     $('.startExp').bind('touchstart mousedown',function (e) {
@@ -424,9 +434,9 @@ window.onload = function() {
         }else{
             console.log("CDM");
             if (!$("#checkConsent").is(':checked')) {
-                alert("Can we use your child's drawings? If so, please click the box above to start drawing!")
+                alert(checkBoxAlert)
             }else if($(".active").val()==undefined){
-                alert("Please select your age group.")
+                alert(ageAlert)
             }
             else {
                 startDrawing();

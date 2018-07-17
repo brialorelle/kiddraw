@@ -1,0 +1,14 @@
+{
+  "age": "HOW OLD ARE YOU?",
+  "adult": "ADULT",
+  "useDrawing": "YOU CAN USE MY DRAWING!",
+  "consentForm":"By proceeding,  you and your child agree to participate in this research. Your child will be asked to draw pictures of common objects on this tablet. No audio/video taping will occur and no identifiable information will be collection. Your child’s participation will take approximately 30 seconds – 5 minutes, depending on how long they choose to draw. The drawing data collected here will be used for research purposes by the Stanford Language and Cognition Lab and the San Jose Children's Discovery Museum, and will be displayed on the Museum's website on a future date. There are no risks or benefits to participating: no identifying information will be collected, so you and your child’s identity will remain anonymous. Your child can stop drawing at any time or choose not to answer any question without penalty. For more information, email the Stanford lab at langcoglab@stanford.edu, or call 650-721-9270. If you are not satisfied with how this study is being conducted, or if you have any concerns, complaints, or general questions about the research or your rights as a participant, please contact the Stanford Institutional Review Board (IRB) to speak to someone independent of the research team at (650)-723-2480 or toll free at 1-866-680-2906.  You can also write to the Stanford IRB, Stanford University, 3000 El Camino Real, Five Palo Alto Square, 4th Floor, Palo Alto, CA 94306.",
+  "notice": "Please note -- this drawing game is only for one person at a time! Please let your child draw by themselves.",
+  "sendEmail": "Email me the consent form",
+  "emailHelp": "If you would like a copy of the consent form, input your email address here.We'll never share your email with anyone else.",
+  "emailSent": "Email Sent!",
+  "startCDM": "LET'S DRAW！",
+  "checkBoxAlert": "Can we use your child's drawings? If so, please click the box above to start drawing!",
+  "ageAlert": "Please select your age group.",
+  "labName":"Stanford Language and Cognition Lab"
+}
