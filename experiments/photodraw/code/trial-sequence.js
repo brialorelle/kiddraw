@@ -56,7 +56,7 @@ function getStimuliList (){
     //     "4":["S","W","P"],
     //     "5":["P","S","W"],
     //     "6":["P","W","S"]}
-    // var cbGroup = $('#cbGroup').val();
+    var cbGroup = $('#cbGroup').val();
 
 
     // var conditions = conditionDic[cbGroup];
