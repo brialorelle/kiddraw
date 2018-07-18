@@ -531,7 +531,10 @@ window.onload = function() {
 
         }else{
             console.log("CDM");
-            if (!$("#checkConsent").is(':checked')) {
+            if ($("#cbGroup").val().trim().length==0){
+                alert("Please let the researcher enter your condition.");
+            }
+            else if (!$("#checkConsent").is(':checked')) {
                 alert("Can we use your child's drawings? If so, please click the box above to start drawing!")
             }else if($(".active").val()==undefined){
                 alert("Please select your age group.")
