@@ -157,6 +157,7 @@ function showTrial(){
         $("#photocue").attr("src",imgPath);
         $('#photocue').fadeIn();
         var audio = new Audio(stimList[curTrial].stimulus.audio_wm);
+        audio.volume = 1;
         audio.play();
         setTimeout(
             function() {
@@ -173,6 +174,7 @@ function showTrial(){
         $("#photocue").attr("src",imgPath);
         $('#photocue').fadeIn();
         var audio = new Audio(stimList[curTrial].stimulus.audio_perception);
+        audio.volume = 1;
         audio.play();
         setTimeout(
             function() {
