@@ -492,6 +492,9 @@ window.onload = function() {
 
 
     $('#startConsent').bind('touchstart mousedown',function(e) {
+        if ($("#cbGroup").val().trim().length==0){
+                alert("Please let the researcher enter your condition.");
+            }
         e.preventDefault()
         // if (mode=="CDM") {
         //     $("#chooseLang").show();
@@ -533,10 +536,7 @@ window.onload = function() {
 
         }else{
             console.log("CDM");
-            if ($("#cbGroup").val().trim().length==0){
-                alert("Please let the researcher enter your condition.");
-            }
-            else if (!$("#checkConsent").is(':checked')) {
+            if (!$("#checkConsent").is(':checked')) {
                 alert("Can we use your child's drawings? If so, please click the box above to start drawing!")
             }else if($(".active").val()==undefined){
                 alert("Please select your age group.")
