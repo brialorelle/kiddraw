@@ -492,15 +492,13 @@ window.onload = function() {
 
 
     $('#startConsent').bind('touchstart mousedown',function(e) {
+        e.preventDefault()
         if ($("#cbGroup").val().trim().length==0){
                 alert("Please let the researcher enter your condition.");
             }
-        e.preventDefault()
-        // if (mode=="CDM") {
-        //     $("#chooseLang").show();
-        //     $("#landingPage").hide();
-        // }else {
+        else{
             showConsentPage();
+        }
         // }
     });
 
