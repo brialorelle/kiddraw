@@ -39,7 +39,7 @@ var disableDrawing = false; //whether touch drawing is disabled or not
 var language = "English";
 
 // current mode and session info
-var mode = "Bing";
+var mode = "CDM";
 var version =mode + "_photodraw" + "_e1";
 var sessionId= version + Date.now().toString();
 
