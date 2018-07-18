@@ -121,7 +121,7 @@ button[disabled] {
 #consentText {
     bottom: 15%;
     font-size: 1.5vw;
-    padding: 4vw;
+    padding: 3vw;
 }
 
 .welcomeHeader {
@@ -151,6 +151,7 @@ button[disabled] {
     background: #ffffff;
     border: solid 5px #999;
     text-align: center;
+    margin-top: 3vh;
 }
 
 #consentDraw {
@@ -360,7 +361,7 @@ button[disabled] {
 #stanfordLogo{
     text-align:center;
     width:20vw;
-    padding-top:3vw;
+    
 }
 
 #parentEmail{
@@ -379,7 +380,6 @@ button[disabled] {
     font-size: 4vw;
     font-family: Schoolbell,cursive;
     font-style: italic;
-    margin-top: 4vh;
 }
 
 .vjs-nofull .vjs-fullscreen-control {

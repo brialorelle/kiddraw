@@ -415,11 +415,11 @@ function setLanguage(lang){
 
 // experiment navigation functions
 function showConsentPage(){
-    if (mode == "CDM") {
-        $("#chooseLang").hide();
-    }else {
+    // if (mode == "CDM") {
+    //     $("#chooseLang").hide();
+    // }else {
         $("#landingPage").hide();
-    }
+    // }
     $('#parentEmail').val('');
     $('#email-form').show();
     $('#emailSent').hide();
@@ -482,12 +482,12 @@ window.onload = function() {
 
     $('#startConsent').bind('touchstart mousedown',function(e) {
         e.preventDefault()
-        if (mode=="CDM") {
-            $("#chooseLang").show();
-            $("#landingPage").hide();
-        }else {
+        // if (mode=="CDM") {
+        //     $("#chooseLang").show();
+        //     $("#landingPage").hide();
+        // }else {
             showConsentPage();
-        }
+        // }
     });
 
     $('.langButton').bind('touchstart mousedown',function(e) {
