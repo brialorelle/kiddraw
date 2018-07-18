@@ -33,6 +33,20 @@ button[disabled] {
     padding-top:15px;
     padding-bottom:15px;
 }
+
+.counter_balancing {
+    margin-left: 37vw;
+    margin-top: 16vh;
+}
+
+.cbButton {
+    font-size: 4vw;
+    text-align:center;
+    font-family: Schoolbell,cursive;
+    font-style: italic;
+    margin: 10px;
+}
+
 .ageButton {
     font-size: 4vw;
     text-align:center;
@@ -125,6 +139,12 @@ button[disabled] {
 }
 
 .welcomeHeader {
+    margin: auto;
+    margin-top: 4vh;
+    margin-bottom:3vh;
+    text-align: center;
+}
+.welcomeHeader2 {
     margin: auto;
     margin-top: 2vh;
     margin-bottom:3vh;

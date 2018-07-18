@@ -50,24 +50,32 @@ var stimList = [];
 var subID = $('#subID').val();
 
 function getStimuliList (){
-    var conditionDic = {"1":["W","P","S"],
-        "2":["W","S","P"],
-        "3":["S","P","W"],
-        "4":["S","W","P"],
-        "5":["P","S","W"],
-        "6":["P","W","S"]}
-    var cbGroup = $('#cbGroup').val();
+    // var conditionDic = {"1":["W","P","S"],
+    //     "2":["W","S","P"],
+    //     "3":["S","P","W"],
+    //     "4":["S","W","P"],
+    //     "5":["P","S","W"],
+    //     "6":["P","W","S"]}
+    // var cbGroup = $('#cbGroup').val();
 
-    var conditions = conditionDic[cbGroup];
-    var curCondition = 0;
 
-    for(var i = 0; i < conditions.length; i++){
-        var currentStimOrder = shuffle(catList);
-        stimList.push({"condition":conditions[i], "stimulus":pracTrial});
-        for(var j = 0; j < currentStimOrder.length; j++){
-            stimList.push({"condition":conditions[i], "stimulus":currentStimOrder[j]});
-        }
+    // var conditions = conditionDic[cbGroup];
+    // var curCondition = 0;
+
+    // for(var i = 0; i < conditions.length; i++){
+    //     var currentStimOrder = shuffle(catList);
+    //     stimList.push({"condition":conditions[i], "stimulus":pracTrial});
+    //     for(var j = 0; j < currentStimOrder.length; j++){
+    //         stimList.push({"condition":conditions[i], "stimulus":currentStimOrder[j]});
+    //     }
+    // }
+
+    var currentStimOrder = shuffle(catList);
+    for(var j = 0; j < currentStimOrder.length; j++){
+            stimList.push({"condition":cbGroup, "stimulus":currentStimOrder[j]});
     }
+
+    stimList.unshift({"condition":cbGroup, "stimulus":pracTrial})
     stimList.unshift(firstTrial);
     stimList.unshift(trace2);
     stimList.unshift(trace1);
@@ -480,6 +488,7 @@ window.onload = function() {
         event.preventDefault();
     }
 
+
     $('#startConsent').bind('touchstart mousedown',function(e) {
         e.preventDefault()
         // if (mode=="CDM") {
@@ -497,6 +506,7 @@ window.onload = function() {
         setLanguage(language);
         showConsentPage();
     });
+
 
     $('.startExp').bind('touchstart mousedown',function (e) {
         e.preventDefault()
