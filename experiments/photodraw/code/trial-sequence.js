@@ -18,14 +18,14 @@ socket = io.connect();
 
 // 1. Setup trial order and randomize it!
 var firstTrial = {"condition":"S","stimulus":{"category": "this circle", "video": "copy_circle.mp4", "image":"images/circle.png"}}
-var pracTrial = {"category": "cup", "video": "cup.mp4","image":"images/photocues/cup.jpg", "audio_perception":"audio_perception/cup.wav", "audio_wm":"audio_wm/cup.wav"}
 var trace1 = {"condition":"S","stimulus":{"category":"this square", "video": "trace_square.mp4", "image":"images/square.png"}}
 var trace2 = {"condition":"S","stimulus":{"category":"this shape", "video": "trace_shape.mp4","image":"images/shape.png"}}
 
 var catList = [{"category":"cat", "video": "cat.mp4", "image":"images/photocues/cat.jpg", "audio_perception":"audio_perception/cat.wav", "audio_wm":"audio_wm/cat.wav"},
     {"category": "shoe", "video": "shoe.mp4","image":"images/photocues/shoe.jpg","audio_perception":"audio_perception/shoe.wav", "audio_wm":"audio_wm/shoe.wav"},
     {"category": "rabbit", "video": "rabbit.mp4","image":"images/photocues/rabbit.jpg", "audio_perception":"audio_perception/rabbit.wav", "audio_wm":"audio_wm/rabbit.wav"},
-    {"category": "train", "video": "train.mp4","image":"images/photocues/train.jpg", "audio_perception":"audio_perception/train.wav", "audio_wm":"audio_wm/train.wav"}]
+    {"category": "train", "video": "train.mp4","image":"images/photocues/train.jpg", "audio_perception":"audio_perception/train.wav", "audio_wm":"audio_wm/train.wav"},
+    {"category": "cup", "video": "cup.mp4","image":"images/photocues/cup.jpg", "audio_perception":"audio_perception/cup.wav", "audio_wm":"audio_wm/cup.wav"}]
 
 
 var curTrial=0 // global variable, trial counter
@@ -75,7 +75,6 @@ function getStimuliList (){
             stimList.push({"condition":cbGroup, "stimulus":currentStimOrder[j]});
     }
 
-    stimList.unshift({"condition":cbGroup, "stimulus":pracTrial})
     stimList.unshift(firstTrial);
     stimList.unshift(trace2);
     stimList.unshift(trace1);
@@ -191,7 +190,8 @@ function beginTrial(){
     $('#mainExp').fadeIn('fast');
 
     // cup is ALWAYS first, as it is the practice trial
-    if (stimList[curTrial].stimulus.category == 'cup') {
+    // if (stimList[curTrial].stimulus.category == 'cup') {
+    if (curTrial==3) {
         showTaskChangeVideo();
     }
     else{
