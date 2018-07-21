@@ -1,0 +1,1134 @@
+
+% Default to the notebook output style
+
+    
+
+
+% Inherit from the specified cell style.
+
+
+
+
+    
+\documentclass[11pt]{article}
+
+    
+    
+    \usepackage[T1]{fontenc}
+    % Nicer default font (+ math font) than Computer Modern for most use cases
+    \usepackage{mathpazo}
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % We will generate all images so they have a width \maxwidth. This means
+    % that they will get their normal width if they fit onto the page, but
+    % are scaled down if they would overflow the margins.
+    \makeatletter
+    \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth
+    \else\Gin@nat@width\fi}
+    \makeatother
+    \let\Oldincludegraphics\includegraphics
+    % Set max figure width to be 80% of text width, for now hardcoded.
+    \renewcommand{\includegraphics}[1]{\Oldincludegraphics[width=.8\maxwidth]{#1}}
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionLabelFormat{nolabel}{}
+    \captionsetup{labelformat=nolabel}
+
+    \usepackage{adjustbox} % Used to constrain images to a maximum size 
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+    \usepackage[mathletters]{ucs} % Extended unicode (utf-8) support
+    \usepackage[utf8x]{inputenc} % Allow utf-8 characters in the tex document
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics 
+                         % to support a larger range 
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    
+
+    
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+    
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    
+    
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatability definitions
+    \def\gt{>}
+    \def\lt{<}
+    % Document parameters
+    \title{preprocess\_museumstation\_firstday}
+    
+    
+    
+
+    % Pygments definitions
+    
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\expandafter\def\csname PY@tok@gd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gu\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@gt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\expandafter\def\csname PY@tok@gs\endcsname{\let\PY@bf=\textbf}
+\expandafter\def\csname PY@tok@gr\endcsname{\def\PY@tc##1{\textcolor[rgb]{1.00,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@cm\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@vg\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@mh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@cs\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@ge\endcsname{\let\PY@it=\textit}
+\expandafter\def\csname PY@tok@vc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@il\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@go\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.53,0.53}{##1}}}
+\expandafter\def\csname PY@tok@cp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.74,0.48,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gh\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@ni\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.60,0.60,0.60}{##1}}}
+\expandafter\def\csname PY@tok@nl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@no\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@na\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.49,0.56,0.16}{##1}}}
+\expandafter\def\csname PY@tok@nb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@ne\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.82,0.25,0.23}{##1}}}
+\expandafter\def\csname PY@tok@nf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@si\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@s2\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@nt\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nv\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@s1\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@dl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@ch\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@m\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@gp\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@sh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@ow\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@sx\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@bp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@c1\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@fm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@o\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@kc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@c\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@mf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@err\endcsname{\def\PY@bc##1{\setlength{\fboxsep}{0pt}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}
+\expandafter\def\csname PY@tok@mb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ss\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@sr\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@mo\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@kd\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@mi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@kn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@cpf\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@kr\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@s\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@kp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@w\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\expandafter\def\csname PY@tok@kt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\expandafter\def\csname PY@tok@sc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sa\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@k\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@se\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sd\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % Exact colors from NB
+    \definecolor{incolor}{rgb}{0.0, 0.0, 0.5}
+    \definecolor{outcolor}{rgb}{0.545, 0.0, 0.0}
+
+
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy 
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+    \begin{document}
+    
+    
+    \maketitle
+    
+    
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}5}]:} \PY{c+c1}{\PYZsh{}\PYZsh{} remember to run conn\PYZus{}cocolab from the terminal before running cells in this notebook!}
+        \PY{k+kn}{import} \PY{n+nn}{os}
+        \PY{k+kn}{import} \PY{n+nn}{urllib}\PY{o}{,} \PY{n+nn}{cStringIO}
+        
+        \PY{k+kn}{import} \PY{n+nn}{pymongo} \PY{k+kn}{as} \PY{n+nn}{pm}
+        
+        \PY{k+kn}{import} \PY{n+nn}{matplotlib}
+        \PY{k+kn}{from} \PY{n+nn}{matplotlib} \PY{k+kn}{import} \PY{n}{pylab}\PY{p}{,} \PY{n}{mlab}\PY{p}{,} \PY{n}{pyplot}
+        \PY{o}{\PYZpc{}}\PY{k}{matplotlib} inline
+        \PY{k+kn}{from} \PY{n+nn}{IPython.core.pylabtools} \PY{k+kn}{import} \PY{n}{figsize}\PY{p}{,} \PY{n}{getfigs}
+        \PY{n}{plt} \PY{o}{=} \PY{n}{pyplot}
+        \PY{k+kn}{import} \PY{n+nn}{seaborn} \PY{k+kn}{as} \PY{n+nn}{sns}
+        \PY{n}{sns}\PY{o}{.}\PY{n}{set\PYZus{}context}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{poster}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+        \PY{n}{sns}\PY{o}{.}\PY{n}{set\PYZus{}style}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{white}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+        
+        \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k+kn}{as} \PY{n+nn}{np}
+        \PY{k+kn}{from} \PY{n+nn}{\PYZus{}\PYZus{}future\PYZus{}\PYZus{}} \PY{k+kn}{import} \PY{n}{division}
+        \PY{k+kn}{import} \PY{n+nn}{scipy.stats} \PY{k+kn}{as} \PY{n+nn}{stats}
+        \PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k+kn}{as} \PY{n+nn}{pd}
+        \PY{k+kn}{import} \PY{n+nn}{json}
+        \PY{k+kn}{import} \PY{n+nn}{re}
+        
+        \PY{k+kn}{from} \PY{n+nn}{PIL} \PY{k+kn}{import} \PY{n}{Image}
+        \PY{k+kn}{import} \PY{n+nn}{base64}
+\end{Verbatim}
+
+
+    \subsubsection{file hierarchy and database connection
+vars}\label{file-hierarchy-and-database-connection-vars}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}6}]:} \PY{c+c1}{\PYZsh{} directory \PYZam{} file hierarchy}
+        \PY{n}{iterationName} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{cdm\PYZus{}run\PYZus{}v2}\PY{l+s+s1}{\PYZsq{}}
+        \PY{n}{exp\PYZus{}path} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{museumstation}\PY{l+s+s1}{\PYZsq{}}
+        \PY{n}{analysis\PYZus{}dir} \PY{o}{=} \PY{n}{os}\PY{o}{.}\PY{n}{getcwd}\PY{p}{(}\PY{p}{)}
+        \PY{n}{exp\PYZus{}dir} \PY{o}{=} \PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{abspath}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{getcwd}\PY{p}{(}\PY{p}{)}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{../..}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{experiments}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
+        \PY{c+c1}{\PYZsh{}\PYZsh{}}
+        \PY{n}{sketch\PYZus{}dir} \PY{o}{=} \PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{analysis\PYZus{}dir}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sketches}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+        \PY{k}{if} \PY{o+ow}{not} \PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{exists}\PY{p}{(}\PY{n}{sketch\PYZus{}dir}\PY{p}{)}\PY{p}{:}
+            \PY{n}{os}\PY{o}{.}\PY{n}{makedirs}\PY{p}{(}\PY{n}{sketch\PYZus{}dir}\PY{p}{)}
+        \PY{c+c1}{\PYZsh{}\PYZsh{} dir where we can keep all sketches not binned by category    }
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}7}]:} \PY{c+c1}{\PYZsh{} set vars }
+        \PY{n}{auth} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{auth.txt}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{header} \PY{o}{=} \PY{n+nb+bp}{None}\PY{p}{)} \PY{c+c1}{\PYZsh{} this auth.txt file contains the password for the sketchloop user}
+        \PY{n}{pswd} \PY{o}{=} \PY{n}{auth}\PY{o}{.}\PY{n}{values}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+        \PY{n}{user} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sketchloop}\PY{l+s+s1}{\PYZsq{}}
+        \PY{n}{host} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rxdhawkins.me}\PY{l+s+s1}{\PYZsq{}} \PY{c+c1}{\PYZsh{}\PYZsh{} cocolab ip address}
+        
+        \PY{c+c1}{\PYZsh{} have to fix this to be able to analyze from local}
+        \PY{k+kn}{import} \PY{n+nn}{pymongo} \PY{k+kn}{as} \PY{n+nn}{pm}
+        \PY{n}{conn} \PY{o}{=} \PY{n}{pm}\PY{o}{.}\PY{n}{MongoClient}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mongodb://sketchloop:}\PY{l+s+s1}{\PYZsq{}} \PY{o}{+} \PY{n}{pswd} \PY{o}{+} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{@127.0.0.1}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+        \PY{n}{db} \PY{o}{=} \PY{n}{conn}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{kiddraw}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+        \PY{n}{coll} \PY{o}{=} \PY{n}{db}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{cdm\PYZus{}run\PYZus{}v2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+\end{Verbatim}
+
+
+    \subsubsection{Preprocessing data and rendering
+images}\label{preprocessing-data-and-rendering-images}
+
+    Notes: There are two types of records in the database: 'stroke' and
+'finalImage'. This is stored under the key: 'dataType'. The
+'stroke'-type of record contains the svg string information. Every
+stroke event is stored as a separate record. The session identifier is
+called "sessionId".
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} \PY{c+c1}{\PYZsh{} wave 1 of data collection (16 classes)}
+        \PY{n}{experiment\PYZus{}name} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{cdm\PYZus{}run\PYZus{}v2}\PY{l+s+s1}{\PYZsq{}}
+        \PY{n}{time\PYZus{}threshold} \PY{o}{=} \PY{l+m+mi}{1510252452134} \PY{c+c1}{\PYZsh{}\PYZsh{} this is the timepoint after which real data started getting collected}
+        \PY{n}{all\PYZus{}sessions} \PY{o}{=} \PY{n}{coll}\PY{o}{.}\PY{n}{distinct}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sessionId}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{c+c1}{\PYZsh{}\PYZsh{} this returns ALL sessions in this collection. we will then filter on time\PYZus{}threshold}
+        \PY{n}{valid\PYZus{}sessions} \PY{o}{=} \PY{n}{coll}\PY{o}{.}\PY{n}{find}\PY{p}{(}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZdl{}gt}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{time\PYZus{}threshold}\PY{p}{\PYZcb{}}\PY{p}{\PYZcb{}}\PY{p}{)}\PY{o}{.}\PY{n}{distinct}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sessionId}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+        \PY{k}{print} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{We currently have \PYZob{}\PYZcb{} valid sessions from \PYZob{}\PYZcb{}.}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{valid\PYZus{}sessions}\PY{p}{)}\PY{p}{,} \PY{n}{experiment\PYZus{}name}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}20}]:} \PY{n+nb}{len}\PY{p}{(}\PY{n}{valid\PYZus{}sessions}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}20}]:} 431
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}32}]:} \PY{n}{really\PYZus{}run\PYZus{}this} \PY{o}{=} \PY{l+m+mi}{1}
+         \PY{k}{if} \PY{n}{really\PYZus{}run\PYZus{}this}\PY{p}{:}
+             \PY{c+c1}{\PYZsh{}\PYZsh{} img writing parameters}
+             \PY{n}{imsize} \PY{o}{=} \PY{l+m+mi}{224}
+             
+             \PY{c+c1}{\PYZsh{}\PYZsh{} desired output: a dataframe that has trials on the rows, and the following columns:}
+             \PY{c+c1}{\PYZsh{}\PYZsh{} category, age, number of strokes, mean\PYZus{}pixel\PYZus{}intensity, bounding\PYZus{}box\PYZus{}coordinates\PYZus{}LTRB, list of strokes, }
+             \PY{c+c1}{\PYZsh{}\PYZsh{} PNG string, submission\PYZus{}time, submission\PYZus{}date}
+             \PY{c+c1}{\PYZsh{}\PYZsh{} to be saved out as a nice tidy CSV}
+             \PY{n}{session\PYZus{}id} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+             \PY{n}{trial\PYZus{}num} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+             \PY{n}{category} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+             \PY{n}{age} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+             \PY{n}{num\PYZus{}strokes} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+             \PY{n}{mean\PYZus{}pixel\PYZus{}intensity} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+             \PY{n}{bounding\PYZus{}box\PYZus{}coords} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+             \PY{n}{svg} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+             \PY{n}{svg\PYZus{}times} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+             \PY{n}{png} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+             \PY{n}{submit\PYZus{}time} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+             \PY{n}{submit\PYZus{}date} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+             \PY{n}{draw\PYZus{}duration} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+             \PY{n}{filename} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+             \PY{k}{for} \PY{n}{s} \PY{o+ow}{in} \PY{n}{valid\PYZus{}sessions}\PY{p}{:}
+                 \PY{n}{this\PYZus{}collection} \PY{o}{=} \PY{n}{coll}
+                 \PY{n}{image\PYZus{}recs} \PY{o}{=} \PY{n}{this\PYZus{}collection}\PY{o}{.}\PY{n}{find}\PY{p}{(}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZdl{}and}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZdl{}gt}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{time\PYZus{}threshold}\PY{p}{\PYZcb{}}\PY{p}{\PYZcb{}}\PY{p}{,} \PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sessionId}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{n}{s}\PY{p}{\PYZcb{}}\PY{p}{,} \PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{dataType}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{finalImage}\PY{l+s+s1}{\PYZsq{}}\PY{p}{\PYZcb{}}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{)}\PY{o}{.}\PY{n}{sort}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}    
+                 \PY{k}{for} \PY{n}{imrec} \PY{o+ow}{in} \PY{n}{image\PYZus{}recs}\PY{p}{:}                                                            
+                         \PY{n}{stroke\PYZus{}recs} \PY{o}{=} \PY{n}{this\PYZus{}collection}\PY{o}{.}\PY{n}{find}\PY{p}{(}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZdl{}and}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZdl{}gt}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{time\PYZus{}threshold}\PY{p}{\PYZcb{}}\PY{p}{\PYZcb{}}\PY{p}{,} 
+                                                           \PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sessionId}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{n}{s}\PY{p}{\PYZcb{}}\PY{p}{,} 
+                                                           \PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{dataType}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stroke}\PY{l+s+s1}{\PYZsq{}}\PY{p}{\PYZcb{}}\PY{p}{,}
+                                                           \PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{trialNum}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{imrec}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{trialNum}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{)}\PY{o}{.}\PY{n}{sort}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}   
+         
+                         \PY{k}{if} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{age}\PY{l+s+s1}{\PYZsq{}} \PY{o+ow}{in} \PY{n}{imrec}\PY{o}{.}\PY{n}{keys}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+                             \PY{k}{if} \PY{n}{imrec}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{!=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{adult}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}
+                                 \PY{k}{if} \PY{n}{stroke\PYZus{}recs}\PY{o}{.}\PY{n}{count}\PY{p}{(}\PY{p}{)} \PY{o}{\PYZgt{}} \PY{l+m+mi}{0}\PY{p}{:} \PY{c+c1}{\PYZsh{}\PYZsh{} only include trials if the drawings are not blank            }
+                                     \PY{n}{session\PYZus{}id}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{imrec}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sessionId}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}        
+                                     \PY{n}{trial\PYZus{}num}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{imrec}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{trialNum}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)} 
+                                     \PY{n}{category}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{imrec}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{category}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+                                     \PY{n}{age}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{imrec}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+                                     
+                                     \PY{n}{png}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{imrec}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{imgData}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+                                     \PY{n}{submit\PYZus{}time}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{imrec}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+                                     \PY{n}{submit\PYZus{}date}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{imrec}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{date}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+                                     \PY{n}{filename}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{sketch\PYZus{}dir}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZob{}\PYZcb{}\PYZus{}sketch\PYZus{}\PYZob{}\PYZcb{}\PYZus{}\PYZob{}\PYZcb{}.png}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{imrec}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{category}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{imrec}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}\PY{n}{imrec}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sessionId}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+                                     \PY{n}{num\PYZus{}strokes}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{stroke\PYZus{}recs}\PY{o}{.}\PY{n}{count}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+                                     \PY{n}{\PYZus{}svg} \PY{o}{=} \PY{p}{[}\PY{p}{]} \PY{c+c1}{\PYZsh{} this keeps track of the strokes from THIS final image}
+                                     \PY{n}{\PYZus{}svg\PYZus{}times} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+                                     \PY{k}{for} \PY{n}{strec} \PY{o+ow}{in} \PY{n}{stroke\PYZus{}recs}\PY{p}{:}
+                                         \PY{n}{\PYZus{}svg}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{strec}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{svg}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+                                         \PY{n}{\PYZus{}svg\PYZus{}times}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{strec}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+                                     \PY{n}{draw\PYZus{}duration}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{p}{(}\PY{n}{\PYZus{}svg\PYZus{}times}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{\PYZus{}svg\PYZus{}times}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)} \PY{c+c1}{\PYZsh{}\PYZsh{} in seconds}
+                                     \PY{n}{svg}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{\PYZus{}svg}\PY{p}{)}
+                                     \PY{n}{svg\PYZus{}times}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{\PYZus{}svg\PYZus{}times}\PY{p}{)}
+         
+                                     \PY{c+c1}{\PYZsh{}\PYZsh{} and write out image data here too}
+                                     \PY{n}{imgData} \PY{o}{=} \PY{n}{imrec}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{imgData}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{;}
+                                     \PY{n}{filestr} \PY{o}{=} \PY{n}{base64}\PY{o}{.}\PY{n}{b64decode}\PY{p}{(}\PY{n}{imgData}\PY{p}{)}
+                                     \PY{n}{category\PYZus{}dir} \PY{o}{=} \PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{sketch\PYZus{}dir}\PY{p}{,}\PY{n}{imrec}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{category}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+                                     \PY{k}{if} \PY{o+ow}{not} \PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{exists}\PY{p}{(}\PY{n}{category\PYZus{}dir}\PY{p}{)}\PY{p}{:}
+                                         \PY{n}{os}\PY{o}{.}\PY{n}{makedirs}\PY{p}{(}\PY{n}{category\PYZus{}dir}\PY{p}{)}
+                                     \PY{n}{fname} \PY{o}{=} \PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{category\PYZus{}dir}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZob{}\PYZcb{}\PYZus{}sketch\PYZus{}\PYZob{}\PYZcb{}\PYZus{}\PYZob{}\PYZcb{}.png}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{imrec}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{category}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{imrec}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}\PY{n}{imrec}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sessionId}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+                                     \PY{k}{with} \PY{n+nb}{open}\PY{p}{(}\PY{n}{fname}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{wb}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)} \PY{k}{as} \PY{n}{fh}\PY{p}{:}
+                                         \PY{n}{fh}\PY{o}{.}\PY{n}{write}\PY{p}{(}\PY{n}{imgData}\PY{o}{.}\PY{n}{decode}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{base64}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}  
+                                 
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}21}]:} \PY{n}{X}\PY{o}{.}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+
+          File "<ipython-input-21-b187d25ee8dc>", line 1
+        X.
+          \^{}
+    SyntaxError: invalid syntax
+
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}33}]:} \PY{k}{if} \PY{n}{really\PYZus{}run\PYZus{}this}\PY{p}{:}
+             \PY{n}{X} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{[}\PY{n}{session\PYZus{}id}\PY{p}{,}\PY{n}{trial\PYZus{}num}\PY{p}{,}\PY{n}{category}\PY{p}{,}\PY{n}{age}\PY{p}{,}\PY{n}{submit\PYZus{}time}\PY{p}{,}\PY{n}{submit\PYZus{}date}\PY{p}{,}\PY{n}{num\PYZus{}strokes}\PY{p}{,}\PY{n}{svg}\PY{p}{,}\PY{n}{svg\PYZus{}times}\PY{p}{,}\PY{n}{png}\PY{p}{,}\PY{n}{draw\PYZus{}duration}\PY{p}{,}\PY{n}{filename}\PY{p}{]}\PY{p}{)}
+             \PY{n}{X} \PY{o}{=} \PY{n}{X}\PY{o}{.}\PY{n}{transpose}\PY{p}{(}\PY{p}{)}
+             \PY{n}{X}\PY{o}{.}\PY{n}{columns} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{session\PYZus{}id}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{trial\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{category}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{submit\PYZus{}time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{submit\PYZus{}date}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{num\PYZus{}strokes}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{svg}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{svg\PYZus{}times}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{png}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{draw\PYZus{}duration}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{filename}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}34}]:} \PY{k}{if} \PY{n}{really\PYZus{}run\PYZus{}this}\PY{p}{:}
+             \PY{n}{X\PYZus{}out} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{[}\PY{n}{session\PYZus{}id}\PY{p}{,}\PY{n}{trial\PYZus{}num}\PY{p}{,}\PY{n}{category}\PY{p}{,}\PY{n}{age}\PY{p}{,}\PY{n}{submit\PYZus{}time}\PY{p}{,}\PY{n}{submit\PYZus{}date}\PY{p}{,}\PY{n}{num\PYZus{}strokes}\PY{p}{,}\PY{n}{draw\PYZus{}duration}\PY{p}{,}\PY{n}{filename}\PY{p}{]}\PY{p}{)}
+             \PY{n}{X\PYZus{}out} \PY{o}{=} \PY{n}{X\PYZus{}out}\PY{o}{.}\PY{n}{transpose}\PY{p}{(}\PY{p}{)}
+             \PY{n}{X\PYZus{}out}\PY{o}{.}\PY{n}{columns} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{session\PYZus{}id}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{trial\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{category}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{submit\PYZus{}time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{submit\PYZus{}date}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{num\PYZus{}strokes}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{draw\PYZus{}duration}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{filename}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+         
+             \PY{n}{X\PYZus{}out}\PY{o}{.}\PY{n}{to\PYZus{}csv}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{May4th\PYZus{}usage.csv}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}24}]:} \PY{c+c1}{\PYZsh{} def get\PYZus{}bounding\PYZus{}box(img):}
+         \PY{c+c1}{\PYZsh{}     rows = np.any(img, axis=1)}
+         \PY{c+c1}{\PYZsh{}     cols = np.any(img, axis=0)}
+         \PY{c+c1}{\PYZsh{}     rmin, rmax = np.where(rows)[0][[0, \PYZhy{}1]]}
+         \PY{c+c1}{\PYZsh{}     cmin, cmax = np.where(cols)[0][[0, \PYZhy{}1]]}
+         \PY{c+c1}{\PYZsh{}     return rmin, rmax, cmin, cmax}
+         
+         \PY{c+c1}{\PYZsh{} merged\PYZus{}experiment\PYZus{}name = \PYZsq{}E1cd\PYZsq{}}
+         
+         \PY{c+c1}{\PYZsh{} if really\PYZus{}run\PYZus{}this:}
+         
+         \PY{c+c1}{\PYZsh{}     \PYZsh{}\PYZsh{} add mean pixel intensity (amount of ink spilled) \PYZam{} bounding box coords }
+         \PY{c+c1}{\PYZsh{}     mean\PYZus{}intensity = []}
+         \PY{c+c1}{\PYZsh{}     bounding\PYZus{}box = []}
+         \PY{c+c1}{\PYZsh{}     imsize = 100}
+         \PY{c+c1}{\PYZsh{}     numpix = imsize**2}
+         \PY{c+c1}{\PYZsh{}     thresh = 250}
+         \PY{c+c1}{\PYZsh{}     for i,\PYZus{}d in X.iterrows():}
+         \PY{c+c1}{\PYZsh{}         imgData = \PYZus{}d[\PYZsq{}png\PYZsq{}]}
+         \PY{c+c1}{\PYZsh{}         filestr = base64.b64decode(imgData)}
+         \PY{c+c1}{\PYZsh{}         fname = os.path.join(\PYZsq{}sketch.png\PYZsq{})}
+         \PY{c+c1}{\PYZsh{}         with open(fname, \PYZdq{}wb\PYZdq{}) as fh:}
+         \PY{c+c1}{\PYZsh{}             fh.write(imgData.decode(\PYZsq{}base64\PYZsq{}))}
+         \PY{c+c1}{\PYZsh{}         im = Image.open(fname).resize((imsize,imsize))}
+         \PY{c+c1}{\PYZsh{}         \PYZus{}im = np.array(im)}
+         \PY{c+c1}{\PYZsh{}         mean\PYZus{}intensity.append(len(np.where(\PYZus{}im[:,:,3].flatten()\PYZgt{}thresh)[0])/numpix)}
+         \PY{c+c1}{\PYZsh{}         \PYZsh{} bounding box part}
+         \PY{c+c1}{\PYZsh{}         rmin, rmax, cmin, cmax = get\PYZus{}bounding\PYZus{}box(np.array(Image.open(fname)))}
+         \PY{c+c1}{\PYZsh{}         bounding\PYZus{}box.append(tuple((rmin, rmax, cmin, cmax)))}
+         
+         \PY{c+c1}{\PYZsh{}     \PYZsh{}\PYZsh{} add to dataframe    }
+         \PY{c+c1}{\PYZsh{}     X = X.assign(mean\PYZus{}intensity=pd.Series(mean\PYZus{}intensity).values)}
+         \PY{c+c1}{\PYZsh{}     X = X.assign(bounding\PYZus{}box=pd.Series(bounding\PYZus{}box).values)}
+             
+         \PY{c+c1}{\PYZsh{}     \PYZsh{} save out csv}
+         \PY{c+c1}{\PYZsh{}     if not os.path.exists(\PYZsq{}../preprocessed\PYZus{}data\PYZsq{}):}
+         \PY{c+c1}{\PYZsh{}         os.makedirs(\PYZsq{}../preprocessed\PYZus{}data\PYZsq{})}
+         \PY{c+c1}{\PYZsh{}     X.to\PYZus{}csv(\PYZsq{}../preprocessed\PYZus{}data/museumdraw\PYZus{}\PYZob{}\PYZcb{}\PYZus{}data.csv\PYZsq{}.format(merged\PYZus{}experiment\PYZus{}name))}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}35}]:} \PY{n+nb}{sum}\PY{p}{(}\PY{n}{X}\PY{o}{.}\PY{n}{age} \PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+
+        ---------------------------------------------------------------------------
+
+        TypeError                                 Traceback (most recent call last)
+
+        <ipython-input-35-cc378e864f8e> in <module>()
+    ----> 1 sum(X.age )
+    
+
+        TypeError: unsupported operand type(s) for +: 'int' and 'unicode'
+
+    \end{Verbatim}
+
+    \subsubsection{load drawing metadata csv back
+in}\label{load-drawing-metadata-csv-back-in}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}36}]:} \PY{n}{plt}\PY{o}{.}\PY{n}{hist}\PY{p}{(}\PY{n}{X}\PY{o}{.}\PY{n}{age}\PY{p}{,}\PY{n}{normed}\PY{o}{=}\PY{n+nb+bp}{False}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{xticks}\PY{p}{(}\PY{n}{rotation}\PY{o}{=}\PY{l+m+mi}{90}\PY{p}{)}
+         \PY{n+nb}{len}\PY{p}{(}\PY{n}{X}\PY{o}{.}\PY{n}{age}\PY{p}{)}
+         \PY{n+nb}{sum}\PY{p}{(}\PY{n}{X}\PY{o}{.}\PY{n}{age} \PY{o}{!=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{adult}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}36}]:} 1531
+\end{Verbatim}
+            
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_15_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \subsubsection{Basic visualizations}\label{basic-visualizations}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}37}]:} \PY{n}{np}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{n}{X}\PY{o}{.}\PY{n}{draw\PYZus{}duration}\PY{o}{.}\PY{n}{values}\PY{o}{\PYZgt{}}\PY{l+m+mi}{25}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}37}]:} 35
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}41}]:} \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{)}\PY{p}{)}
+         \PY{n}{h} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{hist}\PY{p}{(}\PY{n}{X}\PY{o}{.}\PY{n}{num\PYZus{}strokes}\PY{o}{.}\PY{n}{values}\PY{p}{,}\PY{n}{normed}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{proportion}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{number of strokes}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}41}]:} Text(0.5,0,u'number of strokes')
+\end{Verbatim}
+            
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_18_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}48}]:} \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{)}\PY{p}{)}
+         \PY{n}{h} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{hist}\PY{p}{(}\PY{n}{X}\PY{o}{.}\PY{n}{draw\PYZus{}duration}\PY{o}{.}\PY{n}{values}\PY{p}{,}\PY{n}{normed}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{proportion}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{draw duration}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}48}]:} Text(0.5,0,u'draw duration')
+\end{Verbatim}
+            
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_19_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}50}]:} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{14}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{)}\PY{p}{)}
+         
+         \PY{n}{plt}\PY{o}{.}\PY{n}{subplot}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{3}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+         \PY{n}{seq} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,}\PY{l+m+mi}{10}\PY{p}{)}
+         \PY{n}{sns}\PY{o}{.}\PY{n}{barplot}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{X}\PY{p}{,}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{num\PYZus{}strokes}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{order}\PY{o}{=}\PY{n}{seq}\PY{p}{,}\PY{n}{palette}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Greens\PYZus{}d}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{number of strokes}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         
+         \PY{n}{plt}\PY{o}{.}\PY{n}{subplot}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{3}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{)}
+         \PY{n}{seq} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,}\PY{l+m+mi}{10}\PY{p}{)}
+         
+         \PY{n}{sns}\PY{o}{.}\PY{n}{barplot}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{X}\PY{p}{,}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{draw\PYZus{}duration}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{order}\PY{o}{=}\PY{n}{seq}\PY{p}{,} \PY{n}{palette}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Greens\PYZus{}d}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{draw duration (s)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         
+         \PY{c+c1}{\PYZsh{} plt.subplot(1,3,3)}
+         \PY{c+c1}{\PYZsh{} seq = np.arange(4,10)}
+         \PY{c+c1}{\PYZsh{} sns.barplot(data=X,x=\PYZsq{}age\PYZsq{},y=\PYZsq{}mean\PYZus{}intensity\PYZsq{},order=seq,palette=\PYZdq{}Greens\PYZus{}d\PYZdq{})}
+         \PY{c+c1}{\PYZsh{} plt.ylabel(\PYZsq{}mean pixel intensity\PYZsq{})}
+         
+         \PY{n}{plt}\PY{o}{.}\PY{n}{tight\PYZus{}layout}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_20_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}44}]:} \PY{n}{X}\PY{o}{.}\PY{n}{category}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}44}]:} 0                   square
+         1                    shape
+         2                   square
+         3                    shape
+         4              this circle
+         5                   a fish
+         6                    a dog
+         7                    a cup
+         8                   a boat
+         9                    a car
+         10                 a house
+         11                a person
+         12                  a tree
+         13                  square
+         14                  square
+         15                   shape
+         16             this circle
+         17                  square
+         18                   shape
+         19             this circle
+         20                  a fish
+         21                  a tree
+         22                  a boat
+         23                   a dog
+         24                   a cup
+         25                a person
+         26                   a car
+         27                 a house
+         28      something you love
+         29                  square
+                        {\ldots}        
+         1501                 a cup
+         1502              a person
+         1503                a boat
+         1504                square
+         1505                square
+         1506                 shape
+         1507                square
+         1508                 shape
+         1509                square
+         1510                 shape
+         1511           this circle
+         1512                 a cup
+         1513                a tree
+         1514              a person
+         1515                 a car
+         1516                a boat
+         1517               a house
+         1518                square
+         1519                 shape
+         1520           this circle
+         1521                 a cup
+         1522                square
+         1523                 shape
+         1524           this circle
+         1525                 a cup
+         1526                 a car
+         1527                a boat
+         1528                a fish
+         1529                a tree
+         1530               a house
+         Name: category, Length: 1531, dtype: object
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}51}]:} \PY{n}{unique} \PY{o}{=} \PY{n}{X}\PY{o}{.}\PY{n}{drop\PYZus{}duplicates}\PY{p}{(}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{session\PYZus{}id}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}
+         \PY{n}{unique}\PY{o}{.}\PY{n}{count}\PY{p}{(}\PY{p}{)}
+         \PY{c+c1}{\PYZsh{} sum(unique.age != \PYZsq{}adult\PYZsq{})}
+         \PY{n+nb}{sum}\PY{p}{(}\PY{n}{unique}\PY{o}{.}\PY{n}{age} \PY{o}{!=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{adult}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}51}]:} 280
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}52}]:} \PY{n}{X}\PY{o}{.}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+
+          File "<ipython-input-52-b187d25ee8dc>", line 1
+        X.
+          \^{}
+    SyntaxError: invalid syntax
+
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}53}]:} \PY{n}{unique}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}53}]:}                        session\_id trial\_num     category    age  submit\_time  \textbackslash{}
+         0       cdm\_run\_test1524766518460         0       square   age5  1.52477e+12   
+         2     stationPilot1\_1524766676245         0       square   age5  1.52477e+12   
+         13      cdm\_run\_test1524767095441         0       square   age8  1.52477e+12   
+         14    stationPilot1\_1524767406267         0       square   age8  1.52477e+12   
+         17    stationPilot1\_1524767460609         0       square   age9  1.52477e+12   
+         29    stationPilot1\_1524767677268         0       square   age9  1.52477e+12   
+         31      cdm\_run\_test1524767999442         0       square   age8  1.52477e+12   
+         32    stationPilot1\_1524768031714         0       square  age10  1.52477e+12   
+         39    stationPilot1\_1524768165944         0       square   age9  1.52477e+12   
+         40    stationPilot1\_1524768583158         0       square   age3  1.52477e+12   
+         43    stationPilot1\_1524768691693         0       square   age3  1.52477e+12   
+         47    stationPilot1\_1524768885837         2  this circle   age3  1.52477e+12   
+         57      cdm\_run\_test1524769263535         0       square   age5  1.52477e+12   
+         69      cdm\_run\_test1524772855773         0       square   age2  1.52477e+12   
+         81    stationPilot1\_1524773265153         0       square   age2  1.52477e+12   
+         83    stationPilot1\_1524774211399         0       square   age4  1.52477e+12   
+         90      cdm\_run\_test1524776059907         0       square   age3  1.52478e+12   
+         102   stationPilot1\_1524777289150         1        shape   age2  1.52478e+12   
+         113       cdm\_run\_v21524845953055         0       square   age2  1.52485e+12   
+         122       cdm\_run\_v21524850675318         0       square   age8  1.52485e+12   
+         134       cdm\_run\_v21524851276800         0       square   age8  1.52485e+12   
+         136       cdm\_run\_v21524852074777         0       square   age2  1.52485e+12   
+         137       cdm\_run\_v21524852136263         1        shape   age8  1.52485e+12   
+         148       cdm\_run\_v21524852602415         0       square   age8  1.52485e+12   
+         160       cdm\_run\_v21524852833636         0       square   age7  1.52485e+12   
+         169       cdm\_run\_v21524853325838         0       square   age6  1.52485e+12   
+         171       cdm\_run\_v21524853538862         0       square   age5  1.52485e+12   
+         183       cdm\_run\_v21524853769415         0       square   age6  1.52485e+12   
+         195       cdm\_run\_v21524854037249         1        shape   age8  1.52485e+12   
+         197       cdm\_run\_v21524854095549         0       square   age8  1.52485e+12   
+         {\ldots}                           {\ldots}       {\ldots}          {\ldots}    {\ldots}          {\ldots}   
+         1389      cdm\_run\_v21525649079597         0       square   age4  1.52565e+12   
+         1391      cdm\_run\_v21525649214198         0       square   age3  1.52565e+12   
+         1392      cdm\_run\_v21525649510031         0       square   age5  1.52565e+12   
+         1400      cdm\_run\_v21525802532539         0       square   age5   1.5258e+12   
+         1407      cdm\_run\_v21525802763941         0       square   age4   1.5258e+12   
+         1419      cdm\_run\_v21525803597246         0       square   age2   1.5258e+12   
+         1421      cdm\_run\_v21525803685456         0       square   age4   1.5258e+12   
+         1424      cdm\_run\_v21525803809858         0       square   age4   1.5258e+12   
+         1433      cdm\_run\_v21525804660164         0       square   age4  1.52581e+12   
+         1436      cdm\_run\_v21525808174680         0       square   age4  1.52581e+12   
+         1443      cdm\_run\_v21525808318682         0       square   age4  1.52581e+12   
+         1450      cdm\_run\_v21525809367447         0       square   age4  1.52581e+12   
+         1454      cdm\_run\_v21525809542065         0       square   age4  1.52581e+12   
+         1456      cdm\_run\_v21525809573396         0       square   age4  1.52581e+12   
+         1458      cdm\_run\_v21525809616969         0       square   age4  1.52581e+12   
+         1460      cdm\_run\_v21525809687436         0       square   age3  1.52581e+12   
+         1462      cdm\_run\_v21525809840098         0       square   age3  1.52581e+12   
+         1473      cdm\_run\_v21525810440457         0       square   age3  1.52581e+12   
+         1474      cdm\_run\_v21525811079374         0       square   age3  1.52581e+12   
+         1486      cdm\_run\_v21525811377305         0       square   age3  1.52581e+12   
+         1498      cdm\_run\_v21525812769058         0       square   age2  1.52581e+12   
+         1499      cdm\_run\_v21525812809975         1        shape   age9  1.52581e+12   
+         1500      cdm\_run\_v21525812846938         0       square   age2  1.52581e+12   
+         1501      cdm\_run\_v21525812881643         3        a cup   age2  1.52581e+12   
+         1504      cdm\_run\_v21525812987129         0       square   age2  1.52581e+12   
+         1505      cdm\_run\_v21525815254474         0       square   age4  1.52582e+12   
+         1507      cdm\_run\_v21525819160129         0       square   age2  1.52582e+12   
+         1509      cdm\_run\_v21525821354432         0       square   age3  1.52582e+12   
+         1518      cdm\_run\_v21525823317876         0       square   age9  1.52582e+12   
+         1522      cdm\_run\_v21525823804093         0       square   age9  1.52582e+12   
+         
+                            submit\_date num\_strokes  \textbackslash{}
+         0     2018-04-26T18:17:34.102Z           1   
+         2     2018-04-26T18:19:12.145Z           1   
+         13    2018-04-26T18:30:05.270Z         135   
+         14    2018-04-26T18:30:30.271Z           2   
+         17    2018-04-26T18:31:43.009Z           1   
+         29    2018-04-26T18:35:11.560Z           1   
+         31    2018-04-26T18:40:30.873Z           1   
+         32    2018-04-26T18:41:05.915Z           1   
+         39    2018-04-26T18:43:18.263Z           9   
+         40    2018-04-26T18:50:45.246Z          20   
+         43    2018-04-26T18:52:33.077Z          10   
+         47    2018-04-26T18:55:22.309Z           1   
+         57    2018-04-26T19:03:57.261Z           2   
+         69    2018-04-26T20:03:00.000Z           2   
+         81    2018-04-26T20:08:11.735Z           1   
+         83    2018-04-26T20:24:42.535Z           1   
+         90    2018-04-26T21:08:04.997Z           7   
+         102   2018-04-26T21:17:11.529Z          21   
+         113   2018-04-27T17:08:34.707Z          13   
+         122   2018-04-27T17:39:50.315Z           1   
+         134   2018-04-27T17:49:51.510Z           3   
+         136   2018-04-27T18:01:48.706Z          11   
+         137   2018-04-27T18:07:11.183Z           1   
+         148   2018-04-27T18:11:12.149Z           1   
+         160   2018-04-27T18:15:01.809Z           1   
+         169   2018-04-27T18:25:04.900Z           3   
+         171   2018-04-27T18:26:07.627Z           1   
+         183   2018-04-27T18:30:22.835Z           1   
+         195   2018-04-27T18:34:38.511Z           1   
+         197   2018-04-27T18:35:44.835Z           1   
+         {\ldots}                        {\ldots}         {\ldots}   
+         1389  2018-05-06T23:25:18.338Z           4   
+         1391  2018-05-06T23:31:16.366Z           1   
+         1392  2018-05-06T23:40:26.807Z           1   
+         1400  2018-05-08T18:03:24.626Z           1   
+         1407  2018-05-08T18:06:33.634Z           3   
+         1419  2018-05-08T18:20:16.945Z           2   
+         1421  2018-05-08T18:22:36.450Z           1   
+         1424  2018-05-08T18:23:55.841Z           1   
+         1433  2018-05-08T19:35:37.904Z           5   
+         1436  2018-05-08T19:36:40.467Z           1   
+         1443  2018-05-08T19:39:07.239Z           1   
+         1450  2018-05-08T19:58:04.096Z           1   
+         1454  2018-05-08T19:59:23.179Z           1   
+         1456  2018-05-08T20:00:03.345Z           1   
+         1458  2018-05-08T20:00:43.425Z           9   
+         1460  2018-05-08T20:03:43.340Z           4   
+         1462  2018-05-08T20:04:30.569Z           1   
+         1473  2018-05-08T20:15:11.042Z           5   
+         1474  2018-05-08T20:25:15.640Z           2   
+         1486  2018-05-08T20:30:07.855Z           1   
+         1498  2018-05-08T20:53:19.781Z           1   
+         1499  2018-05-08T20:54:06.568Z           4   
+         1500  2018-05-08T20:54:29.584Z           4   
+         1501  2018-05-08T20:55:31.872Z         122   
+         1504  2018-05-08T20:58:23.607Z          13   
+         1505  2018-05-08T21:42:26.618Z          19   
+         1507  2018-05-08T23:13:21.842Z           1   
+         1509  2018-05-08T23:45:10.620Z           2   
+         1518  2018-05-08T23:55:55.997Z           1   
+         1522  2018-05-08T23:56:59.848Z           1   
+         
+                                                             svg  \textbackslash{}
+         0     [M242,242.96875v1v1v2v2v3v2v3l-1,3v3l-1,5l-1,5{\ldots}   
+         2     [M232,212.96875v2v4l-1,3l-1,4l-2,3l-1,4l-1,3l-{\ldots}   
+         13    [M242,216.96875v3l-1,4l-1,4l-2,6l-1,5l-1,7l-1,{\ldots}   
+         14    [M234,225.96875v1v1v1v1v1v1v1v1v2v2v2v3v2v4v3v{\ldots}   
+         17    [M265,248.96875v2v1v1h-1l-1,1h-1l-1,1h-1l-1,1l{\ldots}   
+         29    [M221,230.96875v1v2v2l1,1v2l1,1v1v2v1l1,1v2v2v{\ldots}   
+         31    [M189,222.96875v2v1v1v2v1v1v2l1,1v2l1,3l1,4l1,{\ldots}   
+         32    [M231,233.96875v1v1v1v1v2v2v1v2v2v2v1v1v1v2v1v{\ldots}   
+         39    [M228,543.96875l-5,-9l-4,-9l-2,-5l-3,-5l9,-34l{\ldots}   
+         40    [M368,306.96875v8l-1,9l-1,8l-1,8l-1,7l-1,8v9v8{\ldots}   
+         43    [M472,446.96875h1l1,2l1,1v2l1,2v1l1,2, M202,21{\ldots}   
+         47                                                   []   
+         57    [M236,230.96875h1h1h1h1h2h2h1h2h3h2h2h2h3h3l3,{\ldots}   
+         69    [M223,234.96875h1h2h2h2h3h2h2h4h3h3h3h4h3h4h5h{\ldots}   
+         81    [M391,428.96875l-4,-3l-4,-2l-3,-2l-2,-1l-2,-1l{\ldots}   
+         83    [M303,499.96875v-1v-2v-2v-2v-2v-2l-1,-2v-2v-1l{\ldots}   
+         90    [M546,246.96875l-5,-1h-1h-2h-2h-2h-2h-2h-3h-3h{\ldots}   
+         102   [M252,542.96875l-6,-5v-1v-1v-1v-1v-2l1,-1v-1v-{\ldots}   
+         113   [M454,581.96875l10,8, M388,666.96875, M411,671{\ldots}   
+         122   [M547,225.96875v5v2v1v2v1v1v2v2v2v2v3v3v2v3v2v{\ldots}   
+         134   [M236,215.96875l-7,14v1v1v1v1v1v1v1v1v1v1v1v1v{\ldots}   
+         136   [M306,134.96875l9,-3l8,-1, M355,118.96875l-7,-{\ldots}   
+         137   [M388,715.96875v-11v-1v-2v-1v-1v-2v-2v-1v-2v-1{\ldots}   
+         148   [M254,558.96875l-9,-14v-1v-2v-3v-3v-3v-3v-4v-3{\ldots}   
+         160   [M555,543.96875l5,-6v-1l1,-1v-1v-1v-1v-1v-1v-1{\ldots}   
+         169   [M233,233.96875v2v2v3v5v4v5v5l-1,5l-1,5l-1,5l-{\ldots}   
+         171   [M235,225.96875l-2,2v2v2v2v2v2v2l-1,3l-1,2v3v3{\ldots}   
+         183   [M240,224.96875l-6,1v2v2v2v3v3v2v4v3v4v4v4v4l-{\ldots}   
+         195   [M393,292.96875l-5,7l-3,8l-3,8l-2,9l-2,10l-1,1{\ldots}   
+         197   [M561,544.96875v-5v-1v-1v-1v-1v-1l-1,-1v-1v-1v{\ldots}   
+         {\ldots}                                                 {\ldots}   
+         1389  [M545,239.84375, M544,228.84375, M244,220.8437{\ldots}   
+         1391                                   [M261,122.84375]   
+         1392  [M259,183.84375l-4,2v3v4l-1,6l-2,7l-2,9l-3,9l-{\ldots}   
+         1400  [M209,212.84375l5,-3h3h2h4h3h4h4h5h5h4h6h4h5h5{\ldots}   
+         1407  [M568,227.84375l-7,2l-1,1l-1,1v1h-1v2v1v1v2v1v{\ldots}   
+         1419  [M199,209.84375l4,4v3l1,4l1,4v3l1,5v4l1,6v6l1,{\ldots}   
+         1421  [M528,543.84375l7,1h1v1h1h1h1h1h1h1h1h1v-1v-1v{\ldots}   
+         1424  [M483,560.84375l4,-4h1h1h1h1h1h1h1h1h1h1h1h2h1{\ldots}   
+         1433  [M477,211.84375l-3,8v6v7v8v0v8v9l1,11l2,12l4,1{\ldots}   
+         1436  [M562,199.84375l-2,3v1v2v2v2v1l-1,2v1v2v1v1l-1{\ldots}   
+         1443  [M539,248.84375l5,4v1v1v1v1v1v1v1v1l1,1l1,1l1,{\ldots}   
+         1450  [M372,393.84375l-1,-3l5,-2l5,-2l7,-2l9,-3l9,-2{\ldots}   
+         1454  [M531,238.84375l9,-4h4h3h5l4,2l5,2l5,3l4,2l4,3{\ldots}   
+         1456  [M563,193.84375v13v1v2v2v2v3v2v2v2v3v2v2v2v2v2{\ldots}   
+         1458  [M398,568.84375l-27,-3l-26,-2l-26,-8l-23,-12l-{\ldots}   
+         1460  [M219,438.84375l-2,-4h2h1h1l2,1h2h1h2h3h2h2l2,{\ldots}   
+         1462  [M226,574.84375h-10v-3v-2v-2v-1l-1,-1h-1h-1h-1{\ldots}   
+         1473  [M-63,271.84375, M-63,271.84375, M-63,271.8437{\ldots}   
+         1474  [M214,224.84375l1,12v2v1v1v1v1v2v2v2v2v3l1,1v3{\ldots}   
+         1486  [M249,240.84375l-6,2h-2h-1l-3,1h-1h-1h-1l-1,1h{\ldots}   
+         1498  [M224,220.84375l-3,5v2v3l1,3v5l1,4v4v4v4l1,5v3{\ldots}   
+         1499  [M398,678.84375l-5,5v2v1v1v1v2v3l1,2v3v3v3l1,3{\ldots}   
+         1500  [M339,547.84375l-5,6v2v1v1v1v1v1v1v1v1v1v1h-1v{\ldots}   
+         1501  [M281,680.84375l-15,12v2v2l-2,2l-2,3l-2,2l-3,4{\ldots}   
+         1504  [M339,739.84375, M694,515.84375v0l2,-5v-2v-2l1{\ldots}   
+         1505  [M23,4.84375l-4,6v1v3l-1,3l-1,4l-1,6v6l-1,7l-1{\ldots}   
+         1507  [M225,229.84375l6,1h2h3h4h5h4h5h5h5h5h6h5h6h5h{\ldots}   
+         1509  [M411,432.84375l-5,-10v-2v-2v-2v-2v-2, M230,22{\ldots}   
+         1518  [M552,230.84375h-1h-2h-1h-2h-1h-1h-2h-2h-2h-1h{\ldots}   
+         1522  [M235,232.84375l-1,12v4v6v6v10v7v11v10l-1,11l-{\ldots}   
+         
+                                                       svg\_times  \textbackslash{}
+         0                                   [1.52476665118e+12]   
+         2                                   [1.52476674489e+12]   
+         13    [1.5247673804e+12, 1.52476738661e+12, 1.524767{\ldots}   
+         14               [1.52476741993e+12, 1.52476742888e+12]   
+         17                                  [1.52476750028e+12]   
+         29                                  [1.52476771043e+12]   
+         31                                  [1.52476802937e+12]   
+         32                                  [1.52476806297e+12]   
+         39    [1.52476818331e+12, 1.52476818799e+12, 1.52476{\ldots}   
+         40    [1.52476862933e+12, 1.52476863389e+12, 1.52476{\ldots}   
+         43    [1.52476874314e+12, 1.52476874315e+12, 1.52476{\ldots}   
+         47                                   [1.5247689107e+12]   
+         57               [1.52476942838e+12, 1.52476943318e+12]   
+         69               [1.52477296608e+12, 1.52477297592e+12]   
+         81                                  [1.52477328998e+12]   
+         83                                  [1.52477427668e+12]   
+         90    [1.524776864e+12, 1.524776864e+12, 1.524776865{\ldots}   
+         102   [1.52477740543e+12, 1.52477740543e+12, 1.52477{\ldots}   
+         113   [1.52484890433e+12, 1.52484890453e+12, 1.52484{\ldots}   
+         122                                  [1.5248507887e+12]   
+         134   [1.52485138442e+12, 1.52485138728e+12, 1.52485{\ldots}   
+         136   [1.52485209206e+12, 1.52485209526e+12, 1.52485{\ldots}   
+         137                                 [1.52485242632e+12]   
+         148                                 [1.52485267065e+12]   
+         160                                 [1.52485290035e+12]   
+         169   [1.52485350037e+12, 1.52485350261e+12, 1.52485{\ldots}   
+         171                                  [1.5248535654e+12]   
+         183                                  [1.5248538219e+12]   
+         195                                 [1.52485406394e+12]   
+         197                                 [1.52485414265e+12]   
+         {\ldots}                                                 {\ldots}   
+         1389  [1.52564909679e+12, 1.52564909729e+12, 1.52564{\ldots}   
+         1391                                [1.52564947424e+12]   
+         1392                                [1.52565002568e+12]   
+         1400                                 [1.5258026024e+12]   
+         1407  [1.52580278372e+12, 1.52580278693e+12, 1.52580{\ldots}   
+         1419             [1.52580361474e+12, 1.52580361602e+12]   
+         1421                                [1.52580375507e+12]   
+         1424                                [1.52580383344e+12]   
+         1433  [1.52580812978e+12, 1.52580812979e+12, 1.52580{\ldots}   
+         1436                                 [1.5258081985e+12]   
+         1443                                [1.52580834353e+12]   
+         1450                                [1.52580947964e+12]   
+         1454                                [1.52580956169e+12]   
+         1456                                [1.52580960156e+12]   
+         1458  [1.52580964002e+12, 1.52580964011e+12, 1.52580{\ldots}   
+         1460  [1.52580981862e+12, 1.5258098192e+12, 1.525809{\ldots}   
+         1462                                [1.52580986856e+12]   
+         1473  [1.52581050714e+12, 1.52581050714e+12, 1.52581{\ldots}   
+         1474             [1.52581110741e+12, 1.52581111373e+12]   
+         1486                                [1.52581140571e+12]   
+         1498                                [1.52581279723e+12]   
+         1499  [1.52581283344e+12, 1.5258128349e+12, 1.525812{\ldots}   
+         1500  [1.52581286758e+12, 1.52581286758e+12, 1.52581{\ldots}   
+         1501  [1.5258129238e+12, 1.5258129238e+12, 1.5258129{\ldots}   
+         1504  [1.5258130799e+12, 1.52581308047e+12, 1.525813{\ldots}   
+         1505  [1.52581573104e+12, 1.52581573301e+12, 1.52581{\ldots}   
+         1507                                [1.52582120062e+12]   
+         1509             [1.52582309857e+12, 1.52582310454e+12]   
+         1518                                [1.52582375341e+12]   
+         1522                                [1.52582381945e+12]   
+         
+                                                             png draw\_duration  \textbackslash{}
+         0     iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         2     iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         13    iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}        22.229   
+         14    iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}         8.952   
+         17    iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         29    iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         31    iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         32    iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         39    iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}        11.481   
+         40    iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}        13.906   
+         43    iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}         8.461   
+         47    iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         57    iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}         4.799   
+         69    iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}         9.839   
+         81    iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         83    iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         90    iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}        10.619   
+         102   iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}        23.483   
+         113   iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}         8.795   
+         122   iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         134   iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}           4.6   
+         136   iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}        13.819   
+         137   iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         148   iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         160   iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         169   iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}         2.794   
+         171   iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         183   iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         195   iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         197   iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         {\ldots}                                                 {\ldots}           {\ldots}   
+         1389  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}        17.813   
+         1391  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         1392  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         1400  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         1407  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}         6.621   
+         1419  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}         1.281   
+         1421  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         1424  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         1433  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}         6.666   
+         1436  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         1443  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         1450  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         1454  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         1456  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         1458  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}         2.359   
+         1460  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}         2.205   
+         1462  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         1473  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}         3.471   
+         1474  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}         6.318   
+         1486  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         1498  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         1499  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}        11.893   
+         1500  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}         1.218   
+         1501  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}          7.15   
+         1504  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}         8.134   
+         1505  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}        14.964   
+         1507  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         1509  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}         5.971   
+         1518  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         1522  iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAA{\ldots}             0   
+         
+                                                        filename  
+         0     /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         2     /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         13    /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         14    /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         17    /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         29    /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         31    /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         32    /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         39    /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         40    /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         43    /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         47    /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         57    /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         69    /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         81    /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         83    /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         90    /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         102   /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         113   /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         122   /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         134   /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         136   /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         137   /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         148   /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         160   /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         169   /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         171   /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         183   /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         195   /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         197   /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         {\ldots}                                                 {\ldots}  
+         1389  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1391  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1392  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1400  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1407  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1419  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1421  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1424  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1433  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1436  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1443  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1450  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1454  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1456  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1458  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1460  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1462  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1473  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1474  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1486  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1498  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1499  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1500  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1501  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1504  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1505  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1507  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1509  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1518  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         1522  /Users/zixianchai/Desktop/Kid/kiddraw/analysis{\ldots}  
+         
+         [280 rows x 12 columns]
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}54}]:} \PY{n}{categories} \PY{o}{=} \PY{p}{[}\PY{n}{i} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{os}\PY{o}{.}\PY{n}{listdir}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sketches}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{k}{if} \PY{n}{i} \PY{o}{!=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{.DS\PYZus{}Store}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+         \PY{n}{num\PYZus{}ims} \PY{o}{=} \PY{l+m+mi}{0}
+         \PY{n}{ims\PYZus{}per\PYZus{}cat} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+         \PY{k}{for} \PY{n}{c} \PY{o+ow}{in} \PY{n}{categories}\PY{p}{:}
+             \PY{n}{num\PYZus{}ims} \PY{o}{+}\PY{o}{=} \PY{n+nb}{len}\PY{p}{(}\PY{p}{[}\PY{n}{i} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{os}\PY{o}{.}\PY{n}{listdir}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sketches}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{c}\PY{p}{)}\PY{p}{)} \PY{k}{if} \PY{n}{i} \PY{o}{!=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{.DS\PYZus{}Store}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+             \PY{n}{ims\PYZus{}per\PYZus{}cat}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{p}{[}\PY{n}{i} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{os}\PY{o}{.}\PY{n}{listdir}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sketches}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{c}\PY{p}{)}\PY{p}{)} \PY{k}{if} \PY{n}{i} \PY{o}{!=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{.DS\PYZus{}Store}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+             
+         \PY{k}{print} \PY{n}{num\PYZus{}ims}
+         \PY{k}{print} \PY{n}{ims\PYZus{}per\PYZus{}cat}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+1531
+[104, 104, 109, 99, 110, 104, 106, 105, 209, 65, 253, 163]
+
+    \end{Verbatim}
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+    \end{document}
