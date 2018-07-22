@@ -361,3 +361,167 @@ def plot_coregistered_shapes(ref_verts,ref_codes,tra_verts,tra_codes):
     ax.add_patch(patch)
     plt.gca().invert_yaxis() # y values increase as you go down in image
     plt.show()     
+    
+def plot_corresponding_points_on_reference(tra_verts,tra_codes,ref_verts,ref_codes,cor_verts):
+    fig = plt.figure(figsize=(8,8))    
+    ax = plt.subplot(111)
+    ax.axis('off')
+    ax.set_xlim(-300,300)
+    ax.set_ylim(-300,300)
+    path = Path(tra_verts, tra_codes)
+    patch = patches.PathPatch(path, edgecolor='blue', facecolor='none', lw=3)
+    ax.add_patch(patch)
+    path = Path(ref_verts, ref_codes)
+    patch = patches.PathPatch(path, edgecolor='red',facecolor='none', lw=3)
+    ax.add_patch(patch)
+    path = Path(cor_verts, tra_codes)
+    patch = patches.PathPatch(path, edgecolor='black',facecolor='none', lw=3)
+    ax.add_patch(patch)
+    plt.gca().invert_yaxis() # y values increase as you go down in image
+    plt.show()     
+    
+def near(a, b, rtol=1e-5, atol=1e-8):
+    return abs(a - b) < (atol + rtol * abs(b))
+
+def det(a, b):
+    return a[0] * b[1] - a[1] * b[0]
+
+def line_intersection(line1, line2,verbose=False):    
+    '''
+    see: https://stackoverflow.com/questions/15297590/improve-in-coding-saving-how-to-check-if-two-line-segments-are-crossing-in-pytho
+    
+    Return the coordinates of a point of intersection given two lines.
+    Return None if the lines are parallel, but non-collinear.
+    Return an arbitrary point of intersection if the lines are collinear.
+
+    Parameters:
+    line1 and line2: lines given by 2 points (a 2-tuple of (x,y)-coords).    
+    '''
+    collinear = False
+    (x1,y1), (x2,y2) = line1
+    (u1,v1), (u2,v2) = line2
+    (a,b), (c,d) = (x2-x1, u1-u2), (y2-y1, v1-v2)
+    e, f = u1-x1, v1-y1
+    # Solve ((a,b), (c,d)) * (t,s) = (e,f)
+    denom = float(a*d - b*c)
+    if near(denom, 0):
+        # parallel
+        # If collinear, the equation is solvable with t = 0.
+        # When t=0, s would have to equal e/b and f/d
+        try:
+            if (b==0): ## lines are both vertical, check if collinear
+                ## https://math.stackexchange.com/questions/1102258/how-to-determine-if-some-line-segments-are-collinear 
+                ## Three points are collinear if the determinant 
+                ## (see below) is zero
+                if near(x1*y2 + x2*v1 + u1*y1 - x1*v1 - x2*y1 - u1*y2,0):
+                    if verbose==True:
+                        print 'vertical, parallel and collinear'
+                        collinear=True
+                        return collinear
+                else:
+                    if verbose==True:
+                        print 'vertical, parallel but not collinear'
+                        return None
+            elif d==0: ## lines are both horizontal, check if collinear
+                if near(x1*y2 + x2*v1 + u1*y1 - x1*v1 - x2*y1 - u1*y2,0):
+                    if verbose==True:                        
+                        print 'horizontal, parallel and collinear' 
+                        collinear=True                                                
+                        return collinear
+                else:
+                    if verbose==True:
+                        print 'horizontal, parallel but not collinear'  
+                        return None
+            elif near(float(e)/b, float(f)/d):
+                # collinear
+                px = x1
+                py = y1
+                collinear=True  
+                print 'point of intersection returned'                
+                return px, py, collinear
+            else:
+                if verbose==True:
+                    print 'neither horizontal nor vertical, but parallel and non-collinear'
+                    return None
+        except:
+            print 'Case unknown'
+            
+    else:
+        t = (e*d - b*f)/denom
+        # s = (a*f - e*c)/denom
+        px = x1 + t*(x2-x1)
+        py = y1 + t*(y2-y1)
+        return px, py
+    
+def check_if_intersection_on_line_segments(x1,y1,x2,y2,u1,v1,u2,v2,px,py,verbose=False):    
+    ## check if segments intersect at a point within the line segments
+    ## if within, then go ahead and increment error by adding the triangles
+    ## if outside, increment error as trapezoid
+    A = np.array((x1,y1))
+    B = np.array((x2,y2))
+    P = np.array((px,py))
+    C, dist1 = get_closest_point_from_P_to_AB(A,B,P,verbose=False)
+    A = np.array((u1,v1))
+    B = np.array((u2,v2))
+    P = np.array((px,py))
+    C, dist2 = get_closest_point_from_P_to_AB(A,B,P,verbose=False)
+
+    if (near(dist1,0)) or (near(dist2,0)):
+        if verbose==True:
+            print 'point of intersection is on the line segment'
+        return px,py
+    else:
+        return None       
+    
+def get_area_between_tracing_and_corresponding_verts(tra_verts,cor_verts,verbose=False):
+    total_error = 0
+    tra_gen = pairs(tra_verts)
+    cor_gen = pairs(cor_verts)
+    for i,t in enumerate(zip(tra_gen,cor_gen)):
+
+        tra_vert_1 = tuple(t[0][0]) ## tra vert 1
+        tra_vert_2 = tuple(t[0][1]) ## tra vert 2
+        cor_vert_1 = tuple(t[1][0]) ## cor vert 2
+        cor_vert_2 = tuple(t[1][1]) ## cor vert 2
+        line1 = tuple((tra_vert_1,tra_vert_2))
+        line2 = tuple((cor_vert_1,cor_vert_2))
+
+        ## determine whether these two segments intersect
+        out = line_intersection(line1,line2,verbose=True)
+
+        if type(out)==bool:
+            if verbose==True:
+                print 'segments are collinear, do not increment error'
+            this_error = 0
+        elif (type(out)==tuple):
+            px,py = out
+            (x1,y1), (x2,y2) = line1
+            (u1,v1), (u2,v2) = line2
+            check = check_if_intersection_on_line_segments(x1,y1,x2,y2,u1,v1,u2,v2,px,py,verbose=verbose)        
+            if check==None:
+                if verbose==True:
+                    print 'segments do not intersect, increment error by whole trapezoid'            
+                trapezoid_verts = [(x1,y1),(x2,y2),(u1,v1),(u2,v2),(x1,v1)]
+                area = get_area_polygon(trapezoid_verts)
+                this_error = np.abs(area)
+            elif type(check)==tuple:
+                if verbose==True:                
+                    print 'segments do intersect, increment error by two triangles'            
+                px,py = check            
+                triangle_verts_1 = [(x1,y1),(px,py),(u1,v1),(x1,y1)]
+                triangle_verts_2 = [(px,py),(u2,v2),(x2,y2),(px,py)]
+                area1 = get_area_polygon(triangle_verts_1)
+                area2 = get_area_polygon(triangle_verts_2)    
+                this_error = np.abs(area1) + np.abs(area2) 
+        elif out==None:
+            if verbose==True:            
+                print 'segments are parallel (but not collinear), increment error'
+            trapezoid_verts = [(x1,y1),(x2,y2),(u1,v1),(u2,v2),(x1,v1)]
+            area = get_area_polygon(trapezoid_verts)
+            this_error = np.abs(area)
+
+        ## increment total_error by this_error
+        total_error += this_error
+    return total_error
+
+    
