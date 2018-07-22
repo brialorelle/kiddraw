@@ -487,7 +487,7 @@ def get_area_between_tracing_and_corresponding_verts(tra_verts,cor_verts,verbose
         line2 = tuple((cor_vert_1,cor_vert_2))
 
         ## determine whether these two segments intersect
-        out = line_intersection(line1,line2,verbose=True)
+        out = line_intersection(line1,line2,verbose=verbose)
 
         if type(out)==bool:
             if verbose==True:
