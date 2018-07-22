@@ -317,7 +317,7 @@ def get_area_polygon(verts):
     '''
     see: https://www.mathopenref.com/coordpolygonarea.html
     '''
-    gen = rsh.pairs(verts)
+    gen = pairs(verts)
     _area = 0
     for i,t in enumerate(gen):
         xi = t[0][0] ## xi
@@ -332,8 +332,8 @@ def get_centroid_polygon(verts):
     '''
     see: https://en.wikipedia.org/wiki/Centroid#Of_a_polygon
     '''
-    Area = np.abs(get_area_polygon(verts))
-    gen = rsh.pairs(verts)
+    Area = get_area_polygon(verts)
+    gen = pairs(verts)
     _Cx = 0
     _Cy = 0
     for i,t in enumerate(gen):        
@@ -347,3 +347,17 @@ def get_centroid_polygon(verts):
     Cy = _Cy * (1/(6*Area))    
     return Cx,Cy
         
+def plot_coregistered_shapes(ref_verts,ref_codes,tra_verts,tra_codes):
+    fig = plt.figure(figsize=(8,8))    
+    ax = plt.subplot(111)
+    ax.axis('off')
+    ax.set_xlim(-300,300)
+    ax.set_ylim(-300,300)
+    path = Path(tra_verts, tra_codes)
+    patch = patches.PathPatch(path, edgecolor='blue', facecolor='none', lw=3)
+    ax.add_patch(patch)
+    path = Path(ref_verts, ref_codes)
+    patch = patches.PathPatch(path, edgecolor='red',facecolor='none', lw=3)
+    ax.add_patch(patch)
+    plt.gca().invert_yaxis() # y values increase as you go down in image
+    plt.show()     
