@@ -180,8 +180,8 @@ def plot_shape(_Verts,_Codes):
     fig = plt.figure(figsize=(8,8))    
     ax = plt.subplot(111)
     ax.axis('off')
-    ax.set_xlim(0,600)
-    ax.set_ylim(0,600)
+    ax.set_xlim(-300,300)
+    ax.set_ylim(-300,300)
     path = Path(_Verts, _Codes)
     patch = patches.PathPatch(path, facecolor='none', lw=5)
     ax.add_patch(patch)
@@ -280,17 +280,70 @@ def get_closest_point_from_P_to_AB(A,B,P,verbose=False):
     assert np.sum(A-B) != 0 ## A and B are not the same
 
     t = find_t_minimizing_P_to_AB(A,B,P) ## proportion of the distance from A to B (get this by evaluating fn find_t_minimizing_P_to_AB)
-    print 't is {}'.format(t)
+    if verbose==True:
+        print 't is {}'.format(t)
     if (t>=0) & (t<=1):
-        print 'point lies between A and B'
+        if verbose==True:
+            print 'point lies between A and B'
         vec = point_btw_A_B(A,B,P,t) # get vector from P to the closest point on line segment AB
         C = get_point_on_AB_segment(P,vec)
     else: 
-        print 'point lies outside A and B'        
+        if verbose==True:
+            print 'point lies outside A and B'        
         PA = get_distance_two_points(P,A)
         PB = get_distance_two_points(P,B)
         if PA<PB:
             C = A
         elif PA>PB:
             C = B
-    return C
+    dist = get_distance_two_points(P,C)        
+    return C, dist
+
+def pairs(seq):
+    '''
+    builds a generator that iterates through a sequence, yielding subsequent pairs
+    '''
+    i = iter(seq)
+    prev = next(i)
+    for item in i:
+        yield prev, item
+        prev = item
+        
+## get centroid of the polygon defined by n vertices
+## https://en.wikipedia.org/wiki/Centroid#Of_a_polygon
+## https://www.mathopenref.com/coordpolygonarea.html
+
+def get_area_polygon(verts): 
+    '''
+    see: https://www.mathopenref.com/coordpolygonarea.html
+    '''
+    gen = rsh.pairs(verts)
+    _area = 0
+    for i,t in enumerate(gen):
+        xi = t[0][0] ## xi
+        yi = t[0][1] ## yi
+        xii = t[1][0] ## xi+1
+        yii = t[1][1] ## yi+1
+        _area += (xi*yii - xii*yi)
+    area = _area * 0.5
+    return area
+
+def get_centroid_polygon(verts):
+    '''
+    see: https://en.wikipedia.org/wiki/Centroid#Of_a_polygon
+    '''
+    Area = np.abs(get_area_polygon(verts))
+    gen = rsh.pairs(verts)
+    _Cx = 0
+    _Cy = 0
+    for i,t in enumerate(gen):        
+        xi = t[0][0] ## xi
+        yi = t[0][1] ## yi
+        xii = t[1][0] ## xi+1
+        yii = t[1][1] ## yi+1 
+        _Cx += (xi + xii) * (xi*yii - xii * yi)
+        _Cy += (yi + yii) * (xi*yii - xii * yi)
+    Cx = _Cx * (1/(6*Area))
+    Cy = _Cy * (1/(6*Area))    
+    return Cx,Cy
+        
