@@ -33,6 +33,20 @@ button[disabled] {
     padding-top:15px;
     padding-bottom:15px;
 }
+
+.counter_balancing {
+    margin-left: 37vw;
+    margin-top: 16vh;
+}
+
+.cbButton {
+    font-size: 4vw;
+    text-align:center;
+    font-family: Schoolbell,cursive;
+    font-style: italic;
+    margin: 10px;
+}
+
 .ageButton {
     font-size: 4vw;
     text-align:center;
@@ -121,10 +135,16 @@ button[disabled] {
 #consentText {
     bottom: 15%;
     font-size: 1.5vw;
-    padding: 4vw;
+    padding: 3vw;
 }
 
 .welcomeHeader {
+    margin: auto;
+    margin-top: 4vh;
+    margin-bottom:3vh;
+    text-align: center;
+}
+.welcomeHeader2 {
     margin: auto;
     margin-top: 2vh;
     margin-bottom:3vh;
@@ -151,6 +171,7 @@ button[disabled] {
     background: #ffffff;
     border: solid 5px #999;
     text-align: center;
+    margin-top: 3vh;
 }
 
 #consentDraw {
@@ -360,7 +381,7 @@ button[disabled] {
 #stanfordLogo{
     text-align:center;
     width:20vw;
-    padding-top:3vw;
+    
 }
 
 #parentEmail{
@@ -379,7 +400,6 @@ button[disabled] {
     font-size: 4vw;
     font-family: Schoolbell,cursive;
     font-style: italic;
-    margin-top: 4vh;
 }
 
 .vjs-nofull .vjs-fullscreen-control {

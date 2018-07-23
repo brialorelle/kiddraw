@@ -18,14 +18,16 @@ socket = io.connect();
 
 // 1. Setup trial order and randomize it!
 var firstTrial = {"condition":"S","stimulus":{"category": "this circle", "video": "copy_circle.mp4", "image":"images/circle.png"}}
-var pracTrial = {"category": "cup", "video": "cup.mp4","image":"images/photocues/cup.jpg", "audio_perception":"audio_perception/cup.wav", "audio_wm":"audio_wm/cup.wav"}
+
 var trace1 = {"condition":"S","stimulus":{"category":"this square", "video": "trace_square.mp4", "image":"images/square.png"}}
 var trace2 = {"condition":"S","stimulus":{"category":"this shape", "video": "trace_shape.mp4","image":"images/shape.png"}}
 
-var catList = [{"category":"cat", "video": "cat.mp4", "image":"images/photocues/cat.jpg", "audio_perception":"audio_perception/cat.wav", "audio_wm":"audio_wm/cat.wav"},
-    {"category": "shoe", "video": "shoe.mp4","image":"images/photocues/shoe.jpg","audio_perception":"audio_perception/shoe.wav", "audio_wm":"audio_wm/shoe.wav"},
-    {"category": "rabbit", "video": "rabbit.mp4","image":"images/photocues/rabbit.jpg", "audio_perception":"audio_perception/rabbit.wav", "audio_wm":"audio_wm/rabbit.wav"},
-    {"category": "train", "video": "train.mp4","image":"images/photocues/train.jpg", "audio_perception":"audio_perception/train.wav", "audio_wm":"audio_wm/train.wav"}]
+var catList = [{"category":"cat", "video": "cat.mp4", "image":"images/photocues/cat.jpg", "audio_perception":"audio_perception_louder/cat.wav", "audio_wm":"audio_wm/cat.wav"},
+    {"category": "shoe", "video": "shoe.mp4","image":"images/photocues/shoe.jpg","audio_perception":"audio_perception_louder/shoe.wav", "audio_wm":"audio_wm/shoe.wav"},
+    {"category": "rabbit", "video": "rabbit.mp4","image":"images/photocues/rabbit.jpg", "audio_perception":"audio_perception_louder/rabbit.wav", "audio_wm":"audio_wm/rabbit.wav"},
+    {"category": "train", "video": "train.mp4","image":"images/photocues/train.jpg", "audio_perception":"audio_perception_louder/train.wav", "audio_wm":"audio_wm/train.wav"},
+    {"category": "cup", "video": "cup.mp4","image":"images/photocues/cup.jpg", "audio_perception":"audio_perception_louder/cup.wav", "audio_wm":"audio_wm/cup.wav"}]
+
 
 
 var curTrial=0 // global variable, trial counter
@@ -39,7 +41,7 @@ var disableDrawing = false; //whether touch drawing is disabled or not
 var language = "English";
 
 // current mode and session info
-var mode = "Bing";
+var mode = "CDM";
 var version =mode + "_photodraw" + "_e1";
 var sessionId= version + Date.now().toString();
 
@@ -50,24 +52,31 @@ var stimList = [];
 var subID = $('#subID').val();
 
 function getStimuliList (){
-    var conditionDic = {"1":["W","P","S"],
-        "2":["W","S","P"],
-        "3":["S","P","W"],
-        "4":["S","W","P"],
-        "5":["P","S","W"],
-        "6":["P","W","S"]}
+    // var conditionDic = {"1":["W","P","S"],
+    //     "2":["W","S","P"],
+    //     "3":["S","P","W"],
+    //     "4":["S","W","P"],
+    //     "5":["P","S","W"],
+    //     "6":["P","W","S"]}
     var cbGroup = $('#cbGroup').val();
 
-    var conditions = conditionDic[cbGroup];
-    var curCondition = 0;
 
-    for(var i = 0; i < conditions.length; i++){
-        var currentStimOrder = shuffle(catList);
-        stimList.push({"condition":conditions[i], "stimulus":pracTrial});
-        for(var j = 0; j < currentStimOrder.length; j++){
-            stimList.push({"condition":conditions[i], "stimulus":currentStimOrder[j]});
-        }
+    // var conditions = conditionDic[cbGroup];
+    // var curCondition = 0;
+
+    // for(var i = 0; i < conditions.length; i++){
+    //     var currentStimOrder = shuffle(catList);
+    //     stimList.push({"condition":conditions[i], "stimulus":pracTrial});
+    //     for(var j = 0; j < currentStimOrder.length; j++){
+    //         stimList.push({"condition":conditions[i], "stimulus":currentStimOrder[j]});
+    //     }
+    // }
+
+    var currentStimOrder = shuffle(catList);
+    for(var j = 0; j < currentStimOrder.length; j++){
+            stimList.push({"condition":cbGroup, "stimulus":currentStimOrder[j]});
     }
+
     stimList.unshift(firstTrial);
     stimList.unshift(trace2);
     stimList.unshift(trace1);
@@ -149,6 +158,7 @@ function showTrial(){
         $("#photocue").attr("src",imgPath);
         $('#photocue').fadeIn();
         var audio = new Audio(stimList[curTrial].stimulus.audio_wm);
+        audio.volume = 1;
         audio.play();
         setTimeout(
             function() {
@@ -165,6 +175,7 @@ function showTrial(){
         $("#photocue").attr("src",imgPath);
         $('#photocue').fadeIn();
         var audio = new Audio(stimList[curTrial].stimulus.audio_perception);
+        audio.volume = 1;
         audio.play();
         setTimeout(
             function() {
@@ -181,7 +192,8 @@ function beginTrial(){
     $('#mainExp').fadeIn('fast');
 
     // cup is ALWAYS first, as it is the practice trial
-    if (stimList[curTrial].stimulus.category == 'cup') {
+    // if (stimList[curTrial].stimulus.category == 'cup') {
+    if (curTrial==3) {
         showTaskChangeVideo();
     }
     else{
@@ -415,11 +427,11 @@ function setLanguage(lang){
 
 // experiment navigation functions
 function showConsentPage(){
-    if (mode == "CDM") {
-        $("#chooseLang").hide();
-    }else {
+    // if (mode == "CDM") {
+    //     $("#chooseLang").hide();
+    // }else {
         $("#landingPage").hide();
-    }
+    // }
     $('#parentEmail').val('');
     $('#email-form').show();
     $('#emailSent').hide();
@@ -480,14 +492,16 @@ window.onload = function() {
         event.preventDefault();
     }
 
+
     $('#startConsent').bind('touchstart mousedown',function(e) {
         e.preventDefault()
-        if (mode=="CDM") {
-            $("#chooseLang").show();
-            $("#landingPage").hide();
-        }else {
+        if ($("#cbGroup").val().trim().length==0){
+                alert("Please let the researcher enter your condition.");
+            }
+        else{
             showConsentPage();
         }
+        // }
     });
 
     $('.langButton').bind('touchstart mousedown',function(e) {
@@ -497,6 +511,7 @@ window.onload = function() {
         setLanguage(language);
         showConsentPage();
     });
+
 
     $('.startExp').bind('touchstart mousedown',function (e) {
         e.preventDefault()
