@@ -29,3 +29,5 @@ analysis/museumdraw/python/features/*
 .idea
 *.png
 ._*
+experiments/photodraw/code/node_modules.zip
+experiments/photodraw/code/images.zip
