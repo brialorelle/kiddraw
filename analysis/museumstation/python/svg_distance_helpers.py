@@ -39,20 +39,20 @@ def polyline_pathmaker(lines):
     return verts, codes
 
 def path_renderer(verts, codes):
-    fig = plt.figure(figsize=(6,6))
+    fig = plt.figure(figsize=(10,10))
     ax = fig.add_subplot(111)
     if len(verts)>0:
         path = Path(verts, codes)
         patch = patches.PathPatch(path, facecolor='none', lw=2)
         ax.add_patch(patch)
-        ax.set_xlim(0,500)
-        ax.set_ylim(0,500) 
+        ax.set_xlim(0,1000)
+        ax.set_ylim(0,1000) 
         ax.axis('off')
         plt.gca().invert_yaxis() # y values increase as you go down in image
         plt.show()
     else:
-        ax.set_xlim(0,500)
-        ax.set_ylim(0,500)        
+        ax.set_xlim(0,1000)
+        ax.set_ylim(0,1000)        
         ax.axis('off')
         plt.show()
     plt.savefig()
@@ -180,8 +180,8 @@ def plot_shape(_Verts,_Codes):
     fig = plt.figure(figsize=(8,8))    
     ax = plt.subplot(111)
     ax.axis('off')
-    ax.set_xlim(-300,300)
-    ax.set_ylim(-300,300)
+    ax.set_xlim(0,900)
+    ax.set_ylim(0,900)
     path = Path(_Verts, _Codes)
     patch = patches.PathPatch(path, facecolor='none', lw=5)
     ax.add_patch(patch)
@@ -206,7 +206,36 @@ def get_nearest_reference_square_to_tracing(_Verts,_Codes):
     Verts = [(TLX,TLY),(TRX, TRY),(BRX,BRY),(BLX,BLY),(TLX,TLY)]
     Codes = [1,2,2,2,2]    
     
-    return Verts, Codes    
+    return Verts, Codes   
+
+def get_ref_circle(_Verts, _Codes):
+    ## draw the reference star
+    y_dist = np.max(_Verts[:,1]) - np.min(_Verts[:,1])
+    x_dist = np.max(_Verts[:,0]) - np.min(_Verts[:,0])
+    r = np.max([x_dist, y_dist])/2
+    c = (400, 400)
+#     circle = plt.Circle(c, r)
+    
+    circle_perimeter = 2 * np.pi * r
+    n = len(_Verts)-1
+    Verts = [(c[0]+r, c[1])]
+    for x in range(1, n):
+        delta_x = math.cos( 2*np.pi/n *x )*r
+        delta_y = math.sin( 2*np.pi/n *x )*r
+        print "delta", (delta_x, delta_y)
+        
+        vert_x = int(c[0] + delta_x)
+        vert_y = int(c[1] + delta_y)
+        print "new point", (vert_x, vert_y)
+        
+        Verts.append( (vert_x, vert_y) ) 
+    Verts.append((c[0]+r, c[1]))  # go back to the start point
+    
+    Codes = np.repeat(2, len(_Codes))
+    Codes[0] = 1
+    print Verts
+    return Verts, Codes
+    
 
 #### helpers for getting closest point on line segment (in reference shape) to some point on the tracing
 
@@ -351,8 +380,8 @@ def plot_coregistered_shapes(ref_verts,ref_codes,tra_verts,tra_codes):
     fig = plt.figure(figsize=(8,8))    
     ax = plt.subplot(111)
     ax.axis('off')
-    ax.set_xlim(-300,300)
-    ax.set_ylim(-300,300)
+    ax.set_xlim(-400,400)
+    ax.set_ylim(-400,400)
     path = Path(tra_verts, tra_codes)
     patch = patches.PathPatch(path, edgecolor='blue', facecolor='none', lw=3)
     ax.add_patch(patch)
@@ -366,8 +395,8 @@ def plot_corresponding_points_on_reference(tra_verts,tra_codes,ref_verts,ref_cod
     fig = plt.figure(figsize=(8,8))    
     ax = plt.subplot(111)
     ax.axis('off')
-    ax.set_xlim(-300,300)
-    ax.set_ylim(-300,300)
+    ax.set_xlim(-400,400)
+    ax.set_ylim(-400,400)
     path = Path(tra_verts, tra_codes)
     patch = patches.PathPatch(path, edgecolor='blue', facecolor='none', lw=3)
     ax.add_patch(patch)
