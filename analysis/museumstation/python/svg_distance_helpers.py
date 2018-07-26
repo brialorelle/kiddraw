@@ -545,6 +545,8 @@ def get_area_between_tracing_and_corresponding_verts(tra_verts,cor_verts,verbose
         elif out==None:
             if verbose==True:            
                 print 'segments are parallel (but not collinear), increment error'
+            (x1,y1), (x2,y2) = line1
+            (u1,v1), (u2,v2) = line2
             trapezoid_verts = [(x1,y1),(x2,y2),(u1,v1),(u2,v2),(x1,v1)]
             area = get_area_polygon(trapezoid_verts)
             this_error = np.abs(area)
