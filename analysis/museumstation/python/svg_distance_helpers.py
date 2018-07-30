@@ -236,7 +236,7 @@ def get_ref_circle(_Verts, _Codes):
     print Verts
     return Verts, Codes
     
-
+    
 #### helpers for getting closest point on line segment (in reference shape) to some point on the tracing
 
 ## see: https://math.stackexchange.com/questions/2193720/find-a-point-on-a-line-segment-which-is-the-closest-to-other-point-not-on-the-li
@@ -305,8 +305,7 @@ def get_closest_point_from_P_to_AB(A,B,P,verbose=False):
                projection from P to line defined by AB does not lie on the segment.    
     
     '''
-    
-    assert np.sum(A-B) != 0 ## A and B are not the same
+    assert A[0]-B[0]!= 0  or  A[1]-B[1]!=0## A and B are not the same
 
     t = find_t_minimizing_P_to_AB(A,B,P) ## proportion of the distance from A to B (get this by evaluating fn find_t_minimizing_P_to_AB)
     if verbose==True:
@@ -486,10 +485,12 @@ def check_if_intersection_on_line_segments(x1,y1,x2,y2,u1,v1,u2,v2,px,py,verbose
     ## check if segments intersect at a point within the line segments
     ## if within, then go ahead and increment error by adding the triangles
     ## if outside, increment error as trapezoid
+
     A = np.array((x1,y1))
     B = np.array((x2,y2))
     P = np.array((px,py))
     C, dist1 = get_closest_point_from_P_to_AB(A,B,P,verbose=False)
+    
     A = np.array((u1,v1))
     B = np.array((u2,v2))
     P = np.array((px,py))
