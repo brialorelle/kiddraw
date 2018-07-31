@@ -117,7 +117,20 @@ def simplify_verts_and_codes(Verts,Codes):
                     C.append(codes[i])
     _Verts = np.array(zip(X,Y))
     _Codes = C
-    return _Verts,_Codes    
+    return _Verts,_Codes 
+
+def multistroke_to_one(Verts, Codes):
+    X = []
+    Y = []
+    for (verts,codes) in zip(Verts,Codes):
+        for i,(x,y) in enumerate(verts):    
+            X.append(x)
+            Y.append(y)
+            
+    _Verts = np.array(zip(X,Y))
+    _Codes = list(np.repeat(2, len(_Verts)))
+    _Codes[0] = 1
+    return _Verts,_Codes  
 
 def render_and_save(Verts,
                     Codes,
@@ -555,5 +568,3 @@ def get_area_between_tracing_and_corresponding_verts(tra_verts,cor_verts,verbose
         ## increment total_error by this_error
         total_error += this_error
     return total_error
-
-    
