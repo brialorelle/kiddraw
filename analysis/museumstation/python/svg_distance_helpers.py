@@ -17,7 +17,7 @@ sns.set_context('poster')
 sns.set_style('white')
 from matplotlib.path import Path
 import matplotlib.patches as patches
-
+import cv2
 import pandas as pd
 from svgpathtools import parse_path
 
@@ -568,3 +568,27 @@ def get_area_between_tracing_and_corresponding_verts(tra_verts,cor_verts,verbose
         ## increment total_error by this_error
         total_error += this_error
     return total_error
+
+def minimize_scaling_err(_Verts, _Codes):
+    """
+    Assume the input is a single and complete stroke
+    """
+    # apply a transformation
+    # define an optimization model
+    # error = tracing_ref error
+    # minimize the error
+    print ""
+
+def scale_tracing(fx, fy, _Verts, _Codes):
+    """
+    Resize the tracing shape by fx, fy
+    fx: scale factor along the horizontal axis
+    fy: scale factor along the vertical axis
+    
+    Assume the input is a single and complete stroke
+    """
+    Verts = [[v[0] * fx, v[1]*fy] for v in _Verts]
+    Codes = list(np.repeat(2, len(Verts)))
+    Codes[0] = 1
+    return Verts, Codes
+    
