@@ -145,18 +145,16 @@ function playVideo(player){
         this.play();
         this.on('ended',function(){
             console.log('video ends and drawing starts');
-            hideCue();
-            this.dispose(); //dispose the old video and related eventlistener. Add a new video
-            $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline> </video>");
+            $('#cueVideoDiv').fadeOut();
+            setTimeout(function(){
+                $('#cue').hide(); // fade out cue
+                player.dispose(); //dispose the old video and related eventlistener. Add a new video
+                setUpDrawing();
+                $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline> </video>");
+            }, 500);
+
         });
     });
-}
-
-// hide cue and show sketchpad canvas
-function hideCue() {
-    $('#cue').hide(); // fade out cue
-    $('#cueVideoDiv').hide(); //show video html - this can be a variable later?
-    setUpDrawing();
 }
 
 function loadNextVideo(){
@@ -213,7 +211,7 @@ function setUpDrawing(){
         $("#endGame").show();
     }
 
-    $('#drawing').show()
+    $('#drawing').fadeIn()
     monitorProgress(); // since we now have a timeout function 
 };
 

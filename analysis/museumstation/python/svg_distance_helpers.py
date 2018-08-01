@@ -573,41 +573,45 @@ def minimize_scaling_err(_tra_verts, _tra_codes, ref_verts, ref_codes):
     """
     Assume the input is a single and complete stroke
     """
-    err = 1e6 ## initialize at some crazy large value
-    delta_err = 0
-    delta_scale = 0.1
-    scale_factor = 1
-    increase = True
+    err, cor_verts = final_error(_tra_verts, _tra_codes, ref_verts, ref_codes)
+    delta_err = err
+    delta_scale = 0.01
+    scale_factor = 1.01
+    increase = 1
     
-    while(delta_err<1):
+    while(abs(delta_err)>0.5):
         # apply a scaling transformation
         tra_verts, tra_codes = scale_tracing(scale_factor, _tra_verts, _tra_codes)
         
         # calculate the distance error between tracing and reference
-        new_err = final_error(tra_verts, tra_codes, ref_verts, ref_codes)
+        new_err, cor_verts = final_error(tra_verts, tra_codes, ref_verts, ref_codes)
         delta_err = new_err - err
         err = new_err
         
         # set new scaling factor
-        if delta_err>0: # if new_err is larger than err, flip the change direction
-            increase = not increase
+        if delta_err>0: # if new_err is larger than err, flip the change direction of the scale factor
+            increase *= (-1)
         
-        scale_step = 
+        scale_factor *= (1+ increase * delta_scale)
+        print 'step', increase * delta_scale
+        print 'err', err
+        print 'delta_err', delta_err
+        print 'scale_factor', scale_factor
         
-        
-                   
-def final_error(Verts, Codes, _Verts, _Codes):
+    return ref_verts, ref_codes, tra_verts, tra_codes, cor_verts
+                         
+def final_error(_Verts, _Codes, Verts, Codes):
     # align tracing and reference shape
-    ref_verts, ref_codes, tra_verts, tra_codes = align_tracing_and_ref(Verts, Codes, _Verts, _Codes)
+    tra_verts, tra_codes, ref_verts, ref_codes = align_tracing_and_ref(_Verts, _Codes, Verts, Codes)
     # find corresponding shape
     cor_verts = get_corresponding_verts(tra_verts, ref_verts)
 
     # error = tracing_ref error + cor_ref error
     error = get_distance_error(tra_verts, cor_verts, ref_verts)
     
-    return error
+    return error, cor_verts
 
-def scale_tracing(sfactor _Verts, _Codes):
+def scale_tracing(sfactor, _Verts, _Codes):
     """
     Resize the tracing shape by a scale factor
     Assume the input is a single and complete stroke
@@ -641,7 +645,7 @@ def get_corresponding_verts(tra_verts, ref_verts):
      
     return cor_verts
 
-def align_tracing_and_ref(Verts, Codes, _Verts, _Codes):
+def align_tracing_and_ref(_Verts, _Codes, Verts, Codes):
     ## get centroid of both shapes
     ref_cx,ref_cy = get_centroid_polygon(Verts)
     tra_cx,tra_cy = get_centroid_polygon(_Verts)
@@ -655,7 +659,7 @@ def align_tracing_and_ref(Verts, Codes, _Verts, _Codes):
     tra_verts = _Verts-tra_centroid
     tra_codes = _Codes
     
-    return ref_verts, ref_codes, tra_verts, tra_codes
+    return tra_verts, tra_codes,ref_verts, ref_codes
 
 def get_distance_error(tra_verts, cor_verts, ref_verts):
     ## iterate through each pair of line segments comprising the tracing verts
