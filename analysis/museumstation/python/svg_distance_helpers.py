@@ -103,7 +103,6 @@ def make_svg_list(stroke_recs):
 def simplify_verts_and_codes(Verts,Codes):
     X = []
     Y = []
-    C = []
     for (verts,codes) in zip(Verts,Codes):
         for i,(x,y) in enumerate(verts):
             if i<len(verts)-1:
@@ -114,9 +113,10 @@ def simplify_verts_and_codes(Verts,Codes):
                 else:        
                     X.append(x)
                     Y.append(y)
-                    C.append(codes[i])
+                   
     _Verts = np.array(zip(X,Y))
-    _Codes = C
+    _Codes = list(np.repeat(2, len(_Verts)))
+    _Codes[0] = 1
     return _Verts,_Codes 
 
 def multistroke_to_one(Verts, Codes):
