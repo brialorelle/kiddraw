@@ -504,6 +504,7 @@ window.onload = function() {
     //
     var canvas = document.getElementById("sketchpad"),
         ctx=canvas.getContext("2d");
+
     //landscape mode 00 inne
     if (window.innerWidth > window.innerHeight){
         canvas.height = window.innerHeight*.80;
