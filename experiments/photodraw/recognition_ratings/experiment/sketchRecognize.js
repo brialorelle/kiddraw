@@ -61,7 +61,7 @@ $.ajax({
                 var age = results.data[i][1];
                 var condition = results.data[i][3];
                 imgArray[i] = new Image();
-                imgArray[i].src = ['sketches_CDM_included_only/' + condition + '/' +  category + '_sketch_CDM_photodraw_' + session_id + '_' + condition '_' + age + '.png'];
+                imgArray[i].src = ['sketches_by_condition_only/' + condition + '/' +  category + '_sketch_' + session_id + '_' + condition + '_' + age + '.png'];
                 imgArray[i].category = category;
                 imgArray[i].age = age;
                 imgArray[i].condition = condition;
@@ -106,7 +106,7 @@ var availableTags = ["arm",
 "shoe", 
 "cat", 
 "rabbit",
-"cannott tell at all"]
+"cannot tell at all"]
 
 
 $("#recognitionInput").autocomplete({
