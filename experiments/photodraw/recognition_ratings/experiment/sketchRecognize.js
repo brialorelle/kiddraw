@@ -57,12 +57,14 @@ $.ajax({
             imgArray = new Array();
             for (i = 1; i < results.data.length; i++) {
                 var session_id= results.data[i][0]; //starts i at 1 to get rid of header
-                var category = results.data[i][2];
-                var age = results.data[i][3];
+                var category = results.data[i][4];
+                var age = results.data[i][1];
+                var condition = results.data[i][3];
                 imgArray[i] = new Image();
-                imgArray[i].src = ['sketches/' + category + '/' +  category + '_sketch_' + age + '_' + session_id + '.png'];
+                imgArray[i].src = ['sketches_CDM_included_only/' + condition + '/' +  category + '_sketch_CDM_photodraw_' + session_id + '_' + condition '_' + age + '.png'];
                 imgArray[i].category = category;
                 imgArray[i].age = age;
+                imgArray[i].condition = condition;
             }
             numTrialsExperiment = results.data.length-1;    // -1 for the header  
 
@@ -84,25 +86,26 @@ $.ajax({
 });
 
 
-var availableTags = ["arm","banana",
-"bean",
-"boat",
-"car",
-"carrot",
-"cat",
-"chair",
-"couch",
-"cup",
-"flower",
-"foot",
-"frog",
-"ice cream",
-"phone",
+var availableTags = ["arm", 
+"bottle", 
+"spoon", 
+"car", 
+"bus", 
+"couch", 
+"hat", 
+"book", 
+"lamp", 
+"dog", 
+"mouse", 
+"horse", 
+"bird", 
+"bear", 
+"lion",
+"cup", 
+"train", 
+"shoe", 
+"cat", 
 "rabbit",
-"shoe",
-"train",
-"person",
-"rock",
 "cannott tell at all"]
 
 
