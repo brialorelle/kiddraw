@@ -1,0 +1,92 @@
+---
+title: "Photodraw Analysis Check"
+author: "Bria Long"
+date: "8/2/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(jsonlite)
+library(tidyr)
+library(stringr)
+library(dplyr)
+
+```
+
+## Sanity check
+
+We're going to import the sandbox data
+
+```{r}
+
+## load datafiles and put in a data frame
+files <- dir("sandbox-results/")
+d.raw <- data.frame()
+
+# function for shorter filename extraction
+getCategory <- function(fileName){
+  out=strsplit(as.character(fileName),"/")[[1]][8]
+}
+
+imageNameShort <- function(fileName){
+  out=strsplit(as.character(fileName),"/")[[1]][9]
+}
+
+getAge <- function(imageNameShort){
+  out=as.numeric(strsplit(imageNameShort,"_")[[1]][3])
+}
+
+getSessionId <- function(imageNameShort){
+  out=(strsplit(imageNameShort,"_")[[1]][5])
+}
+
+```
+
+```{r}
+for (f in files) {
+  jf <- paste("sandbox-results/",f,sep="")
+  jd <- fromJSON(paste(readLines(jf), collapse=""))
+  id <- data.frame(workerid = jd$WorkerId, 
+                   rating = jd$answers$data$rating,
+                   imageName = jd$answers$data$imageName)
+  d.raw <- bind_rows(d.raw, id)
+}
+
+## get rid of weird characters where filename had spaces
+d.raw$imageName <- str_replace_all(d.raw$imageName,"%20"," ")
+
+# prettify data: make shorter iamge names for plots, etc.
+d.pretty <- d.raw %>%
+  group_by(imageName) %>%
+  mutate(category = getCategory(imageName)) %>%
+  mutate(imNameShort = imageNameShort(imageName)) %>%
+  mutate(age = getAge(imNameShort)) %>%
+  mutate(sessionId = getSessionId(imNameShort)) %>%
+  mutate(correct = (rating == category))
+
+write.table(d.pretty, "../output/museumdraw_E1c_recognitionData.csv", sep=",")
+
+```
+
+
+
+
+<!-- files <- dir("sandbox-results") -->
+
+<!-- raw_data <- data_frame() -->
+<!-- for (f in files) { -->
+<!--   jf <- paste("sandbox-results/",f,sep="") -->
+<!--   jd <- fromJSON(paste(readLines(jf), collapse="")) -->
+<!--   id <- as_data_frame(jd$answers$data$data) %>% -->
+<!--     mutate(workerid = jd$WorkerId) -->
+
+<!--   rating = jd$answers$data$rating, imageName = jd$answers$data$imageName)  -->
+<!--   raw_data <- bind_rows(raw_data, id) -->
+<!-- } -->
+
+<!-- raw_data -->
+
+
+
