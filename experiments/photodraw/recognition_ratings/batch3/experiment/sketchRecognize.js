@@ -61,7 +61,7 @@ $.ajax({
                 var age = results.data[i][1];
                 var condition = results.data[i][3];
                 imgArray[i] = new Image();
-                imgArray[i].src = ['sketches_by_condition_only/' + condition + '/' +  category + '_sketch_' + session_id + '_' + condition + '_' + age + '.png'];
+                imgArray[i].src = ['sketches_by_condition_only/' + condition + '/' +  category + '_sketch_' + session_id + '_' + condition + '_age' + age + '.png'];
                 imgArray[i].category = category;
                 imgArray[i].age = age;
                 imgArray[i].condition = condition;
