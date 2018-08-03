@@ -26,16 +26,21 @@ files <- dir("sandbox-results/")
 d.raw <- data.frame()
 
 # function for shorter filename extraction
-getCategory <- function(fileName){
-  out=strsplit(as.character(fileName),"/")[[1]][8]
-}
-
-imageNameShort <- function(fileName){
+getCondition <- function(fileName){
   out=strsplit(as.character(fileName),"/")[[1]][9]
 }
 
+imageNameShort <- function(fileName){
+  out=strsplit(as.character(fileName),"/")[[1]][10]
+}
+
 getAge <- function(imageNameShort){
-  out=as.numeric(strsplit(imageNameShort,"_")[[1]][3])
+  age=strsplit(imageNameShort,"_")[[1]][7]
+  out = as.numeric(strsplit(age,"")[[1]][4])
+}
+
+getCategory <- function(imageNameShort){
+  out=strsplit(imageNameShort,"_")[[1]][1]
 }
 
 getSessionId <- function(imageNameShort){
@@ -60,13 +65,14 @@ d.raw$imageName <- str_replace_all(d.raw$imageName,"%20"," ")
 # prettify data: make shorter iamge names for plots, etc.
 d.pretty <- d.raw %>%
   group_by(imageName) %>%
-  mutate(category = getCategory(imageName)) %>%
+  mutate(condition = getCondition(imageName)) %>%
   mutate(imNameShort = imageNameShort(imageName)) %>%
+  mutate(category = getCategory(imNameShort)) %>%
   mutate(age = getAge(imNameShort)) %>%
   mutate(sessionId = getSessionId(imNameShort)) %>%
   mutate(correct = (rating == category))
 
-write.table(d.pretty, "../output/museumdraw_E1c_recognitionData.csv", sep=",")
+write.table(d.pretty, "/Users/langcogresearchassistants/Desktop/kiddraw/kiddraw/experiments/photodraw/recognition_ratings/batch1/output/recognition_sanity_check.csv", sep=",",col.names=NA)
 
 ```
 
