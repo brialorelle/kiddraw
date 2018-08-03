@@ -60,11 +60,13 @@ $.ajax({
                 var category = results.data[i][4];
                 var age = results.data[i][1];
                 var condition = results.data[i][3];
+                var imageSet = results.data[i][5];
                 imgArray[i] = new Image();
                 imgArray[i].src = ['sketches_by_condition_only/' + condition + '/' +  category + '_sketch_' + session_id + '_' + condition + '_age' + age + '.png'];
                 imgArray[i].category = category;
                 imgArray[i].age = age;
                 imgArray[i].condition = condition;
+                imgArray[i].imageSet = imageSet;
             }
             numTrialsExperiment = results.data.length-1;    // -1 for the header  
 
@@ -74,6 +76,7 @@ $.ajax({
             trial = {
                 thisImageName: imgArray[i].src,
                 thisImageCategory: imgArray[i].category,
+                imageSet: imgArray[i].imageSet,
                 slide: "recognitionRatings",
                 behavior: "",
                 trial_number: i+1,
@@ -135,7 +138,8 @@ var experiment = {
         trial_type:[],
 		rating: [],
 		imageName: [],
-        comments: []
+        imageSet: [],
+        comments: [],
 	},
 
 	// end the experiment
@@ -196,7 +200,7 @@ var experiment = {
                 document.getElementById("imagePlaceholder").src = trial_info.thisImageName;
                 showSlide("recognitionRatings"); //display slide
                 experiment.data.imageName.push(trial_info.thisImageName);
-                
+                experiment.data.imageSet.push(trial_info.imageSet);
 	    	    }
 		experiment.data.trial_type.push(trial_info.slide);
 		}
