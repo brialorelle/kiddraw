@@ -195,6 +195,7 @@ def plot_shape(_Verts,_Codes):
     ax.axis('off')
     ax.set_xlim(0,900)
     ax.set_ylim(0,900)
+    ax.patch.set_facecolor('yellow')
     path = Path(_Verts, _Codes)
     patch = patches.PathPatch(path, facecolor='none', lw=5)
     ax.add_patch(patch)
@@ -571,7 +572,7 @@ def get_area_between_tracing_and_corresponding_verts(tra_verts,cor_verts,verbose
 
 def minimize_scaling_err(_tra_verts, _tra_codes, ref_verts, ref_codes):
     """
-    Assume the input is a single and complete stroke
+    Assume the input is a single and closed stroke
     """
     err, cor_verts = final_error(_tra_verts, _tra_codes, ref_verts, ref_codes)
     delta_err = err
@@ -598,7 +599,7 @@ def minimize_scaling_err(_tra_verts, _tra_codes, ref_verts, ref_codes):
         print 'delta_err', delta_err
         print 'scale_factor', scale_factor
         
-    return ref_verts, ref_codes, tra_verts, tra_codes, cor_verts
+    return tra_verts, tra_codes, ref_verts, ref_codes, cor_verts
                          
 def final_error(_Verts, _Codes, Verts, Codes):
     # align tracing and reference shape
