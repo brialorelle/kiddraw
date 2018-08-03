@@ -48,7 +48,7 @@ $(document).ready(function() {
 
 $.ajax({
     type: "GET",
-    url: "sketchNames_batch2.csv",
+    url: "sketchNames_batch2_balanced.csv",
     dataType: "text",
     success: function(data) {
             results = Papa.parse(data); // parse csv file
