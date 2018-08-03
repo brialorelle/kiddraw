@@ -1,0 +1,98 @@
+---
+title: "Photodraw Analysis Check"
+author: "Bria Long"
+date: "8/2/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(jsonlite)
+library(tidyr)
+library(stringr)
+library(dplyr)
+
+```
+
+## Sanity check
+
+We're going to import the sandbox data
+
+```{r}
+
+## load datafiles and put in a data frame
+files <- dir("sandbox-results/")
+d.raw <- data.frame()
+
+# function for shorter filename extraction
+getCondition <- function(fileName){
+  out=strsplit(as.character(fileName),"/")[[1]][9]
+}
+
+imageNameShort <- function(fileName){
+  out=strsplit(as.character(fileName),"/")[[1]][10]
+}
+
+getAge <- function(imageNameShort){
+  age=strsplit(imageNameShort,"_")[[1]][7]
+  out = as.numeric(strsplit(age,"")[[1]][4])
+}
+
+getCategory <- function(imageNameShort){
+  out=strsplit(imageNameShort,"_")[[1]][1]
+}
+
+getSessionId <- function(imageNameShort){
+  out=(strsplit(imageNameShort,"_")[[1]][5])
+}
+
+```
+
+```{r}
+for (f in files) {
+  jf <- paste("sandbox-results/",f,sep="")
+  jd <- fromJSON(paste(readLines(jf), collapse=""))
+  id <- data.frame(workerid = jd$WorkerId, 
+                   rating = jd$answers$data$rating,
+                   imageName = jd$answers$data$imageName)
+  d.raw <- bind_rows(d.raw, id)
+}
+
+## get rid of weird characters where filename had spaces
+d.raw$imageName <- str_replace_all(d.raw$imageName,"%20"," ")
+
+# prettify data: make shorter iamge names for plots, etc.
+d.pretty <- d.raw %>%
+  group_by(imageName) %>%
+  mutate(condition = getCondition(imageName)) %>%
+  mutate(imNameShort = imageNameShort(imageName)) %>%
+  mutate(category = getCategory(imNameShort)) %>%
+  mutate(age = getAge(imNameShort)) %>%
+  mutate(sessionId = getSessionId(imNameShort)) %>%
+  mutate(correct = (rating == category))
+
+write.table(d.pretty, "./recognition_sanity_check.csv", sep=",",col.names=NA)
+
+```
+
+
+
+
+<!-- files <- dir("sandbox-results") -->
+
+<!-- raw_data <- data_frame() -->
+<!-- for (f in files) { -->
+<!--   jf <- paste("sandbox-results/",f,sep="") -->
+<!--   jd <- fromJSON(paste(readLines(jf), collapse="")) -->
+<!--   id <- as_data_frame(jd$answers$data$data) %>% -->
+<!--     mutate(workerid = jd$WorkerId) -->
+
+<!--   rating = jd$answers$data$rating, imageName = jd$answers$data$imageName)  -->
+<!--   raw_data <- bind_rows(raw_data, id) -->
+<!-- } -->
+
+<!-- raw_data -->
+
+
+
