@@ -109,7 +109,8 @@ var availableTags = ["arm",
 "shoe", 
 "cat", 
 "rabbit",
-"cannot tell at all"]
+"cannot tell at all".
+"other"]
 
 
 $("#recognitionInput").autocomplete({
