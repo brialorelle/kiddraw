@@ -5,4 +5,4 @@ for i in {0..6}
 	python extract_features.py --data='/data2/jefan/imagenet_kiddraw' --layer_ind=$i --cohort='images' --ext="jpg" --spatial_avg=False
     done
 
-python extract_features.py --data='/home/bria/imagenet_kiddraw_test' --layer_ind=6 --cohort='images' --ext="jpg" --spatial_avg=False
+python extract_features.py --data='/home/bria/kiddraw/data/museumstation_sketches/' --layer_ind=6 --cohort='kid' --ext="png" --spatial_avg=True
