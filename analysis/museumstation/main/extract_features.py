@@ -30,12 +30,13 @@ def check_invalid_sketch(filenames,invalids_path='images_to_exclude.txt'):
         print('No file containing invalid paths at {}'.format(invalids_path))
         invalids = []        
     else:
+        print('found invalids file...')
         x = pd.read_csv(invalids_path, header=None)
         x.columns = ['filenames']
         invalids = list(x.filenames.values)
     valids = []   
-    # basenames = [f.split('/')[-1] for f in filenames]
-    for i,f in enumerate(filenames):
+    basenames = [f.split('/')[-1] for f in filenames]
+    for i,f in enumerate(basenames):
         if f not in invalids:
             valids.append(filenames[i])
     return valids
@@ -62,8 +63,8 @@ def save_features(Features, Y, layer_num, cohort,spatial_avg):
     if not os.path.exists('./features'):
         os.makedirs('./features')
     layers = ['P1','P2','P3','P4','P5','FC6','FC7']
-    np.save('/data2/jefan/kiddraw/features/FEATURES_{}_{}_Spatial_{}.npy'.format(layers[int(layer_num)], cohort,spatial_avg), Features)
-    Y.to_csv('/data2/jefan/kiddraw/features/METADATA_{}.csv'.format(cohort))
+    np.save('/home/bria/kiddraw/data/museumstation_features/FEATURES_{}_{}_Spatial_{}.npy'.format(layers[int(layer_num)], cohort,spatial_avg), Features)
+    Y.to_csv('/home/bria/kiddraw/data/museumstation_features/METADATA_{}.csv'.format(cohort))
     return layers[int(layer_num)]
 
 def convert_age(Ages):
@@ -73,7 +74,8 @@ def convert_age(Ages):
     ages = []
     for a in Ages:
         if len(a)>0:
-            ages.append(int(a))
+            temp = re.findall(r'\d+', a) ## split spring here.
+            ages.append(int(temp[0]))
         else:
             ages.append(-1)
     return ages
