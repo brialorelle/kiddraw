@@ -22,7 +22,6 @@ We're going to import the sandbox data
 ```{r}
 
 ## load datafiles and put in a data frame
-files <- dir("sandbox-results/")
 d.raw <- data.frame()
 
 # function for shorter filename extraction
@@ -50,8 +49,10 @@ getSessionId <- function(imageNameShort){
 ```
 
 ```{r}
+files <- dir("production-results/")
+
 for (f in files) {
-  jf <- paste("sandbox-results/",f,sep="")
+  jf <- paste("production-results/",f,sep="")
   jd <- fromJSON(paste(readLines(jf), collapse=""))
   id <- data.frame(workerid = jd$WorkerId, 
                    rating = jd$answers$data$rating,

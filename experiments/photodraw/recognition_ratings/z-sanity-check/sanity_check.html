@@ -129,7 +129,6 @@ $(document).ready(function () {
 <h2>Sanity check</h2>
 <p>We’re going to import the sandbox data</p>
 <pre class="r"><code>## load datafiles and put in a data frame
-files &lt;- dir(&quot;sandbox-results/&quot;)
 d.raw &lt;- data.frame()
 
 # function for shorter filename extraction
@@ -153,18 +152,20 @@ getCategory &lt;- function(imageNameShort){
 getSessionId &lt;- function(imageNameShort){
   out=(strsplit(imageNameShort,&quot;_&quot;)[[1]][5])
 }</code></pre>
-<pre class="r"><code>for (f in files) {
-  jf &lt;- paste(&quot;sandbox-results/&quot;,f,sep=&quot;&quot;)
+<pre class="r"><code>files &lt;- dir(&quot;production-results/&quot;)
+
+for (f in files) {
+  jf &lt;- paste(&quot;production-results/&quot;,f,sep=&quot;&quot;)
   jd &lt;- fromJSON(paste(readLines(jf), collapse=&quot;&quot;))
   id &lt;- data.frame(workerid = jd$WorkerId, 
                    rating = jd$answers$data$rating,
                    imageName = jd$answers$data$imageName)
   d.raw &lt;- bind_rows(d.raw, id)
 }</code></pre>
-<pre><code>## Warning in readLines(jf): incomplete final line found on 'sandbox-results/
-## 3EICBYG644W72I6PRP8988FN40BCJZ.json'</code></pre>
-<pre><code>## Warning in readLines(jf): incomplete final line found on 'sandbox-results/
-## 3GGAI1SQEVYX3QCAUML1O0748U6CM3.json'</code></pre>
+<pre><code>## Warning in readLines(jf): incomplete final line found on 'production-
+## results/3AAPLD8UCCHSXTDAPB27QU9C9Z3THB.json'</code></pre>
+<pre><code>## Warning in readLines(jf): incomplete final line found on 'production-
+## results/3LKC68YZ3A3UHR3ROT28XNDCPFZWOS.json'</code></pre>
 <pre><code>## Warning in bind_rows_(x, .id): Unequal factor levels: coercing to character</code></pre>
 <pre><code>## Warning in bind_rows_(x, .id): binding character and factor vector,
 ## coercing into character vector
@@ -172,13 +173,6 @@ getSessionId &lt;- function(imageNameShort){
 ## Warning in bind_rows_(x, .id): binding character and factor vector,
 ## coercing into character vector</code></pre>
 <pre><code>## Warning in bind_rows_(x, .id): Unequal factor levels: coercing to character</code></pre>
-<pre><code>## Warning in bind_rows_(x, .id): binding character and factor vector,
-## coercing into character vector
-
-## Warning in bind_rows_(x, .id): binding character and factor vector,
-## coercing into character vector</code></pre>
-<pre><code>## Warning in readLines(jf): incomplete final line found on 'sandbox-results/
-## 3XUHV3NRVKYQCR2KOFIGIPTYZRL5HF.json'</code></pre>
 <pre><code>## Warning in bind_rows_(x, .id): binding character and factor vector,
 ## coercing into character vector
 
