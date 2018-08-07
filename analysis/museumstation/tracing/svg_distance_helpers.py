@@ -21,6 +21,7 @@ import cv2
 import pandas as pd
 from svgpathtools import parse_path
 from skimage.transform import warp, AffineTransform
+import torch
 from torch.autograd import Variable
 import torch.nn as nn
 
@@ -665,17 +666,25 @@ def minimize_transformation_err(tra_verts, ref_verts):
     ref_verts = np.array(ref_verts)
     cor_verts = get_corresponding_verts(tra_verts, ref_verts) # use the initial cor_verts as actual outputs
     
-    X = Variable( torch.from_numpy( tra_verts )  )
-    Y = Variable( torch.from_numpy( cor_verts )  )
-    
-    w1 = Variable(torch.randn(2, 2).type(dtype), requires_grad=True)
-    w2 = Variable(torch.randn(2, 1).type(dtype), requires_grad=True)
+    x_data = Variable( torch.tensor(tra_verts, dtype=torch.float) )
+    print x_data.size()
+    y_data = Variable( torch.tensor(cor_verts, dtype=torch.float) )
+    print y_data.size()
     
     # init model
     model = LinearTransform()
-    optimizer = torch.optim.SGD(model.parameters(), lr = 0.01)
+    criterion = torch.nn.MSELoss(size_average = False)
+    optimizer = torch.optim.SGD(model.parameters(), weight_decay=100, lr = 0.0001)
     
-    #     num_train_steps = 10000
+    pred_y = model(x_data)
+
+    # Compute and print loss
+    loss = custom_loss(pred_y, y_data)
+    #loss = criterion(pred_y, y_data)
+    print 'init loss', loss
+    
+    num_train_steps = 1000
+    print 'weight', model.transform.weight.data
     for i,epoch in enumerate(range(num_train_steps)):
 
         # Forward pass: Compute predicted y by passing 
@@ -683,18 +692,24 @@ def minimize_transformation_err(tra_verts, ref_verts):
         pred_y = model(x_data)
 
         # Compute and print loss
-        loss = criterion(pred_y, y_data)
-
+        loss = custom_loss(pred_y, y_data)
+        #loss = criterion(pred_y, y_data)
+    
         # Zero gradients, perform a backward pass, 
         # and update the weights.
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+        
+        print 'epoch', i
+        print 'weight', model.transform.weight.data
+        print 'loss', loss.data
 
-        if i%1000==0:
-            print('epoch {}, loss {}'.format(epoch, loss.data[0]))
-       
-    return min_err, final_tra_verts
+        if i%10==0:
+            print('epoch {}, loss {}'.format(epoch, loss.data))
+    
+    final_tra_verts = model(x_data)
+    return loss, final_tra_verts
 
 
 def transform_verts(verts, tform):
@@ -845,14 +860,26 @@ class LinearTransform(torch.nn.Module):
     def __init__(self):
         super(LinearTransform, self).__init__()
         self.transform = torch.nn.Linear(2, 2, bias=True)  # two in and two out
+        # init the model with the identity transformation matrix
+        self.transform.weight = torch.nn.Parameter( torch.tensor([[1.0,0.0],[0.0,1.0]], requires_grad=True))
+        self.transform.bias = torch.nn.Parameter( torch.tensor([0.0,0.0], requires_grad=True))
  
     def forward(self, x):
         y_pred = self.transform(x)
         return y_pred
     
-    def loss(orig_tra_verts, final_tra_verts, ref_verts):
-        tra_ref_cor = get_corresponding_verts(final_tra_verts, ref_verts)
-        new_deviation = get_distance_error(final_tra_verts, tra_ref_cor, ref_verts)
-        new_cost = get_distance_error(final_tra_verts, orig_tra_verts, orig_tra_verts)
-        return new_cost + new_deviation
-
+def custom_loss(tra_verts, ref_verts):
+    """
+    Simple loss function. Calculate the euclean distance between each pair of points on tracing and ref
+    """
+    sum_dist = torch.tensor(0.0)
+    for i, v in enumerate(tra_verts):
+        rv = ref_verts[i]
+        current_dist = ((v[0] - rv[0]) ** 2 + (v[1] - rv[1]) ** 2) ** 1/2
+        #print 'current', current_dist
+        sum_dist.add_(current_dist)
+        #print 'sum', sum_dist
+    
+    final_err = sum_dist
+  
+    return torch.tensor(final_err, requires_grad=True)
