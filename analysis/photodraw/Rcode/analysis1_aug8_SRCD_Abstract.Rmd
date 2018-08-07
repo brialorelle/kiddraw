@@ -20,7 +20,7 @@ theme_set(theme_few())
 ## Load data and do basic preprocessing.
 ```{r}
 ## Read in data outputs from turk data - true/false recognition 
-r <- read.csv("recognition_sanity_check.csv") %>%
+r <- read.csv("preprocessed_data/photodraw_recognition_ratings.csv") %>%
   as.tibble() 
 
 r$condition <- factor(r$condition, levels = c("S", "W", "P"))
@@ -34,7 +34,7 @@ ratersPerImage <- r %>%
   group_by(imageName) %>%
   summarize(count = n()) 
 
-ratersPerImage$count==30
+sum(ratersPerImage$count==30)==(length(unique(r$imageName)))
 ```
 ## Sanity check number of kids in each condition and age
 ```{r}
@@ -95,7 +95,7 @@ corbyConditionOnly <- r %>%
   group_by(condition) %>%
   multi_boot_standard(col = "correct")  
 
-ggplot(corbyConditionOnly, aes(x = condition, y = mean)) + 
+ggplot(corbyConditionOnly, aes(x = condition, y = mean, col=condition)) + 
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
   coord_flip()
 
@@ -124,16 +124,10 @@ ggplot(corbyItem, aes(x = condition, y = mean, col=age)) +
   facet_wrap(~category) 
 ```
 
-## Inferential statistics: Does recogizability of drawings increase with age?
-``` {r}
-## Make sure that semantic condition is the reference condition
-r$condition=as.factor(r$condition)
-r$condition = relevel(r$condition, ref=2) 
-```
 
 # Non-linear mixed effect model with random slopes for items and random intercepts for participants. 
 ```{r}
-mod <- glmer(correct ~ age*condition + (1 | sessionId) + (condition | category) + (1|workerid),  data = r,  family = "binomial")
+mod <- glmer(correct ~ age*condition + (1 | sessionId) + (condition | category),  data = r,  family = "binomial")
 kable(summary(mod)$coef, digits = 3)
 ```
 
