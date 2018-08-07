@@ -95,6 +95,32 @@ def get_verts_and_codes(svg_list):
         Verts.append(verts)
         Codes.append(codes)                  
     return Verts, Codes
+
+def get_stroke_verts_and_codes(svg_list):
+    '''
+    parse into x,y coordinates and output list of lists of coordinates
+    
+    '''    
+    Verts = []
+    Codes = []
+    for stroke_ind,stroke in enumerate(svg_list):      
+        x = []
+        y = []
+        parsed = parse_path(stroke)
+        for i,p in enumerate(parsed):
+            if i!=len(parsed)-1: # last line segment
+                x.append(p.start.real)
+                y.append(p.start.imag)    
+            else:
+                x.append(p.start.real)
+                y.append(p.start.imag)     
+                x.append(p.end.real)
+                y.append(p.end.imag)
+        verts, codes = polyline_pathmaker([zip(x,y)])
+        Verts.append(verts)
+        Codes.append(codes)                  
+    return Verts, Codes
+
     
 def make_svg_list(stroke_recs):
     '''
@@ -667,21 +693,14 @@ def minimize_transformation_err(tra_verts, ref_verts):
     cor_verts = get_corresponding_verts(tra_verts, ref_verts) # use the initial cor_verts as actual outputs
     
     x_data = Variable( torch.tensor(tra_verts, dtype=torch.float) )
-    print x_data.size()
+    print'x_data size', x_data.size()
     y_data = Variable( torch.tensor(cor_verts, dtype=torch.float) )
-    print y_data.size()
+    print'y_data size', y_data.size()
     
     # init model
     model = LinearTransform()
     criterion = torch.nn.MSELoss(size_average = False)
     optimizer = torch.optim.SGD(model.parameters(), weight_decay=100, lr = 0.0001)
-    
-    pred_y = model(x_data)
-
-    # Compute and print loss
-    loss = custom_loss(pred_y, y_data)
-    #loss = criterion(pred_y, y_data)
-    print 'init loss', loss
     
     num_train_steps = 1000
     print 'weight', model.transform.weight.data
@@ -692,8 +711,8 @@ def minimize_transformation_err(tra_verts, ref_verts):
         pred_y = model(x_data)
 
         # Compute and print loss
-        loss = custom_loss(pred_y, y_data)
-        #loss = criterion(pred_y, y_data)
+        #loss = custom_loss(pred_y, y_data)
+        loss = criterion(pred_y, y_data)
     
         # Zero gradients, perform a backward pass, 
         # and update the weights.
