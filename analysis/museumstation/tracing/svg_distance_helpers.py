@@ -20,7 +20,13 @@ import matplotlib.patches as patches
 import cv2
 import pandas as pd
 from svgpathtools import parse_path
+from skimage.transform import warp, AffineTransform
+from torch.autograd import Variable
+import torch.nn as nn
 
+"""
+Methods about rendering svg data using matplotlib
+"""
 def polyline_pathmaker(lines):
     x = []
     y = []
@@ -101,18 +107,20 @@ def make_svg_list(stroke_recs):
     return svg_list
     
 def simplify_verts_and_codes(Verts,Codes):
+    """
+    Assume input is a stroke
+    """
     X = []
     Y = []
-    for (verts,codes) in zip(Verts,Codes):
-        for i,(x,y) in enumerate(verts):
-            if i<len(verts)-1:
-                if x==verts[i+1][0]:
-                    pass
-                elif y==verts[i+1][1]:
-                    pass
-                else:        
-                    X.append(x)
-                    Y.append(y)
+    for i,(x,y) in enumerate(Verts):
+        if i<len(Verts)-1:
+            if x==Verts[i+1][0]:
+                pass
+            elif y==Verts[i+1][1]:
+                pass
+            else:        
+                X.append(x)
+                Y.append(y)
                    
     _Verts = np.array(zip(X,Y))
     _Codes = list(np.repeat(2, len(_Verts)))
@@ -189,18 +197,86 @@ def render_and_save(Verts,
             fig.savefig(filepath,bbox_inches='tight')
             plt.close(fig)   
             
-def plot_shape(_Verts,_Codes):
+def plot_shape(verts_list, codes_list, canvas_side):
     fig = plt.figure(figsize=(8,8))    
     ax = plt.subplot(111)
     ax.axis('off')
-    ax.set_xlim(0,900)
-    ax.set_ylim(0,900)
+    ax.set_xlim(0,canvas_side)
+    ax.set_ylim(0,canvas_side)
+    for i, verts in enumerate(verts_list):
+        path = Path(verts, codes_list[i])
+        patch = patches.PathPatch(path, facecolor='none', lw=5)
+        ax.add_patch(patch)
+    plt.gca().invert_yaxis() # y values increase as you go down in image
+    plt.show()   
+
+def plot_stroke(_Verts,_Codes, canvas_side):
+    fig = plt.figure(figsize=(8,8))    
+    ax = plt.subplot(111)
+    ax.axis('off')
+    ax.set_xlim(0,canvas_side)
+    ax.set_ylim(0,canvas_side)
     ax.patch.set_facecolor('yellow')
     path = Path(_Verts, _Codes)
     patch = patches.PathPatch(path, facecolor='none', lw=5)
     ax.add_patch(patch)
     plt.gca().invert_yaxis() # y values increase as you go down in image
     plt.show()    
+
+    
+"""
+Methods about construction of reference shapes
+"""
+def get_ref_square(fname, canvas_side):
+    """
+    Assume the canvas is a square.
+    """
+    square = cv2.imread(fname)
+    colored_row = []
+    check_y = int(len(square[0])/2)
+    
+    for index, row in enumerate(square):
+        if np.sum(row[check_y]) > 0 :
+            colored_row.append(index)
+    
+    square_side = np.max(colored_row) - np.min(colored_row)
+    canvas_half_sqside = int( (canvas_side * square_side/len(square) )/2  )
+    
+    canvas_center = int( canvas_side/2 )
+    TL = [canvas_center - canvas_half_sqside, canvas_center - canvas_half_sqside]
+    TR = [canvas_center + canvas_half_sqside, canvas_center - canvas_half_sqside]
+    BL = [canvas_center - canvas_half_sqside, canvas_center + canvas_half_sqside]
+    BR = [canvas_center + canvas_half_sqside, canvas_center + canvas_half_sqside]
+    
+    Verts = [TL, TR, BR, BL, TL]
+    Codes = [1,2,2,2,2]    
+    
+    return Verts, Codes
+
+def get_ref_circle(fname, canvas_size):
+    square = cv2.imread(fname)
+    colored_row = []
+    check_y = len(fname[0])/2
+    
+    for index, row in enumerate(square):
+        if np.sum(row[check_y]) > 0 :
+            colored_row.append(index)
+    
+    square_side = np.min(colored_row) - np.max(colored_row)
+    canvas_side = canvas_size[0]
+    canvas_sqside = int(canvas_side * square_side/len(square))
+    
+    canvas_center = (canvas_size/2, canvas_size/2)
+    TL = (canvas_center - canvas_sqside, canvas_center - canvas_sqside)
+    TR = (canvas_center + canvas_sqside, canvas_center - canvas_sqside)
+    BL = (canvas_center - canvas_sqside, canvas_center + canvas_sqside)
+    BR = (canvas_center + canvas_sqside, canvas_center + canvas_sqside)
+    
+    Verts = [TL, TR, BL, BR]
+    Codes = [1,2,2,2,2]    
+    
+    return Verts, Codes
+    
     
 def get_nearest_reference_square_to_tracing(_Verts,_Codes):
     
@@ -222,7 +298,7 @@ def get_nearest_reference_square_to_tracing(_Verts,_Codes):
     
     return Verts, Codes   
 
-def get_ref_circle(_Verts, _Codes):
+def get_nearest_ref_circle(_Verts, _Codes):
     ## draw the reference star
     y_dist = np.max(_Verts[:,1]) - np.min(_Verts[:,1])
     x_dist = np.max(_Verts[:,0]) - np.min(_Verts[:,0])
@@ -250,7 +326,11 @@ def get_ref_circle(_Verts, _Codes):
     print Verts
     return Verts, Codes
     
+
     
+"""
+Methods about calculating errors
+"""
 #### helpers for getting closest point on line segment (in reference shape) to some point on the tracing
 
 ## see: https://math.stackexchange.com/questions/2193720/find-a-point-on-a-line-segment-which-is-the-closest-to-other-point-not-on-the-li
@@ -570,6 +650,75 @@ def get_area_between_tracing_and_corresponding_verts(tra_verts,cor_verts,verbose
         total_error += this_error
     return total_error
 
+
+"""
+Adjusting tracing
+"""
+def minimize_transformation_err(tra_verts, ref_verts):
+    """
+    Assume the input is a single stroke
+    Parameters sx, sy, r, tx, ty
+    """
+    
+    # init input and output variables
+    tra_verts = np.array(tra_verts)
+    ref_verts = np.array(ref_verts)
+    cor_verts = get_corresponding_verts(tra_verts, ref_verts) # use the initial cor_verts as actual outputs
+    
+    X = Variable( torch.from_numpy( tra_verts )  )
+    Y = Variable( torch.from_numpy( cor_verts )  )
+    
+    w1 = Variable(torch.randn(2, 2).type(dtype), requires_grad=True)
+    w2 = Variable(torch.randn(2, 1).type(dtype), requires_grad=True)
+    
+    # init model
+    model = LinearTransform()
+    optimizer = torch.optim.SGD(model.parameters(), lr = 0.01)
+    
+    #     num_train_steps = 10000
+    for i,epoch in enumerate(range(num_train_steps)):
+
+        # Forward pass: Compute predicted y by passing 
+        # x to the model
+        pred_y = model(x_data)
+
+        # Compute and print loss
+        loss = criterion(pred_y, y_data)
+
+        # Zero gradients, perform a backward pass, 
+        # and update the weights.
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        if i%1000==0:
+            print('epoch {}, loss {}'.format(epoch, loss.data[0]))
+       
+    return min_err, final_tra_verts
+
+
+def transform_verts(verts, tform):
+    """
+    Assume the shape of verts is n * 2
+    transformed_verts = transformation_matrix * transpose(verts)
+    """
+    # convert verts into homogeneous coordinates  -> n * 3
+    # add value 1 to each vertex
+    homo_verts = np.array(  [[v[0], v[1], 1] for v in verts]  )
+    
+    # transpose the verts matrix to 3 * n 
+    transpose_verts = homo_verts.transpose()
+    
+    # multiply the transform matrix with verts
+    transformed_verts = np.matmul(tform.params, transpose_verts).transpose()
+    
+    # remove the homogeneous coordinates. 
+    # remove the value 1 from each vertex
+    final_verts = np.array(  [[v[0], v[1]] for v in transformed_verts]  )
+    
+    return final_verts
+    
+    
 def minimize_scaling_err(_tra_verts, _tra_codes, ref_verts, ref_codes):
     """
     Assume the input is a single and closed stroke
@@ -601,6 +750,7 @@ def minimize_scaling_err(_tra_verts, _tra_codes, ref_verts, ref_codes):
         
     return tra_verts, tra_codes, ref_verts, ref_codes, cor_verts
                          
+    
 def final_error(_Verts, _Codes, Verts, Codes):
     # align tracing and reference shape
     tra_verts, tra_codes, ref_verts, ref_codes = align_tracing_and_ref(_Verts, _Codes, Verts, Codes)
@@ -627,6 +777,7 @@ def get_corresponding_verts(tra_verts, ref_verts):
     Get the corresponding shape for a given tracing
     """
     cor_verts = np.zeros((np.shape(tra_verts)[0],2))
+    
     for i,t in enumerate(tra_verts): ## loop through segments of the tracing
         p = t ## endpoint of the current tracing segment
         ## for a given point on the tracing, find the corresponding closest point on the reference shape
@@ -635,6 +786,7 @@ def get_corresponding_verts(tra_verts, ref_verts):
         for r in ref_gen:
             a = r[0]
             b = r[1]
+            
             if a[0] == b[0] and a[1] == b[1]: continue
             c,d = get_closest_point_from_P_to_AB(a,b,p,verbose=False) 
             if d<D: ## if the shortest distance so far, then swap in for the value of D
@@ -687,3 +839,20 @@ def get_distance_error(tra_verts, cor_verts, ref_verts):
     svg_distance_score = np.sqrt(total_error)
     
     return svg_distance_score
+
+class LinearTransform(torch.nn.Module):
+
+    def __init__(self):
+        super(LinearTransform, self).__init__()
+        self.transform = torch.nn.Linear(2, 2, bias=True)  # two in and two out
+ 
+    def forward(self, x):
+        y_pred = self.transform(x)
+        return y_pred
+    
+    def loss(orig_tra_verts, final_tra_verts, ref_verts):
+        tra_ref_cor = get_corresponding_verts(final_tra_verts, ref_verts)
+        new_deviation = get_distance_error(final_tra_verts, tra_ref_cor, ref_verts)
+        new_cost = get_distance_error(final_tra_verts, orig_tra_verts, orig_tra_verts)
+        return new_cost + new_deviation
+
