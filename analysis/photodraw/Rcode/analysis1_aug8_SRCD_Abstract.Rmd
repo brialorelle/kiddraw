@@ -25,6 +25,58 @@ r <- read.csv("preprocessed_data/photodraw_recognition_ratings.csv") %>%
 
 r$condition <- factor(r$condition, levels = c("S", "W", "P"))
 
+d <- read_csv("preprocessed_data/photodraw_data_Aug1.csv") %>%
+  select(-X1) %>%
+  filter(!is.na(age)) %>%
+  mutate(imNameShort = paste0(category, '_sketch', '_', session_id,'_',condition, '_', age,'.png'))
+
+```
+### Convert alphanumeric age to numeric age in python csv
+```{r}
+d <- d %>%
+  group_by(session_id) %>%
+  mutate(age_char = strsplit(age,"e")[[1]][2]) %>%
+  mutate(age_num = as.numeric(age_char)) %>%
+  select(-age) %>%
+  rename(age = age_num)
+```
+
+## Join ratings and python datasets
+```{r}
+joined <- left_join(r,d)
+```
+
+### Look at num strokes / duration per condition
+```{r}
+ggplot(d, aes(x = condition, y = num_strokes, col=age)) + 
+    geom_jitter(width = .1, alpha = .5) 
+    # scale_color_brewer(viridis)
+
+ggplot(d, aes(x = condition, y = draw_duration, col=age)) +
+    geom_jitter(width = .1, alpha = .5) 
+
+```
+
+## How do num strokes / draw duration relate to recognizability?
+```{r}
+corByItem <- joined %>%
+  group_by(imNameShort) %>%
+  mutate(avgCorrect = mean(correct)) %>%
+  distinct(imNameShort, avgCorrect, draw_duration, num_strokes, age, condition)
+
+```
+
+# Make some diagnostic plots...
+```{r}
+ggplot(corByItem, aes(x = num_strokes, y = avgCorrect, col=condition)) +
+    geom_jitter(width = .1, alpha = .5) +
+    facet_grid(~age)
+
+ggplot(corByItem, aes(x = draw_duration, y = avgCorrect, col=condition)) +
+    geom_jitter(width = .1, alpha = .5) +
+    facet_grid(~age)
+
+
 ```
 
 ## Sanity check number of raters per image
@@ -34,7 +86,7 @@ ratersPerImage <- r %>%
   group_by(imageName) %>%
   summarize(count = n()) 
 
-sum(ratersPerImage$count==30)==(length(unique(r$imageName)))
+assert_that(sum(ratersPerImage$count==30)==(length(unique(r$imageName))))
 ```
 ## Sanity check number of kids in each condition and age
 ```{r}
@@ -101,6 +153,8 @@ ggplot(corbyConditionOnly, aes(x = condition, y = mean, col=condition)) +
 
 ```
 
+
+
 ##  How does recognizability vary across age and condition, collapsing across items?
 ```{r}
 ## Get the percent recognized for each age group / condition
@@ -110,6 +164,17 @@ corbyCondition <- r %>%
 
 ggplot(corbyCondition, aes(x = age, y = mean, col=age)) + 
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  facet_grid(~condition) 
+```
+
+
+```{r}
+corbyChild <- r %>%
+  group_by(condition,sessionId, age) %>%
+  mutate(avgCorrect = mean(correct))
+
+ggplot(corbyChild, aes(x = age, y = avgCorrect, col=age)) + 
+  geom_jitter(width = .05, alpha = .5)  +
   facet_grid(~condition) 
   
 ```
@@ -124,15 +189,27 @@ ggplot(corbyItem, aes(x = condition, y = mean, col=age)) +
   facet_wrap(~category) 
 ```
 
+```{r}
+r$workerid = as.factor(r$workerid)
+corbyWorked <- r %>%
+  group_by(workerid) %>%
+  mutate(avgCorrect = mean(correct)) %>%
+  distinct(workerid, avgCorrect) 
+
+ggplot(corbyItem, aes(x = condition, y = mean, col=age)) + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  facet_wrap(~category) 
+
+
+```
 
 # Non-linear mixed effect model with random slopes for items and random intercepts for participants. 
 ```{r}
-mod <- glmer(correct ~ age*condition + (1 | sessionId) + (condition | category),  data = r,  family = "binomial")
+mod <- glmer(correct ~ age*condition + (1 | sessionId) + (1 | category),  data = r,  family = "binomial")
 kable(summary(mod)$coef, digits = 3)
 ```
 
 ```{r}
-
 W_average = round(corbyConditionOnly$mean[corbyConditionOnly$condition=="W"],2)
 P_average = round(corbyConditionOnly$mean[corbyConditionOnly$condition=="P"],2)
 S_average = round(corbyConditionOnly$mean[corbyConditionOnly$condition=="S"],2)
@@ -141,3 +218,28 @@ S_average = round(corbyConditionOnly$mean[corbyConditionOnly$condition=="S"],2)
 
 Overall, we found that children in the perception condition actually drew the least recongizble drawings (perception condition M =`r P_average`% recognized, semantic condition, M=`r S_average`%, working memory condition, M=`r W_average`%).
 
+
+##  Preprocess data and join datasets
+```{r}
+# add special column for when people selected "can't tell at all" during ratings; not separated out in current analyses 
+r$cantTell=(r$rating=="cannot tell at all")
+
+## Get the percent recognized for each drawing
+corbyItem <- r %>%
+  group_by(imNameShort) %>%
+  summarize(meanCorrect = mean(correct), 
+            propCantTell = mean(cantTell))
+
+## Joint the two datasets together
+joint=left_join(d,corbyItem) %>%
+  mutate(session_id = factor(session_uid), 
+         category = factor(category))
+
+## get rid of "age" colummn in d
+
+## for use below with glmer analyses
+
+joinedRatings <- left_join(r,d) %>%
+  renm
+
+```
