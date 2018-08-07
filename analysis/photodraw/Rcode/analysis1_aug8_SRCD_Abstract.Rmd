@@ -1,0 +1,143 @@
+---
+title: "PhotoDraw-Analysis1"
+author: "Bria Long"
+date: "8/6/2018"
+output: html_document
+---
+
+```{r setup, echo = FALSE}
+library(knitr)
+opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(assertthat)
+library(ggthemes)
+library(lme4)
+library(langcog)
+library(forcats)
+theme_set(theme_few())
+```
+
+## Load data and do basic preprocessing.
+```{r}
+## Read in data outputs from turk data - true/false recognition 
+r <- read.csv("preprocessed_data/photodraw_recognition_ratings.csv") %>%
+  as.tibble() 
+
+r$condition <- factor(r$condition, levels = c("S", "W", "P"))
+
+```
+
+## Sanity check number of raters per image
+```{r}
+ratersPerImage <- r %>%
+  distinct(imageName, workerid) %>%
+  group_by(imageName) %>%
+  summarize(count = n()) 
+
+sum(ratersPerImage$count==30)==(length(unique(r$imageName)))
+```
+## Sanity check number of kids in each condition and age
+```{r}
+r %>%
+  distinct(sessionId, condition, age) %>%
+  group_by(condition) %>%
+  summarize(count = n()) %>%
+  kable()
+```
+
+## And distribution across age groups and conditions
+```{r}
+r %>%
+  distinct(sessionId, condition, age) %>%
+  group_by(condition,age) %>%
+  summarize(count = n()) 
+```
+
+## Take a look at the raw rating data as a sanity check
+Highest chosen category is correct one;  confusions look more or less reasonable.
+```{r}
+ratingConfusions <- r %>%
+  group_by(category, rating)  %>%
+  summarize(number = n()) %>%
+  group_by(category) %>%
+  mutate(prop = number / sum(number)) %>%
+  complete(rating, fill = list(prop = 0))
+
+ggplot(ratingConfusions, 
+       aes(x = rating, y = category, fill = prop)) + 
+  geom_tile() + 
+  ylab("True Category") + 
+  xlab("Rated as") + 
+  scale_fill_gradient(limits = c(0, 1)) + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
+```
+
+## How different are individual participants?
+```{r}
+
+corbyChild <- r %>%
+  group_by(sessionId) %>%
+  multi_boot_standard(col = "correct")
+
+indiv <- left_join(r,corbyChild) %>%
+  mutate(sessionId = fct_reorder(sessionId, mean, .desc=TRUE))
+
+ggplot(indiv, aes(x = sessionId, y = mean, col = age)) +
+  geom_jitter(width = .1, alpha = .5) + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
+```
+
+
+##  How does recognizability vary across  condition only?
+```{r}
+## Get the percent recognized for each age group / condition
+corbyConditionOnly <- r %>%
+  group_by(condition) %>%
+  multi_boot_standard(col = "correct")  
+
+ggplot(corbyConditionOnly, aes(x = condition, y = mean, col=condition)) + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  coord_flip()
+
+```
+
+##  How does recognizability vary across age and condition, collapsing across items?
+```{r}
+## Get the percent recognized for each age group / condition
+corbyCondition <- r %>%
+  group_by(condition,age) %>%
+  multi_boot_standard(col = "correct")  
+
+ggplot(corbyCondition, aes(x = age, y = mean, col=age)) + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  facet_grid(~condition) 
+  
+```
+## How does this trend break down by the catergory that children drew?
+```{r}
+corbyItem <- r %>%
+  group_by(age,condition,category) %>%
+  multi_boot_standard(col = "correct")  
+
+ggplot(corbyItem, aes(x = condition, y = mean, col=age)) + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  facet_wrap(~category) 
+```
+
+
+# Non-linear mixed effect model with random slopes for items and random intercepts for participants. 
+```{r}
+mod <- glmer(correct ~ age*condition + (1 | sessionId) + (condition | category),  data = r,  family = "binomial")
+kable(summary(mod)$coef, digits = 3)
+```
+
+```{r}
+
+W_average = round(corbyConditionOnly$mean[corbyConditionOnly$condition=="W"],2)
+P_average = round(corbyConditionOnly$mean[corbyConditionOnly$condition=="P"],2)
+S_average = round(corbyConditionOnly$mean[corbyConditionOnly$condition=="S"],2)
+
+```
+
+Overall, we found that children in the perception condition actually drew the least recongizble drawings (perception condition M =`r P_average`% recognized, semantic condition, M=`r S_average`%, working memory condition, M=`r W_average`%).
+
