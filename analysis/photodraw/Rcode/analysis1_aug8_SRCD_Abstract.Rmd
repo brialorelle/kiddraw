@@ -25,7 +25,7 @@ r <- read.csv("preprocessed_data/photodraw_recognition_ratings.csv") %>%
 ## refactor levels to that semantic condition is first, then working memory, then perception
 r$condition <- factor(r$condition, levels = c("S", "W", "P"))
 
-d <- read_csv("preprocessed_data/photodraw_data_Aug1.csv") %>%
+d <- read_csv("preprocessed_data/photodraw_data_Aug8.csv") %>%
   select(-X1) %>%
   filter(!is.na(age)) %>%
   mutate(imNameShort = paste0(category, '_sketch', '_', session_id,'_',condition, '_', age,'.png'))
@@ -44,13 +44,18 @@ d <- d %>%
 ## Join ratings and python datasets
 ```{r}
 joined <- left_join(r,d)
+
+
 ```
 
 ### Look at num strokes / duration per condition
 ```{r}
+##library("RColorBrewer")
+##myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
+
 ggplot(d, aes(x = condition, y = num_strokes, col=age)) + 
-    geom_jitter(width = .1, alpha = .5) 
-    # scale_color_brewer(viridis)
+    geom_jitter(width = .1, alpha = .5) +
+  ##scale_colour_gradientn(colours = myPalette(100), limits=c(4, 7))
 
 ggplot(d, aes(x = condition, y = draw_duration, col=age)) +
     geom_jitter(width = .1, alpha = .5) 
@@ -76,6 +81,60 @@ ggplot(corByItem, aes(x = draw_duration, y = avgCorrect, col=condition)) +
     geom_jitter(width = .1, alpha = .5) +
     facet_grid(~age)
 ```
+
+
+##look at average stroke length's distribution
+```{r storke length}
+
+corbyCategory <- joined %>%
+  group_by(category)%>%
+  multi_boot_standard(col = "avg_stroke_length")
+
+cate <- left_join(joined,corbyCategory)
+
+ggplot(cate,aes(x=category,y=mean))+
+  geom_jitter(width = .1, alpha = .5)
+
+ggplot(d,aes(x=category,y=avg_stroke_length,col=condition))+
+  geom_jitter(width = .1, alpha = .5)
+
+
+ggplot(d,aes(x=age,y=avg_stroke_length,col=condition))+
+  geom_jitter(width = .1, alpha = .5)
+
+```
+
+## How do stroke length relate to recognizability?
+```{r}
+corByItem2 <- joined %>%
+  group_by(imNameShort) %>%
+  mutate(avgCorrect = mean(correct)) %>%
+  distinct(imNameShort, avgCorrect, avg_stroke_length, age, condition)
+
+
+
+ggplot(corByItem2, aes(x = avg_stroke_length, y = avgCorrect, col=condition)) +
+    geom_jitter(width = .1, alpha = .5) +
+    facet_grid(~age)
+
+
+```
+
+
+## relationship between average storke length and correctness
+```{r}
+
+corbyStrokeLength <- joined %>%
+  group_by(avg_stroke_length,age)%>%
+  multi_boot_standard(col = "correct")
+
+
+ggplot(corbyStrokeLength,aes(x=avg_stroke_length,y=mean,col=age))+
+  geom_jitter(width=.1)
+
+
+```
+
 
 ## Sanity check number of raters per image
 ```{r}
