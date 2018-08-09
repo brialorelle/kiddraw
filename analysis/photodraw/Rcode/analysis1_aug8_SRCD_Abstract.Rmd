@@ -13,6 +13,7 @@ library(assertthat)
 library(ggthemes)
 library(lme4)
 library(langcog)
+library(lmerTest)
 theme_set(theme_few())
 ```
 
@@ -56,7 +57,6 @@ ratersPerImage <- r %>%
   summarize(count = n()) 
 
 assert_that(sum(ratersPerImage$count==30)==(length(unique(r$imageName))))
-
 ```
 
 #### Sanity check number of kids in each condition and age
@@ -100,15 +100,19 @@ ggplot(ratingConfusions,
 
 
 ### Look at num strokes / duration per condition
+
 ```{r}
-ggplot(d, aes(x = condition, y = num_strokes, col=age)) + 
-    geom_jitter(width = .1, alpha = .5) 
+ggplot(d, aes(num_strokes)) +
+  geom_histogram(binwidth=2) + 
+  facet_grid(~condition)
 
-ggplot(d, aes(x = condition, y = draw_duration, col=age)) +
-    geom_jitter(width = .1, alpha = .5) 
+ggplot(d, aes(draw_duration)) +
+  geom_histogram(binwidth=2) + 
+  facet_grid(~condition)
 
-ggplot(d, aes(x = condition, y = avg_stroke_length, col=age)) +
-    geom_jitter(width = .1, alpha = .5) 
+# ggplot(d, aes(num_strokes)) +
+#   geom_histogram(binwidth=2) + 
+#   facet_grid(~condition)
 
 ```
 
@@ -117,14 +121,24 @@ ggplot(d, aes(x = condition, y = avg_stroke_length, col=age)) +
 ## How different are individual participants?
 ```{r}
 
-corbyChild <- r %>%
+## Get proportion recognized for each image
+correctByImage <- r %>%
+  group_by(imNameShort) %>% # group by subjects
+  mutate(image_correct = mean(correct)) %>%
+  distinct(sessionId, category, age, image_correct, condition)
+
+## Get proportion recognized for each participant
+indiv <- r %>%
   group_by(sessionId) %>%
-  multi_boot_standard(col = "correct")
+  mutate(sub_correct = mean(correct)) %>%
+  distinct(sessionId, sub_correct, age) # get unique combos of sessionId and average recognizability 
 
-indiv <- left_join(r,corbyChild) %>%
-  mutate(sessionId = fct_reorder(sessionId, mean, .desc=TRUE))
+# indiv_plot <- indiv %>%
+#   ungroup(sessionId) %>%
+#   mutate(sessionId = fct_reorder(sessionId, sub_correct, .desc=TRUE))  # reorder subjects from best to worst
 
-ggplot(indiv, aes(x = sessionId, y = mean, col = age)) +
+## Plot individual children
+ggplot(indiv, aes(x = sessionId, y = sub_correct, col = age)) +
   geom_jitter(width = .1, alpha = .5) + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
 ```
@@ -133,11 +147,14 @@ ggplot(indiv, aes(x = sessionId, y = mean, col = age)) +
 ##  How does recognizability vary across  condition only?
 ```{r}
 ## Get the percent recognized for each age group / condition
-corbyConditionOnly <- r %>%
+corbyConditionAndSubID <- r %>%
+  group_by(sessionId) %>%
+  mutate(meanCorrect = mean(correct)) %>%
+  distinct(sessionId,meanCorrect, condition) %>%
   group_by(condition) %>%
-  multi_boot_standard(col = "correct")  
+  multi_boot_standard(col = "meanCorrect")  
 
-ggplot(corbyConditionOnly, aes(x = condition, y = mean, col=condition)) + 
+ggplot(corbyConditionAndSubID, aes(x = condition, y = mean, col=condition)) + 
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper))  
 
 ```
@@ -146,20 +163,22 @@ ggplot(corbyConditionOnly, aes(x = condition, y = mean, col=condition)) +
 ```{r}
 corbyChild <- r %>%
   group_by(condition,sessionId, age) %>%
-  mutate(avgCorrect = mean(correct))
+  mutate(avgCorrect = mean(correct)) 
 
 ggplot(corbyChild, aes(x = age, y = avgCorrect, col=age)) + 
   geom_jitter(width = .01, alpha = .5)  +
   facet_grid(~condition) 
-  
 ```
 
 ##  How does recognizability vary across age and condition, collapsing across items?
 ```{r}
 ## Get the percent recognized for each age group / condition
 corbyCondition <- r %>%
-  group_by(condition,age) %>%
-  multi_boot_standard(col = "correct")  
+  group_by(sessionId) %>% # group by subjects
+  mutate(meanCorrect=mean(correct)) %>% # calculate mean correct (subject-level average correct)
+  distinct(sessionId, meanCorrect, age, condition) %>%
+  group_by(condition,age) %>% ## critical step: group by BOTH condition and age to get CIs for each combination of age (4,5,6,7) and condition (S,W,P)
+  multi_boot_standard(col = "meanCorrect")  
 
 ggplot(corbyCondition, aes(x = age, y = mean, col=age)) + 
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
@@ -170,7 +189,7 @@ ggplot(corbyCondition, aes(x = age, y = mean, col=age)) +
 ```{r} 
 corByItem <- joined %>%
   group_by(imNameShort) %>%
-  mutate(avgCorrect = mean(correct)) %>%
+  mutate(avgCorrect = mean(correct)) %>% # IMAGE level correctness
   distinct(imNameShort, avgCorrect, draw_duration, num_strokes, avg_stroke_length,age, condition)
 ```
 
@@ -190,12 +209,10 @@ ggplot(corByItem, aes(x = avg_stroke_length, y = avgCorrect, col=condition)) +
 
 ## How does this trend break down by the catergory that children drew?
 ```{r}
-corbyItem <- r %>%
-  group_by(age,condition,category) %>%
-  multi_boot_standard(col = "correct")  
 
-ggplot(corbyItem, aes(x = condition, y = mean, col=age)) + 
-  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+
+ggplot(correctByImage, aes(x = condition, y = image_correct, col=age)) + 
+  geom_point() +
   facet_wrap(~category) 
 ```
 
@@ -213,35 +230,46 @@ corbyWorked <- r %>%
 
 ## Inferential analyses: Non-linear mixed effect model with random slopes for items and random intercepts for participants. 
 ```{r}
+corbySketch <- r %>%
+  group_by(imNameShort) %>%
+  mutate(propCorrect=mean(correct)) %>%
+  distinct(imNameShort, condition, age, category, propCorrect, sessionId) 
+
+# scale age
+corbySketch$age_sc = scale(corbySketch$age, scale = FALSE)
+
 ## Adding random slopes on items causes the model to fail to converge, only keeping random intercepts.
-mod <- glmer(correct ~ scale(age)*condition + (condition | sessionId) + (1 | category),  data = r,  family = "binomial",   control=glmerControl(optCtrl=list(maxfun=20000),optimizer=c("bobyqa")))
-model_summary = summary(mod)$coef
-kable(model_summary, digits = 3)
+model_lmer <- lmer(propCorrect ~ age_sc*condition + (1 | sessionId) + (1 | category),  data = corbySketch)
+
 ```
 
 ## Secondary analysis: add draw_duration and num_strokes as covariates
 
 ```{r}
+
+
 joined$condition = factor(joined$condition, levels = c("S", "W", "P")) # make sure the conditions are in the right order here
 joined$category = as.factor(joined$category)
 
-mod <- glmer(correct ~ scale(age)*condition + draw_duration + num_strokes + (condition | sessionId) + (1 | category),  data = joined,  family = "binomial", control=glmerControl(optCtrl=list(maxfun=20000),optimizer=c("bobyqa")))
-model_summary = round(summary(mod)$coef,3);
-kable(model_summary, digits = 3)
+mod_covariates <- glmer(correct ~ scale(age)*condition + draw_duration + num_strokes + (condition | sessionId) + (1 | category),  data = joined,  family = "binomial", control=glmerControl(optCtrl=list(maxfun=20000),optimizer=c("bobyqa")))
+model_summary_covariates = round(summary(mod_covariates)$coef,3);
+kable(model_summary_covariates, digits = 3)
 
 ```
 
 ## Exploratory analysis: We have a somewhat uneven distribution of kids across ages (though even across condition). Do these results hold when we bin by "younger" and "older" kids to get a more even split?
-```{r}
-r <- r %>%
-  mutate(age_group = cut(age, c(3.9, 5, 8), labels = c("4-5","6-7"))) 
-```
 
 ### Plot how accuracy differs by these age group and condition
 ```{r}
+r <- r %>%
+  mutate(age_group = cut(age, c(3.9, 5, 8), labels = c("4-5","6-7"))) 
+
 corbyAgeGroup <- r %>%
-  group_by(age_group, condition)%>%
-  multi_boot_standard(col="correct")
+  group_by(sessionId)%>%
+  mutate(meanCorrect = mean (correct)) %>%
+  distinct(sessionId, age_group, condition, meanCorrect)%>%
+  group_by(condition, age_group) %>%
+  multi_boot_standard(col="meanCorrect")
 
 ggplot(corbyAgeGroup, aes(x = condition, y = mean, col=age_group)) + 
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper))
@@ -250,8 +278,11 @@ ggplot(corbyAgeGroup, aes(x = condition, y = mean, col=age_group)) +
 
 ### Run inferential model statistics for age group
 ```{r}
-mod_age_group <- glmer(correct ~ age_group*condition + (1 | sessionId) + (1 | category),  data = r,  family = "binomial")
-kable(summary(mod_age_group)$coef, digits = 3)
+corbySketch <- corbySketch %>%
+  mutate(age_group = cut(age, c(3.9, 5, 8), labels = c("4-5","6-7"))) 
+
+model_lmer <- lmer(propCorrect ~ age_group*condition + (1 | sessionId) + (1 | category),  data = corbySketch)
+summary(model_lmer)
 ```
 
 Looks like we still see an interaction between age_group and condition, though the main effect of 4-5 year-olds and 6-7 year-olds is no longer significant on it's own.
