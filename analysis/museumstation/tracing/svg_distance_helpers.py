@@ -69,6 +69,30 @@ def path_renderer(verts, codes):
 def flatten(x):
     return [val for sublist in x for val in sublist]
 
+def get_stroke_verts_and_codes(svg_list):
+    '''
+    parse into x,y coordinates and output list of lists of coordinates
+    
+    '''    
+    Verts = []
+    Codes = []
+    for stroke_ind,stroke in enumerate(svg_list):      
+        x = []
+        y = []
+        parsed = parse_path(stroke)
+        for i,p in enumerate(parsed):
+            if i!=len(parsed)-1: # last line segment
+                x.append(p.start.real)
+                y.append(p.start.imag)    
+            else:
+                x.append(p.start.real)
+                y.append(p.start.imag)     
+                x.append(p.end.real)
+                y.append(p.end.imag)
+        verts, codes = polyline_pathmaker([zip(x,y)])
+        Verts.append(verts)
+        Codes.append(codes)                  
+    return Verts, Codes
 
 def get_verts_and_codes(svg_list):
     '''
@@ -96,32 +120,6 @@ def get_verts_and_codes(svg_list):
         Verts.append(verts)
         Codes.append(codes)                  
     return Verts, Codes
-
-def get_stroke_verts_and_codes(svg_list):
-    '''
-    parse into x,y coordinates and output list of lists of coordinates
-    
-    '''    
-    Verts = []
-    Codes = []
-    for stroke_ind,stroke in enumerate(svg_list):      
-        x = []
-        y = []
-        parsed = parse_path(stroke)
-        for i,p in enumerate(parsed):
-            if i!=len(parsed)-1: # last line segment
-                x.append(p.start.real)
-                y.append(p.start.imag)    
-            else:
-                x.append(p.start.real)
-                y.append(p.start.imag)     
-                x.append(p.end.real)
-                y.append(p.end.imag)
-        verts, codes = polyline_pathmaker([zip(x,y)])
-        Verts.append(verts)
-        Codes.append(codes)                  
-    return Verts, Codes
-
     
 def make_svg_list(stroke_recs):
     '''
@@ -497,12 +495,12 @@ def get_centroid_polygon(verts):
     Cy = _Cy * (1/(6*Area))    
     return Cx,Cy
         
-def plot_coregistered_shapes(ref_verts,ref_codes,tra_verts,tra_codes, canvas_side):
+def plot_coregistered_shapes(ref_verts,ref_codes,tra_verts,tra_codes):
     fig = plt.figure(figsize=(8,8))    
     ax = plt.subplot(111)
     ax.axis('off')
-    ax.set_xlim(0, canvas_side)
-    ax.set_ylim(0, canvas_side)
+    ax.set_xlim(-400,400)
+    ax.set_ylim(-400,400)
     path = Path(tra_verts, tra_codes)
     patch = patches.PathPatch(path, edgecolor='blue', facecolor='none', lw=3)
     ax.add_patch(patch)
@@ -559,12 +557,12 @@ def plot_stroke_corresponding_points_on_reference(tra_verts,ref_verts,cor_verts,
     plt.gca().invert_yaxis() # y values increase as you go down in image
     plt.show()    
     
-def plot_corresponding_points_on_reference(tra_verts,tra_codes,ref_verts,ref_codes,cor_verts,canvas_side):
+def plot_corresponding_points_on_reference(tra_verts,tra_codes,ref_verts,ref_codes,cor_verts):
     fig = plt.figure(figsize=(8,8))    
     ax = plt.subplot(111)
     ax.axis('off')
-    ax.set_xlim(0, canvas_side)
-    ax.set_ylim(0, canvas_side)
+    ax.set_xlim(-400,400)
+    ax.set_ylim(-400,400)
     path = Path(tra_verts, tra_codes)
     patch = patches.PathPatch(path, edgecolor='blue', facecolor='none', lw=3)
     ax.add_patch(patch)
@@ -790,43 +788,50 @@ def min_multi_stroke_err(tra_verts_list, ref_verts):
     tra_verts = np.array(tra_verts)
     ref_verts = np.array(ref_verts)
     cor_verts = get_corresponding_verts(tra_verts, ref_verts) # use the initial cor_verts as actual outputs
-    codes = list(np.repeat(2, len(tra_verts)))
-    codes[0] = 1
     
     x_data = Variable( torch.tensor(tra_verts, dtype=torch.float) )
-    print'x_data size', x_data.size()
+    print x_data.size()
     y_data = Variable( torch.tensor(cor_verts, dtype=torch.float) )
-    print'y_data size', y_data.size()
+    print y_data.size()
     
     # init model
     model = LinearTransform()
+    criterion = torch.nn.MSELoss(size_average = False)
+    optimizer = torch.optim.SGD(model.parameters(), weight_decay=100, lr = 0.0001)
+    
     pred_y = model(x_data)
+
+    # Compute and print loss
     loss = custom_loss(pred_y, y_data)
+    #loss = criterion(pred_y, y_data)
+    print 'init loss', loss
     
-    optimizer = torch.optim.SGD(model.parameters(), weight_decay=100, lr = 1e-10)
-    
-    num_train_steps = 10000
+    num_train_steps = 1000
     print 'weight', model.transform.weight.data
     for i,epoch in enumerate(range(num_train_steps)):
 
         # Forward pass: Compute predicted y by passing 
         # x to the model
         pred_y = model(x_data)
-        #plot_coregistered_shapes(cor_verts,codes,pred_y.detach().numpy(),codes, 819)
 
         # Compute and print loss
         loss = custom_loss(pred_y, y_data)
-       
+        #loss = criterion(pred_y, y_data)
+    
         # Zero gradients, perform a backward pass, 
         # and update the weights.
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+        
+        print 'epoch', i
+        print 'weight', model.transform.weight.data
+        print 'loss', loss.data
 
-        if i%1000==0:
+        if i%10==0:
             print('epoch {}, loss {}'.format(epoch, loss.data))
     
-    final_tra_verts = model(x_data).detach().numpy()
+    final_tra_verts = model(x_data)
     return loss, final_tra_verts
 
 def transform_verts(verts, tform):

@@ -1,0 +1,280 @@
+---
+title: "PhotoDraw-Analysis1"
+author: "Bria Long"
+date: "8/6/2018"
+output: html_document
+---
+
+```{r setup, echo = FALSE}
+library(knitr)
+opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(assertthat)
+library(ggthemes)
+library(lme4)
+library(langcog)
+theme_set(theme_few())
+```
+
+## Load data and do basic preprocessing.
+```{r}
+## Read in data outputs from turk data - true/false recognition 
+r <- read.csv("preprocessed_data/photodraw_recognition_ratings.csv") %>%
+  as.tibble() 
+
+## refactor levels to that semantic condition is first, then working memory, then perception
+r$condition <- factor(r$condition, levels = c("S", "W", "P"))
+
+d <- read_csv("preprocessed_data/photodraw_data_Aug8.csv") %>%
+  select(-X1) %>%
+  filter(!is.na(age)) %>%
+  mutate(imNameShort = paste0(category, '_sketch', '_', session_id,'_',condition, '_', age,'.png'))
+
+```
+
+#### Convert alphanumeric age to numeric age in python csv
+```{r}
+d <- d %>%
+  group_by(session_id) %>%
+  mutate(age_char = strsplit(age,"e")[[1]][2]) %>%
+  mutate(age_num = as.numeric(age_char)) %>%
+  select(-age) %>%
+  rename(age = age_num)
+```
+
+#### Join ratings and python datasets
+```{r}
+joined <- left_join(r,d)
+```
+
+
+### Sanity check number of raters per image
+```{r}
+ratersPerImage <- r %>%
+  distinct(imageName, workerid) %>%
+  group_by(imageName) %>%
+  summarize(count = n()) 
+
+assert_that(sum(ratersPerImage$count==30)==(length(unique(r$imageName))))
+
+```
+
+#### Sanity check number of kids in each condition and age
+```{r}
+r %>%
+  distinct(sessionId, condition, age) %>%
+  group_by(condition) %>%
+  summarize(count = n()) %>%
+  kable()
+```
+
+#### And distribution across age groups and conditions
+```{r}
+r %>%
+  distinct(sessionId, condition, age) %>%
+  group_by(condition,age) %>%
+  summarize(count = n()) 
+```
+
+
+# Part 2: Descriptive statistics 
+
+### Take a look at the raw rating data 
+Highest chosen category is correct one;  confusions look more or less reasonable.
+```{r}
+ratingConfusions <- r %>%
+  group_by(category, rating)  %>%
+  summarize(number = n()) %>%
+  group_by(category) %>%
+  mutate(prop = number / sum(number)) %>%
+  complete(rating, fill = list(prop = 0))
+
+ggplot(ratingConfusions, 
+       aes(x = rating, y = category, fill = prop)) + 
+  geom_tile() + 
+  ylab("True Category") + 
+  xlab("Rated as") + 
+  scale_fill_gradient(limits = c(0, 1)) + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
+```
+
+
+### Look at num strokes / duration per condition
+```{r}
+ggplot(d, aes(x = condition, y = num_strokes, col=age)) + 
+    geom_jitter(width = .1, alpha = .5) 
+
+ggplot(d, aes(x = condition, y = draw_duration, col=age)) +
+    geom_jitter(width = .1, alpha = .5) 
+
+ggplot(d, aes(x = condition, y = avg_stroke_length, col=age)) +
+    geom_jitter(width = .1, alpha = .5) 
+
+```
+
+
+
+## How different are individual participants?
+```{r}
+
+corbyChild <- r %>%
+  group_by(sessionId) %>%
+  multi_boot_standard(col = "correct")
+
+indiv <- left_join(r,corbyChild) %>%
+  mutate(sessionId = fct_reorder(sessionId, mean, .desc=TRUE))
+
+ggplot(indiv, aes(x = sessionId, y = mean, col = age)) +
+  geom_jitter(width = .1, alpha = .5) + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
+```
+
+
+##  How does recognizability vary across  condition only?
+```{r}
+## Get the percent recognized for each age group / condition
+corbyConditionOnly <- r %>%
+  group_by(condition) %>%
+  multi_boot_standard(col = "correct")  
+
+ggplot(corbyConditionOnly, aes(x = condition, y = mean, col=condition)) + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper))  
+
+```
+
+### Look at individual children's performance in these conditions by their age
+```{r}
+corbyChild <- r %>%
+  group_by(condition,sessionId, age) %>%
+  mutate(avgCorrect = mean(correct))
+
+ggplot(corbyChild, aes(x = age, y = avgCorrect, col=age)) + 
+  geom_jitter(width = .01, alpha = .5)  +
+  facet_grid(~condition) 
+  
+```
+
+##  How does recognizability vary across age and condition, collapsing across items?
+```{r}
+## Get the percent recognized for each age group / condition
+corbyCondition <- r %>%
+  group_by(condition,age) %>%
+  multi_boot_standard(col = "correct")  
+
+ggplot(corbyCondition, aes(x = age, y = mean, col=age)) + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  facet_grid(~condition) 
+```
+
+## How do num strokes / draw duration / avg_stroke_legth relate to recognizability?
+```{r} 
+corByItem <- joined %>%
+  group_by(imNameShort) %>%
+  mutate(avgCorrect = mean(correct)) %>%
+  distinct(imNameShort, avgCorrect, draw_duration, num_strokes, avg_stroke_length,age, condition)
+```
+
+```{r}
+ggplot(corByItem, aes(x = num_strokes, y = avgCorrect, col=condition)) +
+    geom_jitter(width = .1, alpha = .5) +
+    facet_grid(~age)
+
+ggplot(corByItem, aes(x = draw_duration, y = avgCorrect, col=condition)) +
+    geom_jitter(width = .1, alpha = .5) +
+    facet_grid(~age)
+
+ggplot(corByItem, aes(x = avg_stroke_length, y = avgCorrect, col=condition)) +
+    geom_jitter(width = .1, alpha = .5) +
+    facet_grid(~age)
+```
+
+## How does this trend break down by the catergory that children drew?
+```{r}
+corbyItem <- r %>%
+  group_by(age,condition,category) %>%
+  multi_boot_standard(col = "correct")  
+
+ggplot(corbyItem, aes(x = condition, y = mean, col=age)) + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  facet_wrap(~category) 
+```
+
+```{r}
+r$workerid = as.factor(r$workerid)
+corbyWorked <- r %>%
+  group_by(workerid) %>%
+  mutate(avgCorrect = mean(correct)) %>%
+  distinct(workerid, avgCorrect) %>%
+  kable()
+```
+
+
+# Part 3: Inferential Statistics
+
+## Inferential analyses: Non-linear mixed effect model with random slopes for items and random intercepts for participants. 
+```{r}
+## Adding random slopes on items causes the model to fail to converge, only keeping random intercepts.
+mod <- glmer(correct ~ scale(age)*condition + (condition | sessionId) + (1 | category),  data = r,  family = "binomial",   control=glmerControl(optCtrl=list(maxfun=20000),optimizer=c("bobyqa")))
+model_summary = summary(mod)$coef
+kable(model_summary, digits = 3)
+```
+
+## Secondary analysis: add draw_duration and num_strokes as covariates
+
+```{r}
+joined$condition = factor(joined$condition, levels = c("S", "W", "P")) # make sure the conditions are in the right order here
+joined$category = as.factor(joined$category)
+
+mod <- glmer(correct ~ scale(age)*condition + draw_duration + num_strokes + (condition | sessionId) + (1 | category),  data = joined,  family = "binomial", control=glmerControl(optCtrl=list(maxfun=20000),optimizer=c("bobyqa")))
+model_summary = round(summary(mod)$coef,3);
+kable(model_summary, digits = 3)
+
+```
+
+## Exploratory analysis: We have a somewhat uneven distribution of kids across ages (though even across condition). Do these results hold when we bin by "younger" and "older" kids to get a more even split?
+```{r}
+r <- r %>%
+  mutate(age_group = cut(age, c(3.9, 5, 8), labels = c("4-5","6-7"))) 
+```
+
+### Plot how accuracy differs by these age group and condition
+```{r}
+corbyAgeGroup <- r %>%
+  group_by(age_group, condition)%>%
+  multi_boot_standard(col="correct")
+
+ggplot(corbyAgeGroup, aes(x = condition, y = mean, col=age_group)) + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper))
+
+```
+
+### Run inferential model statistics for age group
+```{r}
+mod_age_group <- glmer(correct ~ age_group*condition + (1 | sessionId) + (1 | category),  data = r,  family = "binomial")
+kable(summary(mod_age_group)$coef, digits = 3)
+```
+
+Looks like we still see an interaction between age_group and condition, though the main effect of 4-5 year-olds and 6-7 year-olds is no longer significant on it's own.
+
+### Grab out some values for easier rendering in abstract text.
+```{r}
+W_average = round(corbyConditionOnly$mean[corbyConditionOnly$condition=="W"],2)
+P_average = round(corbyConditionOnly$mean[corbyConditionOnly$condition=="P"],2)
+S_average = round(corbyConditionOnly$mean[corbyConditionOnly$condition=="S"],2)
+
+num_children = length(unique(r$sessionId))
+
+```
+
+SRCD Abstract:
+
+The role of memory in children’s drawings of object categories
+Bria Long, Judy Fan, Yi Feng, Renata Chai, & Michael C. Frank
+
+Children’s drawings of object categories (e.g., rabbit, cat) become more and more recognizable as they get older, including visual features that distinguish these categories from one another (Long, Fan, & Frank, 2018). Why might older children tend to include these kinds of features (e.g., longer ears when drawing a rabbit)? One possibility is that younger children have a harder time accessing and retrieving their visual representations of what things tend to look like. Here, we examined whether children would draw more recognizable versions of objects when they heard a verbal cue accompanied by a picture of a canonical exemplar of this category (e.g., “can you draw a rabbit?”; working memory condition) and when they were asked to draw from perception (e.g., “can you draw this rabbit in the picture”) versus when they only heard a verbal cue (semantic condition).
+
+Children ages 4-7 years (N = `r num_children`  total; 20 children in each condition) participated in a quick drawing game designed to test this hypothesis and were randomly assigned to one of these three conditions and drew five object categories (cup, shoe, rabbit, cat, train). The recognizability of children’s drawings was then assessed via adult raters (N = 30 per image, N = 90 total) who completed a 22AFC task with identity of each object category; drawings were only counted as recognizable if the adult rater guessed the correct category. These recognition scores for each drawing were then modeled as a function of children’s age (reported in years) and the between-subjects drawing condition in a non-linear generalized mixed-effect model. Consistent with prior work (Long, Fan, & Frank, 2018), we found a strong effect of age; older children produced overall more recognizable drawings (b = `r model_summary[1,'Estimate']`, SE =`r model_summary[1,'Std. Error']`, z = `r model_summary[1,'z value']`, p =`r model_summary[1,'Pr(>|z|)']`). Contrary to our expectations, we found that overall children did not draw more recognizable drawings in the perception or working memory conditions than the semantic condition (perception condition M =`r P_average`% recognized, semantic condition, M=`r S_average`%, working memory condition, M=`r W_average`%). However, we  found an interaction between age and the perception condition (b = `r model_summary[5,'Estimate']`, SE =`r model_summary[5,'Std. Error']`, z = `r model_summary[5,'z value']`, p =`r model_summary[5,'Pr(>|z|)']`):  younger children drew less recognizable drawings in the perception condition, while the recognizability of older children's drawings slightly increased.
+
+We thus found a marked developmental difference in drawing from perception: while adults (Fan, Yamins, & Turk-Browne, 2018) produce more recognizable drawings when drawing from photographs, younger children showed the opposite trend, suggesting that the task of drawing from perception may have actually impaired their ability to draw recognizable images. Taken together, this work suggests younger children did not make use the visual information about what things look like to improve the recognizability of their drawings, hinting that a memory retrieval failure is not what explains the age-related changes in the recognizability of children’s drawings. 
+
+
