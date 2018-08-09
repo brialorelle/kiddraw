@@ -734,7 +734,7 @@ def min_single_stroke_err(tra_verts, ref_verts):
     """
     
     # init input and output variables
-    tra_verts = np.array(tra_verts)
+    tra_verts = np.array(segment_stroke(tra_verts))
     ref_verts = np.array(ref_verts)
     cor_verts = get_corresponding_verts(tra_verts, ref_verts) # use the initial cor_verts as actual outputs
 #     codes = list(np.repeat(2, len(tra_verts)))
