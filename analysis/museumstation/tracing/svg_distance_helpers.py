@@ -24,6 +24,7 @@ from skimage.transform import warp, AffineTransform
 import torch
 from torch.autograd import Variable
 import torch.nn as nn
+from scipy.spatial import distance
 
 """
 Methods about rendering svg data using matplotlib
@@ -533,6 +534,30 @@ def plot_stroke_coregistered_shapes(tra_verts, ref_verts, canvas_side):
         
     plt.gca().invert_yaxis() # y values increase as you go down in image
     plt.show()     
+
+def plot_stroke_corresponding_points_on_reference(tra_verts,ref_verts,cor_verts,canvas_side):
+    fig = plt.figure(figsize=(8,8))    
+    ax = plt.subplot(111)
+    ax.axis('off')
+    ax.set_xlim(0, canvas_side)
+    ax.set_ylim(0, canvas_side)
+    
+    tra_codes = np.repeat(2, len(tra_verts))
+    tra_codes[0] = 1
+    path = Path(tra_verts, tra_codes)
+    patch = patches.PathPatch(path, edgecolor='blue', facecolor='none', lw=3)
+    ax.add_patch(patch)
+    
+    ref_codes = np.repeat(2, len(ref_verts))
+    ref_codes[0] = 1
+    path = Path(ref_verts, ref_codes)
+    patch = patches.PathPatch(path, edgecolor='red',facecolor='none', lw=3)
+    ax.add_patch(patch)
+    path = Path(cor_verts, tra_codes)
+    patch = patches.PathPatch(path, edgecolor='black',facecolor='none', lw=3)
+    ax.add_patch(patch)
+    plt.gca().invert_yaxis() # y values increase as you go down in image
+    plt.show()    
     
 def plot_corresponding_points_on_reference(tra_verts,tra_codes,ref_verts,ref_codes,cor_verts,canvas_side):
     fig = plt.figure(figsize=(8,8))    
@@ -704,10 +729,61 @@ def get_area_between_tracing_and_corresponding_verts(tra_verts,cor_verts,verbose
 """
 Adjusting tracing
 """
-def minimize_transformation_err(tra_verts, ref_verts):
+def min_single_stroke_err(tra_verts, ref_verts):
     """
-    Assume the input is a single stroke
-    Parameters sx, sy, r, tx, ty
+    tra_verts: a single stroke. a list of vertices
+    ref_verts: a single stroke. a list of vertices
+    """
+    
+    # init input and output variables
+    tra_verts = np.array(tra_verts)
+    ref_verts = np.array(ref_verts)
+    cor_verts = get_corresponding_verts(tra_verts, ref_verts) # use the initial cor_verts as actual outputs
+#     codes = list(np.repeat(2, len(tra_verts)))
+#     codes[0] = 1
+    
+    x_data = Variable( torch.tensor(tra_verts, dtype=torch.float) )
+    y_data = Variable( torch.tensor(cor_verts, dtype=torch.float) )
+    
+    
+    # init model
+    model = LinearTransform()
+    pred_y = model(x_data)
+    loss = custom_loss(pred_y, y_data)
+    
+    lr = 1/np.power(10, (round(np.log10(loss.detach().numpy()))+5))
+    print lr
+    optimizer = torch.optim.SGD(model.parameters(), weight_decay=100, lr = lr)
+    
+    num_train_steps = 1000
+   
+    for i,epoch in enumerate(range(num_train_steps)):
+
+        # Forward pass: Compute predicted y by passing 
+        # x to the model
+        pred_y = model(x_data)
+        #plot_coregistered_shapes(cor_verts,codes,pred_y.detach().numpy(),codes, 819)
+
+        # Compute and print loss
+        loss = custom_loss(pred_y, y_data)
+       
+        # Zero gradients, perform a backward pass, 
+        # and update the weights.
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        if i%100==0:
+            print('epoch {}, loss {}'.format(epoch, loss.data))
+    
+    final_tra_verts = model(x_data).detach().numpy()
+    return loss, final_tra_verts
+
+def min_multi_stroke_err(tra_verts_list, ref_verts):
+    """
+    tra_verts_list: a list of strokes. a list of lists of vertices
+    ref_verts: a single stroke. a list of vertices
+    
     """
     
     # init input and output variables
@@ -752,7 +828,6 @@ def minimize_transformation_err(tra_verts, ref_verts):
     
     final_tra_verts = model(x_data).detach().numpy()
     return loss, final_tra_verts
-
 
 def transform_verts(verts, tform):
     """
@@ -922,6 +997,69 @@ def custom_loss(tra_verts, ref_verts):
         sum_dist.add_(current_dist)
         #print 'sum', sum_dist
     
+#     sum_cost
+#     for i, v in enumerate(tra_verts):
+#         rv = tra_verts[i]
+#         current_dist = ((v[0] - rv[0]) ** 2 + (v[1] - rv[1]) ** 2) ** 1/2
+#         #print 'current', current_dist
+#         sum_dist.add_(current_dist)
+#         #print 'sum', sum_dist
+    
     final_err = sum_dist
   
     return torch.tensor(final_err, requires_grad=True)
+
+def segment_stroke(tra_verts, seg_factor = 1.0):
+    """
+    Segment a stroke into a list of small line segments
+    Continuous vertices: either x+1 or y+1 
+    """
+    new_verts = []
+    for i, point1 in enumerate(tra_verts[:-1]):
+        # for each two vertices on the stroke, find the line formula
+        # cut the line segment into small parts with length as seg_factor
+        new_verts.append(point1)
+        point2 = tra_verts[i+1]
+        p1_to_p2 = distance.euclidean(point1, point2)
+        if p1_to_p2 <= seg_factor:
+            new_verts.append(point2)
+        
+        else:
+            times = int(p1_to_p2/seg_factor)
+            
+            
+            delta_x, delta_y = 0, 0
+            
+            if point2[0] - point1[0] == 0: # vertical line 
+                delta_y = seg_factor
+            
+            elif point2[1] - point1[1] == 0: # horizontal line 
+                delta_x = seg_factor
+            
+            else:
+                slope = ( point2[1] - point1[1] ) / ( point2[0] - point1[0] )
+                angle = np.arctan(slope)
+                delta_x = np.cos(angle) * seg_factor
+                delta_y = np.sin(angle) * seg_factor
+            
+            # generate new vertices to segment the line
+            current_vert = point1
+            for i in range(times):
+                new_v = (current_vert[0] + delta_x, current_vert[1] + delta_y)
+                new_verts.append(new_v)
+                current_vert = new_v
+            
+            # add remaining line
+            last_segment = p1_to_p2 - times * seg_factor
+            if last_segment>0:
+                delta_x *= (last_segment/seg_factor)
+                delta_y *= (last_segment/seg_factor)
+                last_vert = new_verts[-1]
+                new_v = (last_vert[0] + delta_x, last_vert[1] + delta_y)
+                
+                new_verts.append(new_v)
+
+    return new_verts
+                                                
+        
+    
