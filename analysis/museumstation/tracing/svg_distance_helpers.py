@@ -776,6 +776,9 @@ def min_single_stroke_err(tra_verts, ref_verts):
             loss.backward()
             optimizer.step()
         
+        new_tra = model(x_data).detach().numpy()
+        cor_verts = get_corresponding_verts(new_tra, ref_verts)
+        y_data = Variable( torch.tensor(cor_verts, dtype=torch.float) )
         
         if j%100==0:
             print('epoch {}, loss {}'.format(epoch, loss.data))
