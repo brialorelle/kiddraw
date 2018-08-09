@@ -754,24 +754,30 @@ def min_single_stroke_err(tra_verts, ref_verts):
     optimizer = torch.optim.SGD(model.parameters(), weight_decay=100, lr = lr)
     
     num_train_steps = 1000
+    batch_size = int(x_data.size()[0]/4) 
    
-    for i,epoch in enumerate(range(num_train_steps)):
+    for j,epoch in enumerate(range(num_train_steps)):
+        permutation = torch.randperm(x_data.size()[0])
+        
+        for i in range(0, x_data.size()[0], batch_size):
+            # Forward pass: Compute predicted y by passing 
+            # x to the model
+            indices = permutation[i:i+batch_size]
+            batch_x, batch_y = x_data[indices], y_data[indices]
+            pred_y = model(batch_x)
+            #plot_coregistered_shapes(cor_verts,codes,pred_y.detach().numpy(),codes, 819)
 
-        # Forward pass: Compute predicted y by passing 
-        # x to the model
-        pred_y = model(x_data)
-        #plot_coregistered_shapes(cor_verts,codes,pred_y.detach().numpy(),codes, 819)
+            # Compute and print loss
+            loss = custom_loss(pred_y, batch_y)
 
-        # Compute and print loss
-        loss = custom_loss(pred_y, y_data)
-       
-        # Zero gradients, perform a backward pass, 
-        # and update the weights.
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-
-        if i%100==0:
+            # Zero gradients, perform a backward pass, 
+            # and update the weights.
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+        
+        
+        if j%100==0:
             print('epoch {}, loss {}'.format(epoch, loss.data))
     
     final_tra_verts = model(x_data).detach().numpy()
