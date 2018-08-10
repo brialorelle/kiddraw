@@ -14,6 +14,7 @@ library(ggthemes)
 library(lme4)
 library(langcog)
 library(lmerTest)
+library(viridis)
 theme_set(theme_few())
 ```
 
@@ -47,7 +48,6 @@ d <- d %>%
 ```{r}
 joined <- left_join(r,d)
 ```
-
 
 ### Sanity check number of raters per image
 ```{r}
@@ -94,7 +94,7 @@ ggplot(ratingConfusions,
   geom_tile() + 
   ylab("True Category") + 
   xlab("Rated as") + 
-  scale_fill_gradient(limits = c(0, 1)) + 
+  scale_fill_viridis(limits = c(0, 1),option="magma") + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
 ```
 
@@ -167,7 +167,9 @@ corbyChild <- r %>%
 
 ggplot(corbyChild, aes(x = age, y = avgCorrect, col=age)) + 
   geom_jitter(width = .01, alpha = .5)  +
-  facet_grid(~condition) 
+  facet_grid(~condition) + 
+  scale_color_viridis() 
+
 ```
 
 ##  How does recognizability vary across age and condition, collapsing across items?
@@ -182,7 +184,8 @@ corbyCondition <- r %>%
 
 ggplot(corbyCondition, aes(x = age, y = mean, col=age)) + 
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
-  facet_grid(~condition) 
+  facet_grid(~condition) + 
+  scale_color_viridis() 
 ```
 
 ## How do num strokes / draw duration / avg_stroke_legth relate to recognizability?
@@ -209,11 +212,10 @@ ggplot(corByItem, aes(x = avg_stroke_length, y = avgCorrect, col=condition)) +
 
 ## How does this trend break down by the catergory that children drew?
 ```{r}
-
-
 ggplot(correctByImage, aes(x = condition, y = image_correct, col=age)) + 
   geom_point() +
-  facet_wrap(~category) 
+  facet_wrap(~category) + 
+  scale_color_viridis() 
 ```
 
 ```{r}
@@ -230,12 +232,13 @@ corbyWorked <- r %>%
 
 ## Inferential analyses: Non-linear mixed effect model with random slopes for items and random intercepts for participants. 
 ```{r}
+##
 corbySketch <- r %>%
   group_by(imNameShort) %>%
   mutate(propCorrect=mean(correct)) %>%
   distinct(imNameShort, condition, age, category, propCorrect, sessionId) 
 
-# scale age
+## scale age
 corbySketch$age_sc = scale(corbySketch$age, scale = FALSE)
 
 ## Adding random slopes on items causes the model to fail to converge, only keeping random intercepts.
@@ -243,17 +246,25 @@ model_lmer <- lmer(propCorrect ~ age_sc*condition + (1 | sessionId) + (1 | categ
 
 ```
 
-## Secondary analysis: add draw_duration and num_strokes as covariates
-
+## Get out some model predictions and plot them on top of both the raw data for each sketch and at the participant-averaged level
 ```{r}
+predicted_df = data.frame(lmer_predictions = predict(model_lmer, corbySketch), age=corbySketch$age, condition=corbySketch$condition)
 
+## Model prediction lines overlaid on raw data fed to the model
+ggplot(data = predicted_df, aes(x=age, y=lmer_predictions)) +
+  facet_grid(~condition) +
+  scale_color_viridis()  +
+  stat_smooth(method="lm", col='grey') +
+  scale_x_discrete(limits=c(4,5,6,7),labels=c("4 yrs", "5 yrs", "6 yrs", "7 yrs")) +
+  geom_jitter(data = corbySketch, aes(x=age, y=propCorrect, col=age))
 
-joined$condition = factor(joined$condition, levels = c("S", "W", "P")) # make sure the conditions are in the right order here
-joined$category = as.factor(joined$category)
+## Model prediction lines overliad on subject-level CI data
+ggplot(data = predicted_df, aes(x=age, y=lmer_predictions)) +
+  facet_grid(~condition) +
+  scale_color_viridis()  +
+  stat_smooth(method="lm", col='grey') +
+  geom_pointrange(data = corbyCondition,aes(x = age, y = mean, col=age, ymin = ci_lower, ymax = ci_upper)) 
 
-mod_covariates <- glmer(correct ~ scale(age)*condition + draw_duration + num_strokes + (condition | sessionId) + (1 | category),  data = joined,  family = "binomial", control=glmerControl(optCtrl=list(maxfun=20000),optimizer=c("bobyqa")))
-model_summary_covariates = round(summary(mod_covariates)$coef,3);
-kable(model_summary_covariates, digits = 3)
 
 ```
 
@@ -287,15 +298,6 @@ summary(model_lmer)
 
 Looks like we still see an interaction between age_group and condition, though the main effect of 4-5 year-olds and 6-7 year-olds is no longer significant on it's own.
 
-### Grab out some values for easier rendering in abstract text.
-```{r}
-W_average = round(corbyConditionOnly$mean[corbyConditionOnly$condition=="W"],2)
-P_average = round(corbyConditionOnly$mean[corbyConditionOnly$condition=="P"],2)
-S_average = round(corbyConditionOnly$mean[corbyConditionOnly$condition=="S"],2)
-
-num_children = length(unique(r$sessionId))
-
-```
 
 SRCD Abstract:
 
@@ -306,6 +308,6 @@ Children’s drawings of object categories (e.g., rabbit, cat) become more and m
 
 Children ages 4-7 years (N = `r num_children`  total; 20 children in each condition) participated in a quick drawing game designed to test this hypothesis and were randomly assigned to one of these three conditions and drew five object categories (cup, shoe, rabbit, cat, train). The recognizability of children’s drawings was then assessed via adult raters (N = 30 per image, N = 90 total) who completed a 22AFC task with identity of each object category; drawings were only counted as recognizable if the adult rater guessed the correct category. These recognition scores for each drawing were then modeled as a function of children’s age (reported in years) and the between-subjects drawing condition in a non-linear generalized mixed-effect model. Consistent with prior work (Long, Fan, & Frank, 2018), we found a strong effect of age; older children produced overall more recognizable drawings (b = `r model_summary[1,'Estimate']`, SE =`r model_summary[1,'Std. Error']`, z = `r model_summary[1,'z value']`, p =`r model_summary[1,'Pr(>|z|)']`). Contrary to our expectations, we found that overall children did not draw more recognizable drawings in the perception or working memory conditions than the semantic condition (perception condition M =`r P_average`% recognized, semantic condition, M=`r S_average`%, working memory condition, M=`r W_average`%). However, we  found an interaction between age and the perception condition (b = `r model_summary[5,'Estimate']`, SE =`r model_summary[5,'Std. Error']`, z = `r model_summary[5,'z value']`, p =`r model_summary[5,'Pr(>|z|)']`):  younger children drew less recognizable drawings in the perception condition, while the recognizability of older children's drawings slightly increased.
 
-We thus found a marked developmental difference in drawing from perception: while adults (Fan, Yamins, & Turk-Browne, 2018) produce more recognizable drawings when drawing from photographs, younger children showed the opposite trend, suggesting that the task of drawing from perception may have actually impaired their ability to draw recognizable images. Taken together, this work suggests younger children did not make use the visual information about what things look like to improve the recognizability of their drawings, hinting that a memory retrieval failure is not what explains the age-related changes in the recognizability of children’s drawings. 
+We thus evidence in favor of a developmental difference in drawing from perception: while adults (Fan, Yamins, & Turk-Browne, 2018) produce more recognizable drawings when drawing from photographs, younger children showed the opposite trend, suggesting that the task of drawing from perception may have actually impaired their ability to draw recognizable images. Taken together, this work suggests younger children did not make use the visual information about what things look like to improve the recognizability of their drawings, hinting that a memory retrieval failure is not what explains the age-related changes in the recognizability of children’s drawings.  Future work will confirm this finding with a broader age range and set of items to explore aksdjfa;ksdfj;alsdkjfa;.
 
 
