@@ -277,7 +277,6 @@ ggplot(data = predicted_df, aes(x=age, y=lmer_predictions)) +
 ggplot(data = predicted_df, aes(x=age, y=lmer_predictions)) +
   facet_grid(~condition) +
   stat_smooth(method="lm", col='grey') + # plot smoothed line
-  scale_color_viridis()+
   geom_pointrange(data = corbyCondition,aes(x = age, y = mean, col=age, ymin = ci_lower, ymax = ci_upper)) + 
   xlab("Children's Age") +
   ylab("Proportion Recognized")

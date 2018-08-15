@@ -34,9 +34,11 @@ button[disabled] {
     padding-bottom:15px;
 }
 
-.counter_balancing {
-    margin-left: 37vw;
+.condition_box {
     margin-top: 16vh;
+    font-family: Schoolbell,cursive;
+    font-size:4vw;
+    text-align:center
 }
 
 .cbButton {

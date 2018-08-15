@@ -22,14 +22,6 @@ var firstTrial = {"condition":"S","stimulus":{"category": "this circle", "video"
 var trace1 = {"condition":"S","stimulus":{"category":"this square", "video": "trace_square.mp4", "image":"images/square.png"}}
 var trace2 = {"condition":"S","stimulus":{"category":"this shape", "video": "trace_shape.mp4","image":"images/shape.png"}}
 
-var catList = [{"category":"cat", "video": "cat.mp4", "image":"images/photocues/cat.jpg", "audio_perception":"audio_perception_louder/cat.wav"},
-    {"category": "rabbit", "video": "rabbit.mp4","image":"images/photocues/rabbit.jpg", "audio_perception":"audio_perception_louder/rabbit.wav"},
-    {"category": "bird", "video": "bird.mp4","image":"images/photocues/cat.jpg", "audio_perception":"audio_perception_louder/bird.wav"},
-    {"category": "bike", "video": "cup.mp4","image":"images/photocues/cat.jpg", "audio_perception":"audio_perception_louder/bike.wav"},
-    {"category": "car", "video": "cup.mp4","image":"images/photocues/cat.jpg", "audio_perception":"audio_perception_louder/car.wav"},
-    {"category": "airplane", "video": "airplane.mp4","image":"images/photocues/cat.jpg", "audio_perception":"audio_perception_louder/airplane.wav"},
-    {"category": "tree", "video": "tree.mp4","image":"images/photocues/cat.jpg", "audio_perception":"audio_perception_louder/tree.wav"},
-    {"category": "cup", "video": "cup.mp4","image":"images/photocues/cup.jpg", "audio_perception":"audio_perception_louder/cup.wav"}]
 
 // Set global variables
 var curTrial=0 // global variable, trial counter
@@ -51,30 +43,48 @@ var maxTrials;
 var stimList = [];
 var subID = $('#subID').val();
 
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
+
+function get_random_img_idx(img_lists){
+    idx_list=[]
+    for (var i = 0; i <img_lists.length; i++){
+        var img_list_length = img_lists[i].length
+        idx_list.push(getRandomInt(img_list_length))
+    }
+    return idx_list
+}
+
+cat_imgs = ["images/photocues/cat.jpg"]
+rabbit_imgs = ["images/photocues/cat.jpg"]
+bird_imgs = ["images/photocues/cat.jpg"]
+bike_imgs = ["images/photocues/cat.jpg"]
+car_imgs = ["images/photocues/cat.jpg"]
+airplane_imgs = ["images/photocues/cat.jpg"]
+tree_imgs = ["images/photocues/cat.jpg"]
+cup_imgs = ["images/photocues/cat.jpg"]
+idx_list = get_random_img_idx([cat_imgs,rabbit_imgs,bird_imgs,bike_imgs,car_imgs,airplane_imgs,tree_imgs,cup_imgs])
+
+
+var catList = [{"category":"cat", "video": "cat.mp4", "image":cat_imgs[idx_list[0]], "audio_perception":"audio_perception_louder/cat.wav"},
+    {"category": "rabbit", "video": "rabbit.mp4","image":rabbit_imgs[idx_list[1]], "audio_perception":"audio_perception_louder/rabbit.wav"},
+    {"category": "bird", "video": "bird.mp4","image":bird_imgs[idx_list[2]], "audio_perception":"audio_perception_louder/bird.wav"},
+    {"category": "bike", "video": "cup.mp4","image":bike_imgs[idx_list[3]], "audio_perception":"audio_perception_louder/bike.wav"},
+    {"category": "car", "video": "cup.mp4","image":car_imgs[idx_list[4]], "audio_perception":"audio_perception_louder/car.wav"},
+    {"category": "airplane", "video": "airplane.mp4","image":airplane_imgs[idx_list[5]], "audio_perception":"audio_perception_louder/airplane.wav"},
+    {"category": "tree", "video": "tree.mp4","image":tree_imgs[idx_list[6]], "audio_perception":"audio_perception_louder/tree.wav"},
+    {"category": "cup", "video": "cup.mp4","image":cup_imgs[idx_list[7]], "audio_perception":"audio_perception_louder/cup.wav"}]
+
+
+
+
 function getStimuliList (){
-    // var conditionDic = {"1":["W","P","S"],
-    //     "2":["W","S","P"],
-    //     "3":["S","P","W"],
-    //     "4":["S","W","P"],
-    //     "5":["P","S","W"],
-    //     "6":["P","W","S"]}
-    var cbGroup = $('#cbGroup').val();
-
-
-    // var conditions = conditionDic[cbGroup];
-    // var curCondition = 0;
-
-    // for(var i = 0; i < conditions.length; i++){
-    //     var currentStimOrder = shuffle(catList);
-    //     stimList.push({"condition":conditions[i], "stimulus":pracTrial});
-    //     for(var j = 0; j < currentStimOrder.length; j++){
-    //         stimList.push({"condition":conditions[i], "stimulus":currentStimOrder[j]});
-    //     }
-    // }
-
+    var condition = $('#condition').val();
     var currentStimOrder = shuffle(catList);
     for(var j = 0; j < currentStimOrder.length; j++){
-            stimList.push({"condition":cbGroup, "stimulus":currentStimOrder[j]});
+            stimList.push({"condition":condition, "stimulus":currentStimOrder[j]});
     }
 
     stimList.unshift(firstTrial);
@@ -150,25 +160,8 @@ function showTrial(){
         drawNext = 1;
         setTimeout(function() {playVideo(player, drawNext);},1000);
     }
-    // Working memory trials
-    else if (stimList[curTrial].condition == 'W'){
-        document.getElementById("drawingCue").innerHTML = "a "+ stimList[curTrial].stimulus.category
-        $('#cueVideoDiv').hide();
-        var imgPath = stimList[curTrial].stimulus.image;
-        $("#photocue").attr("src",imgPath);
-        $('#photocue').fadeIn();
-        var audio = new Audio(stimList[curTrial].stimulus.audio_wm);
-        audio.volume = 1;
-        audio.play();
-        setTimeout(
-            function() {
-                $('#photocue').hide()
-                setUpDrawing()
-            },
-            6000)
-    }
     // Perception trails
-    else{
+    else if (stimList[curTrial].condition == 'P'){
         document.getElementById("drawingCue").innerHTML = "this "+ stimList[curTrial].stimulus.category
         $('#cueVideoDiv').hide();
         var imgPath = stimList[curTrial].stimulus.image;
@@ -182,6 +175,9 @@ function showTrial(){
                 setUpDrawing();
             },
             6000);
+    }
+    else{
+        alert("There is an error with the condition.");
     }
 }
 
@@ -376,7 +372,7 @@ function saveSketchData(){
     var age = $('.active').attr('id');
     var firstName = $('#firstName').val();
     var lastName = $('#lastName').val();
-    var cbGroup = $('#cbGroup').val();
+    var condition = $('#condition').val();
     var subID = $('#subID').val();
     var name;
     if (firstName != "") {
@@ -399,7 +395,9 @@ function saveSketchData(){
         date: readable_date,
         age: age,
         subID: subID,
+
         startTrialTime: startTrialTime};
+
 
     // send data to server to write to database
     socket.emit('current_data', current_data);
@@ -491,9 +489,13 @@ window.onload = function() {
 
     $('#startConsent').bind('touchstart mousedown',function(e) {
         e.preventDefault()
-        if ($("#cbGroup").val().trim().length==0){
+
+        if ($("#condition").val().trim().length==0){
                 alert("Please let the researcher enter your condition.");
             }
+        else if($("#condition").val().trim()!='S' && $("#condition").val().trim()!='P'){
+            alert("Please enter a valid condition");
+        }
         else{
             showConsentPage();
         }
@@ -523,8 +525,8 @@ window.onload = function() {
             }else if($("#lastName").val().trim().length==0){
                 alert("Please enter your last name.");
             }
-            else if ($("#cbGroup").val().trim().length==0){
-                alert("Please let the researcher enter your group number.");
+            else if ($("#condition").val().trim().length==0){
+                alert("Please let the researcher enter your condition.");
             }
             else{
                 startDrawing();
@@ -637,7 +639,7 @@ window.onload = function() {
             var age = $('.active').attr('id');
             var firstName = $('#firstName').val();
             var lastName = $('#lastName').val();
-            var cbGroup = $('#cbGroup').val();
+            var condition = $('#condition').val();
             var subID = $('#subID').val();
             var name;
             if (firstName != "") {
@@ -658,6 +660,7 @@ window.onload = function() {
                 date: readable_date,
                 age: age,
                 subID: subID,
+
                 startStrokeTime: startStrokeTime,
                 startTrialTime: startTrialTime
              };
