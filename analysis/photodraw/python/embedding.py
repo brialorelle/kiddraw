@@ -162,22 +162,26 @@ class FeatureExtractor():
             return vgg19  
         
         def get_metadata_from_path(path):
-            label = path.split('/')[-2]            
+            label = path.split('/')[-1].split('_')[0]           
             if self.cohort == 'kid':
-                age = path.split('/')[-1].split('_')[2]
-                session = path.split('/')[-1].split('.')[0].split('_')[-2] + '_' + path.split('/')[-1].split('.')[0].split('_')[-1]
+                age = path.split('/')[-1].split('_')[-1]
+                session = path.split('/')[-1].split('_')[-3]
+                condition = path.split('/')[-1].split('_')[-2]  
             elif self.cohort == 'adult':
                 age = 'adult'
                 session = 'unknown'
+                condition = 'unknown'
+                print('Setting condition/session dummy variables for adult drawings...')
             elif self.cohort == 'images':
                 age = 'images'
                 session = 'unknown'
+                condition = 'unknown'
                 print('Setting age/session dummy variables for images...')
             else:
                 print('Need to specify a cohort: "kid" or "adult"!')
                 age = 'unknown'
                 session = 'unknown'
-            return label, age, session        
+            return label, age, session, condition        
 
         def generator(paths, imsize=self.imsize, use_cuda=use_cuda):
             for path in paths:
@@ -193,6 +197,7 @@ class FeatureExtractor():
         Labels = []
         Ages = []
         Sessions = []
+        Conditions = []
         
         n = 0
         quit = False 
@@ -210,15 +215,17 @@ class FeatureExtractor():
                 label_batch = [] 
                 age_batch = []
                 session_batch = []
+                condition_batch = []
                 if (n+1)%1==0:
                     print('Batch {}'.format(n + 1))            
                 for b in range(batch_size):
                     try:
-                        sketch, label, age, session = generator.next()
+                        sketch, label, age, session, condition = generator.next()
                         sketch_batch[b] = sketch 
                         label_batch.append(label)
                         age_batch.append(age)
                         session_batch.append(session)
+                        condition_batch.append(condition)
                     except StopIteration:
                         quit = True
                         print('stopped!')
@@ -230,6 +237,7 @@ class FeatureExtractor():
                     label_batch = label_batch[:b + 1] 
                     age_batch = age_batch[:b + 1]   
                     session_batch = session_batch[:b + 1]
+                    condition_batch = condition_batch[:b + 1]
                 
                 # extract features from batch
                 sketch_batch = extractor(sketch_batch)
@@ -243,11 +251,13 @@ class FeatureExtractor():
                 Labels.append(label_batch)
                 Ages.append(age_batch)
                 Sessions.append(session_batch)
+                Conditions.append(condition_batch)
 
                 if n == self.num_sketches//batch_size + 1:
                     break
         Labels = np.array([item for sublist in Labels for item in sublist])
         Ages = np.array([item for sublist in Ages for item in sublist])
         Sessions = np.array([item for sublist in Sessions for item in sublist])
-        return Features, Labels, Ages, Sessions
+        Conditions = np.array([item for sublist in Conditions for item in sublist])
+        return Features, Labels, Ages, Sessions, Conditions
     
