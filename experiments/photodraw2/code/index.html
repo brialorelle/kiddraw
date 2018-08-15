@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Draw Something!</title>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <link href="custom.css" media="screen" rel="stylesheet" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./node_modules/paper/dist/paper-full.js"></script>
+    <link href="https://vjs.zencdn.net/6.2.8/video-js.css" rel="stylesheet">
+    <script src="https://vjs.zencdn.net/6.2.8/video.js"></script>
+    <script src="trial-sequence.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Schoolbell" rel="stylesheet">
+    <meta  name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
+
+
+</head>
+
+<body>
+<div>
+    <div id="landingPage">
+
+        <div class="welcomeHeader">
+            <img src="images/stanfordlogo.png" alt="Stanford University" id="stanfordLogo"></img>
+            <p id='logo-text'>Stanford Language and Cognition Lab</p>
+        </div>
+        <p style="font-family: Schoolbell,cursive; text-align:center; font-size:5vw;"> LET'S DRAW TOGETHER!<p>
+        <!-- <img src="images/drawingIcon.png" id="drawingIcon" style="width:25vw;height:auto"></img> -->
+        <img class="imageButton startButton" src="images/play.jpg" id="startConsent"></img>
+
+        <div class = "counter_balancing">
+            <div class = row >
+               <!--  <button class="btn btn-light cbButton" id="1"> &nbsp S &nbsp  </button>
+                <button class="btn btn-light cbButton" id="W"> &nbsp W &nbsp  </button>
+                <button class="btn btn-light cbButton" id="P"> &nbsp P &nbsp  </button> -->
+                <div class="form-group nameForm">
+                    <input id="cbGroup" class="form-control nameInput">
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+   <!--  <div id="chooseLang" style="display:none">
+        <div class="welcomeHeader">
+            <img src="images/stanfordlogo.png" alt="Stanford University" id="stanfordLogo"></img>
+            <p id='logo-text'>Stanford Language and Cognition Lab</p>
+        </div>
+        <div id="langOptions">
+            <div>
+                <button type="button" class="btn btn-info langButton" id="English">English</button>
+            </div>
+            <div>
+                <button type="button" class="btn btn-info langButton" id="Spanish">Español</button>
+            </div>
+            <div>
+                <button type="button" class="btn btn-info langButton" id="Chinese">中文</button>
+            </div>
+        </div>
+    </div> -->
+
+
+
+    <div id="consentCDM" style="display:none">
+        <!-- <div class="welcomeHeader">
+            <img src="images/stanfordlogo.png" alt="Stanford University" id="stanfordLogo"></img>
+        </div> -->
+
+        <div id="kidConsent">
+            <p id="age" style="font-family: Schoolbell,cursive; text-align:center; font-size: 4vw;"> HOW OLD ARE YOU ? <p>
+
+
+            <button class="btn btn-light ageButton" id="age4"> &nbsp 4 &nbsp  </button>
+            <button class="btn btn-light ageButton" id="age5"> &nbsp 5 &nbsp </button>
+            <button class="btn btn-light ageButton" id="age6"> &nbsp 6 &nbsp </button>
+            <button class="btn btn-light ageButton" id="age7"> &nbsp 7 &nbsp </button>
+            <button class="btn btn-light ageButton" id="age8"> &nbsp 8 &nbsp </button>
+            <button class="btn btn-light ageButton" id="age9"> &nbsp 9 &nbsp </button>
+            <button class="btn btn-light ageButton" id="age10"> &nbsp 10+ &nbsp </button>
+
+            <p style="font-family: Schoolbell,cursive; font-size: 4vw; text-align:center"> <input id="checkConsent" type="checkbox"> <span id="useDrawing"> YOU CAN USE MY DRAWING</span> </p>
+        </div>
+        <div id="consentText">
+            
+            <p> By proceeding,  you and your child agree to participate in this research. Your child will be asked to draw pictures of common objects on this tablet. No audio/video taping will occur and no identifiable information will be collection. Your child’s participation will take approximately 30 seconds – 5 minutes, depending on how long they choose to draw.  
+
+                The drawing data collected here will be used for research purposes by the Stanford Language and Cognition Lab and the San Jose Children's Discovery Museum, and will be displayed on the Museum's website on a future date. There are no risks or benefits to participating: no identifying information will be collected, so you and your child’s identity will remain anonymous. Your child can stop drawing at any time or choose not to answer any question without penalty. For more information, email the Stanford lab at langcoglab@stanford.edu, or call 650-721-9270. If you are not satisfied with how this study is being conducted, or if you have any concerns, complaints, or general questions about the research or your rights as a participant, please contact the Stanford Institutional Review Board (IRB) to speak to someone independent of the research team at (650)-723-2480 or toll free at 1-866-680-2906.  You can also write to the Stanford IRB, Stanford University, 3000 El Camino Real, Five Palo Alto Square, 4th Floor, Palo Alto, CA 94306.
+            <div class="input-group mb-3 row" id="email-form">
+                <input type="email" id="parentEmail" class="form-control" aria-describedby="emailHelp" placeholder="Input your email address here if you'd like a copy" aria-label="Recipient's username">
+                <div class="input-group-append">
+                    <button id="sendEmail" class="btn btn-info" type="button">Email me the consent form</button>
+                </div>
+            </div>
+            <div class="alert alert-info" id="emailSent" role="alert" style="display:none">
+                Email Sent!
+            </div>
+            </p>
+        </div>
+
+        <div class = row>
+            <div class="welcomeHeader2">
+                <img src="images/stanfordlogo.png" alt="Stanford University" id="stanfordLogo"></img>
+            </div>
+            <div class="slideButton">
+                <button class="btn btn-info startExp" id="startCDM"> &nbsp LET'S DRAW ! &nbsp </button>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- <div id="consentCDMChinese" style="display:none">
+        <div class="welcomeHeader">
+            <img src="images/stanfordlogo.png" alt="Stanford University" id="stanfordLogo"></img>
+        </div>
+        <div class="welcomeHeader">
+            <p id='logo-text'>Stanford Language and Cognition Lab</p>
+        </div>
+
+        <div id="kidConsent">
+            <p style="font-family: Schoolbell,cursive; text-align:center; font-size: 4vw;"> 你今年几岁了？ <p>
+
+            <button class="btn btn-light ageButton" id="age2"> &nbsp 2 &nbsp </button>
+            <button class="btn btn-light ageButton" id="age3"> &nbsp 3 &nbsp </button>
+            <button class="btn btn-light ageButton" id="age4"> &nbsp 4 &nbsp  </button>
+            <button class="btn btn-light ageButton" id="age5"> &nbsp 5 &nbsp </button>
+            <button class="btn btn-light ageButton" id="age6"> &nbsp 6 &nbsp </button>
+            <button class="btn btn-light ageButton" id="age7"> &nbsp 7 &nbsp </button>
+            <button class="btn btn-light ageButton" id="age8"> &nbsp 8 &nbsp </button>
+            <button class="btn btn-light ageButton" id="age9"> &nbsp 9 &nbsp </button>
+            <button class="btn btn-light ageButton" id="age10"> &nbsp 10+ &nbsp </button>
+            <button class="btn btn-light ageButton" id="adult"> &nbsp 成人 &nbsp </button>
+            <p style="font-family: Schoolbell,cursive; font-size: 4vw; text-align:center"> <input id="checkConsent" type="checkbox"> 你可以用我的画！ </p>
+        </div>
+        <div id="consentText">
+            <p style="font-family: Schoolbell,cursive; text-align:center; font-size: 4vw;">
+            注意 -- 一次只有一个小朋友可以参加这个绘画游戏哦！请排队等候！
+            </p>
+
+            <p id="consent"> By proceeding,  you and your child agree to participate in this research. Your child will be asked to draw pictures of common objects on this tablet. No audio/video taping will occur and no identifiable information will be collection. Your child’s participation will take approximately 30 seconds – 5 minutes, depending on how long they choose to draw.
+
+                The drawing data collected here will be used for research purposes by the Stanford Language and Cognition Lab and the San Jose Children's Discovery Museum, and will be displayed on the Museum's website on a future date. There are no risks or benefits to participating: no identifying information will be collected, so you and your child’s identity will remain anonymous. Your child can stop drawing at any time or choose not to answer any question without penalty. For more information, email the Stanford lab at langcoglab@stanford.edu, or call 650-721-9270. If you are not satisfied with how this study is being conducted, or if you have any concerns, complaints, or general questions about the research or your rights as a participant, please contact the Stanford Institutional Review Board (IRB) to speak to someone independent of the research team at (650)-723-2480 or toll free at 1-866-680-2906.  You can also write to the Stanford IRB, Stanford University, 3000 El Camino Real, Five Palo Alto Square, 4th Floor, Palo Alto, CA 94306.
+            <div class="input-group mb-3 row" id="email-form">
+                <input type="email" id="parentEmail" class="form-control" aria-describedby="emailHelp" placeholder="Input your email address here if you'd like a copy" aria-label="Recipient's username">
+                <div class="input-group-append">
+                    <button id="sendEmail" class="btn btn-info" type="button">Email me the consent form</button>
+                </div>
+            </div>
+            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+            <div class="alert alert-info" id="emailSent" role="alert" style="display:none">
+                Email Sent!
+            </div>
+            </p>
+        </div>
+        <div class="slideButton">
+            <button class="btn btn-info startExp" id="startCDM"> &nbsp LET'S DRAW ! &nbsp </button>
+        </div>
+    </div> -->
+
+    <div id="consentBing" style="display:none">
+        <div class="welcomeHeader">
+            <img src="images/stanfordlogo.png" alt="Stanford University" id="stanfordLogo"></img>
+            <p id='logo-text'>Stanford Language and Cognition Lab</p>
+        </div>
+
+        <div id="bingName">
+<!--             <p style="font-size:5vw">
+                Enter your name!
+            </p> -->
+            <div class = "row">
+                <div  class="offset-md-2 col-md-4">
+                    <div class="form-group nameForm">
+                        <label>First Name</label>
+                        <input id="firstName" class="form-control nameInput" style="">
+                    </div>
+                </div>
+                <div  class="offset-md-0 col-md-4">
+                    <div class="form-group nameForm">
+                        <label>Last Name</label>
+                        <input id="lastName" class="form-control nameInput">
+                    </div>
+                </div>
+            </div>
+            <div class = "row">
+                <div  class="offset-md-2 col-md-4">
+                    <div class="form-group nameForm">
+                        <label>Group</label>
+                        <input id="cbGroup" class="form-control nameInput">
+                    </div>
+                </div>
+                <div  class="offset-md-0 col-md-4">
+                        <div class="form-group nameForm">
+                            <label>SubID</label>
+                            <input id="subID" class="form-control nameInput">
+                        </div>
+                    </div>
+            </div>            
+        </div>
+        <div class="slideButton">
+            <button class="btn btn-info startExp" id="startBing"> &nbsp LET'S DRAW ! &nbsp </button>
+        </div>
+    </div>
+
+
+
+
+        <div id="mainExp" style="display:none">
+
+            
+           <div id="drawingCue" style="padding:1vh;"></div>  
+            <div class = "row" >
+                <div class="col-md-5">
+                    <audio>
+                        <source src ="" type = "audio/mp3">
+                    </audio>
+                    <img id="photocue" src="images/rabbit_4.jpg" style="display:none" ></img>
+                    <div class="videoDiv" id="cueVideoDiv" style="display:none" poster="http://dummyimage.com/320x240/ffffff/fff" >
+                        <video id='cueVideo' class='video-js' playsinline>  </video>
+                    </div>  
+
+                </div> 
+                <canvas class="col-md-6" id="sketchpad" style="display:none"></canvas>
+            </div>
+            
+
+                <div id = "progressBar_Button" class="row" style="display:none">
+
+                    <div class="col-md-3" id="trialButtonRight">
+                        <div class = "drawingButton imageButton" id="keepGoing">
+                            <p id="next"> Next </p>
+                            <img src="images/play.jpg"></img>
+                        </div>
+                        <div class="drawingButton imageButton allDone" id="endGame" style="Display:none">
+                            <p id="end"> End Game </p>
+                            <img src="images/stop.jpg" ></img>
+                        </div>
+                    </div>
+
+                    <div class="progress offset-md-0 col-md-7" style="display:none;margin-top:14vh">
+                        <div class="progress-bar bg-info" role="progressbar" aria-valuenow="100"
+                            aria-valuemin="0" aria-valuemax="100" style="width:100%;font-family: Schoolbell,cursive">30
+                        </div>
+
+                    </div>
+
+                    
+                </div>
+
+            <!-- </div> -->
+        </div>
+
+</div>
+
+
+<div id="thanksPage" style="display:none; text-align:center">
+    <div class="welcomeHeader">
+        <img src="images/stanfordlogo.png" alt="Stanford University" id="stanfordLogo"></img>
+        <p id='logo-text'>Stanford Language and Cognition Lab</p>
+    </div>
+    <p id="thanks" style="font-family: Schoolbell,cursive; font-size: 24pt; text-align:center"> THANK YOU! </p>
+    <p id="endInfo" style="font-family: Schoolbell,cursive; font-size: 18pt; text-align:center; padding:2vw"> To learn more, visit our lab's web page at langcog.stanford.edu. For any questions about the study, please contact Dr. Bria Long at bria@stanford.edu or Dr. Michael C. Frank at mcfrank@stanford.edu. </p>
+    <div class="imageButton endRestart" style="text-align:center">
+        <p id="restart" class="buttonDescription"> Restart </p>
+        <img class="startButton" src="images/play.jpg"></img>
+    </div>
+    <br></br>
+    <br></br>
+    <br></br>
+</div>
+
+<div id="thanksBing" style="display:none;text-align:center">
+    <div class="welcomeHeader">
+        <img src="images/stanfordlogo.png" alt="Stanford University" id="stanfordLogo"></img>
+        <p id='logo-text'>Stanford Language and Cognition Lab</p>
+    </div>
+    <p style="font-family: Schoolbell,cursive; font-size: 6vw;"> THANK YOU! </p>
+    <img id="smile" src="images/smile.png"></img>
+    <div class="slideButton">
+            <button class="btn btn-info endRestart" id="bingRestart"> &nbsp Play Again ! &nbsp </button>
+    </div>
+
+</div>
+
+
+</div>
+</body>
+
+</html>
+
+
