@@ -57,14 +57,14 @@ function get_random_img_idx(img_lists){
     return idx_list
 }
 
-cat_imgs = ["images/photocues/cat.jpg"]
-rabbit_imgs = ["images/photocues/cat.jpg"]
-bird_imgs = ["images/photocues/cat.jpg"]
-bike_imgs = ["images/photocues/cat.jpg"]
-car_imgs = ["images/photocues/cat.jpg"]
-airplane_imgs = ["images/photocues/cat.jpg"]
-tree_imgs = ["images/photocues/cat.jpg"]
-cup_imgs = ["images/photocues/cat.jpg"]
+cat_imgs = ["images/photos_resized/cat/cat1.jpg","images/photos_resized/cat/cat2.jpg","images/photos_resized/cat/cat3.jpg","images/photos_resized/cat/cat4.jpg","images/photos_resized/cat/cat5.jpg"]
+rabbit_imgs = ["images/photos_resized/rabbit/rabbit1.jpg","images/photos_resized/rabbit/rabbit2.jpg","images/photos_resized/rabbit/rabbit3.jpg","images/photos_resized/rabbit/rabbit4.jpg","images/photos_resized/rabbit/rabbit5.jpg"]
+bird_imgs = ["images/photos_resized/bird/bird1.jpg","images/photos_resized/bird/bird2.jpg","images/photos_resized/bird/bird3.jpg","images/photos_resized/bird/bird4.jpg","images/photos_resized/bird/bird5.jpg"]
+bike_imgs = ["images/photos_resized/bike/bike1.jpg","images/photos_resized/bike/bike2.jpg","images/photos_resized/bike/bike3.jpg","images/photos_resized/bike/bike4.jpg","images/photos_resized/bike/bike5.jpg"]
+car_imgs = ["images/photos_resized/car/car1.jpg","images/photos_resized/car/car2.jpg","images/photos_resized/car/car3.jpg","images/photos_resized/car/car4.jpg","images/photos_resized/car/car5.jpg"]
+airplane_imgs = ["images/photos_resized/airplane/airplane1.jpg","images/photos_resized/airplane/airplane2.jpg","images/photos_resized/airplane/airplane3.jpg","images/photos_resized/airplane/airplane4.jpg","images/photos_resized/airplane/airplane5.jpg"]
+tree_imgs = ["images/photos_resized/tree/tree1.jpg","images/photos_resized/tree/tree2.jpg","images/photos_resized/tree/tree3.jpg","images/photos_resized/tree/tree4.jpg","images/photos_resized/tree/tree5.jpg"]
+cup_imgs = ["images/photos_resized/cup/cup1.jpg","images/photos_resized/cup/cup2.jpg","images/photos_resized/cup/cup3.jpg","images/photos_resized/cup/cup4.jpg","images/photos_resized/cup/cup5.jpg"]
 idx_list = get_random_img_idx([cat_imgs,rabbit_imgs,bird_imgs,bike_imgs,car_imgs,airplane_imgs,tree_imgs,cup_imgs])
 
 
