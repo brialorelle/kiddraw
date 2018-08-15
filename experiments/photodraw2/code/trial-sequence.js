@@ -316,6 +316,7 @@ function setUpDrawing(){
 
 function monitorProgress(){
     clickedSubmit=0;
+    startTrialTime=Date.now();
     console.log('starting monitoring')
     progress(timeLimit, timeLimit, $('.progress')); // show progress bar
     $('.progress-bar').attr('aria-valuemax',timeLimit);
@@ -398,8 +399,7 @@ function saveSketchData(){
         date: readable_date,
         age: age,
         subID: subID,
-        kidName: name,
-        counter_balancing: cbGroup};
+        startTrialTime: startTrialTime};
 
     // send data to server to write to database
     socket.emit('current_data', current_data);
@@ -427,11 +427,7 @@ function setLanguage(lang){
 
 // experiment navigation functions
 function showConsentPage(){
-    // if (mode == "CDM") {
-    //     $("#chooseLang").hide();
-    // }else {
-        $("#landingPage").hide();
-    // }
+    $("#landingPage").hide();
     $('#parentEmail').val('');
     $('#email-form').show();
     $('#emailSent').hide();
@@ -653,18 +649,18 @@ window.onload = function() {
                 sessionId: sessionId,
                 svg: svgString,
                 category: category,
-                condition:condition,
+                condition: condition,
                 dbname:'kiddraw',
                 colname: version,
                 location: mode,
                 trialNum: curTrial,
-                time: Date.now(),
+                endStrokeTime: Date.now(),
                 date: readable_date,
                 age: age,
                 subID: subID,
-                kidName: name,
-                counter_balancing: cbGroup
-            };
+                startStrokeTime: startStrokeTime,
+                startTrialTime: startTrialTime
+             };
 
             // send stroke data to server
             console.log(stroke_data)
@@ -677,6 +673,8 @@ window.onload = function() {
         if(disableDrawing){
             return;
         }
+
+        startStrokeTime = Date.now()
 
         console.log("touch start");
         var touches = ev.touches;
@@ -719,7 +717,6 @@ window.onload = function() {
         if(disableDrawing){
             return;
         }
-
         console.log("touch end");
         sendStrokeData()
         var touches = ev.touches; // if not touching anymore
