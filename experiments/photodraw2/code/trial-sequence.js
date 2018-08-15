@@ -22,17 +22,17 @@ var firstTrial = {"condition":"S","stimulus":{"category": "this circle", "video"
 var trace1 = {"condition":"S","stimulus":{"category":"this square", "video": "trace_square.mp4", "image":"images/square.png"}}
 var trace2 = {"condition":"S","stimulus":{"category":"this shape", "video": "trace_shape.mp4","image":"images/shape.png"}}
 
-var catList = [{"category":"cat", "video": "cat.mp4", "image":"images/photocues/cat.jpg", "audio_perception":"audio_perception_louder/cat.wav", "audio_wm":"audio_wm/cat.wav"},
-    {"category": "shoe", "video": "shoe.mp4","image":"images/photocues/shoe.jpg","audio_perception":"audio_perception_louder/shoe.wav", "audio_wm":"audio_wm/shoe.wav"},
-    {"category": "rabbit", "video": "rabbit.mp4","image":"images/photocues/rabbit.jpg", "audio_perception":"audio_perception_louder/rabbit.wav", "audio_wm":"audio_wm/rabbit.wav"},
-    {"category": "train", "video": "train.mp4","image":"images/photocues/train.jpg", "audio_perception":"audio_perception_louder/train.wav", "audio_wm":"audio_wm/train.wav"},
-    {"category": "cup", "video": "cup.mp4","image":"images/photocues/cup.jpg", "audio_perception":"audio_perception_louder/cup.wav", "audio_wm":"audio_wm/cup.wav"}]
+var catList = [{"category":"cat", "video": "cat.mp4", "image":"images/photocues/cat.jpg", "audio_perception":"audio_perception_louder/cat.wav"},
+    {"category": "rabbit", "video": "rabbit.mp4","image":"images/photocues/rabbit.jpg", "audio_perception":"audio_perception_louder/rabbit.wav"},
+    {"category": "bird", "video": "bird.mp4","image":"images/photocues/bird.jpg", "audio_perception":"audio_perception_louder/bird.wav"},
+    {"category": "bike", "video": "cup.mp4","image":"images/photocues/bike.jpg", "audio_perception":"audio_perception_louder/bike.wav"},
+    {"category": "car", "video": "cup.mp4","image":"images/photocues/car.jpg", "audio_perception":"audio_perception_louder/car.wav"},
+    {"category": "airplane", "video": "airplane.mp4","image":"images/photocues/airplane.jpg", "audio_perception":"audio_perception_louder/airplane.wav"},
+    {"category": "tree", "video": "tree.mp4","image":"images/photocues/tree.jpg", "audio_perception":"audio_perception_louder/tree.wav"}
+    {"category": "cup", "video": "cup.mp4","image":"images/photocues/cup.jpg", "audio_perception":"audio_perception_louder/cup.wav"}]
 
-
-
+// Set global variables
 var curTrial=0 // global variable, trial counter
-
-// set global variables
 var clickedSubmit=0; // whether an image is submitted or not
 var tracing = true; //whether the user is in tracing trials or not
 var maxTraceTrial = 2; //the max number of tracing trials
@@ -42,8 +42,8 @@ var language = "English";
 
 // current mode and session info
 var mode = "CDM";
-var version =mode + "_photodraw" + "_e2_testing";
-var sessionId= version + Date.now().toString();
+var version =mode + "_photodraw" + "_e2_testing"; // set experiment name
+var sessionId=version + Date.now().toString();
 
 var consentPage = '#consentBing';
 var thanksPage = "#thanksBing";
@@ -249,7 +249,7 @@ function loadChangeTaskVideo(){
     player.pause();
     player.volume(1); // set volume to max
 
-    player.src({ type: "video/mp4", src: "videos_new/something_new.mp4" });
+    player.src({ type: "video/mp4", src: "videos/something_new.mp4" });
     player.load();
     return player;
 }
@@ -268,7 +268,7 @@ function loadNextVideo(){
     player.pause();
     player.volume(1); // set volume to max
     console.log(stimList[curTrial].stimulus.video)
-    player.src({ type: "video/mp4", src: "videos_new/" + stimList[curTrial].stimulus.video });
+    player.src({ type: "video/mp4", src: "videos/" + stimList[curTrial].stimulus.video });
     player.load();
     return player;
 }
