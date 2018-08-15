@@ -28,7 +28,7 @@ var catList = [{"category":"cat", "video": "cat.mp4", "image":"images/photocues/
     {"category": "bike", "video": "cup.mp4","image":"images/photocues/cat.jpg", "audio_perception":"audio_perception_louder/bike.wav"},
     {"category": "car", "video": "cup.mp4","image":"images/photocues/cat.jpg", "audio_perception":"audio_perception_louder/car.wav"},
     {"category": "airplane", "video": "airplane.mp4","image":"images/photocues/cat.jpg", "audio_perception":"audio_perception_louder/airplane.wav"},
-    {"category": "tree", "video": "tree.mp4","image":"images/photocues/cat.jpg", "audio_perception":"audio_perception_louder/tree.wav"}
+    {"category": "tree", "video": "tree.mp4","image":"images/photocues/cat.jpg", "audio_perception":"audio_perception_louder/tree.wav"},
     {"category": "cup", "video": "cup.mp4","image":"images/photocues/cup.jpg", "audio_perception":"audio_perception_louder/cup.wav"}]
 
 // Set global variables
