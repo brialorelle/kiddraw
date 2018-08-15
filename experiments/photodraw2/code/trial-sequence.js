@@ -58,7 +58,7 @@ function getStimuliList (){
     //     "4":["S","W","P"],
     //     "5":["P","S","W"],
     //     "6":["P","W","S"]}
-    var cbGroup = $('#cbGroup').val();
+    var condition = $('#condition').val();
 
 
     // var conditions = conditionDic[cbGroup];
@@ -74,7 +74,7 @@ function getStimuliList (){
 
     var currentStimOrder = shuffle(catList);
     for(var j = 0; j < currentStimOrder.length; j++){
-            stimList.push({"condition":cbGroup, "stimulus":currentStimOrder[j]});
+            stimList.push({"condition":condition, "stimulus":currentStimOrder[j]});
     }
 
     stimList.unshift(firstTrial);
@@ -150,25 +150,8 @@ function showTrial(){
         drawNext = 1;
         setTimeout(function() {playVideo(player, drawNext);},1000);
     }
-    // Working memory trials
-    else if (stimList[curTrial].condition == 'W'){
-        document.getElementById("drawingCue").innerHTML = "a "+ stimList[curTrial].stimulus.category
-        $('#cueVideoDiv').hide();
-        var imgPath = stimList[curTrial].stimulus.image;
-        $("#photocue").attr("src",imgPath);
-        $('#photocue').fadeIn();
-        var audio = new Audio(stimList[curTrial].stimulus.audio_wm);
-        audio.volume = 1;
-        audio.play();
-        setTimeout(
-            function() {
-                $('#photocue').hide()
-                setUpDrawing()
-            },
-            6000)
-    }
     // Perception trails
-    else{
+    else if (stimList[curTrial].condition == 'P'){
         document.getElementById("drawingCue").innerHTML = "this "+ stimList[curTrial].stimulus.category
         $('#cueVideoDiv').hide();
         var imgPath = stimList[curTrial].stimulus.image;
@@ -182,6 +165,9 @@ function showTrial(){
                 setUpDrawing();
             },
             6000);
+    }
+    else{
+        alert("There is an error with the condition.");
     }
 }
 
@@ -375,7 +361,7 @@ function saveSketchData(){
     var age = $('.active').attr('id');
     var firstName = $('#firstName').val();
     var lastName = $('#lastName').val();
-    var cbGroup = $('#cbGroup').val();
+    var condition = $('#condition').val();
     var subID = $('#subID').val();
     var name;
     if (firstName != "") {
@@ -389,7 +375,6 @@ function saveSketchData(){
         sessionId: sessionId, // each children's session
         imgData: dataURL,
         category: category,
-        condition:condition,
         dbname:'kiddraw',
         colname: version,
         location: mode,
@@ -399,7 +384,7 @@ function saveSketchData(){
         age: age,
         subID: subID,
         kidName: name,
-        counter_balancing: cbGroup};
+        condition: condition};
 
     // send data to server to write to database
     socket.emit('current_data', current_data);
@@ -495,9 +480,13 @@ window.onload = function() {
 
     $('#startConsent').bind('touchstart mousedown',function(e) {
         e.preventDefault()
-        if ($("#cbGroup").val().trim().length==0){
+
+        if ($("#condition").val().trim().length==0){
                 alert("Please let the researcher enter your condition.");
             }
+        else if($("#condition").val().trim()!='S' && $("#condition").val().trim()!='P'){
+            alert("Please enter a valid condition");
+        }
         else{
             showConsentPage();
         }
@@ -527,8 +516,8 @@ window.onload = function() {
             }else if($("#lastName").val().trim().length==0){
                 alert("Please enter your last name.");
             }
-            else if ($("#cbGroup").val().trim().length==0){
-                alert("Please let the researcher enter your group number.");
+            else if ($("#condition").val().trim().length==0){
+                alert("Please let the researcher enter your condition.");
             }
             else{
                 startDrawing();
@@ -641,7 +630,7 @@ window.onload = function() {
             var age = $('.active').attr('id');
             var firstName = $('#firstName').val();
             var lastName = $('#lastName').val();
-            var cbGroup = $('#cbGroup').val();
+            var condition = $('#condition').val();
             var subID = $('#subID').val();
             var name;
             if (firstName != "") {
@@ -653,7 +642,6 @@ window.onload = function() {
                 sessionId: sessionId,
                 svg: svgString,
                 category: category,
-                condition:condition,
                 dbname:'kiddraw',
                 colname: version,
                 location: mode,
@@ -663,7 +651,7 @@ window.onload = function() {
                 age: age,
                 subID: subID,
                 kidName: name,
-                counter_balancing: cbGroup
+                condition: condition
             };
 
             // send stroke data to server
