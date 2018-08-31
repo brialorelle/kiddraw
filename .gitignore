@@ -17,6 +17,7 @@ z-test/
 *.json
 *.ipynb_checkpoints/
 *.pyc
+gmail_creds.json
 auth.txt
 auth.json
 history.csv
