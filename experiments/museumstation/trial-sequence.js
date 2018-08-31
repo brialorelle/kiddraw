@@ -552,11 +552,11 @@ window.onload = function() {
             return;
         }
         console.log("touch end");        
-        var paths_copy = paths.clone();
+        var paths_copy = paths[0].clone();
         paths_copy.flatten(1);
 
         console.log('raw path: ', paths[0].exportSVG({asString: true}));
-        console.log('simplified path: ', paths_copy[0].exportSVG({asString: true}));
+        console.log('simplified path: ', paths_copy.exportSVG({asString: true}));
 
         var currStrokeLength = paths[0].length;
         if (currStrokeLength > strokeThresh) {sendStrokeData();}
