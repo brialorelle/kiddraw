@@ -470,42 +470,40 @@ window.onload = function() {
 
     // Each time we send a stroke...
     function sendStrokeData() {
-        for(var i = 0; i < paths.length; i++){
-            var path = paths[i];
-            path.selected = false
+        path.selected = false
 
-            var svgString = path.exportSVG({asString: true});
-            var category = stimListTest[curTrial].category;
-            var readable_date = new Date();
-            var age = $('.active').attr('id');
-            
-            console.log('time since we started the trial')
-            console.log(endStrokeTime - startTrialTime)
-            console.log("time of this stroke")
-            console.log(endStrokeTime - startStrokeTime)
- 
-            stroke_data = {
-                dataType: 'stroke',
-                sessionId: sessionId,
-                svg: svgString,
-                category: category,
-                dbname:'kiddraw',
-                colname: version,
-                location: mode,
-                trialNum: curTrial,
-                startTrialTime: startTrialTime,
-                startStrokeTime: startStrokeTime,
-                endStrokeTime: endStrokeTime,
-                date: readable_date,
-                age: age};
+        var svgString = path.exportSVG({asString: true});
+        var category = stimListTest[curTrial].category;
+        var readable_date = new Date();
+        var age = $('.active').attr('id');
+        
+        console.log('time since we started the trial')
+        console.log(endStrokeTime - startTrialTime)
+        console.log("time of this stroke")
+        console.log(endStrokeTime - startStrokeTime)
 
-            // send stroke data to server
-            console.log(stroke_data)
-            socket.emit('stroke',stroke_data);
-        }
+        stroke_data = {
+            dataType: 'stroke',
+            sessionId: sessionId,
+            svg: svgString,
+            category: category,
+            dbname:'kiddraw',
+            colname: version,
+            location: mode,
+            trialNum: curTrial,
+            startTrialTime: startTrialTime,
+            startStrokeTime: startStrokeTime,
+            endStrokeTime: endStrokeTime,
+            date: readable_date,
+            age: age};
+
+        // send stroke data to server
+        console.log(stroke_data)
+        socket.emit('stroke',stroke_data);
+        
     }
 
-    var paths = [];
+    var path = []; // open global variable
     function touchStart(ev) {
         if(disableDrawing){
             return;
@@ -513,56 +511,48 @@ window.onload = function() {
 
         startStrokeTime = Date.now()
         console.log("touch start");
-        var touches = ev.touches;
-        // Create new path per touch
-        var path = new Path();
+        touches = ev.touches;
+        if (touches.length>1){
+            return; // don't do anything when simultaneous -- get out of this function
+            console.log("detedcted multiple touches")
+        }
+        
+        // Create new path 
+        path = new Path();
         path.strokeColor = 'black';
         path.strokeCap = 'round'
         path.strokeWidth = 10;
-        paths.push(path);
-
-        // Prevents touch bubbling
-        for(var i = 0; i < touches.length; i++){
-            var path = paths[i];
-            var point = view.getEventPoint(touches[i]);
-            path.add(point);
-            view.draw();
-        }
-
+        
+        // add point to path
+        var point = view.getEventPoint(ev); // should only ever be one
+        path.add(point);
+        view.draw();
     }
 
     function touchMove(ev) {
         if(disableDrawing){
             return;
         }
-
         console.log("touch move");
+
+        // don't do anything when simultaneous touches
         var touches = ev.touches;
-        // Prevents touch bubbling
-        if(touches.length === paths.length) {
-            for(var i = 0; i < touches.length; i++){
-                var path = paths[i];
-                var point = view.getEventPoint(touches[i]);
-                path.add(point);
-                view.draw();
-            }
+        if (touches.length>1){
+            return; 
         }
+        // add point to path
+        var point = view.getEventPoint(ev); 
+        path.add(point);
+        view.draw();
     }
 
     function touchEnd(ev){
         if(disableDrawing){
             return;
         }
-
         endStrokeTime = Date.now();
         console.log("touch end");        
         sendStrokeData();
-        var touches = ev.touches; // if not touching anymore
-        // Empty paths array to start process over
-        if(touches.length === 0){
-            paths = [];
-        }
-
     }
 
     targetSketch = document.getElementById("sketchpad");
