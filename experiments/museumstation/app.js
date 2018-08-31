@@ -14,6 +14,8 @@ var
 
 var gameport;
 
+const gmailCreds = require('./gmail_creds.json');
+
 if(argv.gameport) {
     gameport = argv.gameport;
     console.log('using port ' + gameport);
@@ -89,7 +91,7 @@ var serveFile = function(req, res) {
 
 var writeDataToMongo = function(data) {
     sendPostRequest(
-        'http://localhost:4000/db/insert',
+        'http://localhost:4001/db/insert',
         { json: data },
         (error, res, body) => {
         if (!error && res.statusCode === 200) {
@@ -104,8 +106,8 @@ var smtpTransport = nodemailer.createTransport({
     service: "gmail",
     host: "smtp.gmail.com",
     auth: {
-        user: 'kiddrawsanjose@gmail.com',
-        pass: 'Lang-2018Cog'
+        user: gmailCreds.user,
+        pass: gmailCreds.password
     }
 });
 
