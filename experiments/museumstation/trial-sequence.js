@@ -504,7 +504,6 @@ window.onload = function() {
         
     }
 
-    var path = []; // open global variable
     function touchStart(ev) {
         if(disableDrawing){
             return;
