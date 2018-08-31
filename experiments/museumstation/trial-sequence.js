@@ -478,8 +478,12 @@ window.onload = function() {
             var category = stimListTest[curTrial].category;
             var readable_date = new Date();
             var age = $('.active').attr('id');
-
-
+            
+            console.log('time since we started the trial')
+            console.log(endStrokeTime - startTrialTime)
+            console.log("time of this stroke")
+            console.log(endStrokeTime - startStrokeTime)
+ 
             stroke_data = {
                 dataType: 'stroke',
                 sessionId: sessionId,
@@ -489,8 +493,9 @@ window.onload = function() {
                 colname: version,
                 location: mode,
                 trialNum: curTrial,
+                startTrialTime: startTrialTime,
                 startStrokeTime: startStrokeTime,
-                endStrokeTime: Date.now(),
+                endStrokeTime: endStrokeTime,
                 date: readable_date,
                 age: age};
 
@@ -549,6 +554,7 @@ window.onload = function() {
             return;
         }
 
+        endStrokeTime = Date.now();
         console.log("touch end");        
         sendStrokeData();
         var touches = ev.touches; // if not touching anymore
@@ -588,7 +594,6 @@ window.onload = function() {
     }
 
     setTimeout(refresh, refreshTime);
-
 
 
 
