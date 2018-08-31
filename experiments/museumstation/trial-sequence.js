@@ -97,7 +97,7 @@ var language = "English";
 
 // current mode and session info
 var mode = "CDM";
-var version ="cdm_run_v3";
+var version ="testing";
 // initial version: piloting at museum
 // v2: first run
 // v3: circle timeout to 1 second
@@ -295,12 +295,6 @@ function saveSketchData(){
     dataURL = dataURL.replace('data:image/png;base64,','');
     var category = stimListTest[curTrial].category;
     var age = $('.active').attr('id');
-    var firstName = $('#firstName').val();
-    var lastName = $('#lastName').val();
-    var name;
-    if (firstName != "") {
-        name = firstName.toUpperCase() + ' ' + lastName.toUpperCase()
-    }
 
     // test stirng
     readable_date = new Date();
@@ -315,8 +309,7 @@ function saveSketchData(){
                 trialNum: curTrial,
                 time: Date.now(),
                 date: readable_date,
-                age: age,
-                kidName: name}; // age
+                age: age}; // age
 
     // send data to server to write to database
     socket.emit('current_data', current_data);
@@ -601,8 +594,8 @@ window.onload = function() {
             return;
         }
 
-        console.log("touch end");
-        sendStrokeData()
+        console.log("touch end");        
+        sendStrokeData();
         var touches = ev.touches; // if not touching anymore
         // Empty paths array to start process over
         if(touches.length === 0){
