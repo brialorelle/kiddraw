@@ -554,6 +554,12 @@ window.onload = function() {
         endStrokeTime = Date.now();
         console.log("touch end");  
 
+        // try out mild simplification
+        console.log("raw path: ", path.exportSVG({asString: true}));        
+        path.simplify(1);
+        path.flatten(1);
+        console.log("simpler path: ", path.exportSVG({asString: true}));
+
         // only send data if above some minimum stroke length threshold      
         console.log('path length = ',path.length);
         var currStrokeLength = path.length;
