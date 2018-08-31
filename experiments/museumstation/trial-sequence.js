@@ -69,6 +69,7 @@ var maxTraceTrial = 2; //the max number of tracing trials
 var timeLimit=30;
 var disableDrawing = false; //whether touch drawing is disabled or not
 var language = "English";
+var strokeThresh = 3; // each stroke needs to be at least this many pixels long to be sent
 
 // current mode and session info
 var mode = "CDM";
@@ -94,7 +95,7 @@ function shuffle (a)
 function startDrawing(){
     if (curTrial==0){
         $(consentPage).fadeOut('fast'); // fade out age screen
-        beginTrial()
+	beginTrial();
     }
     else if (curTrial>0 && curTrial<maxTrials) {
         if (curTrial == maxTraceTrial){
@@ -549,8 +550,12 @@ window.onload = function() {
             return;
         }
 
-        console.log("touch end");        
-        sendStrokeData();
+        console.log("touch end");
+	console.log('path length = ',paths[0].length);
+	var currStrokeLength = paths[0].length;
+	if (currStrokeLength > strokeThresh) {
+            sendStrokeData();
+	}
         var touches = ev.touches; // if not touching anymore
         // Empty paths array to start process over
         if(touches.length === 0){
