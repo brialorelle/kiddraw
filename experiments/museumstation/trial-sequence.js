@@ -553,11 +553,18 @@ window.onload = function() {
         }
         console.log("touch end");        
         var paths_copy = paths[0].clone();
-        paths_copy.simplify(1);
+        paths_copy.simplify(5);
         paths_copy.flatten(1);
 
         console.log('raw path: ', paths[0].exportSVG({asString: true}));
-        console.log('simplified path: ', paths_copy.exportSVG({asString: true}));
+        console.log('simplified path: ', paths_copy.exportSVG({asString: true}));        
+
+        console.log("simplifying path");
+        _.forEach(pathArray, function(p) {
+            p.simplify(5);
+            p.flatten(1);
+        }
+
 
         var currStrokeLength = paths[0].length;
         if (currStrokeLength > strokeThresh) {sendStrokeData();}
