@@ -305,18 +305,18 @@ function saveSketchData(){
     // test stirng
     readable_date = new Date();
     current_data = {
-        dataType: 'finalImage',
-        sessionId: sessionId, // each child
-        imgData: dataURL,
-        category: category,
-        dbname:'kiddraw',
-        colname: version,
-        location: mode,
-        trialNum: curTrial,
-        time: Date.now(),
-        date: readable_date,
-        age: age,
-        kidName: name}; // age
+                dataType: 'finalImage',
+                sessionId: sessionId, // each child
+                imgData: dataURL,
+                category: category,
+                dbname:'kiddraw',
+                colname: version,
+                location: mode,
+                trialNum: curTrial,
+                time: Date.now(),
+                date: readable_date,
+                age: age,
+                kidName: name}; // age
 
     // send data to server to write to database
     socket.emit('current_data', current_data);
