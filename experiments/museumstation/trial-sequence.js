@@ -72,7 +72,7 @@ var language = "English";
 
 // current mode and session info
 var mode = "CDM";
-var version ="cdm_run_v4"
+var version ="testing";
 var sessionId= version + Date.now().toString();
 var consentPage = '#consentCDM';
 var thanksPage = "#thanksPage";
@@ -283,7 +283,7 @@ function saveSketchData(){
                 endTrialTime: Date.now(), // when trial was complete, e.g., now
                 startTrialTime: startTrialTime, // when trial started, global variable
                 date: readable_date,
-                age: age} // age
+                age: age};
 
     // send data to server to write to database
     socket.emit('current_data', current_data);
@@ -549,8 +549,8 @@ window.onload = function() {
             return;
         }
 
-        console.log("touch end");
-        sendStrokeData()
+        console.log("touch end");        
+        sendStrokeData();
         var touches = ev.touches; // if not touching anymore
         // Empty paths array to start process over
         if(touches.length === 0){
