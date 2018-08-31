@@ -553,6 +553,7 @@ window.onload = function() {
         }
         console.log("touch end");        
         var paths_copy = paths[0].clone();
+        paths_copy.simplify(1);
         paths_copy.flatten(1);
 
         console.log('raw path: ', paths[0].exportSVG({asString: true}));
