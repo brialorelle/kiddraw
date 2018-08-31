@@ -546,7 +546,9 @@ window.onload = function() {
         }
     }
 
-    var paths = [];
+    ///// TOUCH EVENT LISTENERS DEFINED HERE
+
+    var paths = []; // global paths variable
     function touchStart(ev) {
         if(disableDrawing){
             return;
