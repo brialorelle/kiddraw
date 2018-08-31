@@ -554,10 +554,10 @@ window.onload = function() {
         // get stroke end time
         endStrokeTime = Date.now();
         console.log("touch end");  
-        
+
         // only send data if above some minimum stroke length threshold      
-        console.log('path length = ',paths[0].length);
-        var currStrokeLength = paths[0].length;
+        console.log('path length = ',path.length);
+        var currStrokeLength = path.length;
         if (currStrokeLength > strokeThresh) {
             sendStrokeData();
            }
