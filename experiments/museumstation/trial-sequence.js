@@ -501,7 +501,7 @@ window.onload = function() {
         }
     }
 
-    ///// TOUCH EVENT LISTENERS DEFINED HERE
+    ///////////// TOUCH EVENT LISTENERS DEFINED HERE ///////////////
 
     var paths = []; // global paths variable
     function touchStart(ev) {
@@ -551,13 +551,15 @@ window.onload = function() {
         if(disableDrawing){
             return;
         }
+        console.log("touch end");        
+        var paths_copy = paths.clone();
+        paths_copy.flatten(1);
 
-        console.log("touch end");
-	console.log('path length = ',paths[0].length);
-	var currStrokeLength = paths[0].length;
-	if (currStrokeLength > strokeThresh) {
-            sendStrokeData();
-	}
+        console.log('raw path: ', paths[0].exportSVG({asString: true}));
+        console.log('simplified path: ', paths_copy[0].exportSVG({asString: true}));
+
+        var currStrokeLength = paths[0].length;
+        if (currStrokeLength > strokeThresh) {sendStrokeData();}
         var touches = ev.touches; // if not touching anymore
         // Empty paths array to start process over
         if(touches.length === 0){
