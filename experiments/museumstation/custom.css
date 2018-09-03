@@ -41,6 +41,13 @@ button[disabled] {
     margin: 10px;
 }
 
+.thanksButton {
+    font-size: 4vw;
+    text-align:center;
+    font-family: Arial;
+    margin: 10px;
+}
+
 .btn-warning{
     background-color:#F7E293;
 }
@@ -246,6 +253,14 @@ button[disabled] {
     width: 50px;
     height: 50px;
     border: solid 5px #999;
+}
+
+
+.checkboxSurvey {
+    width: 50px;
+    height: 50px;
+    border: solid 5px #999;
+    /*transform: scale(1.5);*/
 }
 
 
