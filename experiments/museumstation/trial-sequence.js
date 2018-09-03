@@ -314,6 +314,29 @@ function showConsentPage(){
 }
 
 function restartExperiment() {
+   
+   var age = $('.active').attr('id'); // only active button from first page
+   
+   // send survey participation data
+   var parent_drew = document.getElementById("survey_parent").checked
+   var child_drew = document.getElementById("survey_child").checked
+   var other_drew = document.getElementById("survey_other").checked
+
+   survey_data = {
+   				parent_drew: parent_drew,
+   				child_drew: child_drew,
+   				other_drew: other_drew,
+                dataType: 'survey',
+                sessionId: sessionId, // each child
+                dbname:'kiddraw',
+                colname: version, 
+                location: mode,
+                date: readable_date,
+                age: age};
+
+    // send data to server to write to database
+    socket.emit('survey_data', survey_data);
+
     window.location.reload(true);
 }
 
