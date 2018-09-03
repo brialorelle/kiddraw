@@ -493,7 +493,7 @@ window.onload = function() {
     paper.setup('sketchpad');
 
     // Each time we send a stroke...
-    function sendStrokeData() {
+    function sendStrokeData(path) {
         path.selected = false
 
         var svgString = path.exportSVG({asString: true});
@@ -556,7 +556,7 @@ window.onload = function() {
         if(disableDrawing){
             return;
         }
-        console.log("touch move");
+        //console.log("touch move");
 
         // don't do anything when simultaneous touches
         var touches = ev.touches;
@@ -577,11 +577,17 @@ window.onload = function() {
         endStrokeTime = Date.now();
         console.log("touch end");  
 
+        // simplify path
+        //console.log("raw path: ", path.exportSVG({asString: true}));        
+        path.simplify(3);
+        path.flatten(1);
+        //console.log("simpler path: ", path.exportSVG({asString: true}));
+
         // only send data if above some minimum stroke length threshold      
-        console.log('path length = ',path.length);
+        //console.log('path length = ',path.length);
         var currStrokeLength = path.length;
         if (currStrokeLength > strokeThresh) {
-            sendStrokeData();
+            sendStrokeData(path);
            }
     }
 
