@@ -52,7 +52,7 @@ var stimLang = {
     "a key": "a key",
     "a phone": "a phone",
     "a train": "a train",
-    "a tree": "a tree",
+    "a frog": "a frog",
     "a scissors": "a pair of scissors",
     "something you love": "something you love"}
 
@@ -204,7 +204,7 @@ function setUpDrawing(){
         $("#submit_div").show();
         $("#lastTrial").hide();
 
-    }else if(stimListTest[curTrial].category == 'this circle'){
+    }else if(stimListTest[curTrial].category == 'this square'){
         //for the circle trial, show the circle image for 1s and hide it.
         var imageurl = "url('" + stimListTest[curTrial].image + "')";
         $('#sketchpad').css("background-image", imageurl)
