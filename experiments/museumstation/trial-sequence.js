@@ -17,40 +17,43 @@ paper.install(window);
 socket = io.connect();
 
 // 1. Setup trial order and randomize it!
-firstTrial = {"category": "this circle", "video": "circle.mp4", "image":"images/circle.png"}
+firstTrial = {"category": "this square", "video": "copy_square.mp4", "image":"images/square.png"}
 lastTrial = {"category": "something you love", "video": "love.mp4"}
-trace1 = {"category":"square", "video": "square.mp4", "image":"images/square.png"}
-trace2 = {"category":"shape", "video": "shape.mp4","image":"images/shape.png"}
+trace1 = {"category":"square", "video": "trace_square.mp4", "image":"images/square.png"}
+trace2 = {"category":"shape", "video": "trace_shape.mp4","image":"images/shape.png"}
+intro = {"category":"intro", "video": "intro.mp4","image":"images/lab_logo_stanford.png"}
 
 // round 1 -- finished June 1, 2018
-var stimListTest = [{"category": "a boat", "video": "boat.mp4"},
-    {"category": "a car", "video": "car.mp4"},
-    {"category": "a cup", "video": "cup.mp4"},
-    {"category": "a dog", "video": "dog.mp4"},
-    {"category": "a fish", "video": "fish.mp4"},
-    {"category": "a house", "video": "house.mp4"},
-    {"category": "a tree", "video": "tree.mp4"},
-    {"category": "a person", "video": "person.mp4"} ]
+var stimListTest = [{"category": "a bear", "video": "bear.mp4"},
+    {"category": "a cat", "video": "cat.mp4"},
+    {"category": "a frog", "video": "frog.mp4"},
+    {"category": "a sheep", "video": "sheep.mp4"},
+    {"category": "a key", "video": "key.mp4"},
+    {"category": "a phone", "video": "phone.mp4"},
+    {"category": "a scissors", "video": "scissors.mp4"},
+    {"category": "a train", "video": "train.mp4"} ]
 
 var stimListTest = shuffle(stimListTest)
 stimListTest.push(lastTrial)
 stimListTest.unshift(firstTrial)
 stimListTest.unshift(trace2)
 stimListTest.unshift(trace1)
+stimListTest.unshift(intro)
+
 var curTrial=0 // global variable, trial counter
 var maxTrials = stimListTest.length; //
 var stimLang = {
-    "this circle": "this circle",
+    "this square": "this square",
     "square": "square",
     "shape": "shape",
-    "a car": "a car",
-    "a fish": "a fish",
-    "a boat": "a boat",
-    "a house": "a house",
-    "a dog": "a dog",
-    "a cup": "a cup",
+    "a bear": "a bear",
+    "a cat": "a cat",
+    "a sheep": "a sheep",
+    "a key": "a key",
+    "a phone": "a phone",
+    "a train": "a train",
     "a tree": "a tree",
-    "a person": "a person",
+    "a scissors": "a pair of scissors",
     "something you love": "something you love"}
 
 var cuesLang = {
@@ -66,6 +69,7 @@ var ageAlert = "Please select your age group.";
 var clickedSubmit=0; // whether an image is submitted or not
 var tracing = true; //whether the user is in tracing trials or not
 var maxTraceTrial = 2; //the max number of tracing trials
+maxTraceTrial = maxTraceTrial + 1 // add one because the intro technically gets logged as a trial
 var timeLimit=30;
 var disableDrawing = false; //whether touch drawing is disabled or not
 var language = "English";
@@ -95,7 +99,7 @@ function shuffle (a)
 function startDrawing(){
     if (curTrial==0){
         $(consentPage).fadeOut('fast'); // fade out age screen
-	beginTrial();
+        showIntroVideo();  
     }
     else if (curTrial>0 && curTrial<maxTrials) {
         if (curTrial == maxTraceTrial){
@@ -109,6 +113,14 @@ function startDrawing(){
     }
 }
 
+
+function showIntroVideo(){
+    var player = loadNextVideo(curTrial); // change video
+    setTimeout(function() {showCue();},1000);
+    setTimeout(function() {playVideo(player);},1000);
+}
+
+
 // for the start of each trial
 function beginTrial(){
     //
@@ -118,7 +130,7 @@ function beginTrial(){
         document.getElementById("cue").innerHTML = traceCue;
         document.getElementById("drawingCue").innerHTML = traceCue;
     }else {
-        if (stimListTest[curTrial].category == 'this circle'){
+        if (stimListTest[curTrial].category == 'this square'){
             var circleCue = cuesLang["copy"]  + stimLang[stimListTest[curTrial].category] + cuesLang["endQuestion"];
             document.getElementById("cue").innerHTML = circleCue;
             document.getElementById("drawingCue").innerHTML = circleCue;
@@ -149,7 +161,14 @@ function playVideo(player){
             setTimeout(function(){
                 $('#cue').hide(); // fade out cue
                 player.dispose(); //dispose the old video and related eventlistener. Add a new video
-                setUpDrawing(); // set up the drawing canvas
+                if (curTrial==0) { // after intro
+                    console.log('starting first trial')
+                    curTrial = curTrial + 1
+                    setTimeout(function() {beginTrial();},1000); /// start trial sequence after intro trial
+                }
+                else{ /// if not on introductory trial
+                    setUpDrawing(); // set up the drawing canvas
+                }
                 $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline> </video>");
             }, 500);
 
@@ -320,7 +339,7 @@ function restartExperiment() {
    // send survey participation data
    var parent_drew = document.getElementById("survey_parent").checked
    var child_drew = document.getElementById("survey_child").checked
-   var other_drew = document.getElementById("survey_other").checked
+   var other_drew = document.getElementById("survey_else").checked
 
    survey_data = {
    				parent_drew: parent_drew,
