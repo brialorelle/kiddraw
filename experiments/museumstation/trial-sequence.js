@@ -546,6 +546,8 @@ window.onload = function() {
         
     }
 
+    ///////////// TOUCH EVENT LISTENERS DEFINED HERE ///////////////
+
     function touchStart(ev) {
         if(disableDrawing){
             return;
@@ -592,7 +594,7 @@ window.onload = function() {
         if(disableDrawing){
             return;
         }
-        // get stroke end time
+	// get stroke end time
         endStrokeTime = Date.now();
         console.log("touch end");  
 
@@ -608,6 +610,7 @@ window.onload = function() {
         if (currStrokeLength > strokeThresh) {
             sendStrokeData(path);
            }
+
     }
 
     targetSketch = document.getElementById("sketchpad");
