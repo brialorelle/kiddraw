@@ -594,8 +594,7 @@ window.onload = function() {
         if(disableDrawing){
             return;
         }
-<<<<<<< HEAD
-        // get stroke end time
+	// get stroke end time
         endStrokeTime = Date.now();
         console.log("touch end");  
 
@@ -611,31 +610,7 @@ window.onload = function() {
         if (currStrokeLength > strokeThresh) {
             sendStrokeData(path);
            }
-=======
-        console.log("touch end");        
-        var paths_copy = paths[0].clone();
-        paths_copy.simplify(5);
-        paths_copy.flatten(1);
 
-        console.log('raw path: ', paths[0].exportSVG({asString: true}));
-        console.log('simplified path: ', paths_copy.exportSVG({asString: true}));        
-
-        console.log("simplifying path");
-        _.forEach(pathArray, function(p) {
-            p.simplify(5);
-            p.flatten(1);
-        }
-
-
-        var currStrokeLength = paths[0].length;
-        if (currStrokeLength > strokeThresh) {sendStrokeData();}
-        var touches = ev.touches; // if not touching anymore
-        // Empty paths array to start process over
-        if(touches.length === 0){
-            paths = [];
-        }
-
->>>>>>> 998788fa8e901e6f71a7c794c9a28abb7d2db6d7
     }
 
     targetSketch = document.getElementById("sketchpad");
