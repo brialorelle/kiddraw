@@ -7,7 +7,7 @@ function [newIm flag newPxCount] = imAreaResize(im, saveImName, saveDir, targetP
 % over?)
 
 colorThres  = 250;
-imBW        = mean(im,3);
+imBW        = mean(im(:,:,1:3),3);
 imThresh    = imBW < colorThres;
 pxCount     = sum(imThresh(:));
 pxTotal     = length(imThresh(:));
@@ -25,8 +25,9 @@ imshow(imThresh);
 saveFigureHelper(saveFigFlag, saveDir,fileName)
 
 %
-OK = input('thres image OK?', 's')
-OK = str2num(OK);
+% OK = input('thres image OK?', 's')
+% OK = str2num(OK);
+OK = 1
 
 % compute the size it has to be to achieve the target Px Count
 scaleFactor = sqrt(targetPxCount/pxCount);

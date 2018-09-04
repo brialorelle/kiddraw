@@ -6,7 +6,7 @@ addpath('HelperCode')
 frame       = 440;
 
 % percent of frame area
-visSize      = 15; 
+visSize      = 9; 
 
 % helpers
 frameArea       = frame*frame;
@@ -14,11 +14,11 @@ visPixelCount   = frameArea * visSize/100;
 
 % get categories by reading image files folder
 topDir=pwd;
-stimDir='photos'
+stimDir='photos_resized'
 categories = getVisibleFiles(stimDir)
 
 % remove that directory if it's already there:
-saveDir = [stimDir '_resized'];
+saveDir = [stimDir '_resized_2'];
 % if exist(saveDir, 'dir')
 %     rmdir(saveDir, 's')
 % end
@@ -32,7 +32,7 @@ thresSaveDir = [stimDir '_Thresholds']
 mkdir(thresSaveDir)
 
 % loop through all images:
-% categories = {'final_set'}
+% categories = {'airplane'}
 
 for s=1:length(categories)
     % get list
@@ -59,8 +59,15 @@ for s=1:length(categories)
     for i=1:length(imList)
 %         try
         % read in image
-        im = imread(fullfile(topDir, stimDir, thisCategory, imList(i).name));
         
+        if strcmp(imList(i).name(end-3:end),'.png')
+            disp('trying png')
+            im = imread(fullfile(topDir, stimDir, thisCategory, imList(i).name), 'BackgroundColor',[1 1 1]);
+        elseif strcmp(imList(i).name(end-3:end),'.jpg')
+            disp('trying jpg')
+            im = imread(fullfile(topDir, stimDir, thisCategory, imList(i).name));
+
+               
         % image(im) % show me the image
         % imageBW = mean(im,3)./255;
         
@@ -84,10 +91,10 @@ for s=1:length(categories)
             
             fn = fullfile(saveDir, [thisCategory], [imageStr '_' thisCategory '_'  imList(i).name]);
             imwrite(resizedIm./255, fn, 'png');
+            else  
+            end
         end
-        
     end
-    
 end
 
 
