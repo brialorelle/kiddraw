@@ -116,6 +116,7 @@ function startDrawing(){
 
 function showIntroVideo(){
     var player = loadNextVideo(curTrial); // change video
+    document.getElementById("cue").innerHTML = "This game is for only one person at a time. Please draw by yourself!";
     setTimeout(function() {showCue();},1000);
     setTimeout(function() {playVideo(player);},1000);
 }
