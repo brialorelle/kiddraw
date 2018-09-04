@@ -20,8 +20,8 @@ if(argv.gameport) {
     gameport = argv.gameport;
     console.log('using port ' + gameport);
 } else {
-    gameport = 8883;
-    console.log('no gameport specified: using 8883\nUse the --gameport flag to change');
+    gameport = 8880;
+    console.log('no gameport specified: using 8880\nUse the --gameport flag to change');
 }
 
 var mode;
