@@ -342,7 +342,7 @@ function restartExperiment() {
    var child_drew = document.getElementById("survey_child").checked
    var other_drew = document.getElementById("survey_else").checked
 
-   survey_data = {
+   current_data = {
    				parent_drew: parent_drew,
    				child_drew: child_drew,
    				other_drew: other_drew,
@@ -355,8 +355,8 @@ function restartExperiment() {
                 age: age};
 
     // send data to server to write to database
-    socket.emit('survey_data', survey_data);
-
+    socket.emit('current_data', current_data);
+    console.log('sending survey data')
     window.location.reload(true);
 }
 
