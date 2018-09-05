@@ -77,7 +77,7 @@ var strokeThresh = 3; // each stroke needs to be at least this many pixels long 
 
 // current mode and session info
 var mode = "CDM";
-var version ="testing";
+var version ="cdm_run_v4";
 var sessionId= version + Date.now().toString();
 var consentPage = '#consentCDM';
 var thanksPage = "#thanksPage";
