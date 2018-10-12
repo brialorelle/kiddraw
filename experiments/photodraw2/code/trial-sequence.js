@@ -41,6 +41,26 @@ var subID = $('#subID').val();
 
 var strokeThresh = 3; // each stroke needs to be at least this many pixels long to be sent
 
+var stimLang = {
+    "square": "square",
+    "triangle": "triangle",
+    "rectangle": "rectangle",
+    "airplane": "an airplane",
+    "bike": "a bike",
+    "bird": "a bird",
+    "car": "a car",
+    "cat": "a cat",
+    "chair": "a chair",
+    "cup": "a cup",
+    "hat": "a hat",
+    "house": "a house",
+    "rabbit": "a rabbit",
+    "tree": "a tree",
+    "watch": "a watch", 
+}
+
+
+
 
 
 // HELPER FUNCTIONS - GENERAL
@@ -76,15 +96,10 @@ function getStimuliList(){
     // Which validation trials are we using?
     whichValidation = getRandomInt(1, 2)
     //
-    var triangle_semantic = {"condition":"S","category":"triangle", "video": "trace_shape.mp4"}
-    var triangle_perception = {"condition":"P","category":"triangle", "image": "images_photocues/shape.png"}
-    var rect_semantic = {"condition":"S","category":"rectangle", "video": "trace_shape.mp4"}
-    var rect_perception= {"condition":"P","category":"rectangle", "image": "images_photocues/shape.png"}
-
-    // var triangle_semantic = {"condition":"S","category":"a triangle", "video": "triangle.mp4"}
-    // var triangle_perception = {"condition":"P","category":"a triangle", "image": "images_photocues/triangle.jpg"}
-    // var rect_semantic = {"condition":"S","category":"a rectangle", "video": "rectangle.mp4"}
-    // var rect_perception= {"condition":"P","category":"a rectangle", "image": "images_photocues/rectangle.jpg"}
+    var triangle_semantic = {"condition":"S","category":"triangle", "video": "triangle.mp4"}
+    var triangle_perception = {"condition":"P","category":"triangle", "image": "images_photocues/triangle.png", "audio_perception":"audio/triangle.wav" }
+    var rect_semantic = {"condition":"S","category":"rectangle", "video": "rectangle.mp4"}
+    var rect_perception= {"condition":"P","category":"rectangle", "image": "images_photocues/rectangle.png" , "audio_perception":"audio/rectangle.wav" }
   
     if (whichValidation==1){ 
         semantic_validation = triangle_semantic;
@@ -96,7 +111,7 @@ function getStimuliList(){
     }
 
     // Get list of categories and shuffle them
-    categories = ['cup','rabbit']  // FILL OUT FULL LIST HERE
+    categories = ['airplane','bike','bird','car','cat','chair','cup','hat','house','rabbit','tree','watch'] // full list of test categories 
     categories = shuffle(categories)
     stimList = []
     halfway_index = categories.length / 2
@@ -126,7 +141,7 @@ function getStimuliList(){
 
             // Push all of the relevant info into the stimuli list; requires videos and images to be named correctly!
             stimList.push({"condition":condition, "video": this_category + ".mp4", "category": this_category, 
-                "audio_perception":"audio_perception_louder/" + this_category + ".wav" , "image": "images_photocues/" + this_category + getRandomInt(1, 3) + ".jpg"});
+                "audio_perception":"audio/" + this_category + ".wav" , "image": "images_photocues/" + this_category + "_" + getRandomInt(1, 3) + ".png"});
     }
     
 
@@ -188,7 +203,7 @@ function showTrial(){
             document.getElementById("drawingCue").innerHTML =  stimList[curTrial].category
         }
         else{
-            document.getElementById("drawingCue").innerHTML = "a "+ stimList[curTrial].category
+            document.getElementById("drawingCue").innerHTML = stimLang[stimList[curTrial].category] 
         }
         $('#photocue').hide();
 
@@ -226,7 +241,7 @@ function beginTrial(){
     $('#mainExp').fadeIn('fast');
 
     // 
-    if (curTrial==(halfway_index + numPracticeTrials + 1)) {
+    if (curTrial==(halfway_index + numPracticeTrials)) {
         showTaskChangeVideo(); // in between two tasks e.g., S and P, but before validation trial for next task
     }
     else{
@@ -719,7 +734,7 @@ window.onload = function() {
         touches = ev.touches;
         if (touches.length>1){
             return; // don't do anything when simultaneous -- get out of this function
-            console.log("detedcted multiple touches")
+            console.log("detected multiple touches")
         }
         
         // Create new path 
