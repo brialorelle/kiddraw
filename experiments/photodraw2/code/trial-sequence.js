@@ -1,33 +1,29 @@
 /* 
 
-Handles dynamic elements of museumdraw task
-Oct 26 2017
+Handles dynamic elements of standard kidddraw task
+Oct 9 2018 photodraw2 updates
 
 */
+// General to-do
+// 1. Record new audio (watch, triangle, rectangle)
+// 2. Make atypical triangle and rectangle images (ask Renata maybe how she did this?)
+// 3. Finish stimuli selection, resizing, renaming to .jpg, put in file folder.
 
-// To integrate:
-// HTML divs: Starting welcome page, age page (push age data), thank you page
-// JS: clear and save sketchpad data (and push to online database after each trial)
-// Convert onclick to also ontouch to work with ipad
-// CSS: Make sure sizing works well on an iPad
-// and much more...
+// 6. Change DB name for pilot and then for run time
+// 7. Check CB entering on splash page is intuitive
 
-// 0. Load dependencies
+// 4. Double check stroke saving timestamps here (done)
+// 5. Port over simplified stroke saving framework from new museumstation (done)
+
 paper.install(window);
 socket = io.connect();
-
-// 1. Setup trial order and randomize it!
-var firstTrial = {"condition":"S","stimulus":{"category": "this circle", "video": "copy_circle.mp4", "image":"images/circle.png"}}
-
-var trace1 = {"condition":"S","stimulus":{"category":"this square", "video": "trace_square.mp4", "image":"images/square.png"}}
-var trace2 = {"condition":"S","stimulus":{"category":"this shape", "video": "trace_shape.mp4","image":"images/shape.png"}}
-
 
 // Set global variables
 var curTrial=0 // global variable, trial counter
 var clickedSubmit=0; // whether an image is submitted or not
 var tracing = true; //whether the user is in tracing trials or not
 var maxTraceTrial = 2; //the max number of tracing trials
+var numPracticeTrials = maxTraceTrial + 1; // number of tracing trials
 var timeLimit=30;
 var disableDrawing = false; //whether touch drawing is disabled or not
 var language = "English";
@@ -43,56 +39,14 @@ var maxTrials;
 var stimList = [];
 var subID = $('#subID').val();
 
+var strokeThresh = 3; // each stroke needs to be at least this many pixels long to be sent
 
-function getRandomInt(max) {
-  return Math.floor(Math.random() * Math.floor(max));
+
+
+// HELPER FUNCTIONS - GENERAL
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-
-function get_random_img_idx(img_lists){
-    idx_list=[]
-    for (var i = 0; i <img_lists.length; i++){
-        var img_list_length = img_lists[i].length
-        idx_list.push(getRandomInt(img_list_length))
-    }
-    return idx_list
-}
-
-cat_imgs = ["images/photos_resized/cat/cat1.jpg","images/photos_resized/cat/cat2.jpg","images/photos_resized/cat/cat3.jpg","images/photos_resized/cat/cat4.jpg","images/photos_resized/cat/cat5.jpg"]
-rabbit_imgs = ["images/photos_resized/rabbit/rabbit1.jpg","images/photos_resized/rabbit/rabbit2.jpg","images/photos_resized/rabbit/rabbit3.jpg","images/photos_resized/rabbit/rabbit4.jpg","images/photos_resized/rabbit/rabbit5.jpg"]
-bird_imgs = ["images/photos_resized/bird/bird1.jpg","images/photos_resized/bird/bird2.jpg","images/photos_resized/bird/bird3.jpg","images/photos_resized/bird/bird4.jpg","images/photos_resized/bird/bird5.jpg"]
-bike_imgs = ["images/photos_resized/bike/bike1.jpg","images/photos_resized/bike/bike2.jpg","images/photos_resized/bike/bike3.jpg","images/photos_resized/bike/bike4.jpg","images/photos_resized/bike/bike5.jpg"]
-car_imgs = ["images/photos_resized/car/car1.jpg","images/photos_resized/car/car2.jpg","images/photos_resized/car/car3.jpg","images/photos_resized/car/car4.jpg","images/photos_resized/car/car5.jpg"]
-airplane_imgs = ["images/photos_resized/airplane/airplane1.jpg","images/photos_resized/airplane/airplane2.jpg","images/photos_resized/airplane/airplane3.jpg","images/photos_resized/airplane/airplane4.jpg","images/photos_resized/airplane/airplane5.jpg"]
-tree_imgs = ["images/photos_resized/tree/tree1.jpg","images/photos_resized/tree/tree2.jpg","images/photos_resized/tree/tree3.jpg","images/photos_resized/tree/tree4.jpg","images/photos_resized/tree/tree5.jpg"]
-cup_imgs = ["images/photos_resized/cup/cup1.jpg","images/photos_resized/cup/cup2.jpg","images/photos_resized/cup/cup3.jpg","images/photos_resized/cup/cup4.jpg","images/photos_resized/cup/cup5.jpg"]
-idx_list = get_random_img_idx([cat_imgs,rabbit_imgs,bird_imgs,bike_imgs,car_imgs,airplane_imgs,tree_imgs,cup_imgs])
-
-
-var catList = [{"category":"cat", "video": "cat.mp4", "image":cat_imgs[idx_list[0]], "audio_perception":"audio_perception_louder/cat.wav"},
-    {"category": "rabbit", "video": "rabbit.mp4","image":rabbit_imgs[idx_list[1]], "audio_perception":"audio_perception_louder/rabbit.wav"},
-    {"category": "bird", "video": "bird.mp4","image":bird_imgs[idx_list[2]], "audio_perception":"audio_perception_louder/bird.wav"},
-    {"category": "bike", "video": "cup.mp4","image":bike_imgs[idx_list[3]], "audio_perception":"audio_perception_louder/bike.wav"},
-    {"category": "car", "video": "cup.mp4","image":car_imgs[idx_list[4]], "audio_perception":"audio_perception_louder/car.wav"},
-    {"category": "airplane", "video": "airplane.mp4","image":airplane_imgs[idx_list[5]], "audio_perception":"audio_perception_louder/airplane.wav"},
-    {"category": "tree", "video": "tree.mp4","image":tree_imgs[idx_list[6]], "audio_perception":"audio_perception_louder/tree.wav"},
-    {"category": "cup", "video": "cup.mp4","image":cup_imgs[idx_list[7]], "audio_perception":"audio_perception_louder/cup.wav"}]
-
-
-
-
-function getStimuliList (){
-    var condition = $('#condition').val();
-    var currentStimOrder = shuffle(catList);
-    for(var j = 0; j < currentStimOrder.length; j++){
-            stimList.push({"condition":condition, "stimulus":currentStimOrder[j]});
-    }
-
-    stimList.unshift(firstTrial);
-    stimList.unshift(trace2);
-    stimList.unshift(trace1);
-    maxTrials = stimList.length;
-}
-
 
 // shuffle the order of drawing trials
 function shuffle (a)
@@ -106,6 +60,90 @@ function shuffle (a)
          j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
     return o;
 }
+
+
+// HELPER FUNCTIONS - TASK SPECIFIC
+
+// Make stimulus list function, called later
+function getStimuliList(){
+    // Get counterbalancing order from formula (should be 1 or 2)
+    var CB = $('#CB').val();
+
+    // tracing trials as variables for afterwards
+    var trace1 = {"condition":"S","category":"this square", "video": "trace_square.mp4", "image":"images/square.png"}
+    var trace2 = {"condition":"S","category":"this shape", "video": "trace_shape.mp4","image":"images/shape.png"}
+
+    // Which validation trials are we using?
+    whichValidation = getRandomInt(1, 2)
+    //
+    var triangle_semantic = {"condition":"S","category":"triangle", "video": "trace_shape.mp4"}
+    var triangle_perception = {"condition":"P","category":"triangle", "image": "images_photocues/shape.png"}
+    var rect_semantic = {"condition":"S","category":"rectangle", "video": "trace_shape.mp4"}
+    var rect_perception= {"condition":"P","category":"rectangle", "image": "images_photocues/shape.png"}
+
+    // var triangle_semantic = {"condition":"S","category":"a triangle", "video": "triangle.mp4"}
+    // var triangle_perception = {"condition":"P","category":"a triangle", "image": "images_photocues/triangle.jpg"}
+    // var rect_semantic = {"condition":"S","category":"a rectangle", "video": "rectangle.mp4"}
+    // var rect_perception= {"condition":"P","category":"a rectangle", "image": "images_photocues/rectangle.jpg"}
+  
+    if (whichValidation==1){ 
+        semantic_validation = triangle_semantic;
+        perception_validation = rect_perception;
+    }
+    else if (whichValidation==2){ 
+        semantic_validation = rect_semantic;
+        perception_validation = triangle_perception;
+    }
+
+    // Get list of categories and shuffle them
+    categories = ['cup','rabbit']  // FILL OUT FULL LIST HERE
+    categories = shuffle(categories)
+    stimList = []
+    halfway_index = categories.length / 2
+
+    for(var j = 0; j < (categories.length); j++){
+            this_category = categories[j]
+
+            // if in the first six categories and CB1, semantic condition
+            if (j<halfway_index && CB == 1){
+                condition = 'S'
+            }
+            // if in the first six categories and CB1, perception condition
+            else if (j>(halfway_index-1) && CB==1){
+                condition = 'P'
+            }
+            // if in the first six categories and CB2, perception condition
+            else if (j<halfway_index && CB==2){
+                condition = 'P'
+            }
+            // if in the first six categories and CB2, semantoc condition
+            else if (j>(halfway_index-1) && CB==2){
+                condition = 'S'
+            }
+            else {
+                error("Condition was entered incorrectly! Should be 1 or 2")
+            }
+
+            // Push all of the relevant info into the stimuli list; requires videos and images to be named correctly!
+            stimList.push({"condition":condition, "video": this_category + ".mp4", "category": this_category, 
+                "audio_perception":"audio_perception_louder/" + this_category + ".wav" , "image": "images_photocues/" + this_category + getRandomInt(1, 3) + ".jpg"});
+    }
+    
+
+    if (CB==1) { // semantic first, insert perception halfway
+        stimList.splice(halfway_index,0,perception_validation) // 
+        stimList.unshift(semantic_validation); // 
+    } else if (CB==2) {
+        stimList.splice(halfway_index,0,semantic_validation) // 
+        stimList.unshift(perception_validation); // 
+    }
+
+    stimList.unshift(trace2); // and tracing trial
+    stimList.unshift(trace1); // and warm up trial
+    maxTrials = stimList.length;
+}
+
+
 
 // for each time we start drawings
 function startDrawing(){
@@ -146,11 +184,11 @@ function showTrial(){
     if (stimList[curTrial].condition == 'S'){
         var player = loadNextVideo(curTrial); // change video
 
-        if (tracing || stimList[curTrial].stimulus.category == "this circle"){
-            document.getElementById("drawingCue").innerHTML =  stimList[curTrial].stimulus.category
+        if (tracing){
+            document.getElementById("drawingCue").innerHTML =  stimList[curTrial].category
         }
         else{
-            document.getElementById("drawingCue").innerHTML = "a "+ stimList[curTrial].stimulus.category
+            document.getElementById("drawingCue").innerHTML = "a "+ stimList[curTrial].category
         }
         $('#photocue').hide();
 
@@ -162,12 +200,12 @@ function showTrial(){
     }
     // Perception trails
     else if (stimList[curTrial].condition == 'P'){
-        document.getElementById("drawingCue").innerHTML = "this "+ stimList[curTrial].stimulus.category
+        document.getElementById("drawingCue").innerHTML = "this "+ stimList[curTrial].category
         $('#cueVideoDiv').hide();
-        var imgPath = stimList[curTrial].stimulus.image;
+        var imgPath = stimList[curTrial].image;
         $("#photocue").attr("src",imgPath);
         $('#photocue').fadeIn();
-        var audio = new Audio(stimList[curTrial].stimulus.audio_perception);
+        var audio = new Audio(stimList[curTrial].audio_perception);
         audio.volume = 1;
         audio.play();
         setTimeout(
@@ -187,10 +225,9 @@ function beginTrial(){
     $('#sketchpad').hide();
     $('#mainExp').fadeIn('fast');
 
-    // cup is ALWAYS first, as it is the practice trial
-    // if (stimList[curTrial].stimulus.category == 'cup') {
-    if (curTrial==3) {
-        showTaskChangeVideo();
+    // 
+    if (curTrial==(halfway_index + numPracticeTrials + 1)) {
+        showTaskChangeVideo(); // in between two tasks e.g., S and P, but before validation trial for next task
     }
     else{
         showTrial();
@@ -263,8 +300,8 @@ function loadNextVideo(){
     );
     player.pause();
     player.volume(1); // set volume to max
-    console.log(stimList[curTrial].stimulus.video)
-    player.src({ type: "video/mp4", src: "videos/" + stimList[curTrial].stimulus.video });
+    console.log(stimList[curTrial].video)
+    player.src({ type: "video/mp4", src: "videos/" + stimList[curTrial].video });
     player.load();
     return player;
 }
@@ -277,7 +314,7 @@ function setUpDrawing(){
     if (tracing){
         //for all tracing trials, show the tracing image on the canvas
 
-        var imageurl = "url('" + stimList[curTrial].stimulus.image + "')";
+        var imageurl = "url('" + stimList[curTrial].image + "')";
         $('#sketchpad').css("background-image", imageurl)
             .css("background-size",imgSize)
             .css("background-repeat", "no-repeat")
@@ -286,10 +323,10 @@ function setUpDrawing(){
         $("#keepGoing").show();
         $("#endGame").hide();
 
-    }else if(stimList[curTrial].stimulus.category == 'this circle'){
+    }else if(stimList[curTrial].category == 'this circle'){
         //for the circle trial, show the circle image for 1s and hide it.
 
-        var imageurl = "url('" + stimList[curTrial].stimulus.image + "')";
+        var imageurl = "url('" + stimList[curTrial].image + "')";
         $('#sketchpad').css("background-image", imageurl)
             .css("background-size",imgSize)
             .css("background-repeat", "no-repeat")
@@ -367,38 +404,33 @@ function saveSketchData(){
 
     var dataURL = tmpCanvas.toDataURL();
     dataURL = dataURL.replace('data:image/png;base64,','');
-    var category = stimList[curTrial].stimulus.category;
-    var condition = stimList[curTrial].condition;
-    var age = $('.active').attr('id');
-    var firstName = $('#firstName').val();
-    var lastName = $('#lastName').val();
-    var condition = $('#condition').val();
+    var category = stimList[curTrial].category; // category name
+    var condition = stimList[curTrial].condition; // should be S or P
+    var imageName = stimList[curTrial].image; // actual image IF it was a P trial, saved in general even if not used for S trials...
+    var age = $('.active').attr('id'); // age value
+    var CB = $('#CB').val(); // counterbalancing (1,2)
+    var whichValidation = whichValidation;
     var subID = $('#subID').val();
-    var name;
-    if (firstName != "") {
-        name = firstName.toUpperCase() + ' ' + lastName.toUpperCase()
-    }
+    var readable_date = new Date();
 
-    // test stirng
-    readable_date = new Date();
     current_data = {
         dataType: 'finalImage',
         sessionId: sessionId, // each children's session
         imgData: dataURL,
         category: category,
         condition: condition,
+        imageName: imageName,
+        age: age,
+        CB: CB,
+        whichValidation: whichValidation,
+        subID: subID,
+        date: readable_date,
         dbname:'kiddraw',
         colname: version,
         location: mode,
         trialNum: curTrial,
-        time: Date.now(),
-        date: readable_date,
-        age: age,
-        subID: subID,
-
-        startTrialTime: startTrialTime};
-
-
+        startTrialTime: startTrialTime,
+        endTrialTime: Date.now()} // when trial was complete, e.g., now};
     // send data to server to write to database
     socket.emit('current_data', current_data);
 };
@@ -490,11 +522,11 @@ window.onload = function() {
     $('#startConsent').bind('touchstart mousedown',function(e) {
         e.preventDefault()
 
-        if ($("#condition").val().trim().length==0){
+        if ($("#CB").val().trim().length==0){
                 alert("Please let the researcher enter your condition.");
             }
-        else if($("#condition").val().trim()!='S' && $("#condition").val().trim()!='P'){
-            alert("Please enter a valid condition");
+        else if($("#CB").val().trim()!=1 && $("#CB").val().trim()!=2){
+            alert("Please enter a valid counterbalancing condition (1,2)");
         }
         else{
             showConsentPage();
@@ -603,13 +635,14 @@ window.onload = function() {
         });
     });
 
+    // for toggling between age buttons
     $('.ageButton').bind('touchstart mousedown',function(e){
         e.preventDefault()
         $('.ageButton').removeClass('active')
         $(this).addClass('active')
     });
 
-    //
+    // Set up drawing canvas
     var canvas = document.getElementById("sketchpad"),
         ctx=canvas.getContext("2d");
     //landscape mode 00 inne
@@ -624,78 +657,81 @@ window.onload = function() {
     }
 
 
-    // Drawing related tools
+    /////////////  DRAWING RELATED TOOLS 
     paper.setup('sketchpad');
 
-    function sendStrokeData() {
-        for(var i = 0; i < paths.length; i++){
-            var path = paths[i];
-            path.selected = false
+    // Each time we send a stroke...
+    function sendStrokeData(path) {
+        path.selected = false
 
-            var svgString = path.exportSVG({asString: true});
-            var category = stimList[curTrial].stimulus.category;
-            var condition = stimList[curTrial].condition;
-            var readable_date = new Date();
-            var age = $('.active').attr('id');
-            var firstName = $('#firstName').val();
-            var lastName = $('#lastName').val();
-            var condition = $('#condition').val();
-            var subID = $('#subID').val();
-            var name;
-            if (firstName != "") {
-                name = firstName.toUpperCase() + ' ' + lastName.toUpperCase()
-            }
+        var svgString = path.exportSVG({asString: true});
+        var category = stimList[curTrial].category; // category name
+        var condition = stimList[curTrial].condition; // should be S or P
+        var imageName = stimList[curTrial].image; // actual image IF it was a P trial, saved in general even if not used for S trials...
+        var age = $('.active').attr('id'); // age value
+        var CB = $('#CB').val(); // counterbalancing (1,2)
+        var whichValidation = whichValidation;
+        var subID = $('#subID').val();
+        
+        var readable_date = new Date();
+        
+        console.log('time since we started the trial')
+        console.log(endStrokeTime - startTrialTime)
+        console.log("time of this stroke")
+        console.log(endStrokeTime - startStrokeTime)
 
-            stroke_data = {
-                dataType: 'stroke',
-                sessionId: sessionId,
-                svg: svgString,
-                category: category,
-                condition: condition,
-                dbname:'kiddraw',
-                colname: version,
-                location: mode,
-                trialNum: curTrial,
-                endStrokeTime: Date.now(),
-                date: readable_date,
-                age: age,
-                subID: subID,
+        stroke_data = {
+            dataType: 'stroke',
+            sessionId: sessionId,
+            svg: svgString,
+            category: category,
+            condition: condition,
+            imageName: imageName,
+            age: age,
+            CB: CB,
+            whichValidation: whichValidation,
+            subID: subID,
+            date: readable_date,
+            dbname:'kiddraw',
+            colname: version,
+            location: mode,
+            trialNum: curTrial,
+            startTrialTime: startTrialTime,
+            startStrokeTime: startStrokeTime,
+            endStrokeTime: endStrokeTime};
 
-                startStrokeTime: startStrokeTime,
-                startTrialTime: startTrialTime
-             };
-
-            // send stroke data to server
-            console.log(stroke_data)
-            socket.emit('stroke',stroke_data);
-        }
+        // send stroke data to server
+        console.log(stroke_data)
+        socket.emit('stroke',stroke_data);
+        
     }
 
-    var paths = [];
+
+///////////// TOUCH EVENT LISTENERS DEFINED HERE 
+
     function touchStart(ev) {
         if(disableDrawing){
             return;
         }
 
         startStrokeTime = Date.now()
-
         console.log("touch start");
-        var touches = ev.touches;
-        // Create new path per touch
-        var path = new Path();
+        touches = ev.touches;
+        if (touches.length>1){
+            return; // don't do anything when simultaneous -- get out of this function
+            console.log("detedcted multiple touches")
+        }
+        
+        // Create new path 
+        path = new Path();
         path.strokeColor = 'black';
         path.strokeCap = 'round'
-        path.strokeWidth = 5;
-        paths.push(path);
-
-        // Prevents touch bubbling
-        for(var i = 0; i < touches.length; i++){
-            var path = paths[i];
-            var point = view.getEventPoint(touches[i]);
-            path.add(point);
-            view.draw();
-        }
-
+        path.strokeWidth = 10;
+        
+        // add point to path
+        var point = view.getEventPoint(ev); // should only ever be one
+        path.add(point);
+        view.draw();
     }
 
     function touchMove(ev) {
@@ -703,89 +739,45 @@ window.onload = function() {
             return;
         }
 
-        console.log("touch move");
+        // don't do anything when simultaneous touches
         var touches = ev.touches;
-        // Prevents touch bubbling
-        if(touches.length === paths.length) {
-            for(var i = 0; i < touches.length; i++){
-                var path = paths[i];
-                var point = view.getEventPoint(touches[i]);
-                path.add(point);
-                view.draw();
-            }
+        if (touches.length>1){
+            return; 
         }
+        // add point to path
+        var point = view.getEventPoint(ev); 
+        path.add(point);
+        view.draw();
     }
 
     function touchEnd(ev){
         if(disableDrawing){
             return;
         }
-        console.log("touch end");
-        sendStrokeData()
-        var touches = ev.touches; // if not touching anymore
-        // Empty paths array to start process over
-        if(touches.length === 0){
-            paths = [];
-        }
+    // get stroke end time
+        endStrokeTime = Date.now();
+        console.log("touch end");  
+
+        // simplify path
+        //console.log("raw path: ", path.exportSVG({asString: true}));        
+        path.simplify(3);
+        path.flatten(1);
+        //console.log("simpler path: ", path.exportSVG({asString: true}));
+
+        // only send data if above some minimum stroke length threshold      
+        //console.log('path length = ',path.length);
+        var currStrokeLength = path.length;
+        if (currStrokeLength > strokeThresh) {
+            sendStrokeData(path);
+           }
 
     }
-
 
     targetSketch = document.getElementById("sketchpad");
     targetSketch.addEventListener('touchstart', touchStart, false);
     targetSketch.addEventListener('touchmove', touchMove, false);
     targetSketch.addEventListener('touchend', touchEnd, false);
 
-    // //Refresh if no user activities in 90 seconds
-    // var time = new Date().getTime();
-    //     $(document.body).bind("touchstart touchmove touchend click", function(e) {
-    //     time = new Date().getTime();
-    // });
-
-    // var refreshTime = 120000
-    // function refresh() {
-    //     if (new Date().getTime() - time >= refreshTime) {
-    //         if($("#landingPage").css("display")=="none") {
-    //             window.location.reload(true);
-    //             console.log("No user activities. Reload.")
-    //         }else{
-    //             //if the current page is the landingPage, reset time and wait again
-    //             time = new Date().getTime();
-    //             setTimeout(refresh, refreshTime);
-    //         }
-    //     } else {
-    //         setTimeout(refresh, refreshTime);
-    //     }
-
-    // }
-
-    // setTimeout(refresh, refreshTime);
-
-
-    // function preventZoom(event){
-    // if(event.touches.length > 1){
-    //     //the event is multi-touch
-    //     //you can then prevent the behavior
-    //     event.preventDefault()
-    //     console.log("trying to prevent zoom")
-    //     }, {passive: false}
-    // }
-
-    // $('cueVideo').bind('touchmove', false);
-    // $('cueVideoDiv').bind('touchmove', false);
-
-    // videoBox = document.getElementById("cueVideo");
-    // // videoBox.addEventListener("touchstart", preventZoom, false);
-
-    // videojs("cueVideo",{controlBar: {fullscreenToggle: false}}).ready(function(){
-    //     myPlayer = this;
-    //     myPlayer.on("fullscreenchange", function(){
-    //         if(myPlayer.isFullscreen()){
-    //             myPlayer.exitFullscreen();
-    //             console.log("prevented fullscreen")
-    //         }
-    //     });
-    // });
 
 
 } // on document load
