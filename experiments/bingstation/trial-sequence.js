@@ -17,10 +17,12 @@ paper.install(window);
 socket = io.connect();
 
 // 1. Setup trial order and randomize it!
-firstTrial = {"category": "this circle", "video": "circle.mp4louder.mp4", "image":"images/circle.png"}
+firstTrial = {"category": "this square", "video": "copy_square.mp4", "image":"images/square.png"}
 lastTrial = {"category": "something you love", "video": "love.mp4louder.mp4"}
-trace1 = {"category":"square", "video": "square.mp4louder.mp4", "image":"images/square.png"}
+trace1 = {"category":"square", "video": "trace_square.mp4", "image":"images/square.png"}
 trace2 = {"category":"shape", "video": "shape.mp4louder.mp4","image":"images/shape.png"}
+intro = {"category":"intro", "video": "intro.mp4","image":"images/lab_logo_stanford.png"}
+
 var stimListTest = [{"category": "a boat", "video": "boat.mp4louder.mp4"},
     {"category": "a car", "video": "car.mp4louder.mp4"},
     {"category": "a cup", "video": "cup.mp4louder.mp4"},
@@ -35,10 +37,12 @@ stimListTest.push(lastTrial)
 stimListTest.unshift(firstTrial)
 stimListTest.unshift(trace2)
 stimListTest.unshift(trace1)
+stimListTest.unshift(intro)
+
 var curTrial=0 // global variable, trial counter
 var maxTrials = stimListTest.length; //
 var stimLang = {
-    "this circle": "this circle",
+    "this square": "this square",
     "square": "square",
     "shape": "shape",
     "a car": "a car",
@@ -59,19 +63,24 @@ var cuesLang = {
 
 // set global variables
 var clickedSubmit=0; // whether an image is submitted or not
-var tracing = true; //whether the user is in tracing trials or not
+var tracing= true; //whether the user is in tracing trials or not
 var maxTraceTrial = 2; //the max number of tracing trials
+maxTraceTrial = maxTraceTrial + 1 // add one because the intro technically gets logged as a trial
 var timeLimit=30;
 var disableDrawing = false; //whether touch drawing is disabled or not
-var language = "English";
+
+//drawing param
+var strokeThresh = 3; // each stroke needs to be at least this many pixels long to be sent
 
 // current mode and session info
 var mode = "Bing";
-var version =mode + "run" + "_v1"
+var version =mode + "_run" + "_v2"
 var sessionId= version + Date.now().toString();
 
 var consentPage = '#consentBing';
-var thanksPage = "#thanksBing";
+var thanksPage = "#thanksBingSurvey";
+
+/// HELPER FUNCTIONS ///
 
 // shuffle the order of drawing trials
 function shuffle (a)
@@ -90,7 +99,7 @@ function shuffle (a)
 function startDrawing(){
     if (curTrial==0){
         $(consentPage).fadeOut('fast'); // fade out age screen
-        beginTrial()
+        showIntroVideo();  
     }
     else if (curTrial>0 && curTrial<maxTrials) {
         if (curTrial == maxTraceTrial){
@@ -105,19 +114,23 @@ function startDrawing(){
 }
 
 //
+function showIntroVideo(){
+    var player = loadNextVideo(curTrial); // change video
+    document.getElementById("cue").innerHTML = "This game is for only one person at a time. Please draw by yourself!";
+    setTimeout(function() {showCue();},1000);
+    setTimeout(function() {playVideo(player);},1000);
+}
+//
 function beginTrial(){
     //
     var player = loadNextVideo(curTrial); // change video
-    // set volume again
-    var video = document.getElementById('cueVideo');
-    video.volume = 1;
     //
     if (tracing){
         var traceCue = cuesLang["trace"]  + stimLang[stimListTest[curTrial].category] + cuesLang["endQuestion"];
         document.getElementById("cue").innerHTML = traceCue;
         document.getElementById("drawingCue").innerHTML = traceCue;
     }else {
-        if (stimListTest[curTrial].category == 'this circle'){
+        if (stimListTest[curTrial].category == 'this square'){
             var circleCue = cuesLang["copy"]  + stimLang[stimListTest[curTrial].category] + cuesLang["endQuestion"];
             document.getElementById("cue").innerHTML = circleCue;
             document.getElementById("drawingCue").innerHTML = circleCue;
@@ -125,9 +138,7 @@ function beginTrial(){
             document.getElementById("cue").innerHTML = cuesLang["draw"] + stimLang[stimListTest[curTrial].category] + cuesLang["endQuestion"]; // change cue
             document.getElementById("drawingCue").innerHTML = stimLang[stimListTest[curTrial].category]; // change drawing cue
         }
-
     }
-
     setTimeout(function() {showCue();},1000);
     setTimeout(function() {playVideo(player);},1000);
 }
@@ -138,6 +149,7 @@ function showCue() {
     $('#cue').fadeIn('fast'); // text cue associated with trial
 }
 
+
 // video player functions
 function playVideo(player){
     $('#cueVideoDiv').fadeIn(); // show video div
@@ -145,9 +157,21 @@ function playVideo(player){
         this.play();
         this.on('ended',function(){
             console.log('video ends and drawing starts');
-            hideCue();
-            this.dispose(); //dispose the old video and related eventlistener. Add a new video
-            $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline> </video>");
+            $('#cueVideoDiv').fadeOut();
+            setTimeout(function(){
+                $('#cue').hide(); // fade out cue
+                player.dispose(); //dispose the old video and related eventlistener. Add a new video
+                if (curTrial==0) { // after intro
+                    console.log('starting first trial')
+                    curTrial = curTrial + 1
+                    setTimeout(function() {beginTrial();},1000); /// start trial sequence after intro trial
+                }
+                else{ /// if not on introductory trial
+                    setUpDrawing(); // set up the drawing canvas
+                }
+                $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline> </video>");
+            }, 500);
+
         });
     });
 }
@@ -164,11 +188,7 @@ function loadNextVideo(){
         {
         "controls": false,
         "preload":"auto"
-        },
-        function() {
-            this.volume(1);
-        }
-    );
+        });
     player.pause();
     player.volume(1); // set volume to max
     console.log(stimListTest[curTrial].video)
@@ -194,8 +214,8 @@ function setUpDrawing(){
         $("#keepGoing").show();
         $("#endGame").hide();
 
-    }else if(stimListTest[curTrial].category == 'this circle'){
-        //for the circle trial, show the circle image for 2s and hide it.
+    }else if(stimListTest[curTrial].category == 'this square'){
+        //for the copying trial, show the image for 1s and hide it.
 
         var imageurl = "url('" + stimListTest[curTrial].image + "')";
         $('#sketchpad').css("background-image", imageurl)
@@ -219,6 +239,7 @@ function setUpDrawing(){
 
 function monitorProgress(){
     clickedSubmit=0;
+    startTrialTime=Date.now()
     console.log('starting monitoring')
     progress(timeLimit, timeLimit, $('.progress')); // show progress bar
     $('.progress-bar').attr('aria-valuemax',timeLimit);
@@ -259,6 +280,7 @@ function progress(timeleft, timetotal, $element) {
     }
 };
 
+
 // saving data functions
 function saveSketchData(){
     // downsamplesketchpad before saveing
@@ -293,7 +315,8 @@ function saveSketchData(){
         colname: version,
         location: mode,
         trialNum: curTrial,
-        time: Date.now(),
+        endTrialTime: Date.now(), // when trial was complete, e.g., now
+        startTrialTime: startTrialTime, // when trial started, global variable
         date: readable_date,
         age: age,
         kidName: name}; // age
@@ -302,25 +325,6 @@ function saveSketchData(){
     socket.emit('current_data', current_data);
 };
 
-
-function setLanguage(lang){
-    //If the user choose English, no change on the webpage
-    if (lang=="English") return;
-
-    //If the user choose other langauges
-    var filename = "language/"+lang +".json";
-    $.getJSON(filename, function( data ) {
-        var items = [];
-        $.each( data.webpage, function( key, val ) {
-            if (key=="parentEmail"){
-                $("#parentEmail").attr("placeholder",val);
-            }else {
-                var id = "#" + key;
-                $(id).text(val);
-            }
-        });
-    });
-}
 
 // experiment navigation functions
 function showConsentPage(){
@@ -336,6 +340,29 @@ function showConsentPage(){
 }
 
 function restartExperiment() {
+   
+   var age = $('.active').attr('id'); // only active button from first page
+   
+   // send survey participation data
+   var parent_drew = document.getElementById("survey_parent").checked
+   var child_drew = document.getElementById("survey_child").checked
+   var other_drew = document.getElementById("survey_else").checked
+
+   current_data = {
+                parent_drew: parent_drew,
+                child_drew: child_drew,
+                other_drew: other_drew,
+                dataType: 'survey',
+                sessionId: sessionId, // each child
+                dbname:'kiddraw',
+                colname: version, 
+                location: mode,
+                date: readable_date,
+                age: age};
+
+    // send data to server to write to database
+    socket.emit('current_data', current_data);
+    console.log('sending survey data')
     window.location.reload(true);
 }
 
@@ -375,7 +402,7 @@ window.onload = function() {
         mode = data.mode;
         if(mode=='Bing') {
             consentPage = '#consentBing';
-            thanksPage = "#thanksBing";
+            thanksPage = "#thanksBingSurvey";
             console.log(" mode Bing")
         }else if(mode=="CDM"){
             consentPage = '#consentCDM';
@@ -391,57 +418,27 @@ window.onload = function() {
 
     $('#startConsent').bind('touchstart mousedown',function(e) {
         e.preventDefault()
-        if (mode=="CDM") {
-            $("#chooseLang").show();
-            $("#landingPage").hide();
-        }else {
-            showConsentPage();
-        }
-    });
-
-    $('.langButton').bind('touchstart mousedown',function(e) {
-        e.preventDefault()
-        // if (isDoubleClicked($(this))) return;
-        language = $(this).attr('id');
-        setLanguage(language);
         showConsentPage();
     });
+
 
     $('.startExp').bind('touchstart mousedown',function (e) {
         e.preventDefault()
         // if (isDoubleClicked($(this))) return;
 
         console.log('touched start button');
-
-        if (mode == "Bing"){
-            console.log("Bing");
-
-            if ($("#firstName").val().trim().length==0 ) {
-                alert("Please enter your first name.");
-            }else if($("#lastName").val().trim().length==0){
-                alert("Please enter your last name.");
-            }else{
-                startDrawing();
-            }
-
+        if ($("#firstName").val().trim().length==0 ) {
+            alert("Please enter your first name.");
+        }else if($("#lastName").val().trim().length==0){
+            alert("Please enter your last name.");
         }else{
-            console.log("CDM");
-            if (!$("#checkConsent").is(':checked')) {
-                alert("Can we use your child's drawings? If so, please click the box above to start drawing!")
-            }else if($(".active").val()==undefined){
-                alert("Please select your age group.")
-            }
-            else {
-                startDrawing();
-            }
+            startDrawing();
         }
 
     });
 
     $('#keepGoing').bind('touchstart mousedown',function(e) {
         e.preventDefault()
-        // if (isDoubleClicked($(this))) return;
-
         $('#keepGoing').removeClass('bounce')
 
         console.log('touched next trial button');
@@ -457,7 +454,6 @@ window.onload = function() {
 
     $('.allDone').bind('touchstart mousedown',function(e) {
         e.preventDefault()
-        // if (isDoubleClicked($(this))) return;
 
         console.log('touched endExperiment  button');
         if(clickedSubmit==0){// if the current trial has not timed out yet
@@ -479,29 +475,8 @@ window.onload = function() {
         restartExperiment()
     });
 
-
-    $('#sendEmail').bind('touchstart mousedown',function(e){
-        e.preventDefault()
-
-        // if (isDoubleClicked($(this))) return;
-        var email = $('#parentEmail').val()
-        $.get("/send", {email:email}, function(data){
-            if(data=="sent"){
-                $('#email-form').hide()
-                $('#emailSent').show()
-            }else{
-                alert('invalid email')
-            }
-        });
-    });
-
-    $('.ageButton').bind('touchstart mousedown',function(e){
-        e.preventDefault()
-        $('.ageButton').removeClass('active')
-        $(this).addClass('active')
-    });
-
-    //
+    
+    /////////////// DRAWING PARAMETERS AND FUNCTIONS ///////////////
     var canvas = document.getElementById("sketchpad"),
         ctx=canvas.getContext("2d");
 
@@ -521,8 +496,6 @@ window.onload = function() {
     paper.setup('sketchpad');
 
     function sendStrokeData() {
-        for(var i = 0; i < paths.length; i++){
-            var path = paths[i];
             path.selected = false
 
             var svgString = path.exportSVG({asString: true});
@@ -545,7 +518,9 @@ window.onload = function() {
                 colname: version,
                 location: mode,
                 trialNum: curTrial,
-                time: Date.now(),
+                startTrialTime: startTrialTime,
+            	startStrokeTime: startStrokeTime,
+            	endStrokeTime: endStrokeTime,
                 date: readable_date,
                 age: age,
                 kidName: name
@@ -554,123 +529,82 @@ window.onload = function() {
             // send stroke data to server
             console.log(stroke_data)
             socket.emit('stroke',stroke_data);
-        }
+        
     }
 
-    var paths = [];
+ ///////////// TOUCH EVENT LISTENERS DEFINED HERE ///////////////
+
     function touchStart(ev) {
         if(disableDrawing){
             return;
         }
 
+        startStrokeTime = Date.now()
         console.log("touch start");
-        var touches = ev.touches;
-        // Create new path per touch
-        var path = new Path();
+        touches = ev.touches;
+        if (touches.length>1){
+            return; // don't do anything when simultaneous -- get out of this function
+            console.log("detedcted multiple touches")
+        }
+        
+        // Create new path 
+        path = new Path();
         path.strokeColor = 'black';
         path.strokeCap = 'round'
-        path.strokeWidth = 5;
-        paths.push(path);
-
-        // Prevents touch bubbling
-        for(var i = 0; i < touches.length; i++){
-            var path = paths[i];
-            var point = view.getEventPoint(touches[i]);
-            path.add(point);
-            view.draw();
-        }
-
+        path.strokeWidth = 10;
+        
+        // add point to path
+        var point = view.getEventPoint(ev); // should only ever be one
+        path.add(point);
+        view.draw();
     }
 
     function touchMove(ev) {
         if(disableDrawing){
             return;
         }
+        //console.log("touch move");
 
-        console.log("touch move");
+        // don't do anything when simultaneous touches
         var touches = ev.touches;
-        // Prevents touch bubbling
-        if(touches.length === paths.length) {
-            for(var i = 0; i < touches.length; i++){
-                var path = paths[i];
-                var point = view.getEventPoint(touches[i]);
-                path.add(point);
-                view.draw();
-            }
+        if (touches.length>1){
+            return; 
         }
+        // add point to path
+        var point = view.getEventPoint(ev); 
+        path.add(point);
+        view.draw();
     }
 
     function touchEnd(ev){
         if(disableDrawing){
             return;
         }
+	// get stroke end time
+        endStrokeTime = Date.now();
+        console.log("touch end");  
 
-        console.log("touch end");
-        sendStrokeData()
-        var touches = ev.touches; // if not touching anymore
-        // Empty paths array to start process over
-        if(touches.length === 0){
-            paths = [];
-        }
+        // simplify path
+        //console.log("raw path: ", path.exportSVG({asString: true}));        
+        path.simplify(3);
+        path.flatten(1);
+        //console.log("simpler path: ", path.exportSVG({asString: true}));
+
+        // only send data if above some minimum stroke length threshold      
+        //console.log('path length = ',path.length);
+        var currStrokeLength = path.length;
+        if (currStrokeLength > strokeThresh) {
+            sendStrokeData(path);
+           }
 
     }
-
 
     targetSketch = document.getElementById("sketchpad");
     targetSketch.addEventListener('touchstart', touchStart, false);
     targetSketch.addEventListener('touchmove', touchMove, false);
     targetSketch.addEventListener('touchend', touchEnd, false);
 
-    // //Refresh if no user activities in 90 seconds
-    // var time = new Date().getTime();
-    //     $(document.body).bind("touchstart touchmove touchend click", function(e) {
-    //     time = new Date().getTime();
-    // });
-
-    // var refreshTime = 120000
-    // function refresh() {
-    //     if (new Date().getTime() - time >= refreshTime) {
-    //         if($("#landingPage").css("display")=="none") {
-    //             window.location.reload(true);
-    //             console.log("No user activities. Reload.")
-    //         }else{
-    //             //if the current page is the landingPage, reset time and wait again
-    //             time = new Date().getTime();
-    //             setTimeout(refresh, refreshTime);
-    //         }
-    //     } else {
-    //         setTimeout(refresh, refreshTime);
-    //     }
-
-    // }
-
-    // setTimeout(refresh, refreshTime);
-
-
-    // function preventZoom(event){
-    // if(event.touches.length > 1){
-    //     //the event is multi-touch
-    //     //you can then prevent the behavior
-    //     event.preventDefault()
-    //     console.log("trying to prevent zoom")
-    //     }, {passive: false}
-    // }
-
-    // $('cueVideo').bind('touchmove', false);
-    // $('cueVideoDiv').bind('touchmove', false);
-
-    // videoBox = document.getElementById("cueVideo");
-    // // videoBox.addEventListener("touchstart", preventZoom, false);
-
-    // videojs("cueVideo",{controlBar: {fullscreenToggle: false}}).ready(function(){
-    //     myPlayer = this;
-    //     myPlayer.on("fullscreenchange", function(){
-    //         if(myPlayer.isFullscreen()){
-    //             myPlayer.exitFullscreen();
-    //             console.log("prevented fullscreen")
-    //         }
-    //     });
-    // });
+ 
 
 
 } // on document load
