@@ -14,7 +14,7 @@ pxTotal     = length(imThresh(:));
 pctArea     = pxCount/pxTotal * 100;
 
 % params
-saveFigFlag=1 % set to 0 if you don't want to save, 1 by default
+saveFigFlag=1; % set to 0 if you don't want to save, 1 by default
 fileName = [saveImName '_threshold.png'] % filaneme
 
 % make and save thresholded images
@@ -27,7 +27,7 @@ saveFigureHelper(saveFigFlag, saveDir,fileName)
 %
 % OK = input('thres image OK?', 's')
 % OK = str2num(OK);
-OK = 1
+OK = 1;
 
 % compute the size it has to be to achieve the target Px Count
 scaleFactor = sqrt(targetPxCount/pxCount);
