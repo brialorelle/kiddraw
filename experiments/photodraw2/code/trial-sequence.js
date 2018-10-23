@@ -30,7 +30,7 @@ var language = "English";
 
 // current mode and session info
 var mode = "CDM";
-var version =mode + "_photodraw" + "_e2_testing"; // set experiment name
+var version =mode + "_photodraw" + "_e2"; // set experiment name
 var sessionId=version + Date.now().toString();
 
 var consentPage = '#consentBing';
