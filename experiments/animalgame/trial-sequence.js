@@ -41,6 +41,43 @@ function shuffle (a)
     return o;
 }
 
+//
+function getButtonCategory(clicked_id) {
+    return function(element) {
+        return (element.buttonIndex == clicked_id)
+        alert('get button category')
+    }
+}
+
+function clickResponse(clicked_id){
+    temp = buttonList.filter(getButtonCategory(clicked_id))
+    curr_category = stimListTest[curTrial].category
+    clicked_category = temp[0].category
+    if (curr_category == clicked_category){
+        alert('correct')
+        // play cool sound here?
+    } 
+    // alert(clicked_category)
+    saveGuessData(clicked_category) // save first!
+    increaseTrial(); // save data and increase trial counter
+}
+
+function increaseTrial(){
+    // increase trial counter
+    curTrial=curTrial+1; 
+
+    // clear canvas
+    var canvas = document.getElementById("sketchpad"),
+        ctx=canvas.getContext("2d");
+    ctx.clearRect(0,0,canvas.width,canvas.height)
+
+    // wait 2 seconds
+    setTimeout(function() {
+        startGuessing()
+    }, 2000);
+    
+}
+
 
 function startGuessing(){
     maxTrials = stimListTest.length;
@@ -131,9 +168,10 @@ function monitorProgress(){
 //     }
 // };
 
-function saveGuessData(){
+function saveGuessData(clicked_category){
 // NEEDS MODIFICTIONS
 // get critical trial variables
+    var clicked_category = clicked_category
     var category = stimListTest[curTrial].category;
     var age = $('.active').attr('id');
 
@@ -143,6 +181,7 @@ function saveGuessData(){
                 dataType: 'finalImage',
                 sessionId: sessionId, // each child
                 category: category, // drawing category
+                clicked_category: clicked_category, // clicked category
                 dbname:'kiddraw',
                 colname: version, 
                 location: mode,
@@ -219,24 +258,10 @@ function endExperiment(){
     }, 60000);
 }
 
-function increaseTrial(){
-    saveGuessData() // save first!
-    curTrial=curTrial+1; // increase trial counter
-    clickedSubmit = 0
 
-    // clear canvas
-    var canvas = document.getElementById("sketchpad"),
-        ctx=canvas.getContext("2d");
-    ctx.clearRect(0,0,canvas.width,canvas.height)
 
-    // put back up progress back
-    // $('.progress-bar').attr('aria-valuemax',timeLimit);
-    // now move on to next trial
-    setTimeout(function() {
-        startGuessing()
-    }, 2000);
-    
-}
+
+
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -303,21 +328,19 @@ window.onload = function() {
     });
 
     // if child presses the "lets keep drawing" button....e.g.,  the SUBMIT button
-    $('.keepGoingButton').bind('touchstart mousedown',function(e) {
-        e.preventDefault()
-        alert('got here')
-        console.log('touched next trial button');
-        if(clickedSubmit==0){// if the current trial has not timed out yet
-            clickedSubmit=1; // indicate that we submitted - global variable
-            increaseTrial(); // save data and increase trial counter
-        }
-
-        startGuessing(); // start the new trial
-    });
+    // $('.keepGoingButton').bind('touchstart mousedown',function(e) {
+    //     e.preventDefault()
+    //     alert('got here')
+    //     console.log('touched next trial button');
+    //     if(clickedSubmit==0){// if the current trial has not timed out yet
+    //         clickedSubmit=1; // indicate that we submitted - global variable
+    //         increaseTrial(); // save data and increase trial counter
+    //     }
+    //     startGuessing(); // start the new trial
+    // });
 
     $('.allDone').bind('touchstart mousedown',function(e) {
         e.preventDefault()
-        // if (isDoubleClicked($(this))) return;
 
         console.log('touched endExperiment  button');
         if(clickedSubmit==0){// if the current trial has not timed out yet
@@ -326,7 +349,6 @@ window.onload = function() {
         }
         $('#mainExp').hide();
         $('#drawing').hide();
-        // $('#keepGoing').removeClass('bounce')
         endExperiment();
 
     });
@@ -360,14 +382,14 @@ window.onload = function() {
         $(this).addClass('active')
     });
 
-    /////////////// RESIZE IMG WINDOW
+    /////////////// RESIZE SKETCHPAD WINDOW
     var canvas = document.getElementById("sketchpad"),
         ctx=canvas.getContext("2d");
     canvas.height = window.innerWidth*.80; // set to 80% of the actual screen
     canvas.width = canvas.height;
 
 
-    // Refresh if no user activities in 60 seconds
+    // In general, refresh if no user activities in 90 seconds
     var time = new Date().getTime();
     $(document.body).bind("touchstart touchmove touchend click", function(e) {
         time = new Date().getTime();
@@ -387,13 +409,12 @@ window.onload = function() {
         } else {
             setTimeout(refresh, refreshTime);
         }
-
     }
 
     setTimeout(refresh, refreshTime);
 
 
-    // randomize order that the buttons appear in
+    // randomize order that the buttons appear in for different runs of the game
     // categories = ['bird','dog','frog','cat','fish','rabbit'] // animals
     categories = ['bird','bike','house','hat','car','chair'] // debugging only
     // categories = shuffle(categories)
@@ -404,14 +425,16 @@ window.onload = function() {
             this_index = j+1
             this_button_image_index = "keepGoing" + "_" + this_index
             this_button_txt_index = "keepGoing" + "_" + this_index + "_" + "txt"
+            
             // Push all of the relevant info into the stimuli list; requires videos and images to be named correctly!
             buttonList.push({"buttonIndex": this_button_image_index, "category": this_category, "image": "images_photocues/" + this_category + "_" + getRandomInt(1, 3) + ".png"});
-
             console.log(j)
-            console.log(this_category)
             document.getElementById(this_button_txt_index).innerHTML = this_category;
             document.getElementById(this_button_image_index).src = buttonList[j].image;
     }
+
+
+
 
     // LOAD SKETCH NAMES
     $.ajax({
@@ -432,8 +455,8 @@ window.onload = function() {
                 }
 
                 // SET UP TRIAL STRUCTURE
-                sketch_categories = ['cat','chair'] // categories = ['bird','bike','house','hat','car','chair'] // debugging only
-                ages = ['age7','age8']             // ages = ['age3','age4','age5','age6','age7','age8','age9']
+                sketch_categories = ['cat','chair'] // debugging only - will be, categories = ['bird','bike','house','hat','car','chair'] 
+                ages = ['age7','age8']             // debugging only - , will be ages = ['age3','age4','age5','age6','age7','age8','age9']
                 numImagePerCat = 1; stimListTest = []
 
                 // function to get subset of sketches based on age/category
