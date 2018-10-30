@@ -1,7 +1,7 @@
 /* 
 
-Handles dynamic elements of museumdraw task
-Oct 26 2017
+Handles dynamic elements of animalgame task
+Nov 2018
 
 */
 
@@ -9,67 +9,10 @@ Oct 26 2017
 paper.install(window);
 socket = io.connect();
 
-
-
-
-
-
-// 1. Setup trial order and randomize it!
-firstTrial = {"category": "this square", "video": "copy_square.mp4", "image":"images/square.png"}
-lastTrial = {"category": "something you love", "video": "love.mp4"}
-trace1 = {"category":"square", "video": "trace_square.mp4", "image":"images/square.png"}
-trace2 = {"category":"shape", "video": "trace_shape.mp4","image":"images/shape.png"}
-intro = {"category":"intro", "video": "intro.mp4","image":"images/lab_logo_stanford.png"}
-
-// round 1 -- finished June 1, 2018
-var stimListTest = [{"category": "a bear", "video": "bear.mp4"},
-    {"category": "a cat", "video": "cat.mp4"},
-    {"category": "a frog", "video": "frog.mp4"},
-    {"category": "a sheep", "video": "sheep.mp4"},
-    {"category": "a key", "video": "key.mp4"},
-    {"category": "a phone", "video": "phone.mp4"},
-    {"category": "a scissors", "video": "scissors.mp4"},
-    {"category": "a train", "video": "train.mp4"} ]
-
-var stimListTest = shuffle(stimListTest)
-stimListTest.push(lastTrial)
-stimListTest.unshift(firstTrial)
-
-
-var curTrial=1 // global variable, trial counter
-var maxTrials = stimListTest.length; //
-var stimLang = {
-    "this square": "this square",
-    "square": "square",
-    "shape": "shape",
-    "a bear": "a bear",
-    "a cat": "a cat",
-    "a sheep": "a sheep",
-    "a key": "a key",
-    "a phone": "a phone",
-    "a train": "a train",
-    "a frog": "a frog",
-    "a scissors": "a pair of scissors",
-    "something you love": "something you love"}
-
-var cuesLang = {
-    "trace": "Can you trace the ",
-    "copy": "Can you copy ",
-    "draw": "Can you draw ",
-    "endQuestion": " ?"
-}
-var checkBoxAlert = "Can we use your child's drawings? If so, please click the box above to start drawing!";
-var ageAlert = "Please select your age group.";
-
 // set global variables
+var curTrial=1 // global variable, trial counter : SET TO 1 FOR DEBUGGING, SHOULD BE 0
 var clickedSubmit=0; // whether an image is submitted or not
-var tracing = true; //whether the user is in tracing trials or not
-var maxTraceTrial = 2; //the max number of tracing trials
-maxTraceTrial = maxTraceTrial + 1 // add one because the intro technically gets logged as a trial
-var timeLimit=30;
-var disableDrawing = false; //whether touch drawing is disabled or not
 var language = "English";
-var strokeThresh = 3; // each stroke needs to be at least this many pixels long to be sent
 
 // current mode and session info
 var mode = "CDM";
@@ -77,6 +20,8 @@ var version ="animalgame_run_pilot";
 var sessionId= version + Date.now().toString();
 var consentPage = '#consentCDM';
 var thanksPage = "#thanksPage";
+var checkBoxAlert = "Can we use your child's drawings? If so, please click the box above to start drawing!";
+var ageAlert = "Please select your age group.";
 
 
 // shuffling functions
@@ -97,10 +42,8 @@ function shuffle (a)
 }
 
 
-
-
-
 function startGuessing(){
+    maxTrials = stimListTest.length;
     if (curTrial==0){
         $(consentPage).fadeOut('fast'); // fade out age screen
         showIntroVideo();  
@@ -134,90 +77,59 @@ function beginTrial(){
 
 function showNextSketch(){
 	// get image from somewhere
-	var imageurl = "url('" + stimListTest[curTrial].image + "')";
-    // load it into the sketchpad
-    var imgSize = "70%";
-    $('#sketchpad').fadeIn('fast');
-    $('#sketchpad').css("background-image", imageurl)
-        .css("background-size",imgSize)
-        .css("background-repeat", "no-repeat")
-        .css("background-position","center center");
-}
-
-
-function setUpDrawing(){
-    var imgSize = "70%";
-    disableDrawing = false;
-    $('#sketchpad').css({"background": "", "opacity":""});
-
-    if (tracing){
-        //for all tracing trials, show the tracing image on the canvas
-        var imageurl = "url('" + stimListTest[curTrial].image + "')";
-        $('#sketchpad').css("background-image", imageurl)
-            .css("background-size",imgSize)
-            .css("background-repeat", "no-repeat")
-            .css("background-position","center center");
-        $("#submit_div").show();
-        $("#lastTrial").hide();
-
-    }else if(stimListTest[curTrial].category == 'this square'){
-        //for the circle trial, show the circle image for 1s and hide it.
-        var imageurl = "url('" + stimListTest[curTrial].image + "')";
-        $('#sketchpad').css("background-image", imageurl)
-            .css("background-size",imgSize)
-            .css("background-repeat", "no-repeat")
-            .css("background-position","center center");
-
-        setTimeout(function () {
-            $('#sketchpad').css("background-image", "");
-        }, 1000);
-
-    }else if(curTrial == maxTrials-1){
-        $("#submit_div").hide();
-        $("#lastTrial").show();
-    }
-
-    $('#drawing').fadeIn()
+	// var imageurl = "url('" + stimListTest[curTrial].image + "')";
+    var imageurl = stimListTest[curTrial].image;
+    var canvas = document.getElementById('sketchpad');
+    context = canvas.getContext('2d');
+    context.drawImage(imageurl,canvas.width*.2,canvas.height*.2,canvas.width*.8,canvas.height*.8)
     
-};
+    // load it into the sketchpad
+    // var imgSize = "100%";
+    // $('#sketchpad').fadeIn('fast');
+    // $('#sketchpad').css("background-image", imageurl)
+    //     .css("background-size",imgSize)
+    //     .css("background-repeat", "no-repeat")
+    //     .css("background-position","center center");
+}
 
 function monitorProgress(){
     clickedSubmit=0;
     startTrialTime=Date.now()
-    console.log('starting monitoring')
-    progress(timeLimit, timeLimit, $('.progress')); // show progress bar
-    $('.progress-bar').attr('aria-valuemax',timeLimit);
-    $('.progress').show(); // don't show progress bar until we start monitorung
+    // console.log('starting monitoring')
+    // $('.progress').show(); // don't show progress bar until we start monitorung
+    // progress(timeLimit, timeLimit, $('.progress')); // show progress bar
 };
+
+
 
 //  monitors the progress and changes the js elements associated with timeout bar
-function progress(timeleft, timetotal, $element) {
-    var progressBarWidth = timeleft * $element.width()/ timetotal;
-    var totalBarWidth = $element.width();
-    $element.find('.progress-bar').attr("aria-valuenow", timeleft).text(timeleft)
-    $element.find('.progress-bar').animate({ width: progressBarWidth }, timeleft == timetotal ? 0 : 1000, "linear");
-    console.log("clicked submit = " + clickedSubmit)
-    console.log("time left = " + timeleft)
+// function progress(timeleft, timetotal, $element) {
+//     var progressBarWidth = timeleft * $element.width()/ timetotal;
+//     var totalBarWidth = $element.width();
+//     $element.find('.progress-bar').attr("aria-valuenow", timeleft).text(timeleft)
+//     $element.find('.progress-bar').animate({ width: progressBarWidth }, timeleft == timetotal ? 0 : 1000, "linear");
+//     console.log("clicked submit = " + clickedSubmit)
+//     console.log("time left = " + timeleft)
 
-    if(timeleft > 0 & clickedSubmit==0) {
-        setTimeout(function() {
-            progress(timeleft - 1, timetotal, $element);
-        }, 1000);
-    }
-    else if(timeleft == 0 & clickedSubmit==0){
-        console.log("trial timed out")
-        increaseTrial();
-        clickedSubmit = 1 // it's as if we clicked submit
-        disableDrawing = true // can't draw after trial timed out
-        $("#sketchpad").css({"background":"linear-gradient(#17a2b81f, #17a2b81f)", "opacity":"0.5"});
-        return; //  get out of here
-    }
-    else if (clickedSubmit==1){
-        console.log("exiting out of progress function")
-        $element.find('.progress-bar').width(totalBarWidth)
-        return; //  get out of here, data being saved by other button
-    }
-};
+//     if(timeleft > 0 & clickedSubmit==0) {
+//         setTimeout(function() {
+//             progress(timeleft - 1, timetotal, $element);
+//         }, 1000);
+//     }
+//     else if(timeleft == 0 & clickedSubmit==0){
+//         console.log("trial timed out")
+//         increaseTrial();
+//         clickedSubmit = 1 // it's as if we clicked submit
+//         disableDrawing = true // can't draw after trial timed out
+//         $("#sketchpad").css({"background":"linear-gradient(#17a2b81f, #17a2b81f)", "opacity":"0.5"});
+//         return; //  get out of here
+//     }
+//     else if (clickedSubmit==1){
+//         console.log("exiting out of progress function")
+//         $element.find('.progress-bar').width(totalBarWidth)
+//         return; //  get out of here, data being saved by other button
+//     }
+// };
 
 function saveGuessData(){
 // NEEDS MODIFICTIONS
@@ -295,6 +207,7 @@ function restartExperiment() {
 }
 
 function endExperiment(){
+    $('#drawing').hide();
     $(thanksPage).show();
     curTrial = -1;
     // wait for 1min and restart entire experiment
@@ -309,6 +222,20 @@ function endExperiment(){
 function increaseTrial(){
     saveGuessData() // save first!
     curTrial=curTrial+1; // increase trial counter
+    clickedSubmit = 0
+
+    // clear canvas
+    var canvas = document.getElementById("sketchpad"),
+        ctx=canvas.getContext("2d");
+    ctx.clearRect(0,0,canvas.width,canvas.height)
+
+    // put back up progress back
+    // $('.progress-bar').attr('aria-valuemax',timeLimit);
+    // now move on to next trial
+    setTimeout(function() {
+        startGuessing()
+    }, 2000);
+    
 }
 
 
@@ -376,18 +303,15 @@ window.onload = function() {
     });
 
     // if child presses the "lets keep drawing" button....e.g.,  the SUBMIT button
-    $('#keepGoing').bind('touchstart mousedown',function(e) {
+    $('.keepGoingButton').bind('touchstart mousedown',function(e) {
         e.preventDefault()
-        $('#keepGoing').removeClass('bounce')
-
+        alert('got here')
         console.log('touched next trial button');
         if(clickedSubmit==0){// if the current trial has not timed out yet
             clickedSubmit=1; // indicate that we submitted - global variable
             increaseTrial(); // save data and increase trial counter
         }
 
-        // $('#drawing').hide(); // hide the canvas
-        // project.activeLayer.removeChildren(); // clear the canvas
         startGuessing(); // start the new trial
     });
 
@@ -402,7 +326,7 @@ window.onload = function() {
         }
         $('#mainExp').hide();
         $('#drawing').hide();
-        $('#keepGoing').removeClass('bounce')
+        // $('#keepGoing').removeClass('bounce')
         endExperiment();
 
     });
@@ -443,116 +367,6 @@ window.onload = function() {
     canvas.width = canvas.height;
 
 
-    // // Initialize paper.js
-    // paper.setup('sketchpad');
-
-    // Each time we send a stroke...
-    function sendStrokeData(path) {
-        path.selected = false
-
-        var svgString = path.exportSVG({asString: true});
-        var category = stimListTest[curTrial].category;
-        var readable_date = new Date();
-        var age = $('.active').attr('id');
-        
-        console.log('time since we started the trial')
-        console.log(endStrokeTime - startTrialTime)
-        console.log("time of this stroke")
-        console.log(endStrokeTime - startStrokeTime)
-
-        stroke_data = {
-            dataType: 'stroke',
-            sessionId: sessionId,
-            svg: svgString,
-            category: category,
-            dbname:'kiddraw',
-            colname: version,
-            location: mode,
-            trialNum: curTrial,
-            startTrialTime: startTrialTime,
-            startStrokeTime: startStrokeTime,
-            endStrokeTime: endStrokeTime,
-            date: readable_date,
-            age: age};
-
-        // send stroke data to server
-        console.log(stroke_data)
-        socket.emit('stroke',stroke_data);
-        
-    }
-
-    ///////////// TOUCH EVENT LISTENERS DEFINED HERE ///////////////
-
-    function touchStart(ev) {
-        if(disableDrawing){
-            return;
-        }
-
-        startStrokeTime = Date.now()
-        console.log("touch start");
-        touches = ev.touches;
-        if (touches.length>1){
-            return; // don't do anything when simultaneous -- get out of this function
-            console.log("detedcted multiple touches")
-        }
-        
-        // Create new path 
-        path = new Path();
-        path.strokeColor = 'black';
-        path.strokeCap = 'round'
-        path.strokeWidth = 10;
-        
-        // add point to path
-        var point = view.getEventPoint(ev); // should only ever be one
-        path.add(point);
-        view.draw();
-    }
-
-    function touchMove(ev) {
-        if(disableDrawing){
-            return;
-        }
-        //console.log("touch move");
-
-        // don't do anything when simultaneous touches
-        var touches = ev.touches;
-        if (touches.length>1){
-            return; 
-        }
-        // add point to path
-        var point = view.getEventPoint(ev); 
-        path.add(point);
-        view.draw();
-    }
-
-    function touchEnd(ev){
-        if(disableDrawing){
-            return;
-        }
-	// get stroke end time
-        endStrokeTime = Date.now();
-        console.log("touch end");  
-
-        // simplify path
-        //console.log("raw path: ", path.exportSVG({asString: true}));        
-        path.simplify(3);
-        path.flatten(1);
-        //console.log("simpler path: ", path.exportSVG({asString: true}));
-
-        // only send data if above some minimum stroke length threshold      
-        //console.log('path length = ',path.length);
-        var currStrokeLength = path.length;
-        if (currStrokeLength > strokeThresh) {
-            sendStrokeData(path);
-           }
-
-    }
-
-    targetSketch = document.getElementById("sketchpad");
-    targetSketch.addEventListener('touchstart', touchStart, false);
-    targetSketch.addEventListener('touchmove', touchMove, false);
-    targetSketch.addEventListener('touchend', touchEnd, false);
-
     // Refresh if no user activities in 60 seconds
     var time = new Date().getTime();
     $(document.body).bind("touchstart touchmove touchend click", function(e) {
@@ -582,7 +396,7 @@ window.onload = function() {
     // randomize order that the buttons appear in
     // categories = ['bird','dog','frog','cat','fish','rabbit'] // animals
     categories = ['bird','bike','house','hat','car','chair'] // debugging only
-    categories = shuffle(categories)
+    // categories = shuffle(categories)
     buttonList = []
 
     for(var j = 0; j < (categories.length); j++){
@@ -593,6 +407,8 @@ window.onload = function() {
             // Push all of the relevant info into the stimuli list; requires videos and images to be named correctly!
             buttonList.push({"buttonIndex": this_button_image_index, "category": this_category, "image": "images_photocues/" + this_category + "_" + getRandomInt(1, 3) + ".png"});
 
+            console.log(j)
+            console.log(this_category)
             document.getElementById(this_button_txt_index).innerHTML = this_category;
             document.getElementById(this_button_image_index).src = buttonList[j].image;
     }
@@ -604,8 +420,6 @@ window.onload = function() {
         dataType: "text",
         success: function(data) {
                 results = Papa.parse(data); // parse csv file
-
-                //set up image names
                 imgArray = new Array();
                 for (i = 1; i < results.data.length; i++) {
                     var session_id= results.data[i][0]; //starts i at 1 to get rid of header
@@ -616,41 +430,39 @@ window.onload = function() {
                     imgArray[i].category = category;
                     imgArray[i].age = "age" + age;
                 }
-            
-            // SET UP TRIAL STRUCTURE
-            sketch_categories = ['cat','chair']
-            ages = ['age7','age8']
-            // categories = ['bird','bike','house','hat','car','chair'] // debugging only
-            // ages = ['age3','age4','age5','age6','age7','age8','age9']
 
-            numTrials = sketch_categories.length * ages.length
-            numImagePerCat = 2
-            trialList = []
-            // function to get subset of sketches based on age/category
-            function getSubset(this_category,this_age) {
-                return function(element) {
-                    return (element.category == this_category &&
-                            element.age == this_age)
+                // SET UP TRIAL STRUCTURE
+                sketch_categories = ['cat','chair'] // categories = ['bird','bike','house','hat','car','chair'] // debugging only
+                ages = ['age7','age8']             // ages = ['age3','age4','age5','age6','age7','age8','age9']
+                numImagePerCat = 1; stimListTest = []
+
+                // function to get subset of sketches based on age/category
+                function getSubset(this_category,this_age) {
+                    return function(element) {
+                        return (element.category == this_category &&
+                                element.age == this_age)
+                    }
                 }
-            }
-
-            // get random sketch
-            for(var j = 0; j < (sketch_categories.length); j++){
-                    this_sketch_category = sketch_categories[j]
-                        for (var a = 0; a < (ages.length); a++){
-                        this_age = ages[a]
-                        random_index = getRandomInt(1,numImagePerCat);
-                        sketch_subset = imgArray.filter(getSubset(this_sketch_category, this_age));
-                        random_sketch = sketch_subset[random_index].src;
-                        // Push all of the relevant info into the stimuli list; requires sketches to be named correctly...
-                        trialList.push({"age": this_age, "category": this_sketch_category, "random_index": random_index, "image": "sketches/" + random_sketch});
+                // get random sketch
+                for(var j = 0; j < (sketch_categories.length); j++){
+                        this_sketch_category = sketch_categories[j]
+                            for (var a = 0; a < (ages.length); a++){
+                            this_age = ages[a]
+                            random_index = getRandomInt(1,numImagePerCat);
+                            sketch_subset = imgArray.filter(getSubset(this_sketch_category, this_age));
+                            random_sketch = sketch_subset[random_index];
+                            // Push all of the relevant info into the stimuli list; requires sketches to be named correctly...
+                            stimListTest.push({"age": this_age, "category": this_sketch_category, "random_index": random_index, "image": random_sketch});
+                    }
+                } 
+                /////
+                result = stimListTest;
+            }, // success in ajax
+                error: function() {
+                    alert('ajax error occured');
                 }
-            }
-
-
-            } // success in ajax
     }); // ajax
-
+    
 } // on document load
 
 
