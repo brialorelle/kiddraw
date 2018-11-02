@@ -10,7 +10,7 @@ paper.install(window);
 socket = io.connect();
 
 // set global variables
-var curTrial=1 // global variable, trial counter : SET TO 1 FOR DEBUGGING, SHOULD BE 0
+var curTrial=0 // global variable, trial counter : SET TO 1 FOR DEBUGGING, SHOULD BE 0
 var clickedSubmit=0; // whether an image is submitted or not
 var language = "English";
 
@@ -100,15 +100,60 @@ function startGuessing(){
 
 // intro video before first thing happens
 function showIntroVideo(){
-    // var player = loadNextVideo(curTrial); // change video
+    var player = loadNextVideo(curTrial); // change video
     document.getElementById("cue").innerHTML = "This game is for only one person at a time. Please draw by yourself!";
     $('#mainExp').fadeIn('fast');
-    // setTimeout(function() {playVideo(player);},1000);
+    setTimeout(function() {playVideo(player);},1000);
 }
+
+
+// video player functions
+function playVideo(player){
+    $('#cueVideoDiv').fadeIn(); // show video div
+    player.ready(function(){ // need to wait until video is ready
+        this.play();
+        this.on('ended',function(){
+            console.log('video ends and drawing starts');
+            $('#cueVideoDiv').fadeOut();
+            setTimeout(function(){
+                $('#cue').hide(); // fade out cue
+                player.dispose(); //dispose the old video and related eventlistener. Add a new video
+                if (curTrial==0) { // after intro
+                    console.log('starting first trial')
+                    curTrial = curTrial + 1
+                    setTimeout(function() {beginTrial();},1000); /// start trial sequence after intro trial
+                }
+                else{ /// if not on introductory trial
+                    alert('not sure what video you want!')
+                }
+                // reset video div?
+                $("#cueVideoDiv").html("<video id='cueVideo' class='video-js' playsinline> </video>");
+            }, 500);
+
+        });
+    });
+}
+
+function loadNextVideo(){
+    var player=videojs('cueVideo',{
+        "controls": false,
+        "preload":"auto"
+    });
+    player.pause();
+    player.volume(1); // set volume to max 
+    console.log(stimListTest[curTrial].video)
+    player.src({ type: "video/mp4", src: "videos/" + stimListTest[curTrial].video });
+    player.load();
+    return player;
+}
+
 
 // for the start of each trial
 function beginTrial(){
     //
+    if (curTrial==1) {
+        $('#drawing').show();
+    }
     showNextSketch(curTrial)
     monitorProgress(); // start the timeout function (10s)?
     $('#mainExp').fadeIn('fast'); // fade in exp
@@ -443,8 +488,8 @@ window.onload = function() {
                 }
 
                 // SET UP TRIAL STRUCTURE
-                sketch_categories = ['cat','chair'] // debugging only - will be, categories = ['bird','bike','house','hat','car','chair'] 
-                ages = ['age7','age8']             // debugging only - , will be ages = ['age3','age4','age5','age6','age7','age8','age9']
+                sketch_categories = ['rabbit'] // debugging only - will be, categories = ['bird','bike','house','hat','car','chair'] 
+                ages = ['age6','age7','age8']             // debugging only - , will be ages = ['age3','age4','age5','age6','age7','age8','age9']
                 numImagePerCat = 1; stimListTest = []
 
                 // function to get subset of sketches based on age/category
@@ -479,6 +524,9 @@ window.onload = function() {
                             stimListTest.unshift({"age": "photo", "category": this_sketch_category, "random_index": random_index, "src": practice_trial_img});
                 } 
 
+                // add in introductory video trial
+                intro = {"category":"intro", "video": "intro.mp4","image":"images/lab_logo_stanford.png"}
+                stimListTest.unshift(intro)
                 /////
                 result = stimListTest;
             }, // success in ajax

@@ -18,7 +18,7 @@ button:active {
     border-left: 1px solid #c9c9c9;
     border-top: 1px solid #c9c9c9;
     background: none;
-    background-color: #c9c9c9;
+    background-color: #c9c9cx9;
 }
 
 button[disabled] {
@@ -92,6 +92,18 @@ button[disabled] {
 }
 
 .drawingButton>img{
+    width:20vw;
+    height:auto;
+}
+
+.drawingButton_Small{
+    font-family: Schoolbell,cursive;
+    font-size: 3vw;
+    text-align:center;
+    cursor:pointer;
+}
+
+.drawingButton_Small>img{
     width:10vw;
     height:auto;
 }
@@ -139,16 +151,13 @@ button[disabled] {
 }
 
 #sketchpad {
-    /*position: absolute;*/
-    /*top: 20vh;*/
-    /*left: 2.5%;*/
     border: solid 5px #999;
     display:block;
     margin:0 auto;
+    margin-top: 5vh;
 }
 
 #kidConsent {
-    /*position: absolute;*/
     top: 20vh;
     width: 95%;
     left: 0;

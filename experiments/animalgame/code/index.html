@@ -17,14 +17,11 @@
        <script src="papaparse.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Schoolbell" rel="stylesheet">
     <meta  name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
-
-
 </head>
 
 <body>
 <div>
     <div id="landingPage">
-
         <div class="welcomeHeader">
             <img src="images/stanfordlogo.png" alt="Stanford University" id="stanfordLogo"></img>
             <p class='logo-text'>Stanford Language and Cognition Lab</p>
@@ -32,7 +29,6 @@
         <p style="font-family: Schoolbell,cursive; text-align:center; font-size:5vw;"> LET'S DRAW !!<p>
         <img src="images/drawingIcon.png" id="drawingIcon" style="width:25vw;height:auto"></img>
         <img class="imageButton startButton" src="images/play.jpg" id="startConsent"></img>
-
     </div>
 
     <div id="consentCDM" style="display:none">
@@ -98,65 +94,66 @@
 
     <div id="mainExp" style="display:none">
         <div id ="cue" style="display:none;padding:2vw;"></div>
-<!--         <div class="videoDiv" id="cueVideoDiv">
+        <div class="videoDiv" id="cueVideoDiv">
             <video id="cueVideo" class="video-js vjs-nofull vjs-fullscreen-control" preload="none" playsinline>
                 <source src="videos/love.mp4" type="video/mp4">
             </video>
-        </div> -->
+        </div>
+
 
         <div id="drawing" style="display:none">
 
-            <div id="drawingCue" style="padding:2vw;"></div>
-
-            <div class="progress offset-md-2 col-md-8" style="display:none">
+<!--             <div class="progress offset-md-2 col-md-8" style="display:none">
                 <div class="progress-bar bg-info" role="progressbar" aria-valuenow="100"
                      aria-valuemin="0" aria-valuemax="100" style="width:100%;font-family: Schoolbell,cursive">30
                 </div>
-            </div>
+            </div> -->
 
-             <canvas id="sketchpad"></canvas>
+            <canvas id="sketchpad"></canvas>
             
+            <img id ="sketch" style="display:none"></img>
             <div class="row" id="submit_div" style="width:100%;">
 
-                <div class="col-sm-2 drawingButton imageButton">
+                <!-- <div class="col-sm-2 drawingButton imageButton"> -->
+                <div class="col drawingButton imageButton">
                     <p id="keepGoing_1_txt"> Bird </p>
-                    <img class="keepGoingButton" id="keepGoing_1" src="images_photocues/bird_1.png" onclick="clickResponse(this.id)"></img>
+                    <img class="keepGoingButton" id="keepGoing_1" src="images_photocues/bird.jpg" onclick="clickResponse(this.id)"></img>
                 </div>
 
-                <div class="next-sm-2 drawingButton imageButton">
+                <!-- <div class="col-sm-2 drawingButton imageButton"> -->
+                <div class="col drawingButton imageButton">
                     <p id="keepGoing_2_txt"> Cat </p>
-                    <img class="keepGoingButton"  id="keepGoing_2" src="images_photocues/cat_2.png" onclick="clickResponse(this.id)"></img>
+                    <img class="keepGoingButton" id="keepGoing_2" src="photocues/cat.jpg" onclick="clickResponse(this.id)"></img>
                 </div>
 
-                <div class="col-sm-2 drawingButton imageButton" >
+                <!-- <div class="col-sm-2 drawingButton imageButton" > -->
+                <div class="col drawingButton imageButton">
                     <p id="keepGoing_3_txt"> Rabbit </p>
-                    <img class="keepGoingButton"  id="keepGoing_3" src="images_photocues/rabbit_1.png" onclick="clickResponse(this.id)"></img>
+                    <img class="keepGoingButton"  id="keepGoing_3" src="photocues/rabbit.jpg" onclick="clickResponse(this.id)"></img>
                 </div>
-                <div class = "col-sm-2 drawingButton imageButton">
+                <!-- <div class = "col-sm-2 drawingButton imageButton"> -->
+                <div class="col drawingButton imageButton">
                     <p id="keepGoing_4_txt"> Chair </p>
-                    <img class="keepGoingButton"  id="keepGoing_4" src="images_photocues/chair_1.png" onclick="clickResponse(this.id)"></img>
-                </div>
-                <div class = "col-sm-2 drawingButton imageButton">
-                    <p id="keepGoing_5_txt"> Bike </p>
-                    <img class="keepGoingButton"  id="keepGoing_5" src="images_photocues/bike_1.png" onclick="clickResponse(this.id)"></img>
-                </div>
-                <div class = "col-sm-2 drawingButton imageButton" >
-                    <p id="keepGoing_6_txt"> Cup </p>
-                    <img class="keepGoingButton"  id="keepGoing_6" src="images_photocues/cup_1.png" onclick="clickResponse(this.id)"></img>
-                </div>
-            </div>
-             <div class = "col-sm-2 drawingButton imageButton" class="keepGoingButton">
-                    <p id="keepGoing_7_txt"> Don't know </p>
-                    <img id="keepGoing_7" src="images/questionmark.png"></img>
-             </div>
-
-            <div id="lastTrial" class="row" style="text-align:center; margin-top:4vh;display:none">
-                <div class="col-md-4 drawingButton imageButton allDone" id="endGame" style="margin:auto">
-                    <p id="end"> End Game </p>
-                    <img src="images/stop.jpg" ></img>
+                    <img class="keepGoingButton"  id="keepGoing_4" src="photocues/dog.jpg" onclick="clickResponse(this.id)"></img>
                 </div>
             </div>
 
+            <p> </p>
+            <p> </p>
+            <p> </p>
+            <p> </p>
+
+            <!-- Don't know and end buttons -->
+            <div class="row" id="bottomRow" style="margin-top: 5vh">
+                <div class="col-sm-6 drawingButton_Small imageButton" id="endGame">
+                        <p id="end"> End Game </p>
+                        <img src="images/stop.jpg" ></img>
+                </div>
+                <div class = "col-sm-6 drawingButton_Small imageButton" class="keepGoingButton">
+                        <p id="keepGoing_7_txt"> Don't know </p>
+                        <img id="keepGoing_7" src="images/question.png"></img>
+                 </div>
+            </div>
         </div>
 
     </div>
