@@ -10,7 +10,7 @@ paper.install(window);
 socket = io.connect();
 
 // set global variables
-var curTrial=0 // global variable, trial counter : SET TO 1 FOR DEBUGGING, SHOULD BE 0
+var curTrial=1 // global variable, trial counter : SET TO 1 FOR DEBUGGING, SHOULD BE 0
 var clickedSubmit=0; // whether an image is submitted or not
 var language = "English";
 
@@ -20,12 +20,21 @@ var version ="animalgame_run_pilot";
 var sessionId= version + Date.now().toString();
 var consentPage = '#consentCDM';
 var thanksPage = "#thanksPage";
-var checkBoxAlert = "Can we use your child's drawings? If so, please click the box above to start drawing!";
+var checkBoxAlert = "Can we save your child's guesses? If so, please click the box above to start playing!";
 var ageAlert = "Please select your age group.";
+var numPracTrials = 4
+
+////Audio set up
+// set up feedback audio
+var feedback = new Audio("audio/ping.wav");
+feedback.volume = 1;
 
 // set up feedback audio
-var audio = new Audio("audio/ping.wav");
-audio.volume = 1;
+var instructions = new Audio("audio/instructions_test.wav");
+instructions.volume = 1;
+
+var sketch_instructions = new Audio("audio/bird.wav");
+sketch_instructions.volume = 1;
 
 
 // shuffling functions
@@ -58,7 +67,7 @@ function clickResponse(clicked_id){
     curr_category = stimListTest[curTrial].category
     clicked_category = temp[0].category
     if (curr_category == clicked_category){
-        audio.play();
+        feedback.play();
     } 
     saveGuessData(clicked_category) // save first!
     increaseTrial(); // save data and increase trial counter
@@ -101,7 +110,7 @@ function startGuessing(){
 // intro video before first thing happens
 function showIntroVideo(){
     var player = loadNextVideo(curTrial); // change video
-    document.getElementById("cue").innerHTML = "This game is for only one person at a time. Please draw by yourself!";
+    // document.getElementById("cue").innerHTML = "This game is for only one person at a time. Please draw by yourself!";
     $('#mainExp').fadeIn('fast');
     setTimeout(function() {playVideo(player);},1000);
 }
@@ -116,7 +125,7 @@ function playVideo(player){
             console.log('video ends and drawing starts');
             $('#cueVideoDiv').fadeOut();
             setTimeout(function(){
-                $('#cue').hide(); // fade out cue
+                // $('#cue').hide(); // fade out cue
                 player.dispose(); //dispose the old video and related eventlistener. Add a new video
                 if (curTrial==0) { // after intro
                     console.log('starting first trial')
@@ -153,9 +162,16 @@ function beginTrial(){
     //
     if (curTrial==1) {
         $('#drawing').show();
+        instructions.play() // play instructions audio
     }
+    else if (curTrial==(numPracTrials + 1)){
+        sketch_instructions.play() // play sketch instructinos audio
+    }
+    
     showNextSketch(curTrial)
-    monitorProgress(); // start the timeout function (10s)?
+    // get start of trial time; set 
+    clickedSubmit=0;
+    startTrialTime=Date.now()
     $('#mainExp').fadeIn('fast'); // fade in exp
 }
 
@@ -168,15 +184,19 @@ function showNextSketch(){
     var canvas = document.getElementById('sketchpad');
     context = canvas.getContext('2d');
 
+    // define size of img & get x/y pos for centered in canvas
+    img_width = canvas.width*.8; img_height = img_width; // show at 80% of canvas
+    x_pos = canvas.width / 2 - img_width / 2,
+    y_pos = canvas.height / 2 - img_height / 2
+
     // show sketch on  canvas only when loaded
     document.getElementById('sketch').onload = function (){
-        context.drawImage(this_image,canvas.width*.2,canvas.height*.2,canvas.width*.8,canvas.height*.8)
+        context.drawImage(this_image,x_pos,y_pos,img_width,img_height)
     }
 }
 
 function monitorProgress(){
-    clickedSubmit=0;
-    startTrialTime=Date.now()
+
     // console.log('starting monitoring')
     // $('.progress').show(); // don't show progress bar until we start monitorung
     // progress(timeLimit, timeLimit, $('.progress')); // show progress bar
@@ -240,7 +260,6 @@ function saveGuessData(clicked_category){
     socket.emit('current_data', current_data);
 }
 
-
 function setLanguage(lang){
     //If the user choose other langauges
     var filename = "language/"+lang +".json";
@@ -252,15 +271,6 @@ function setLanguage(lang){
         checkBoxAlert = data["checkBoxAlert"];
         ageAlert = data["ageAlert"];
     });
-}
-
-// experiment navigation functions
-function showConsentPage(){
-    $("#landingPage").hide();
-    $('#parentEmail').val('');
-    $('#email-form').show();
-    $('#emailSent').hide();
-    $(consentPage).fadeIn();
 }
 
 function restartExperiment() {
@@ -375,12 +385,7 @@ window.onload = function() {
 
     $('.allDone').bind('touchstart mousedown',function(e) {
         e.preventDefault()
-
         console.log('touched endExperiment  button');
-        if(clickedSubmit==0){// if the current trial has not timed out yet
-            clickedSubmit=1; // indicate that we submitted - global variable
-            increaseTrial(); // save data and increase trial counter
-        }
         $('#mainExp').hide();
         $('#drawing').hide();
         endExperiment();
@@ -450,18 +455,25 @@ window.onload = function() {
     // randomize order that the buttons appear in for different runs of the game
     categories = ['bird','dog','fish','rabbit'] // animals
     categories = shuffle(categories)
+    categories.push('dont_know') // always at end becasuse in bottom row
     buttonList = []
 
     for(var j = 0; j < (categories.length); j++){
             this_category = categories[j]
+            if (this_category=="dont_know"){
+                category_text = "Don't know"
+            }
+            else {
+                category_text = this_category
+            }
+
             this_index = j+1
             this_button_image_index = "keepGoing" + "_" + this_index
             this_button_txt_index = "keepGoing" + "_" + this_index + "_" + "txt"
             
             // Push all of the relevant info into the stimuli list; requires videos and images to be named correctly!
-            // buttonList.push({"buttonIndex": this_button_image_index, "category": this_category, "image": "images_photocues/" + this_category + "_" + getRandomInt(1, 3) + ".png"});
             buttonList.push({"buttonIndex": this_button_image_index, "category": this_category, "image": "photocues/" + this_category + ".jpg"});
-            document.getElementById(this_button_txt_index).innerHTML = this_category;
+            document.getElementById(this_button_txt_index).innerHTML = category_text;
             document.getElementById(this_button_image_index).src = buttonList[j].image;
     }
 
@@ -469,28 +481,28 @@ window.onload = function() {
     // LOAD SKETCH NAMES
     $.ajax({
         type: "GET",
-        url: "sketchNames.csv",
+        url: "balanced_sketch_paths.csv",
         dataType: "text",
         success: function(data) {
                 results = Papa.parse(data); // parse csv file
                 imgArray = new Array();
                 for (i = 1; i < results.data.length; i++) {
-                    var session_id= results.data[i][0]; //starts i at 1 to get rid of header
-                    var category = results.data[i][2];
-                    var age = results.data[i][3];
-                    var sketch_name = ['sketches/' + category + '/' +  category + '_sketch_' + age + '_' + session_id + '.png'];
-
+                    var category = results.data[i][5];
+                    var age = results.data[i][2];
+                    var session_id = results.data[i][3];
+                    var sketch_name= results.data[i][4]; //starts i at 1 to get rid of header 
+                    var sketch_name_src = 'balanced_sketches_renamed/' + sketch_name
                     imgArray.push({
-                        src: sketch_name,
+                        src: sketch_name_src,
                         category: category,
-                        age: "age" + age
+                        age: age
                     })
                 }
 
                 // SET UP TRIAL STRUCTURE
-                sketch_categories = ['rabbit'] // debugging only - will be, categories = ['bird','bike','house','hat','car','chair'] 
-                ages = ['age6','age7','age8']             // debugging only - , will be ages = ['age3','age4','age5','age6','age7','age8','age9']
-                numImagePerCat = 1; stimListTest = []
+                sketch_categories = ['bird','dog','fish','rabbit'] // debugging only 
+                ages = ['age4','age5','age6','age7','age8']             // debugging only 
+                stimListTest = []
 
                 // function to get subset of sketches based on age/category
                 function getSubset(this_category,this_age) {
@@ -501,33 +513,49 @@ window.onload = function() {
                 }
 
 
-                // get random sketch
+                // For each category / age group, select a random sketch and insert into trial structure
                 for(var j = 0; j < (sketch_categories.length); j++){
                         this_sketch_category = sketch_categories[j]
                             for (var a = 0; a < (ages.length); a++){
-                            this_age = ages[a]
-                            random_index = getRandomInt(1,numImagePerCat);
+                            this_age = ages[a] 
+                            
+                            // get subset of sketches for this age / category
                             sketch_subset = imgArray.filter(getSubset(this_sketch_category, this_age));
-                            random_sketch = sketch_subset[random_index].src;
+                            sketch_subset = shuffle(sketch_subset)
+                            random_sketch_1 = sketch_subset[0].src; // take the first random sketch
+                            random_sketch_2 = sketch_subset[1].src; // and the second
+
                             // Push all of the relevant info into the stimuli list; requires sketches to be named correctly...
-                            stimListTest.push({"age": this_age, "category": this_sketch_category, "random_index": random_index, "src": random_sketch});
+                            stimListTest.push({"age": this_age, "category": this_sketch_category, "src": random_sketch_1});
+                            stimListTest.push({"age": this_age, "category": this_sketch_category, "src": random_sketch_2});
                     }
                 } 
                 stimListTest = shuffle(stimListTest) // shuffle the order of the trials
 
-                // Now also get the practice trials
+                // Add in catch trials every 10 trials
+                for(var j = 0; j < (sketch_categories.length); j++){
+                        this_sketch_category = sketch_categories[j]
+                            random_index = getRandomInt(1,4);
+                            practice_trial_img = ['photos/' + this_sketch_category + "_" + random_index + ".png"];
+                            prac_index = (j+1)*10 // every 10th trial
+                            // Push all of the relevant info into the stimuli list; requires sketches to be named correctly...
+                            stimListTest.splice(prac_index, 0, {"age": "photo", "category": this_sketch_category, "src": practice_trial_img});
+                } 
+
+                // Now also get the practice trials and put it at beginning
                 sketch_categories = shuffle(sketch_categories) // shuffle sketch categories so in not same order every time
                 for(var j = 0; j < (sketch_categories.length); j++){
                         this_sketch_category = sketch_categories[j]
                             random_index = getRandomInt(1,4);
                             practice_trial_img = ['photos/' + this_sketch_category + "_" + random_index + ".png"];
-                            stimListTest.unshift({"age": "photo", "category": this_sketch_category, "random_index": random_index, "src": practice_trial_img});
+                            stimListTest.unshift({"age": "photo", "category": this_sketch_category, "src": practice_trial_img});
                 } 
 
-                // add in introductory video trial
+                // also add in introductory video trial
                 intro = {"category":"intro", "video": "intro.mp4","image":"images/lab_logo_stanford.png"}
                 stimListTest.unshift(intro)
-                /////
+
+                ///// make this result of ajax function
                 result = stimListTest;
             }, // success in ajax
                 error: function() {
@@ -535,6 +563,15 @@ window.onload = function() {
                 }
     }); // ajax
     
+    // start with consent page
+    $("#landingPage").hide();
+    $('#parentEmail').val('');
+    $('#email-form').show();
+    $('#emailSent').hide();
+    $(consentPage).fadeIn();
+    // }
+
+
 } // on document load
 
 

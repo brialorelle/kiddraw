@@ -319,6 +319,12 @@ button[disabled] {
     font-size:2vw
 }
 
+.allDone {
+    text-align:center;
+    font-size: 4vw;
+    font-family: Schoolbell,cursive;
+    cursor:pointer
+}
 
 #restartExp{
     margin-top:10vw;
