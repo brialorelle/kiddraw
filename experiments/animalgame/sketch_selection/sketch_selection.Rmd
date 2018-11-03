@@ -1,0 +1,105 @@
+---
+title: "AnimalGame Sketch Selection"
+author: "Bria Long"
+date: "11/2/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readr)
+library(assertthat)
+```
+
+## Get list of drawings and load exclusions
+```{r cars}
+## list all candidate drawings
+all_drawings = list.files(path='candidate_sketches', pattern = ".png$", recursive = TRUE)
+all_drawings = as.tibble(all_drawings)
+all_drawings$sketchName = all_drawings$value
+
+## loading drawings to exclude based on manual exclusions
+drawings_to_exclude = read_csv(file = 'images_to_exclude_animalgame.txt', col_names = FALSE)
+drawings_to_exclude = as.tibble(drawings_to_exclude)
+drawings_to_exclude$sketchName = drawings_to_exclude$value
+```
+
+## Filter drawings and make nice columns
+```{r}
+d <- all_drawings %>%
+  mutate(category = str_split_fixed(sketchName,'/',3)[,1]) %>%
+  mutate(age = str_split_fixed(sketchName,'/',3)[,2]) %>%
+  mutate(sketch_src = str_split_fixed(sketchName,'/',3)[,3]) %>%
+  mutate(age_check = str_split_fixed(sketch_src,'_',4)[,3]) %>%
+  mutate(category_check = str_split_fixed(sketch_src,'_',4)[,1]) %>%
+  mutate(sessionId = str_split_fixed(sketch_src,'_',4)[,4]) %>% # parse out sessionId, i.e., child
+  mutate(sessionId = str_split_fixed(sessionId,'.png',2)[1]) %>% # get rid of png
+  filter(!sketch_src %in% drawings_to_exclude$X1) 
+
+## quick checks we did ok
+# assert_that(sum(d$category_check == d$category)==length(d$value))
+assert_that(sum(d$age_check == d$age)==length(d$value))
+
+##
+num_excluded = length(all_drawings$value) - length(d$value)
+```
+
+## Randomly get subset of drawings 
+```{r}
+countSubset=0
+numPerSubSet=28
+ages = c('age4','age5','age6','age7','age8')
+categories = c('rabbit','dog','bird','fish')
+for (this_age in ages) {
+  for (this_cat in categories){
+    
+    ## filter by age/cat
+    d_subsampled <- d %>%
+      filter(category==this_cat & age==this_age) 
+    
+    ## num drawings we could get from this category
+    numDrawings = length(d_subsampled$sketchName)
+    print(numDrawings)
+    
+    ## get subsample
+    d_equal_subsampled = sample_n(d_subsampled, numPerSubSet)
+    
+    ## fill into d balanced
+    countSubset = countSubset+1
+    if (countSubset==1){ d_balanced = d_equal_subsampled
+    }
+    else {
+    d_balanced <- d_balanced %>%
+      full_join(d_equal_subsampled)
+    }
+  }
+}  
+
+## check we did ok
+assert_that((length(ages)*length(categories)*numPerSubSet)==length(d_balanced$sketchName))
+  
+```
+
+## Copy files from candidate to balanced set of sketches
+```{r}
+d_balanced$fullPath = paste('candidate_sketches/',d_balanced$value,sep="")
+balanced_sketches_dir = 'balanced_sketches' 
+dir.create('balanced_sketches')
+dir.create('balanced_sketches_renamed')
+
+file.copy(d_balanced$fullPath, balanced_sketches_dir)
+d_balanced$newSketchName = str_split_fixed(d_balanced$sketch_src," ",2)[,2]
+d_balanced$category_new = str_split_fixed(d_balanced$category," ",2)[,1]
+
+# 
+# ## get rid of stupid spaces in filename
+file.rename(from = file.path('balanced_sketches',d_balanced$sketch_src),to=file.path('balanced_sketches_renamed',d_balanced$newSketchName))
+# 
+# ## write out
+d_write <- d_balanced %>%
+  select(-value,-age_check,-category_check,-fullPath, -sketch_src, -category) %>%
+  rename(sketch_img_name = newSketchName, category=category_new)
+
+write.csv(d_write, "balanced_sketch_paths.csv")
+```

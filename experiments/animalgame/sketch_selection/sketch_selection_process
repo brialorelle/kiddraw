@@ -1,0 +1,20 @@
+
+1. Grab stimestamped database (August 2018) when we had roughly equal numbers of sketches in 4 animal categories. Render
+out all of the sketches (preprocess_museumstation.ipynb in museumstation > preprocessing)
+
+2. Go through all sketches and eliminate sketches where children are off task (liberally speaking) -- get rid of
+very very sparse drawings, drawings where dragged fingers, scribbles, drawing other items, etc. Note that more exclusions here can
+actually only hurt the hypothesis that recognizability changes with age. These are tagged in macOS with a red
+label, and then finder > search > label==red and you can copy-paste the filenames
+
+3. Come back to python/R(?) script, read in all image names
+
+4. Exclude all image names from list that are in the images_to_exclude list 
+
+5. Randomly sample 30 images per category per age group (maximum given that 8-yrs often have few drawings)
+
+6. Parse category, sessionId, age (3 combined are unique identifiers) of these selected drawings; output in csv file
+
+7. Resave selected images in a different directory so that we can sanity check what we did
+
+8. Upload selected images and .csv file to the animalgame experiment directory
