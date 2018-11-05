@@ -500,8 +500,8 @@ window.onload = function() {
                 }
 
                 // SET UP TRIAL STRUCTURE
-                sketch_categories = ['bird','dog','fish','rabbit'] // debugging only 
-                ages = ['age4','age5','age6','age7','age8']             // debugging only 
+                sketch_categories = ['bird','dog','fish','rabbit'] 
+                ages = ['age4','age5','age6','age7','age8']          
                 stimListTest = []
 
                 // function to get subset of sketches based on age/category
