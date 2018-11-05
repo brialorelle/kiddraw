@@ -45,37 +45,21 @@ function shuffle (a)
 
 $(document).ready(function() {
 
-
-$.ajax({
-    type: "GET",
-    url: "featureList_categories.csv",
-    dataType: "text",
-    success: function(data) {
-            results = Papa.parse(data); // parse csv file
-
-            //set up image names
-            cateArray = new Array();
-            for (i = 1; i < results.data.length; i++) {
-                var category= results.data[i][0]; //starts i at 1 to get rid of header
-                cateArray[i].category = category;
-
-            }
-            numTrialsExperiment = results.data.length-1;    // -1 for the header  
-
-            // set up uptake experiment slides.
-            trials = [];
-            for (i = 1; i < numTrialsExperiment+1; i++) {
+        categories = ['cat','rabbit']
+        // set up uptake experiment slides.
+        trials = [];
+        numTrialsExperiment=categories.length
+        for (i = 1; i < numTrialsExperiment+1; i++) {
             trial = {
-                thisCategory: cateArray[i].category,
+                thisCategory: categories[i],
                 slide: "featureListing",
                 behavior: "",
                 trial_number: i+1,
             }
             trials.push(trial);
-            }
-            trials=shuffle(trials);
         }
-     });
+        trials=shuffle(trials);
+
 });
 
 
