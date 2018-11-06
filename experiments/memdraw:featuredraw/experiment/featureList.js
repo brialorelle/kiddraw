@@ -45,11 +45,11 @@ function shuffle (a)
 
 $(document).ready(function() {
 
-        categories = ['cat','rabbit']
+        categories = ['cat','rabbit', 'car','bicycle']
         // set up uptake experiment slides.
         trials = [];
         numTrialsExperiment=categories.length
-        for (i = 1; i < numTrialsExperiment+1; i++) {
+        for (i = 0; i < numTrialsExperiment; i++) {
             trial = {
                 thisCategory: categories[i],
                 slide: "featureListing",
@@ -99,7 +99,7 @@ var experiment = {
         // if there is something in the response, log it
         if (input && response) {
             response_logged = true;
-            experiment.data.rating.push(response);
+            experiment.data.featureListed.push(response);
             experiment.next();
             $("#features").val(""); // clear value
             
@@ -113,7 +113,7 @@ var experiment = {
 	
 	// The work horse of the sequence - what to do on every trial.
 	next: function() {
-
+		
 		// Allow experiment to start if it's a turk worker OR if it's a test run
 		if (window.self == window.top | turk.workerId.length > 0) {
 		$("#testMessage_att").html(''); //clear test message
@@ -122,21 +122,25 @@ var experiment = {
 
 		$("#progress").attr("style","width:" +
 			 String(100 * (1 - (trials.length)/numTrialsExperiment)) + "%")
-			// Get the current trial - <code>shift()</code> removes the first element
-			// select from our scales array and stop exp after we've exhausted all the domains
-			var trial_info = trials.shift();
+		// Get the current trial - <code>shift()</code> removes the first element
+		// select from our scales array and stop exp after we've exhausted all the domains
+		var trial_info = trials.shift();
 
-			//If the current trial is undefined, call the end function.
-			if (typeof trial_info == "undefined") {
-				return experiment.debriefing();
-			}
+		//If the current trial is undefined, call the end function.
+		if (typeof trial_info == "undefined") {
+			return experiment.debriefing();
+		}
 
-			// check which trial type you're in and display correct slide
-			if (trial_info.slide == "featureListing") {
-                showSlide("featureListing"); //display slide
-                experiment.data.category.push(trial_info.thisCategory);
-                experiment.data.featureListed.push(document.getElementById("features").value);
-	    	    }
+		// check which trial type you're in and display correct slide
+		if (trial_info.slide == "featureListing") {
+			var categoryName = trial_info.thisCategory;
+			var prompt = "Think about what " +categoryName+"s look like. What makes a " 
+			+categoryName+" look like a "+categoryName
+			+ "? \nPlease list as many things you can think of in 30 seconds.";
+			document.getElementById("featurePrompt").innerText = prompt;
+            showSlide("featureListing"); //display slide
+            experiment.data.category.push(trial_info.thisCategory);
+    	    }
 		experiment.data.trial_type.push(trial_info.slide);
 		}
 	},
