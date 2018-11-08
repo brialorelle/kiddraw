@@ -45,11 +45,11 @@ function shuffle (a)
 
 $(document).ready(function() {
 
-        categories = ['cat','rabbit']
+        categories = ['cat','rabbit', 'car','bicycle']
         // set up uptake experiment slides.
         trials = [];
         numTrialsExperiment=categories.length
-        for (i = 1; i < numTrialsExperiment+1; i++) {
+        for (i = 0; i < numTrialsExperiment; i++) {
             trial = {
                 thisCategory: categories[i],
                 slide: "featureListing",
@@ -61,6 +61,49 @@ $(document).ready(function() {
         trials=shuffle(trials);
 
 });
+
+
+// for time progress bar
+var timeLimit=10;
+
+function monitorProgress(){
+    	clickedSubmit=0;
+	    console.log('starting monitoring')
+	    progress(timeLimit, timeLimit, $('.progress')); // show progress bar
+	    $('#time-progress').attr('aria-valuemax',timeLimit);
+	    // $('progress').show();
+	};
+
+function progress(timeleft, timetotal, $element) {
+    var progressBarWidth = timeleft * $element.width()/ timetotal;
+    var totalBarWidth = $element.width();
+    $element.find('#time-progress').attr("aria-valuenow", timeleft).text(timeleft)
+    $element.find('#time-progress').animate({ width: progressBarWidth }, timeleft == timetotal ? 0 : 1000, "linear");
+    console.log("totalBarWidth = "+totalBarWidth)
+    console.log("progressBarWidth = "+progressBarWidth)
+
+    console.log("width = "+$element.find('#time-progress').width())
+
+    console.log("clicked submit = " + clickedSubmit)
+    console.log("time left = " + timeleft)
+
+    if(timeleft > 0 & clickedSubmit==0) {
+        setTimeout(function() {
+            progress(timeleft - 1, timetotal, $element);
+        }, 1000);
+    }
+    else if(timeleft == 0 & clickedSubmit==0){
+        console.log("trial timed out")
+        clickedSubmit =1 
+        $element.find('#time-progress').width(totalBarWidth)
+        experiment.log_response();
+    }
+    else if (clickedSubmit==1){
+        console.log("exiting out of progress function")
+        $element.find('#time-progress').width(totalBarWidth)
+        experiment.log_response(); 
+    }
+};
 
 
 
@@ -92,27 +135,24 @@ var experiment = {
 
         var response_logged = false;
 
-        // Slider
         var input = document.getElementById("features");
         var response = input.value;
 
-        // if there is something in the response, log it
-        if (input && response) {
-            response_logged = true;
-            experiment.data.rating.push(response);
-            experiment.next();
-            $("#features").val(""); // clear value
+
+        response_logged = true;
+        experiment.data.featureListed.push(response);
+        experiment.next();
+        $("#features").val(""); // clear value
             
-        } else {
-            $("#testMessage_att").html('<font color="red">' + 
-            'Please make a response!' + 
-             '</font>');
-            
-        }
+
     },
+
 	
+
 	// The work horse of the sequence - what to do on every trial.
 	next: function() {
+
+		
 
 		// Allow experiment to start if it's a turk worker OR if it's a test run
 		if (window.self == window.top | turk.workerId.length > 0) {
@@ -120,23 +160,30 @@ var experiment = {
 		$("#testMessage_uptake").html(''); 
 
 
-		$("#progress").attr("style","width:" +
+		$("#task-progress").attr("style","width:" +
 			 String(100 * (1 - (trials.length)/numTrialsExperiment)) + "%")
-			// Get the current trial - <code>shift()</code> removes the first element
-			// select from our scales array and stop exp after we've exhausted all the domains
-			var trial_info = trials.shift();
+		// Get the current trial - <code>shift()</code> removes the first element
+		// select from our scales array and stop exp after we've exhausted all the domains
+		var trial_info = trials.shift();
 
-			//If the current trial is undefined, call the end function.
-			if (typeof trial_info == "undefined") {
-				return experiment.debriefing();
-			}
+		//If the current trial is undefined, call the end function.
+		if (typeof trial_info == "undefined") {
+			return experiment.debriefing();
+		}
 
-			// check which trial type you're in and display correct slide
-			if (trial_info.slide == "featureListing") {
-                showSlide("featureListing"); //display slide
-                experiment.data.category.push(trial_info.thisCategory);
-                experiment.data.featureListed.push(document.getElementById("features").value);
-	    	    }
+		// check which trial type you're in and display correct slide
+		if (trial_info.slide == "featureListing") {
+			var categoryName = trial_info.thisCategory;
+			var prompt = "Think about what " +categoryName+"s look like. What makes a " 
+			+categoryName+" look like a "+categoryName
+			+ "? \nPlease list as many things you can think of in 30 seconds.";
+			document.getElementById("featurePrompt").innerText = prompt;
+            showSlide("featureListing"); //display slide
+            experiment.data.category.push(trial_info.thisCategory);
+    	    
+    	    monitorProgress();
+
+    	    }
 		experiment.data.trial_type.push(trial_info.slide);
 		}
 	},
