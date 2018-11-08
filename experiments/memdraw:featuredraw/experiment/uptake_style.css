@@ -164,3 +164,37 @@ td {
     background: #4CAF50;
     cursor: pointer;
 }
+
+
+#progressBar {
+    width: 90%;
+    margin: 3vw;
+    height: 2vw;
+    background-color: #0A5F44;
+    position: absolute;
+    left: 0;
+    right:0;
+    bottom: 2%;
+}
+
+#progressBar div {
+    height: 100%;
+    text-align: right;
+    padding: 0 10px;
+    line-height: 1vw; /* same as #progressBar height if we want text middle aligned */
+    width: 0;
+    background-color: #CBEA00;
+    box-sizing: border-box;
+    left: 0;
+    right:0;
+    bottom: 2%;
+}
+
+.progress{
+    padding-left:0px;
+    padding-right:0px;
+    height: 2vw;
+    margin-bottom: 4vw;
+    font-size:2vw
+}
+
