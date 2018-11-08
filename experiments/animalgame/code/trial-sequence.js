@@ -30,10 +30,10 @@ var feedback = new Audio("audio/ping.wav");
 feedback.volume = 1;
 
 // set up feedback audio
-var instructions = new Audio("audio/instructions_test.wav");
+var instructions = new Audio("audio/tap_animal_picture.wav");
 instructions.volume = 1;
 
-var sketch_instructions = new Audio("audio/bird.wav");
+var sketch_instructions = new Audio("audio/tap_animal_drawing.wav");
 sketch_instructions.volume = 1;
 
 
