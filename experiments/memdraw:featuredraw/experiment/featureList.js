@@ -63,6 +63,46 @@ $(document).ready(function() {
 });
 
 
+// for time progress bar
+var timeLimit=5;
+
+function monitorProgress(){
+    	clickedSubmit=0;
+	    console.log('starting monitoring')
+	    progress(timeLimit, timeLimit, $('.progress')); // show progress bar
+	    $('#time-progress').attr('aria-valuemax',timeLimit);
+	    // $('progress').show();
+	};
+
+function progress(timeleft, timetotal, $element) {
+    var progressBarWidth = timeleft * $element.width()/ timetotal;
+    var totalBarWidth = $element.width();
+    $element.find('#time-progress').attr("aria-valuenow", timeleft).text(timeleft)
+    $element.find('#time-progress').animate({ width: progressBarWidth }, timeleft == timetotal ? 0 : 1000, "linear");
+
+
+    console.log("clicked submit = " + clickedSubmit)
+    console.log("time left = " + timeleft)
+
+    if(timeleft > 0 & clickedSubmit==0) {
+        setTimeout(function() {
+            progress(timeleft - 1, timetotal, $element);
+        }, 1000);
+    }
+    else if(timeleft == 0 & clickedSubmit==0){
+        console.log("trial timed out")
+        clickedSubmit =1 
+        $element.find('#time-progress').width(totalBarWidth)
+        experiment.log_response();
+    }
+    else if (clickedSubmit==1){
+        console.log("exiting out of progress function")
+        $element.find('#time-progress').width(totalBarWidth)
+        experiment.log_response(); 
+    }
+};
+
+
 
 // Show the instructions slide -- this is what we want subjects to see first.
 showSlide("instructions");
@@ -92,35 +132,32 @@ var experiment = {
 
         var response_logged = false;
 
-        // Slider
         var input = document.getElementById("features");
         var response = input.value;
 
-        // if there is something in the response, log it
-        if (input && response) {
-            response_logged = true;
-            experiment.data.featureListed.push(response);
-            experiment.next();
-            $("#features").val(""); // clear value
+
+        response_logged = true;
+        experiment.data.featureListed.push(response);
+        experiment.next();
+        $("#features").val(""); // clear value
             
-        } else {
-            $("#testMessage_att").html('<font color="red">' + 
-            'Please make a response!' + 
-             '</font>');
-            
-        }
+
     },
+
 	
+
 	// The work horse of the sequence - what to do on every trial.
 	next: function() {
+
 		
+
 		// Allow experiment to start if it's a turk worker OR if it's a test run
 		if (window.self == window.top | turk.workerId.length > 0) {
 		$("#testMessage_att").html(''); //clear test message
 		$("#testMessage_uptake").html(''); 
 
 
-		$("#progress").attr("style","width:" +
+		$("#task-progress").attr("style","width:" +
 			 String(100 * (1 - (trials.length)/numTrialsExperiment)) + "%")
 		// Get the current trial - <code>shift()</code> removes the first element
 		// select from our scales array and stop exp after we've exhausted all the domains
@@ -140,6 +177,9 @@ var experiment = {
 			document.getElementById("featurePrompt").innerText = prompt;
             showSlide("featureListing"); //display slide
             experiment.data.category.push(trial_info.thisCategory);
+    	    
+    	    monitorProgress();
+
     	    }
 		experiment.data.trial_type.push(trial_info.slide);
 		}
