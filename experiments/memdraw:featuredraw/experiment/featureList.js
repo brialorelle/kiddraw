@@ -64,7 +64,7 @@ $(document).ready(function() {
 
 
 // for time progress bar
-var timeLimit=5;
+var timeLimit=10;
 
 function monitorProgress(){
     	clickedSubmit=0;
@@ -79,7 +79,10 @@ function progress(timeleft, timetotal, $element) {
     var totalBarWidth = $element.width();
     $element.find('#time-progress').attr("aria-valuenow", timeleft).text(timeleft)
     $element.find('#time-progress').animate({ width: progressBarWidth }, timeleft == timetotal ? 0 : 1000, "linear");
+    console.log("totalBarWidth = "+totalBarWidth)
+    console.log("progressBarWidth = "+progressBarWidth)
 
+    console.log("width = "+$element.find('#time-progress').width())
 
     console.log("clicked submit = " + clickedSubmit)
     console.log("time left = " + timeleft)
