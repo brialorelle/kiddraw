@@ -99,7 +99,7 @@ var strokeThresh = 3; // each stroke needs to be at least this many pixels long 
 
 // current mode and session info
 var mode = "Bing";
-var version =mode + "_run" + "_v2"
+var version =mode + "_run" + "_v3" // ## v2: plus ruvey and instructions, few drawings, #v3 now has extra categories
 var sessionId= version + Date.now().toString();
 
 var consentPage = '#consentBing';
