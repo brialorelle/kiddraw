@@ -67,14 +67,14 @@ var stimLang = {
     "a tree": "a tree",
     "a person": "a person",
     "something you love": "something you love",
-    "bike": "a bike",
-    "bird": "a bird",
-    "cat": "a cat",
-    "key": "a key",
-    "phone": "a phone",
-    "rabbit": "a rabbit",
-    "sheep": "a sheep",
-    "train": "a train"
+    "a bike": "a bike",
+    "a bird": "a bird",
+    "a cat": "a cat",
+    "a key": "a key",
+    "a phone": "a phone",
+    "a rabbit": "a rabbit",
+    "a sheep": "a sheep",
+    "a train": "a train"
 }
 
 
