@@ -41,6 +41,38 @@ function shuffle (a)
     return o;
 }
 
+// add a new text box under the last one
+function createTextBox() {
+  	var form = document.getElementById("myForm");
+
+  	// make sure no more than 20 text boxes
+  	if (form.childNodes.length<45){
+		var input = document.createElement("input");
+		input.type = "text";
+		input.style = "width:40%";
+		var br = document.createElement("br");
+		form.appendChild(br);
+		form.appendChild(input);
+		form.appendChild(br);
+	}
+	
+}
+
+// remove all text boxes except the first one
+function deleteTextBoxes(){
+	var form = document.getElementById("myForm");
+	console.log(form.childNodes)
+	console.log(form.childNodes.length)
+	var length = form.childNodes.length
+	var i = 4;
+	for (i = length-1; i>5; i--){
+		console.log(i)
+		console.log(form.childNodes[i])
+		form.removeChild(form.childNodes[i]);
+	}
+}
+
+
 // ######################## Experiment specific functinons ############################
 
 $(document).ready(function() {
@@ -60,85 +92,7 @@ $(document).ready(function() {
         }
         trials=shuffle(trials);
 
-	// for time progress bar
-	timeLimit=10;
-	clickedSubmit=0; // define global variable
-	nextCount=0
-
-	// when page loads, bind this functino
-	$('#nextTrialButton').bind('touchstart mousedown',function (e) {
-		e.preventDefault()
-		if (isDoubleClicked($(this))){
-			console.log('double clicked')
-			return;	
-		} 
-			else {
-			console.log('not double clicked')
-			experiment.log_response();
-		}
-	});
-
 });
-
-
-function monitorProgress(){
-    	clickedSubmit=0;
-	    console.log('starting monitoring')
-		$('.progress-bar').attr('aria-valuemax',timeLimit);
-		$('.progress').show(); // don't show progress bar until we start monitorung
-	    progress(timeLimit, timeLimit, $('.progress')); // this is actually the wrapped div around the bar that has a certain, stable width
-	};
-
-function progress(timeleft, timetotal, $element) {
-    // get current and total widths; log them
-    var totalBarWidth = $element.width(); // this should never change
-    var progressBarWidth = ((timeleft/timetotal) * $element.width())
-    console.log("progressBarWidth = "+progressBarWidth + " totalBarWidth = "+totalBarWidth +  " timeleft=" + timeleft)
-    
-    // set value
-    $('.progress-bar').attr("aria-valuenow", timeleft).text(timeleft)
-    // change width
-
-    // $('.progress-bar').animate({ width: progressBarWidth }, timeleft == timetotal ? 0 : 1000, "linear");
-    $('.progress-bar').animate({ width: progressBarWidth });
-
-    
-
-    if(timeleft > 0 & clickedSubmit==0) {
-        setTimeout(function() {
-            progress(timeleft - 1, timetotal, $element);
-        }, 1000);
-    }
-    else if(timeleft == 0 & clickedSubmit==0){
-        console.log("trial timed out")
-        clickedSubmit=1 // as if we clicked submit
-        $('.progress-bar').width = totalBarWidth
-        experiment.log_response()
-    }
-    else if (clickedSubmit==1){
-        console.log("clicked next; exiting out of progress function")
-        $('.progress-bar').width = totalBarWidth
-    }
-};
-
-
-
-
-
-function isDoubleClicked(element) {
-    //if already clicked return TRUE to indicate this click is not allowed
-    if (element.data("isclicked")) return true;
-
-    //mark as clicked for 2 second
-    element.data("isclicked", true);
-    setTimeout(function () {
-        element.removeData("isclicked");
-    }, 2000);
-
-    //return FALSE to indicate this click was allowed
-    return false;
-    console.log('checked double')
-}
 
 
 
@@ -169,16 +123,27 @@ var experiment = {
     log_response: function() {
 
         var response_logged = false;
-
-        var input = document.getElementById("features");
-        var response = input.value;
+        var responses = []
+        
+        // log all responses from all text boxes
+        var inputs = document.getElementsByTagName("input");
+        for (i = 0; i<inputs.length-1;i++){
+        	responses.push(inputs[i].value)
+        }
+        console.log(responses)
 
         // if there is something in the response, log it
-        if (input && response) {
+        if (inputs && responses[0]) {
             response_logged = true;
-            experiment.data.featureListed.push(response);
+            experiment.data.featureListed.push(responses);
             experiment.next();
-            $("#features").val(""); // clear value
+
+            // clear all text box values
+	        for (i = 0; i<inputs.length-1;i++){
+	        	inputs[i].value = "";
+	        }
+
+	        deleteTextBoxes();
             
         } else {
             $("#testMessage_att").html('<font color="red">' + 
@@ -186,28 +151,18 @@ var experiment = {
              '</font>');
             
         }
-        response_logged = true;
-        experiment.data.featureListed.push(response);
-        experiment.next();
     },
-
 	
-
 	// The work horse of the sequence - what to do on every trial.
 	next: function() {
-    	nextCount=nextCount+1
-    	clickedSubmit=1  // Need to say that we clicked the next button
-    	console.log("clickedSubmit = " + clickedSubmit)
-    	console.log("nextCount = " + nextCount)
-		$('.progress').hide(); 
-
+		
 		// Allow experiment to start if it's a turk worker OR if it's a test run
 		if (window.self == window.top | turk.workerId.length > 0) {
 		$("#testMessage_att").html(''); //clear test message
 		$("#testMessage_uptake").html(''); 
 
 
-		$("#task-progress").attr("style","width:" +
+		$("#progress").attr("style","width:" +
 			 String(100 * (1 - (trials.length)/numTrialsExperiment)) + "%")
 		// Get the current trial - <code>shift()</code> removes the first element
 		// select from our scales array and stop exp after we've exhausted all the domains
@@ -220,28 +175,13 @@ var experiment = {
 
 		// check which trial type you're in and display correct slide
 		if (trial_info.slide == "featureListing") {
-			// push data
-			experiment.data.category.push(trial_info.thisCategory);
-			// set up experiment slide
 			var categoryName = trial_info.thisCategory;
 			var prompt = "Think about what " +categoryName+"s look like. What makes a " 
 			+categoryName+" look like a "+categoryName
 			+ "? \nPlease list as many things you can think of in 30 seconds.";
-			
 			document.getElementById("featurePrompt").innerText = prompt;
-          	
-          	// reset bar width just in case
-          	totalBarWidth=$('.progress').width()
-	        $('.progress-bar').width(totalBarWidth)
-
-          	// wait 1 second before changing cue  
-	        setTimeout(function() {
-
-	            showSlide("featureListing"); //display slide
-	            monitorProgress();
-	        }, 1000);
-            
-    	  
+            showSlide("featureListing"); //display slide
+            experiment.data.category.push(trial_info.thisCategory);
     	    }
 		experiment.data.trial_type.push(trial_info.slide);
 		}
@@ -258,5 +198,4 @@ var experiment = {
 		experiment.end();
 	}
 }
-
 
