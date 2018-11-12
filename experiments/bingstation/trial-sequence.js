@@ -32,12 +32,25 @@ var stimListTest = [{"category": "a boat", "video": "boat.mp4louder.mp4"},
     {"category": "a tree", "video": "tree.mp4louder.mp4"},
     {"category": "a person", "video": "person.mp4louder.mp4"} ]
 
+var stimListTest_Round2 = [{"category": "a bike", "video": "bike.mp4"},
+    {"category": "a bird", "video": "bird.mp4"},
+    {"category": "a cat", "video": "cat.mp4"},
+    {"category": "a key", "video": "key.mp4"},
+    {"category": "a phone", "video": "phone.mp4"},
+    {"category": "a rabbit", "video": "rabbit.mp4"},
+    {"category": "a sheep", "video": "sheep.mp4"},
+    {"category": "a train", "video": "train.mp4"} ]
+
+
+var stimListTest_Round2 = shuffle(stimListTest_Round2)
 var stimListTest = shuffle(stimListTest)
-stimListTest.push(lastTrial)
 stimListTest.unshift(firstTrial)
 stimListTest.unshift(trace2)
 stimListTest.unshift(trace1)
 stimListTest.unshift(intro)
+// add both stim lists together
+stimListTest = stimListTest.concat(stimListTest_Round2)
+
 
 var curTrial=0 // global variable, trial counter
 var maxTrials = stimListTest.length; //
@@ -53,7 +66,19 @@ var stimLang = {
     "a cup": "a cup",
     "a tree": "a tree",
     "a person": "a person",
-    "something you love": "something you love"}
+    "something you love": "something you love",
+    "bike": "a bike",
+    "bird": "a bird",
+    "cat": "a cat",
+    "key": "a key",
+    "phone": "a phone",
+    "rabbit": "a rabbit",
+    "sheep": "a sheep",
+    "train": "a train"
+}
+
+
+
 var cuesLang = {
     "trace": "Can you trace the ",
     "copy": "Can you copy ",
