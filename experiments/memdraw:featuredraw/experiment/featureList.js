@@ -49,8 +49,8 @@ function createTextBox() {
   	if (form.childNodes.length<45){
 		var input = document.createElement("input");
 		input.type = "text";
-		input.style = "width:40%";
-		var br = document.createElement("br");
+		input.style = "width:16%";
+		var br = document.createElement("p");
 		form.appendChild(br);
 		form.appendChild(input);
 		form.appendChild(br);
@@ -61,13 +61,9 @@ function createTextBox() {
 // remove all text boxes except the first one
 function deleteTextBoxes(){
 	var form = document.getElementById("myForm");
-	console.log(form.childNodes)
-	console.log(form.childNodes.length)
 	var length = form.childNodes.length
 	var i = 4;
 	for (i = length-1; i>5; i--){
-		console.log(i)
-		console.log(form.childNodes[i])
 		form.removeChild(form.childNodes[i]);
 	}
 }
@@ -130,10 +126,17 @@ var experiment = {
         for (i = 0; i<inputs.length-1;i++){
         	responses.push(inputs[i].value)
         }
-        console.log(responses)
+
+        var noEmptyResponses = true;
+        for (i = 0; i<responses.length;i++){
+        	if(responses[i]=="")
+        	{
+        		noEmptyResponses=false
+        	}
+        }
 
         // if there is something in the response, log it
-        if (inputs && responses[0]) {
+        if (inputs && noEmptyResponses) {
             response_logged = true;
             experiment.data.featureListed.push(responses);
             experiment.next();
@@ -178,7 +181,7 @@ var experiment = {
 			var categoryName = trial_info.thisCategory;
 			var prompt = "Think about what " +categoryName+"s look like. What makes a " 
 			+categoryName+" look like a "+categoryName
-			+ "? \nPlease list as many things you can think of in 30 seconds.";
+			+ "? \nPlease list each feature in a new text box.";
 			document.getElementById("featurePrompt").innerText = prompt;
             showSlide("featureListing"); //display slide
             experiment.data.category.push(trial_info.thisCategory);

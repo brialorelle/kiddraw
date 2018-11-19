@@ -44,8 +44,8 @@ button {
   border-top: 1px solid #e0e0e0;
   border-left: 1px solid #e0e0e0;
   margin: 10px;
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-left: 2px;
+  padding-right: 2px;
   height: 29px;
   min-width: 70px;
 }
@@ -196,5 +196,10 @@ td {
     height: 2vw;
     margin-bottom: 4vw;
     font-size:2vw
+}
+
+#myform{
+  position: relative;
+  left: 38vw;
 }
 
