@@ -1,0 +1,254 @@
+---
+title: "MuseumStation Preprocessing"
+author: "Bria Long"
+date: "11/2/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readr)
+library(assertthat)
+library(knitr)
+```
+
+## List all of the drawings in the rendered dataset 
+```{r}
+all_drawings = list.files(path='sketches_full_dataset', pattern = ".png$", recursive = TRUE)
+all_drawings = as.tibble(all_drawings)
+all_drawings$sketchName = all_drawings$value
+```
+
+## Load csvs with descriptives
+```{r}
+## We have slightly less than number of images in folder because it lost connection before finishing writing out the final csv file; only analyzing drawings in csv for now (number of actual all drawings changes every day since still getting data!)
+descriptives_v4 = read_csv(file = 'sketches_descriptives/MuseumStation_AllDescriptives_7200_images_cdm_run_v4.csv', col_names = TRUE)%>%
+  mutate(fileNameShort = str_split_fixed(filename,"/",11)[,11])
+
+descriptives = read_csv(file = 'sketches_descriptives/MuseumStation_AllDescriptives_20780_images_final_cdm_run_v3.csv', col_names = TRUE) %>%
+  mutate(fileNameShort = str_split_fixed(filename,"/",11)[,11]) %>%
+  mutate(draw_duration_new = as.numeric(draw_duration_new)) %>%
+  full_join(descriptives_v4)
+```
+
+## Load manual exclusions from previous filtering (incomplete)
+```{r}
+## loading drawings to exclude based on manual exclusions
+drawings_to_exclude = read_csv(file = 'images_to_exclude/images_to_exclude.txt', col_names = FALSE)
+drawings_to_exclude = as.tibble(drawings_to_exclude)
+drawings_to_exclude$fileNameShort = drawings_to_exclude$X1
+```
+
+## Filter those drawings and make nicer columns
+```{r}
+# filter out manually excluded drawings
+descriptives_filtered_v1 <- descriptives %>%
+  filter(!fileNameShort %in% drawings_to_exclude$X1) 
+
+# only consider image paths with descriptives and that weren't filetered
+filtered_drawing_paths <- all_drawings %>% 
+  mutate(fileNameShort = str_split_fixed(sketchName,'/',2)[,2]) %>%
+  filter(fileNameShort %in% descriptives$fileNameShort) %>%
+  mutate(fullPath = paste("sketches_full_dataset/",sketchName,sep="")) %>%
+  select(-value,-sketchName) 
+
+descriptives_filtered_v2 <- descriptives_filtered_v1 %>%
+  left_join(filtered_drawing_paths)
+
+```
+## Filtering pass 1:
+### Grab images with weird intensities and save them out (won't actually run this)
+```{r eval=FALSE}
+strokes_thres = quantile(descriptives_filtered_v2$num_strokes,.95)
+light_thres = quantile(descriptives_filtered_v2$mean_intensity,.05)
+dark_thres = quantile(descriptives_filtered_v2$mean_intensity,.95)
+
+dark_drawings <- descriptives_filtered_v2 %>%
+  filter(mean_intensity > dark_thres) 
+  
+almost_blank <- descriptives_filtered_v2 %>%
+  filter(mean_intensity < light_thres)
+
+dark_sketches_dir = 'maybe_exclude_dark_sketches' 
+light_sketches_dir = 'maybe_exclude_light_sketches' 
+
+# dir.create(dark_sketches_dir)
+# dir.create(light_sketches_dir)
+# 
+# file.copy(dark_drawings$fullPath, dark_sketches_dir)
+# file.copy(almost_blank$fullPath, light_sketches_dir)
+```
+
+### After manually going through drawings and making new csv file, exclude those drawings
+```{r}
+## loading drawings to exclude based on manual exclusions
+drawings_to_exclude_2 = read_csv(file = 'images_to_exclude/images_to_exclude_scribbles_dark_light.txt', col_names = FALSE)
+drawings_to_exclude_2 = as.tibble(drawings_to_exclude_2)
+
+## copy all drawings into one directory
+descriptives_filtered_v3 <- descriptives_filtered_v2 %>%
+  filter(!fileNameShort %in% drawings_to_exclude_2$X1) 
+
+# filtered_sketches_dir = 'filtered_sketches'
+# dir.create(filtered_sketches_dir)
+# file.copy(descriptives_full_filtered$fullPath, filtered_sketches_dir)
+
+```
+
+```{r}
+## loading drawings to exclude based on manual exclusions based on rest of dataset
+drawings_to_exclude_3 = read_csv(file = 'images_to_exclude/images_to_exclude_manual.txt', col_names = FALSE)
+drawings_to_exclude_3 = as.tibble(drawings_to_exclude_3)
+```
+### Exclude last round and clean up datasets
+```{r}
+## Clean up -- exclude practice categories, recode age as numeric, make filenames w/o spaces
+practice_categories = c('shape','this circle','square','this square','something you love')
+extra_prompt = c('something you love')
+
+# clean up dataset and filter out manual exclusions
+descriptives_filtered_v4 <- descriptives_filtered_v3 %>%
+  filter(!fileNameShort %in% drawings_to_exclude_3$X1) %>%
+  mutate(age_numeric = as.numeric(str_split_fixed(age,'age',2)[,2])) %>%
+  mutate(fileNameShortNew = str_split_fixed(fileNameShort," ",2)[,2]) %>%
+  mutate(version = as.numeric(is.na(draw_duration_new))) 
+
+# for object drawing trials
+descriptives_full_filtered <- descriptives_filtered_v4 %>%
+  filter(!category %in% practice_categories) %>%
+  filter(!category %in% extra_prompt) 
+
+## now only get practice trials for people who made it into the full dataset
+obj_session_ids = unique(descriptives_full_filtered$session_id)
+practice_shapes_filtered <- descriptives_filtered_v4 %>%
+  filter(category %in% practice_categories) %>%
+  filter(!category %in% extra_prompt) %>%
+  filter(session_id %in% obj_session_ids)
+
+# save output csvs
+dir.create('dataset_nov19/output-csvs')
+write.csv(practice_shapes_filtered, "dataset_nov19/output-csvs/practice_shapes_filtered_nov19.csv")
+write.csv(descriptives_full_filtered, "dataset_nov19/output-csvs/cdm_descriptives_nov19_filtered.csv")
+```
+
+### Render out new copies of filtered datasets
+```{r}
+## Render out new copy of practice shapes
+pracImagesDir = 'dataset_nov19/practice_shapes_filtered'
+dir.create(pracImagesDir)
+file.copy(practice_shapes_filtered$fullPath, pracImagesDir)
+
+## Render out new copy of filtered dataset / rename shapes
+dir.create('dataset_nov19/sketches_filtered_copy')
+dir.create('dataset_nov19/sketches_filtered_renamed')
+file.copy(from = descriptives_full_filtered$fullPath, to = 'dataset_nov19/sketches_filtered_copy')
+file.rename(from = file.path('dataset_nov19/sketches_filtered_copy',descriptives_full_filtered$fileNameShort),to=file.path('dataset_nov19/sketches_filtered_renamed',descriptives_full_filtered$fileNameShortNew))
+
+```
+
+## How many sketches are we left with in each age / category?
+```{r}
+category_by_age <- descriptives_full_filtered %>%
+  group_by(category,age_numeric) %>%
+  summarize(countImages = n())
+
+# category_by_age <- descriptives_full_filtered %>%
+#   filter(age_numeric > 7) %>%
+#   group_by(category,age_numeric) %>%
+#   summarize(countImages = n())
+
+ggplot(category_by_age,aes(category,countImages,color=age_numeric)) +
+  geom_point()
+
+```
+
+```{r}
+all_exclusions <- drawings_to_exclude %>%
+  full_join(drawings_to_exclude_2) %>%
+  full_join(drawings_to_exclude_3) %>%
+  rename(sketchName = X1) %>%
+  mutate(category = str_split_fixed(sketchName,'_',4)[,1]) %>%
+  mutate(age = str_split_fixed(sketchName,'_',4)[,3]) %>%
+  mutate(age_numeric = str_split_fixed(age,'age',2)[,2])
+
+
+exclusion_summary <- all_exclusions %>%
+  group_by(age_numeric, category) %>%
+  summarise(numExclusions = n())
+
+
+ggplot(exclusion_summary,aes(category,numExclusions,color=age_numeric)) +
+  geom_point() + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+```
+```{r}
+
+ggplot(descriptives_full_filtered,aes(age_numeric,mean_intensity,color=category)) +
+  geom_point() +
+  facet_wrap(~category) 
+
+```
+
+```{r}
+ggplot(descriptives_full_filtered,aes(category,num_strokes,color=age_numeric)) +
+  geom_point()
+
+# look at the crazy drawings
+high_strokes <- descriptives_full_filtered %>%
+  filter(num_strokes > 500)
+
+dir.create('images_many_strokes')
+file.copy(high_strokes$fullPath, 'images_many_strokes')
+
+# make a plot to look at aveages by age /category
+high_strokes_sum <- descriptives_full_filtered %>%
+  group_by(version,category,age_numeric) %>%
+  summarise(mean_strokes = mean(num_strokes))
+
+ggplot(high_strokes_sum,aes(age_numeric,mean_strokes,color=version)) +
+  geom_point()
+
+# output some summary stats
+high_strokes_by_version <- high_strokes_sum %>%
+  group_by(version) %>%
+  summarise(mean_strokes_v = mean(mean_strokes), sd_strokes_v = sd(mean_strokes))
+
+```
+
+
+```{r}
+## all drawings
+effort_sum <- descriptives_full_filtered %>%
+  group_by(category,age_numeric) %>%
+  summarise(mean_strokes = mean(num_strokes), mean_intensity = mean(mean_intensity), draw_duration = mean(draw_duration_old))
+
+## only cdm_run_v4, which has new timing info
+effort_sum_v4 <- descriptives_full_filtered %>%
+  filter(version==0) %>%
+  group_by(category,age_numeric) %>%
+  summarise(mean_strokes = mean(num_strokes), mean_intensity = mean(mean_intensity), draw_duration = mean(draw_duration_new))
+```
+
+### Make some plots of these basic descriptives across age
+```{r}
+ggplot(effort_sum,aes(age_numeric,mean_intensity,color=category)) +
+  geom_point() +
+  facet_wrap(~category) +
+  geom_smooth(alpha=.1)
+```
+
+```{r}
+ggplot(effort_sum,aes(age_numeric,mean_strokes,color=category)) +
+  geom_point() +
+  facet_wrap(~category) +
+  geom_smooth(alpha=.1)
+```
+
+```{r}
+ggplot(effort_sum,aes(age_numeric,draw_duration,color=category)) +
+  geom_point() +
+  facet_wrap(~category) +
+  geom_smooth(alpha=.1)
+```
