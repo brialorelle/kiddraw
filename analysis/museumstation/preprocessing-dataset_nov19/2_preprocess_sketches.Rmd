@@ -23,10 +23,10 @@ all_drawings$sketchName = all_drawings$value
 ## Load csvs with descriptives
 ```{r}
 ## We have slightly less than number of images in folder because it lost connection before finishing writing out the final csv file; only analyzing drawings in csv for now (number of actual all drawings changes every day since still getting data!)
-descriptives_v4 = read_csv(file = 'sketches_descriptives/MuseumStation_AllDescriptives_7200_images_cdm_run_v4.csv', col_names = TRUE)%>%
+descriptives_v4 = read_csv(file = 'mongodb-output/MuseumStation_AllDescriptives_7200_images_cdm_run_v4.csv', col_names = TRUE)%>%
   mutate(fileNameShort = str_split_fixed(filename,"/",11)[,11])
 
-descriptives = read_csv(file = 'sketches_descriptives/MuseumStation_AllDescriptives_20780_images_final_cdm_run_v3.csv', col_names = TRUE) %>%
+descriptives = read_csv(file = 'mongodb-output/MuseumStation_AllDescriptives_20780_images_final_cdm_run_v3.csv', col_names = TRUE) %>%
   mutate(fileNameShort = str_split_fixed(filename,"/",11)[,11]) %>%
   mutate(draw_duration_new = as.numeric(draw_duration_new)) %>%
   full_join(descriptives_v4)
@@ -70,8 +70,8 @@ dark_drawings <- descriptives_filtered_v2 %>%
 almost_blank <- descriptives_filtered_v2 %>%
   filter(mean_intensity < light_thres)
 
-dark_sketches_dir = 'maybe_exclude_dark_sketches' 
-light_sketches_dir = 'maybe_exclude_light_sketches' 
+dark_sketches_dir = 'sketches_subsets_inspection/maybe_exclude_dark_sketches' 
+light_sketches_dir = 'sketches_subsets_inspection/maybe_exclude_light_sketches' 
 
 # dir.create(dark_sketches_dir)
 # dir.create(light_sketches_dir)
@@ -127,23 +127,23 @@ practice_shapes_filtered <- descriptives_filtered_v4 %>%
   filter(session_id %in% obj_session_ids)
 
 # save output csvs
-dir.create('dataset_nov19/output-csvs')
-write.csv(practice_shapes_filtered, "dataset_nov19/output-csvs/practice_shapes_filtered_nov19.csv")
-write.csv(descriptives_full_filtered, "dataset_nov19/output-csvs/cdm_descriptives_nov19_filtered.csv")
+dir.create('filtered_dataset/output-csvs')
+write.csv(practice_shapes_filtered, "filtered_dataset/output-csvs/practice_shapes_filtered_nov19.csv")
+write.csv(descriptives_full_filtered, "filtered_dataset/output-csvs/cdm_descriptives_nov19_filtered.csv")
 ```
 
 ### Render out new copies of filtered datasets
 ```{r}
 ## Render out new copy of practice shapes
-pracImagesDir = 'dataset_nov19/practice_shapes_filtered'
+pracImagesDir = 'practice_shapes_filtered'
 dir.create(pracImagesDir)
-file.copy(practice_shapes_filtered$fullPath, pracImagesDir)
+file.copy(practice_shapes_filtered$fullPath, to = file.path(pracImagesDir,practice_shapes_filtered$fileNameShort))
 
-## Render out new copy of filtered dataset / rename shapes
-dir.create('dataset_nov19/sketches_filtered_copy')
-dir.create('dataset_nov19/sketches_filtered_renamed')
-file.copy(from = descriptives_full_filtered$fullPath, to = 'dataset_nov19/sketches_filtered_copy')
-file.rename(from = file.path('dataset_nov19/sketches_filtered_copy',descriptives_full_filtered$fileNameShort),to=file.path('dataset_nov19/sketches_filtered_renamed',descriptives_full_filtered$fileNameShortNew))
+# ## Render out new copy of filtered dataset / rename shapes
+# dir.create('dataset_nov19/sketches_filtered_copy')
+# dir.create('dataset_nov19/sketches_filtered_renamed')
+# file.copy(from = descriptives_full_filtered$fullPath, to = 'dataset_nov19/sketches_filtered_copy')
+# file.rename(from = file.path('dataset_nov19/sketches_filtered_copy',descriptives_full_filtered$fileNameShort),to=file.path('dataset_nov19/sketches_filtered_renamed',descriptives_full_filtered$fileNameShortNew))
 
 ```
 
@@ -153,16 +153,14 @@ category_by_age <- descriptives_full_filtered %>%
   group_by(category,age_numeric) %>%
   summarize(countImages = n())
 
-# category_by_age <- descriptives_full_filtered %>%
-#   filter(age_numeric > 7) %>%
-#   group_by(category,age_numeric) %>%
-#   summarize(countImages = n())
-
-ggplot(category_by_age,aes(category,countImages,color=age_numeric)) +
-  geom_point()
+ggplot(category_by_age,aes(age_numeric,countImages,color=age_numeric)) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  facet_wrap(~category)
 
 ```
 
+### Look at how many exclusions we made in diferent categories / ages
 ```{r}
 all_exclusions <- drawings_to_exclude %>%
   full_join(drawings_to_exclude_2) %>%
@@ -172,35 +170,49 @@ all_exclusions <- drawings_to_exclude %>%
   mutate(age = str_split_fixed(sketchName,'_',4)[,3]) %>%
   mutate(age_numeric = str_split_fixed(age,'age',2)[,2])
 
-
 exclusion_summary <- all_exclusions %>%
   group_by(age_numeric, category) %>%
   summarise(numExclusions = n())
 
-
-ggplot(exclusion_summary,aes(category,numExclusions,color=age_numeric)) +
-  geom_point() + 
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
-
-```
-```{r}
-
-ggplot(descriptives_full_filtered,aes(age_numeric,mean_intensity,color=category)) +
+ggplot(exclusion_summary,aes(age_numeric,numExclusions,color=age_numeric)) +
   geom_point() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  facet_wrap(~category)
+```
+
+### How do intensity, # of strokes, and drawing duration vary with age / category?
+```{r}
+ggplot(descriptives_full_filtered,aes(age_numeric,mean_intensity,color=category)) +
+  geom_boxplot(aes(group=age_numeric)) +
+  facet_wrap(~category) 
+```
+
+```{r}
+ggplot(descriptives_full_filtered,aes(age_numeric,draw_duration_old,color=category)) +
+  geom_boxplot(aes(group=age_numeric)) +
+  facet_wrap(~category) 
+```
+
+```{r}
+ggplot(descriptives_full_filtered,aes(age_numeric,num_strokes,color=age_numeric)) +
+  geom_boxplot(aes(group=age_numeric)) +
   facet_wrap(~category) 
 
+# now limit the y-axis so we can see without outliers 
+ggplot(descriptives_full_filtered,aes(age_numeric,num_strokes,color=age_numeric)) +
+  geom_boxplot(aes(group=age_numeric)) +
+  facet_wrap(~category) +
+  ylim(c(0, 100))
 ```
 
+#### Hm, there are some drawings with lots of strokes -- lets look at them.
 ```{r}
-ggplot(descriptives_full_filtered,aes(category,num_strokes,color=age_numeric)) +
-  geom_point()
-
 # look at the crazy drawings
 high_strokes <- descriptives_full_filtered %>%
   filter(num_strokes > 500)
 
-dir.create('images_many_strokes')
-file.copy(high_strokes$fullPath, 'images_many_strokes')
+dir.create('sketches_subsets_inspection/images_many_strokes')
+file.copy(high_strokes$fullPath, 'sketches_subsets_inspection/images_many_strokes')
 
 # make a plot to look at aveages by age /category
 high_strokes_sum <- descriptives_full_filtered %>%
@@ -214,10 +226,9 @@ ggplot(high_strokes_sum,aes(age_numeric,mean_strokes,color=version)) +
 high_strokes_by_version <- high_strokes_sum %>%
   group_by(version) %>%
   summarise(mean_strokes_v = mean(mean_strokes), sd_strokes_v = sd(mean_strokes))
-
 ```
 
-
+#### Timing info
 ```{r}
 ## all drawings
 effort_sum <- descriptives_full_filtered %>%
@@ -231,7 +242,22 @@ effort_sum_v4 <- descriptives_full_filtered %>%
   summarise(mean_strokes = mean(num_strokes), mean_intensity = mean(mean_intensity), draw_duration = mean(draw_duration_new))
 ```
 
-### Make some plots of these basic descriptives across age
+```{r}
+
+# weird <- descriptives_full_filtered %>% filter(draw_duration_old >30)
+# dir.create('sketches_subsets_inspection/long_duration')
+# file.copy(weird$fullPath, 'sketches_subsets_inspection/long_duration')
+# 
+# long_trials <- descriptives_full_filtered %>% 
+#   filter(version==0) %>%
+#   filter(trial_duration>31) 
+# 
+# dir.create('sketches_subsets_inspection/long_trial_duration')
+# file.copy(long_trials$fullPath, 'sketches_subsets_inspection/long_trial_duration')
+
+```
+
+### Make some plots of these basic descriptives across age after averaging
 ```{r}
 ggplot(effort_sum,aes(age_numeric,mean_intensity,color=category)) +
   geom_point() +
