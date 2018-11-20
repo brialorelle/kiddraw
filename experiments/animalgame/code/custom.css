@@ -21,6 +21,19 @@ button:active {
     background-color: #c9c9cx9;
 }
 
+.keepGoingButton{
+    border-radius: 50%;
+    border-style: 2px;
+}
+
+.keepGoingButton:active{
+  background: #e5e5e5;
+  -webkit-box-shadow: inset 0px 0px 5px #c1c1c1;
+     -moz-box-shadow: inset 0px 0px 5px #c1c1c1;
+          box-shadow: inset 0px 0px 5px #c1c1c1;
+   outline: none;
+}
+
 button[disabled] {
     background: url(zen-button.png);
     border: 1px solid #999;
@@ -84,6 +97,12 @@ button[disabled] {
     text-align:center;
 }
 
+.responseButton{
+    background-image: 'photocues/rabbit.jpg';
+    box-shadow: 0 0 3px gray;
+    border-radius:50%;
+}
+
 .drawingButton{
     font-family: Schoolbell,cursive;
     font-size: 3vw;
@@ -94,6 +113,9 @@ button[disabled] {
 .drawingButton>img{
     width:20vw;
     height:auto;
+    border-radius:50%;
+    border-width: 2px;
+    border-color: black;
 }
 
 .drawingButton_Small{
@@ -154,8 +176,28 @@ button[disabled] {
     border: solid 5px #999;
     display:block;
     margin:0 auto;
-    margin-top: 5vh;
+    margin-top: 3vh;
 }
+
+#stars {
+    width: 950%;
+    margin: auto;
+}
+
+.starContainer{
+
+}
+
+.smallStars {
+    width: 30%;
+    left:0;
+}
+
+.bigStars {
+    width: 40%;
+    right:0;
+}
+
 
 #kidConsent {
     top: 20vh;
@@ -286,38 +328,6 @@ button[disabled] {
 }
 
 
-#progressBar {
-    width: 90%;
-    margin: 3vw;
-    height: 2vw;
-    background-color: #0A5F44;
-    position: absolute;
-    left: 0;
-    right:0;
-    bottom: 2%;
-}
-
-#progressBar div {
-    height: 100%;
-    text-align: right;
-    padding: 0 10px;
-    line-height: 1vw; /* same as #progressBar height if we want text middle aligned */
-    width: 0;
-    background-color: #CBEA00;
-    box-sizing: border-box;
-    left: 0;
-    right:0;
-    bottom: 2%;
-
-}
-
-.progress{
-    padding-left:0px;
-    padding-right:0px;
-    height: 2vw;
-    margin-bottom: 4vw;
-    font-size:2vw
-}
 
 
 #restartExp{
@@ -397,37 +407,6 @@ button[disabled] {
   100%     {bottom:0;}
 }
 
-.nameInput{
-    width: 30vw;
-    margin: auto;
-    font-size: 4vw;
-    color: #128395;
-}
-
-.nameForm{
-    margin-top:5vw;
-    margin-top: 5vw;
-    margin-bottom: 5vw;
-}
-
-#bingName{
-    font-family: Schoolbell,cursive;
-    font-size:4vw;
-    text-align:center
-}
-
-#smile{
-    width:60vw;
-    height:auto;
-    margin:auto;
-}
-
-#bingRestart{
-    font-family: Schoolbell,cursive;
-    font-size:4vw;
-    text-align:center;
-    margin-top:5vh;
-}
 
 #langOptions{
     text-align:center;
