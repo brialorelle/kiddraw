@@ -23,6 +23,7 @@ var thanksPage = "#thanksPage";
 var checkBoxAlert = "Can we save your child's guesses? If so, please click the box above to start playing!";
 var ageAlert = "Please select your age group.";
 var numPracTrials = 4
+var correctCount = 0 
 
 ////Audio set up
 // set up feedback audio
@@ -68,6 +69,16 @@ function clickResponse(clicked_id){
     clicked_category = temp[0].category
     if (curr_category == clicked_category){
         feedback.play();
+        // and change color of border around sketchpad
+        $('#sketchpad').css({"border":"solid 5px #17a2b8"});
+        setTimeout (function(){
+            $('#sketchpad').css({"border":"solid 5px #999"});
+        },500);
+        if (curTrial>numPracTrials){
+           correctCount = correctCount + 1
+        }
+        // place stars
+        // if (correctCount%5==1)
     } 
     saveGuessData(clicked_category) // save first!
     increaseTrial(); // save data and increase trial counter
