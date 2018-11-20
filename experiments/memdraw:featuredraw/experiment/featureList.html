@@ -48,26 +48,25 @@
 <!-- Questionnaire slide 1 - Recogniton Ratings -->
 
 <div class="slide" id="featureListing">
-  <div align="center">
+  <!-- <div align="center"> -->
     <h4>
-    <p id="featurePrompt">Think about what cats look like. What makes a cat look like a cat?</p> 
+    <p id="featurePrompt" align="center">Think about what cats look like. What makes a cat look like a cat?</p> 
     </h4>
 <br>
 <form name="myForm" id="myForm" onsubmit="return validateForm()">
-    <input type="text" id="features"style="width:40%" value=""> </textarea>
+    <input type="text" id="features"style="width:16%" value=""> </textarea>
     <button type = "button" id="addBox" onclick="createTextBox()">add a new box</button>
   <br>
 </form>
     <!-- Next button and "please make a response" message -->
     <table align="center"><tr>
-      <td align="center">
-        <button type="button" id="nextButton_QualRatings" onClick="experiment.log_response()"> next</button>
-      </td> 
       <tr><td align="center">
+        <button type="button" id="nextButton_QualRatings" onClick="experiment.log_response()"> Next item</button>
+      <!-- <tr><td align="center"> -->
         <div id="testMessage_att"> </div>
       </td></tr>
     </table>
-  </div>
+  <!-- </div> -->
 </div>
 
 
