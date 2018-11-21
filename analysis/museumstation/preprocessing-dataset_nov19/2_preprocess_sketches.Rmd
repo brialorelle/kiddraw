@@ -188,6 +188,13 @@ ggplot(descriptives_full_filtered,aes(age_numeric,mean_intensity,color=category)
 ```
 
 ```{r}
+ggplot(descriptives_full_filtered,aes(age_numeric,mean_intensity,color=category)) +
+  geom_point(alpha=.2) 
+```
+
+
+
+```{r}
 ggplot(descriptives_full_filtered,aes(age_numeric,draw_duration_old,color=category)) +
   geom_boxplot(aes(group=age_numeric)) +
   facet_wrap(~category) 
