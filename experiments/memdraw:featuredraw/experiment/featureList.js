@@ -73,7 +73,8 @@ function deleteTextBoxes(){
 
 $(document).ready(function() {
 
-        categories = ['cat','rabbit', 'car','bicycle']
+        categories = ['car', 'bike', 'train', 'airplane', 'cup', 'chair', 'key', 'scissors', 'couch',
+        'dog', 'sheep', 'fish', 'rabbit', 'cat', 'bird', 'frog', 'bear', 'person']
         // set up uptake experiment slides.
         trials = [];
         numTrialsExperiment=categories.length
@@ -181,7 +182,7 @@ var experiment = {
 			var categoryName = trial_info.thisCategory;
 			var prompt = "Think about what " +categoryName+"s look like. What makes a " 
 			+categoryName+" look like a "+categoryName
-			+ "? \nPlease list each feature in a new text box.";
+			+ "?\nPlease list three or more features, and list each feature in a new text box.";
 			document.getElementById("featurePrompt").innerText = prompt;
             showSlide("featureListing"); //display slide
             experiment.data.category.push(trial_info.thisCategory);
