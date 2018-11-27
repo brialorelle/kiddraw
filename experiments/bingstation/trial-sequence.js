@@ -32,15 +32,19 @@ var stimListTest = [{"category": "a boat", "video": "boat.mp4louder.mp4"},
     {"category": "a tree", "video": "tree.mp4louder.mp4"},
     {"category": "a person", "video": "person.mp4louder.mp4"} ]
 
-var stimListTest_Round2 = [{"category": "a bike", "video": "bike.mp4"},
-    {"category": "a bird", "video": "bird.mp4"},
-    {"category": "a cat", "video": "cat.mp4"},
-    {"category": "a key", "video": "key.mp4"},
-    {"category": "a phone", "video": "phone.mp4"},
-    {"category": "a rabbit", "video": "rabbit.mp4"},
-    {"category": "a sheep", "video": "sheep.mp4"},
-    {"category": "a train", "video": "train.mp4"} ]
+// var stimListTest_Round2 = [{"category": "a bike", "video": "bike.mp4"},
+//     {"category": "a bird", "video": "bird.mp4"},
+//     {"category": "a cat", "video": "cat.mp4"},
+//     {"category": "a key", "video": "key.mp4"},
+//     {"category": "a phone", "video": "phone.mp4"},
+//     {"category": "a rabbit", "video": "rabbit.mp4"},
+//     {"category": "a sheep", "video": "sheep.mp4"},
+//     {"category": "a train", "video": "train.mp4"} ]
 
+var stimListTest_Round2 = [{"category": "a bike", "video": "bike.mp4"},
+    {"category": "a rabbit", "video": "rabbit.mp4"},
+    {"category": "a cat", "video": "cat.mp4"},
+    {"category": "a train", "video": "train.mp4"}] 
 
 var stimListTest_Round2 = shuffle(stimListTest_Round2)
 var stimListTest = shuffle(stimListTest)
@@ -99,7 +103,7 @@ var strokeThresh = 3; // each stroke needs to be at least this many pixels long 
 
 // current mode and session info
 var mode = "Bing";
-var version =mode + "_run" + "_v3" // ## v2: plus ruvey and instructions, few drawings, #v3 now has extra categories
+var version =mode + "_run" + "_v4" // ## v2: plus ruvey and instructions, few drawings, #v3 now has extra categories. #v4 has only 4 extra categories
 var sessionId= version + Date.now().toString();
 
 var consentPage = '#consentBing';
