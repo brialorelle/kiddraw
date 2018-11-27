@@ -1,0 +1,487 @@
+---
+title: "Examine LOO classification outputs (data subset)"
+author: "Bria Long"
+date: "started 11/20/2018"
+output: 
+  html_document:
+    toc: true # make table of contents
+    toc_depth: 3
+    theme: united
+    highlight: tango 
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(readr)
+library(assertthat)
+library(knitr)
+library(ggplot2)
+library(ggthemes)
+library(lme4)
+library(stringr)
+library(magick) # for making montages
+library(langcog)
+library(viridis)
+library(egg)
+```
+
+## Read in and clean up datafiles
+### Read in classification outputs (from get_classifications.py)
+```{r}
+meta <- read.csv('classification-outputs/museumstation_subset_classification.csv') %>%
+  as.tibble() %>%
+  mutate(session_id = paste('cdm_',session_ids,sep="")) %>%
+  mutate(age_numeric = ages) %>%
+  mutate(age = paste('age',ages,sep="")) %>%
+  mutate(category = target_classes) %>% 
+  mutate(category_short = str_split_fixed(category," ",2)[,2]) %>%
+  mutate(image_name = paste(category,'_sketch_', age,'_', session_id,'.png',sep="")) %>%
+  select(-X) 
+```
+
+### Merge with mongodb database outputs (stroke count, duration, etc.)
+Now should be able to look at target label probabilties for each image as a function of all of these other factors
+```{r}
+d <- read.csv('mongodb-output/MuseumStation_AllDescriptives_20780_images_final_cdm_run_v3.csv') %>%
+  as.tibble() %>%
+  left_join(meta) %>% # should join on session_id, category, age -- combination of which is unique identifier for an image
+  filter(!is.na(target_label_prob)) # if intermediate file, only look where we have data
+
+## we only have meta data for those in cdm_run_v3, and we ran some classifications on cdm_run_v2 -- so mismatch here.
+# test_meta <- meta %>%
+#   filter(!(session_id %in% mongodb_meta$session_id)) 
+```
+
+## Plot data before averaging to get a sense of the distributions
+### Target label probs for each category; dots colored by whether it was correctly classified
+```{r}
+ggplot(d, aes(age_numeric,target_label_prob, col=image_scores)) +
+  theme_few() + 
+  geom_jitter(alpha=.2, height=0, width=.3) +
+  geom_smooth(span=10, col='dark grey') + 
+  # scale_color_viridis(option="B") + 
+  theme(legend.position = "none") + 
+  facet_wrap(~category) +
+  labs(y = 'Correct label probability', x = 'Age')
+```
+
+### Plot number of strokes x probability of target class 
+```{r}
+ggplot(d, aes(num_strokes,log(target_label_prob), color=image_scores)) +
+  geom_point(alpha=.5) +
+  theme_few() + 
+  geom_smooth(method='lm') +
+  xlim(c(0,50)) + 
+  facet_wrap(~category)
+```
+
+### Plot mean intensity x probability of target class 
+```{r}
+ggplot(d, aes(mean_intensity,target_label_prob, color=image_scores)) +
+  geom_point(alpha=.5) +
+  theme_few() + 
+  geom_smooth(method='lm') +
+  facet_wrap(~category)
+```
+
+### Plot draw duration x probability of target class 
+```{r}
+ggplot(d, aes(draw_duration_old,target_label_prob, color=image_scores, names = "recognized or not")) +
+  geom_point(alpha=.5) +
+  theme_few() + 
+  geom_smooth(method='lm') +
+  facet_wrap(~category) +
+  labs(x='Time spent drawing', y='Log probability', color="correctly classified?")
+```
+
+
+
+### Intensity vs. strokes by age
+```{r}
+ggplot(d, aes(mean_intensity,num_strokes)) +
+  geom_point(alpha=.5) +
+  theme_few() + 
+  geom_smooth(method='lm') +
+  facet_wrap(~age_numeric) +
+  ylim(c(0,50)) + ## some crazy outliers here, probably scribbles we didn't catch?
+  labs(x='Ink', y='Num strokes')
+```
+
+
+
+## Compute CIs and look at trends across conditions.
+### How does classification accuracy change with age?
+```{r}
+cor_by_age <- d %>%
+  group_by(age_numeric,category) %>%
+  summarize(avg_cor = mean(image_scores)) %>%
+  group_by(age_numeric) %>%
+  multi_boot_standard(col = "avg_cor")  
+
+(cor_by_age_plot = ggplot(cor_by_age, aes(age_numeric,mean, color=age_numeric)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  theme_few() + 
+  labs(x='Age', y='Avg correct') +
+  scale_color_viridis(option="D") + 
+  theme(legend.position = "none") + 
+  geom_smooth(col='grey',span=10))
+
+ggsave('plots-nov26/cor_by_age.png',cor_by_age_plot, width = 6, height = 3)
+```
+
+### How does classification probabitlies change with age?
+```{r}
+
+prob_by_age <- d %>%
+  group_by(age_numeric,category) %>%
+  summarize(avg_prob = mean(target_label_prob)) %>%
+  group_by(age_numeric) %>%
+  multi_boot_standard(col = "avg_prob")  
+
+(prob_by_age_plot = ggplot(prob_by_age, aes(age_numeric,mean, color=age_numeric)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  theme_few() + 
+  labs(x='Age', y='Avg target probabilitiy') +
+  scale_color_viridis(option="D") + 
+  theme(legend.position = "none") + 
+  geom_smooth(col='grey',span=10))
+
+ggsave('plots-nov26/prob_by_age.png',prob_by_age_plot, width = 6, height = 3)
+
+```
+
+### How do our covariates change with age? Compute CIs and plot next to accuracy.
+```{r}
+
+draw_duration <- d %>%
+  group_by(age_numeric,category) %>%
+  summarize(avg_num_strokes = mean(num_strokes), avg_draw_duration = mean(draw_duration_old), avg_intensity = mean(mean_intensity)) %>%
+  group_by(age_numeric) %>%
+  multi_boot_standard(col = "avg_draw_duration") %>%
+  mutate(covariate = 'draw_duration')
+
+num_strokes <- d %>%
+  group_by(age_numeric,category) %>%
+  summarize(avg_num_strokes = mean(num_strokes), avg_draw_duration = mean(draw_duration_old), avg_intensity = mean(mean_intensity)) %>%
+  group_by(age_numeric) %>%
+  multi_boot_standard(col = "avg_num_strokes")  %>%
+  mutate(covariate = 'num_strokes')
+
+avg_intensity <- d %>%
+  group_by(age_numeric,category) %>%
+  summarize(avg_num_strokes = mean(num_strokes), avg_draw_duration = mean(draw_duration_old), avg_intensity = mean(mean_intensity)) %>%
+  group_by(age_numeric) %>%
+  multi_boot_standard(col = "avg_intensity")  %>%
+  mutate(covariate = 'intensity')
+
+###
+p1=ggplot(draw_duration, aes(age_numeric,mean, color=age_numeric)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  theme_few() +
+  labs(x='Age', y='Draw duration') +
+  scale_color_viridis(option="D") +
+  theme(legend.position = "none") + 
+  geom_smooth(col='grey', span = 10) 
+
+p2=ggplot(avg_intensity, aes(age_numeric,mean, color=age_numeric)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  theme_few() +
+  labs(x='Age', y='Ink used') +
+  scale_color_viridis(option="D") +
+  theme(legend.position = "none") + 
+  geom_smooth(col='grey', span = 10)  
+
+p3=ggplot(num_strokes, aes(age_numeric,mean, color=age_numeric)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  theme_few() +
+  labs(x='Age', y='Num Strokes') +
+  scale_color_viridis(option="D") +
+  theme(legend.position = "none") + 
+  geom_smooth(col='grey', span = 10)  
+
+compiledPlot = ggarrange(cor_by_age_plot,p1,p2,p3, nrow = 1)
+# dir.create('plots-nov26')
+ggsave('plots-nov26/covariates_by_age.png',compiledPlot, width = 11, height = 4)
+
+```
+
+### How do these results hold up for each category that was drawn? Examine for accuracy.
+
+```{r}
+category_by_age_scores <- d %>%
+  group_by(category,age_numeric) %>%
+  multi_boot_standard(col="image_scores")
+
+(category_by_age_scores_plot <- ggplot(category_by_age_scores, aes(age_numeric,mean, col=age_numeric)) +
+  theme_few() + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  geom_smooth(span=10, col='dark grey') + 
+  scale_color_viridis(option="D") + 
+  theme(legend.position = "none") + 
+  facet_wrap(~category) +
+  labs(y = 'Average classification accuracy', x = 'Age'))
+
+ggsave('plots-nov26/category_by_age_scores.png', category_by_age_scores_plot, width = 10, height = 8 )
+
+```
+
+### How do these results hold up for each category that was drawn? Examine for target category probabilities.
+
+```{r}
+category_by_age_probs <- d %>%
+  group_by(category,age_numeric) %>%
+  multi_boot_standard(col="target_label_prob")
+
+ggplot(category_by_age_probs, aes(age_numeric,mean, col=age_numeric)) +
+  theme_few() + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  geom_smooth(span=10, col='dark grey') + 
+  scale_color_viridis(option="D") + 
+  theme(legend.position = "none") + 
+  facet_wrap(~category) +
+  labs(y = 'Correct label probability', x = 'Age')
+```
+
+
+#### Look at increases in confidence only for drawings that were correctly classified.
+```{r}
+category_by_age_probs_cor_only <- d %>%
+  filter(image_scores == 1) %>%
+  group_by(category,age_numeric) %>%
+  multi_boot_standard(col="target_label_prob")
+
+category_by_age_probs_cor_only_plot <- ggplot(category_by_age_probs_cor_only, aes(age_numeric,mean, col=age_numeric)) +
+  theme_few() + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  geom_smooth(span=10, col='dark grey') + 
+  scale_color_viridis(option="D") + 
+  theme(legend.position = "none") + 
+  facet_wrap(~category) +
+  labs(y = 'Correct label probability', x = 'Age')
+
+ggsave('plots-nov26/category_by_age_probs_corr_only.png', category_by_age_probs_cor_only_plot, width = 10, height = 8 )
+
+```
+
+
+
+
+  
+## Inferential stats
+### Generalized linear mixed models on accuracy all covariates 
+```{r}
+mod_covariates <- glmer(image_scores ~ scale(age_numeric) +
+                          scale(draw_duration_old) +
+                          scale(mean_intensity) +
+                          scale(num_strokes) +
+                        (1|session_id) +
+                        (1|category),
+      data = d,
+      family = "binomial")
+
+kable(summary(mod_covariates)$coef, digits = 3)
+```
+
+#### Visualize predictions 
+```{r}
+predicted_df = data.frame(glmer_predictions = predict(mod_covariates, d), age=d$age_numeric, category=d$category)
+
+(predicted_accuracy <- ggplot(data = predicted_df, aes(x=age, y=glmer_predictions, col=age)) +
+  scale_color_viridis()  +
+  theme_few() + 
+  geom_jitter(alpha=.1, width=.2, height=0) + 
+  stat_smooth(col='grey', method='lm') +
+  theme(legend.position = "none") + 
+  scale_x_discrete(limits=c(2,3,4,5,6,7,8,9,10)) +
+  labs(x = 'Age', y = 'Predicted accuracy of actual category'))
+
+ggsave('plots-nov26/predicted_accuracy.png',predicted_accuracy, width = 6, height = 4 )
+
+```
+
+
+
+### Generalized linear mixed model on category probabilities with all covariates 
+```{r}
+mod_covariates_prob <- glmer(target_label_prob ~ scale(age_numeric) +
+                          scale(draw_duration_old) +
+                          scale(mean_intensity) +
+                          scale(num_strokes) +
+                        (1|session_id) +
+                        (1|category),
+      data = d)
+
+kable(summary(mod_covariates_prob)$coef, digits = 3)
+```
+
+#### Visualize predictions by age
+```{r}
+
+predicted_df = data.frame(glmer_predictions_prob = predict(mod_covariates_prob, d), age=d$age_numeric, category=d$category)
+
+## Model prediction lines overlaid on raw data fed to the model
+(predicted_probs <- ggplot(data = predicted_df, aes(x=age, y=glmer_predictions_prob, col=age)) +
+  scale_color_viridis()  +
+  theme_few() + 
+  geom_jitter(alpha=.1, width=.2, height=0) + 
+  stat_smooth(col='grey', method='lm') +
+  theme(legend.position = "none") + 
+  scale_x_discrete(limits=c(2,3,4,5,6,7,8,9,10)) +
+  labs(x = 'Age', y = 'Predicted probability of actual category'))
+
+ggsave('plots-nov26/predicted_probs.png',predicted_probs, width = 6, height = 4 )
+
+```
+
+### Run model on probabilities only when it was classified correctly
+E.g., is there an increase in confidence independent of an increase in accuracy of the classifier?
+```{r}
+d_correct <- d %>%
+  filter(image_scores == 1)
+
+mod_covariates_correct_only <- glmer(target_label_prob ~ scale(age_numeric) +
+                          scale(draw_duration_old) +
+                          scale(mean_intensity) +
+                          scale(num_strokes) +
+                        (1|session_id) +
+                        (1|category),
+      data = d_correct)
+modelOut=summary(mod_covariates_correct_only)
+kable(summary(mod_covariates_correct_only)$coef, digits = 3)
+
+```
+
+
+##Render out subsets of classifications by classification scores
+#### Set parameters
+```{r}
+### Set parameters first
+categories = unique(meta$category)
+##
+upper_thresholds=c(1,.85,.65,.45,.25,.05)
+lower_thresholds=c(.95,.80,.60,.40,.20,0)
+##
+age_thres = 0
+dir_name = 'subset_classification_examples_test'
+dir.create(dir_name)
+```
+### Render out random sample with these parameters
+```{r eval=FALSE}
+##
+for (this_category in categories){
+  dir.create(file.path(paste(dir_name,'/',this_category,sep="")))
+  thres_count=0
+  
+  for (upper in upper_thresholds) {
+    thres_count = thres_count + 1
+    lower = lower_thresholds[thres_count]
+    subset <- meta %>%
+      filter(age_numeric > age_thres) %>%
+      group_by(category) %>%
+      mutate(upper_thres = quantile(target_label_prob, upper, na.rm = TRUE)) %>%
+      mutate(lower_thres = quantile(target_label_prob, lower, na.rm = TRUE)) %>%
+      filter(category == this_category) %>%
+      filter(target_label_prob > lower_thres & target_label_prob < upper_thres) %>%
+      sample_n(2) %>%
+      mutate(image_path = paste('srcd-features/museumstation_sketches/',category,'/',image_name,sep="")) %>%
+      mutate(new_image_path = paste(dir_name,'/',this_category,'/',
+                                    round(target_label_prob,4),image_name,sep=""))
+    
+    file.copy(subset$image_path, subset$new_image_path)
+  }
+}
+
+### Make montages of these randomly sampled sketches for use in diagrams
+dir.create(paste0(dir_name,'/montages/'))
+for (this_category in categories){
+  image_read(dir(paste(dir_name, "/",this_category,sep=""), full.names = TRUE)) %>%
+  image_append(stack = FALSE) %>%
+    image_write(file.path(paste0(dir_name,"/montages/", this_category,".png")))
+}
+
+```
+#### Correct only
+```{r eval=FALSE}
+##
+age_thres = 4
+dir_name = 'subset_classification_examples_ages4_10_correct_only'
+dir.create(dir_name)
+
+##
+for (this_category in categories){
+  dir.create(file.path(paste(dir_name,'/',this_category,sep="")))
+  thres_count=0
+  
+  for (upper in upper_thresholds) {
+    thres_count = thres_count + 1
+    lower = lower_thresholds[thres_count]
+    subset <- meta %>%
+      filter(age_numeric > age_thres) %>%
+      filter(image_scores==1 ) %>%
+      group_by(category) %>%
+      mutate(upper_thres = quantile(target_label_prob, upper, na.rm = TRUE)) %>%
+      mutate(lower_thres = quantile(target_label_prob, lower, na.rm = TRUE)) %>%
+      filter(category == this_category) %>%
+      filter(target_label_prob > lower_thres & target_label_prob < upper_thres) %>%
+      sample_n(2) %>%
+      mutate(image_path = paste('srcd-features/museumstation_sketches/',category,'/',image_name,sep="")) %>%
+      mutate(new_image_path = paste(dir_name,'/',this_category,'/',
+                                    round(target_label_prob,4),image_name,sep=""))
+    
+    file.copy(subset$image_path, subset$new_image_path)
+  }
+}
+
+### Make montages of these randomly sampled sketches for use in diagrams
+dir.create(paste0(dir_name,'/montages/'))
+for (this_category in categories){
+  image_read(dir(paste(dir_name, "/",this_category,sep=""), full.names = TRUE)) %>%
+  image_append(stack = FALSE) %>%
+    image_write(file.path(paste0(dir_name,"/montages/", this_category,".png")))
+}
+
+```
+
+
+```{r include=FALSE}
+### Diffeent divisions of category probabilities... not that useful with imbalanced sets, come back to?
+
+# d$summed_probs = d$a.bike.prob + d$a.bird.prob + d$a.boat.prob + d$a.bowl.prob + d$a.car.prob + d$a.chair.prob + d$a.couch.prob + d$a.cup.prob + d$a.dog.prob + d$a.fish.prob + d$a.house.prob  + d$a.person.prob + d$a.phone.prob + d$a.rabbit.prob + d$a.tree.prob + d$an.airplane.prob
+
+# d$animate_prob =  d$a.bird.prob + d$a.dog.prob + d$a.fish.prob + d$a.rabbit.prob 
+# d$small_prob = d$a.bowl.prob + d$a.cup.prob + d$a.phone.prob
+# d$furniture_prob = d$a.chair.prob + d$a.couch.prob
+# d$vehicle_prob = d$a.boat.prob + d$a.car.prob + d$a.bike.prob + d$a.car.prob + d$an.airplane.prob
+
+# animate_list = c('a bird','a dog','a fish','a rabbit')
+# d <- d %>%
+#   mutate(is_animate = (category %in% animate_list))?
+
+# ggplot(d, aes(age_numeric,log(target_label_prob), color=image_scores)) +
+#   geom_point(alpha=.5) +
+#   theme_few() + 
+#   geom_smooth()  +
+#   facet_wrap(~category) +
+#   labs(x='Age', y='Log probability', color="correctly classified?")
+  
+# ggplot(d, aes(age_numeric,log(animate_prob), color=image_scores)) +
+#   geom_point(alpha=.5) +
+#   theme_few() +
+#   geom_boxplot(aes(groups=age_numeric)) +
+#   facet_wrap(~category) +
+#   labs(x='Age', y='Log probability', color="correctly classified?")
+# # 
+# ggplot(d, aes(age_numeric,log(vehicle_prob))) +
+#   theme_few() + 
+#   geom_boxplot(aes(group=age_numeric)) +
+#   facet_wrap(~category) +
+#   labs(x='Age', y='Log probability', color="correctly classified?")
+# 
+# ggplot(d, aes(age_numeric,log(small_prob))) +
+#   theme_few() + 
+#   geom_boxplot(aes(group=age_numeric)) +
+#   facet_wrap(~category) +
+#   labs(x='Age', y='Log probability', color="correctly classified?")
+```
+
+

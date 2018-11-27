@@ -1,0 +1,198 @@
+---
+title: "3_examine_classification_outputs"
+author: "Bria Long"
+date: "11/20/2018"
+output: 
+  html_document:
+    toc: true # make table of contents
+    toc_depth: 3
+    theme: united
+    highlight: tango 
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(readr)
+library(assertthat)
+library(knitr)
+library(ggplot2)
+library(ggthemes)
+library(lme4)
+library(stringr)
+```
+
+## Read in and clean up datafiles
+### Read in classification outputs (from get_classifications.py)
+
+```{r}
+dist <- read.csv('distinct_csvs/a person_v_a bowl_by_age.csv') %>%
+  mutate(image_name = paste(target_class_label,'_sketch_', 'age',age,'_', session_id,'.png',sep="")) %>%
+  mutate(image_path = paste('srcd-features/museumstation_sketches/',target_class_label,'/',image_name,sep=""))
+##
+dist$distinctiveness_score = dist$dist_conf-dist$dist_target
+thres = quantile(dist$distinctiveness_score,.01)
+
+least_distinct <- dist %>%
+  filter(distinctiveness_score < thres) 
+  
+least_distinct_dir='not_distinct_person_bowl'
+dir.create(least_distinct_dir)
+file.copy(least_distinct$image_path, least_distinct_dir)
+  
+# ggplot(dist, aes(age,dist_target)) +
+#   theme_few() +
+#   geom_jitter(alpha=.2, height=0, width=.2) +
+#   geom_smooth() 
+
+ggplot(dist, aes(age,dist_conf-dist_target)) +
+  theme_few() +
+  geom_jitter(alpha=.2, height=0, width=.2) +
+  geom_smooth(method = "lm")
+```
+
+
+```{r}
+dist <- read.csv('distinctiveness_try.csv')
+ggplot(dist, aes(ages,distinctiveness)) +
+  theme_few() + 
+  geom_jitter(alpha=.2, height=0, width=.2) +
+  geom_smooth() + 
+  facet_wrap(~class_labels)
+```
+
+```{r}
+meta <- read.csv('classification-outputs/museumstation_subset_classification.csv') %>%
+  as.tibble() %>%
+  mutate(session_id = paste('cdm_',session_ids,sep="")) %>%
+  mutate(age_numeric = ages) %>%
+  mutate(age = paste('age',ages,sep="")) %>%
+  mutate(category = target_classes) %>% 
+  mutate(category_short = str_split_fixed(category," ",2)[,2]) %>%
+  mutate(image_name = paste(category,'_sketch_', age,'_', session_id,'.png',sep="")) %>%
+  select(-X) 
+```
+
+### Render out best classified sketches
+```{r}
+upper_thres = quantile(meta$target_label_prob,.99, na.rm = TRUE)
+
+best_classified <- meta %>%
+  filter(target_label_prob > upper_thres) %>%
+  mutate(image_path = paste('srcd-features/museumstation_sketches/',category,'/',image_name,sep=""))
+
+high_classified_dir='scrd_subset_highly_classified'
+dir.create(high_classified_dir)
+file.copy(best_classified$image_path, high_classified_dir)
+
+```
+### Render out worst classified sketches
+```{r}
+lower_thres = quantile(meta$target_label_prob,.01, na.rm = TRUE)
+worst_classified <- meta %>%
+  filter(target_label_prob < lower_thres) %>%
+  mutate(image_path = paste('srcd-features/museumstation_sketches/',category,'/',image_name,sep=""))
+
+worst_classified_dir='scrd_subset_worst_classified'
+dir.create(worst_classified_dir)
+file.copy(worst_classified$image_path, worst_classified_dir)
+```
+
+
+### Merge with mongodb database outputs (stroke count, duration, etc.)
+Now should be able to look at target label probabilties for each image as a function of all of these other factors
+```{r}
+mongodb_meta <- read.csv('mongodb-output/MuseumStation_AllDescriptives_20780_images_final_cdm_run_v3.csv') %>%
+  as.tibble() %>%
+  left_join(meta) %>% # should join on session_id, category, age -- combination of which is unique identifier for an image
+  filter(!is.na(target_label_prob)) # if intermediate file, only look where we have data
+
+# main variable with merged data
+d<- mongodb_meta
+```
+## Basic plots 
+### age x log_probability of target class
+```{r}
+
+ggplot(d, aes(age_numeric,log(target_label_prob), color=image_scores)) +
+  geom_point(alpha=.5) +
+  theme_few() + 
+  geom_smooth() +
+  facet_wrap(~category) +
+  labs(x='Age', y='Log probability', color="correctly classified?")
+```
+
+### age x classification accuracy 
+```{r}
+ggplot(d, aes(age_numeric,image_scores)) +
+  theme_few() + 
+  geom_jitter(alpha=.2, height=0, width=.2) +
+  geom_smooth() + 
+  facet_wrap(~category)
+```
+
+### Num strokes x target_label_prob
+```{r}
+ggplot(d, aes(num_strokes,log(target_label_prob), color=image_scores)) +
+  geom_point(alpha=.5) +
+  theme_few() + 
+  geom_smooth(method='lm') +
+  facet_wrap(~category)
+```
+
+### Mean intensity x target_label_prob
+```{r}
+ggplot(d, aes(mean_intensity,log(target_label_prob), color=image_scores)) +
+  geom_point(alpha=.5) +
+  theme_few() + 
+  geom_smooth(method='lm') +
+  facet_wrap(~category)
+```
+
+### Draw duration x target_label_prob
+```{r}
+ggplot(d, aes(draw_duration_old,log(target_label_prob), color=image_scores, names = "recognized or not")) +
+  geom_point(alpha=.5) +
+  theme_few() + 
+  geom_smooth(method='lm') +
+  facet_wrap(~category) +
+  labs(x='Time spent drawing', y='Log probability', color="correctly classified?")
+```
+
+## Inferential stats
+### Generalized linear mixed models with all covariates 
+```{r}
+mod_covariates <- glmer(image_scores ~ scale(age_numeric) +
+                          scale(draw_duration_old) +
+                          scale(mean_intensity) +
+                          scale(num_strokes) +
+                        (1|session_id) +
+                        (1|category),
+      data = d,
+      family = "binomial")
+modelOut=summary(mod_covariates)
+kable(summary(mod_covariates)$coef, digits = 3)
+```
+
+```{r}
+mod_covariates <- lmer(log(target_label_prob) ~ scale(age_numeric) +
+                          scale(draw_duration_old) +
+                          scale(mean_intensity) +
+                          scale(num_strokes) +
+                        (1|session_id) +
+                        (1|category),
+      data = d)
+modelOut=summary(mod_covariates)
+kable(summary(mod_covariates)$coef, digits = 3)
+
+```
+
+### Generalized linear mixed model with all covariates *and their interactions*
+``` {r}
+# mod_covariates_age <- glmer(image_scores ~ (scale(age_numeric) + 
+#                           scale(draw_duration_old) + 
+#                           scale(num_strokes))^2 +
+#                         (1|session_id), 
+#       data = d,  
+#       family = "binomial")
+# kable(summary(mod_covariates_age)$coef, digits = 3)
+```
