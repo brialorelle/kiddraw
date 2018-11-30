@@ -16,6 +16,7 @@ library(readr)
 library(assertthat)
 library(knitr)
 library(ggplot2)
+library(reshape2)
 library(ggthemes)
 library(lme4)
 library(stringr)
@@ -27,6 +28,13 @@ library(egg)
 
 ## Read in and clean up datafiles
 ### Read in classification outputs (from get_classifications.py)
+
+```{r}
+
+double_check <- read.csv('classification-outputs/Resampled-metadata.csv')  %>%
+  as.tibble(double_check)
+```
+
 ```{r}
 meta <- read.csv('classification-outputs/museumstation_subset_classification.csv') %>%
   as.tibble() %>%
@@ -38,6 +46,48 @@ meta <- read.csv('classification-outputs/museumstation_subset_classification.csv
   mutate(image_name = paste(category,'_sketch_', age,'_', session_id,'.png',sep="")) %>%
   select(-X) 
 ```
+
+
+```{r}
+makeConfusions<- function(meta,target_age){
+  confusions <- meta %>%
+  group_by(category_short) %>%
+  filter(age_numeric == target_age ) %>%
+  summarize(bike = mean(a.bike.prob), bird = mean(a.bird.prob), boat = mean(a.boat.prob), bowl = mean(a.bowl.prob), car = mean(a.car.prob), chair = mean(a.chair.prob), couch = mean(a.couch.prob), cup = mean(a.cup.prob), dog = mean(a.dog.prob), fish = mean(a.fish.prob), house = mean(a.house.prob), person = mean(a.person.prob), phone = mean(a.phone.prob), rabbit = mean(a.rabbit.prob), tree = mean(a.tree.prob), airplane = mean(an.airplane.prob))
+ 
+confusions_melt = melt(confusions)
+confusions_melt$target_category = factor(confusions_melt$category_short, levels = c("person" ,"bird", "rabbit", "dog","fish","tree","car","bike","airplane","boat","bowl","cup","phone", "couch","chair","house"))
+
+confusions_melt$guessed_category = factor(confusions_melt$variable, levels = c("person" ,"bird", "rabbit", "dog","fish","tree","car","bike","airplane","boat","bowl","cup","phone", "couch","chair","house"))  
+
+return(confusions_melt)
+}
+```
+
+```{r}
+dir.create('plots')
+
+meta_incorrect <- meta %>%
+  filter(image_scores==1)
+
+target_ages=c(2,3,4,5,6,7,8,9,10)
+for (target_age in target_ages) {
+  this_age_confusions = makeConfusions(meta_incorrect, target_age)
+  (age_plot = ggplot(data = this_age_confusions, aes(x=guessed_category, y=target_category, fill=value)) + 
+  geom_tile() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, 
+  size = 12, hjust = 1), axis.text.y = element_text(angle = 0,
+  size = 12, hjust = 1)) + 
+  coord_fixed() + 
+  scale_fill_viridis(option="D",limits=c(0, .1))) 
+  
+  ggsave(paste0('plots','/','Age',target_age,'confusion_matrix.png'),age_plot) 
+}
+
+
+
+```
+
 
 ### Merge with mongodb database outputs (stroke count, duration, etc.)
 Now should be able to look at target label probabilties for each image as a function of all of these other factors
