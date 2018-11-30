@@ -29,8 +29,7 @@
     <button type="button" onclick="this.blur(); experiment.next();">Start</button>
 
     <p class="block-text">
-    In this survey, you'll be asked to list features of some categories. For example, for an elephant, one person might respond "big ears", "long nose", "huge feet", etc.
-    There are no correct answers for this task. Please go with your own intuition.
+    In this survey, you’ll be asked to think about what different objects or animals look like, and make a list of attributes that are characteristic of them. Each attribute should consist of a short phrase (3 words or fewer). For example, for an elephant, you might say "big ears", "long trunk", "huge feet", etc. Please list as many attributes as you can think of, being as inclusive as you can: feel free to list attributes that may be shared by many other objects/animals, as well as those that are unique to a particular object/animal. Let’s begin!
     <p class="block-text" id="legal">By answering the following questions, you are participating in a study being performed by cognitive scientists in the Stanford Department of Psychology. If you have questions about this research, please contact us at <a href="mailto://bria@stanford.edu.">bria@stanford.edu</a>.
       You must be at least 18 years old to participate. Your participation in this research is voluntary. You may decline to answer any or all of the following questions. You may decline further participation, at any time, without adverse consequences.
       Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you. Note however that we have recently been made aware that your public Amazon.com profile can be accessed via your
@@ -49,25 +48,25 @@
 <!-- Questionnaire slide 1 - Recogniton Ratings -->
 
 <div class="slide" id="featureListing">
-  <!-- <div align="center"> -->
     <h4>
     <p id="featurePrompt" align="center">Think about what cats look like. What makes a cat look like a cat?</p> 
     </h4>
 <br>
-<form name="myForm" id="myForm" onsubmit="return validateForm()">
-    <input type="text" id="features"style="width:16%" value=""> </textarea>
+<form name="myForm" id="myForm">
+    <p><input type="text" id="box1"style="width:16%" value="" class ="userResponse" maxlength=30 onchange="validateResponse()"> </textarea></p>
+    <input type="text" id="box2"style="width:16%" value="" class ="userResponse" maxlength=30 onchange="validateResponse()"> </textarea>
+    <br>
+    <input type="text" id="box3"style="width:16%" value="" class ="userResponse" maxlength=30 onchange="validateResponse()"> </textarea>
     <button type = "button" id="addBox" onclick="createTextBox()">add a new box</button>
-  <br>
+    <button type = "button" id="removeBox" onclick="removeLastTextBox()">remove last box</button>
 </form>
     <!-- Next button and "please make a response" message -->
     <table align="center"><tr>
       <tr><td align="center">
         <button type="button" id="nextButton_QualRatings" onClick="experiment.log_response()"> Next item</button>
-      <!-- <tr><td align="center"> -->
         <div id="testMessage_att"> </div>
       </td></tr>
     </table>
-  <!-- </div> -->
 </div>
 
 
