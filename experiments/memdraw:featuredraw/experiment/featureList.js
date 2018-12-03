@@ -63,12 +63,6 @@ function createTextBox() {
 		form.appendChild(br);
 		form.appendChild(input);
 
-        // var newTextBoxDiv = $(document.createElement('div')).attr("id",id);
-        // newTextBoxDiv.after().html('<input type="text" id='+id+
-        //     ' style="width:16%" value="" class = "userResponse" maxlength=30')
-        // // newTextBoxDiv.appendTo("#textBoxesGroup")
-        // form.appendChild(newTextBoxDiv);
-
 	}
 	
 }
@@ -118,7 +112,8 @@ function validateResponse() {
 
     //check every response, if contains the cue, label it as containCue
     $inputs.filter(function() { 
-        var stringArray = this.value.split(" ");
+    	var lowerCaseVal = this.value.toLowerCase();
+        var stringArray = lowerCaseVal.split(" ");
         return stringArray.includes(cateListForValidRes[cateCountForValidRes])
                                 }).addClass("containCue");
 
@@ -134,7 +129,8 @@ $(document).ready(function() {
 
         // categories = ['car', 'bike', 'train', 'airplane', 'cup', 'chair', 'key', 'scissors', 'couch',
         // 'dog', 'sheep', 'fish', 'rabbit', 'cat', 'bird', 'frog', 'bear', 'person']
-        categories =['car','bike','train', 'airplane']
+        categories =['car','bike','couch']
+        categories_dict = {'car':'cars','bike':'bikes','couch':'couches'}
         categories = shuffle(categories);
         // set up uptake experiment slides.
         trials = [];
@@ -270,9 +266,10 @@ var experiment = {
 		// check which trial type you're in and display correct slide
 		if (trial_info.slide == "featureListing") {
 			var categoryName = trial_info.thisCategory;
-			var prompt = "Think about what " +categoryName+"s look like. What makes a " 
+			var categoryNamePlural = categories_dict[trial_info.thisCategory];
+			var prompt = "Think about what " +categoryNamePlural+" look like. What makes a " 
 			+categoryName+" look like a "+categoryName
-			+ "?\nPlease list three or more features, and list each feature in a new text box.";
+			+ "?\nPlease list three or more attributes, and list each attribute in a new text box.";
 			document.getElementById("featurePrompt").innerText = prompt;
             showSlide("featureListing"); //display slide
             experiment.data.category.push(trial_info.thisCategory);
