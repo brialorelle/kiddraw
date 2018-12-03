@@ -129,6 +129,10 @@ $(document).ready(function() {
 
         // categories = ['car', 'bike', 'train', 'airplane', 'cup', 'chair', 'key', 'scissors', 'couch',
         // 'dog', 'sheep', 'fish', 'rabbit', 'cat', 'bird', 'frog', 'bear', 'person']
+        // categories_dict = {'car':'cars', 'bike':'bikes', 'train':'trains', 'airplane':'airplanes', 
+        // 'cup':'cups', 'chair':'chairs', 'key':'keys', 'scissors':'scissors', 'couch':'couches',
+        // 'dog':'dogs', 'sheep':'sheep', 'fish':'fish', 'rabbit':'rabbits', 'cat':'cats',
+        // 'bird':'birds', 'frog':'frogs', 'bear':'bears', 'person':'people'}
         categories =['car','bike','couch']
         categories_dict = {'car':'cars','bike':'bikes','couch':'couches'}
         categories = shuffle(categories);
