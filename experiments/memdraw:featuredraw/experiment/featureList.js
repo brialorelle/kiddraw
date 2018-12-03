@@ -101,12 +101,12 @@ function validateResponse() {
     
     $inputs.each(function() {   //Loop through the inputs
     
-        var v = this.value;
+        var v = this.value.toLowerCase();
         if (!v) return true; //If no value, skip this input
         
         //If this value is a duplicate, get all inputs from our list that
         //have this value, and mark them ALL as duplicates
-        if (values.includes(v)) $inputs.filter(function() { return this.value == v }).addClass("duplicate");
+        if (values.includes(v)) $inputs.filter(function() { return this.value.toLowerCase() == v }).addClass("duplicate");
         values.push(v); //Add the value to our array
     });
 
