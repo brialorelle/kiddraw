@@ -52,8 +52,7 @@ function createTextBox() {
 		var input = document.createElement("input");
 
         textBoxCounter++;
-        var id = '"'+'box'+textBoxCounter+'"';
-        input.setAttribute('id',id)
+        input.setAttribute('id','box'+textBoxCounter)
         input.setAttribute('type','text')
         input.setAttribute('style','width:16%')
         input.setAttribute('class','userResponse')
@@ -98,14 +97,12 @@ var cateListForValidRes = [];
 //modified from stack overflow
 //https://stackoverflow.com/questions/44504541/check-for-duplicate-values-in-html-input-textboxes-and-paint-the-borders-red-not
 function validateResponse() {
-    console.log("validateResponse")
     var values = [];  //Create array where we'll store values
 
     $(".duplicate").removeClass("duplicate"); //Clear all duplicates
     $(".containCue").removeClass("containCue"); //Clear all containCues
     var $inputs = $('input[class="userResponse"]'); //Store all inputs 
 
-    console.log($inputs)
     
     $inputs.each(function() {   //Loop through the inputs
     
