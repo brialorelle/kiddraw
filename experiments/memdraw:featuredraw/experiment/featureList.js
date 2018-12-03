@@ -58,6 +58,7 @@ function createTextBox() {
         input.setAttribute('class','userResponse')
         input.setAttribute('maxlength',30)
         input.setAttribute('onchange','validateResponse()')
+        input.setAttribute('autocomplete','off')
 
 		var br = document.createElement("p");
 		form.appendChild(br);
