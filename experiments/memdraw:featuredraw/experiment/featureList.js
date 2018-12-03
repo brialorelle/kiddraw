@@ -150,14 +150,20 @@ $(document).ready(function() {
         }
         trials=shuffle(trials);
 
-        
   
         for (i = 0; i < numTrialsExperiment; i++){
             cateListForValidRes.push(trials[i].thisCategory);
         }
 
+        
 });
 
+// add text box with enter key
+$(document).keypress(function(e) {
+    if(e.which == 13) {
+        createTextBox()
+    }
+});
 
 
 // Show the instructions slide -- this is what we want subjects to see first.
