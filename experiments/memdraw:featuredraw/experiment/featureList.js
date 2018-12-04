@@ -258,7 +258,7 @@ var experiment = {
 
             
         } else {
-            var warning = 'Please make a response.'
+            var warning = 'Please fill in all text boxes or remove empty boxes.'
         	if (duplicate)
         	{
                 warning = 'Please do not enter duplicate responses.' 
