@@ -211,3 +211,7 @@ td {
   box-shadow: inset 0 0 0 3px blue;
 }
 
+.userResponse{
+  border:1px solid grey;
+}
+
