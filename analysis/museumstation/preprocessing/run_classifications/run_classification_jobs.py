@@ -57,7 +57,7 @@ layer_ind = 6
 KF, KM = load_features('kid',layer_ind, dataset)
 features, labels, KM_downsampled = balance_dataset(KF,KM)
 num_iterations = get_data_splits(KM_downsampled,"leave-one-out")
-num_iterations = 1
+num_iterations = 10
 
 if __name__ == "__main__":
 	print 'Now running ...'
