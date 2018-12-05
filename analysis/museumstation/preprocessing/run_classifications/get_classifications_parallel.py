@@ -95,19 +95,19 @@ if __name__ == "__main__":
     ## get metadata - index
     indexes.append(test_index)
     test_index_numeric = test_index[0]
-    
+
     ## target label
-    target_label = KM_downsampled['label'][test_index_numeric]
+    target_label = KM_downsampled['label'].iloc[test_index_numeric]
     target_classes.append(target_label)
-    
+
     # target probability
     target_label_ind = np.where(clf.classes_==target_label)
     prob_array = probs[0,target_label_ind]
     target_label_prob.append(prob_array[0,0])
 
     # age/sessionid
-    ages.append(KM_downsampled['age'][test_index_numeric])
-    session_ids.append(KM_downsampled['session'][test_index_numeric])
+    ages.append(KM_downsampled['age'].iloc[test_index_numeric])
+    session_ids.append(KM_downsampled['session'].iloc[test_index_numeric])
 
     # print output just so we know what's happening.
     # print('loop index = {}, image score = {}'.format(test_index_numeric,this_image_score))
