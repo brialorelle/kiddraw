@@ -77,9 +77,9 @@ if __name__ == "__main__":
 		cmd_string = 'python get_classifications_parallel.py --test_index={} --layer_ind={} --dataset={}'.format(i,layer_ind,dataset)
 		print cmd_string
 
-        # count = multiprocessing.cpu_count()
-        # pool = multiprocessing.Pool(processes=count)
-        # print pool.map(work, ['ls'] * count)
+        count = multiprocessing.cpu_count()
+        pool = multiprocessing.Pool(processes=count)
+        print pool.map(work, cmd_string)
 
     	# subprocess.call(cmd_string, shell=True)
-    	thread.start_new_thread(os.system,(cmd_string,))             
+    	# thread.start_new_thread(os.system,(cmd_string,))             
