@@ -59,12 +59,12 @@ def preprocess_features(Features, Y):
     _Y = _Y.reset_index(drop=True) # reset pandas dataframe index
     return _Features, _Y
 
-def save_features(Features, Y, layer_num, cohort,spatial_avg):
+def save_features(Features, Y, layer_num, cohort,spatial_avg,dataset):
     if not os.path.exists('./features'):
         os.makedirs('./features')
     layers = ['P1','P2','P3','P4','P5','FC6','FC7']
-    np.save('/home/bria/kiddraw/data/museumstation_features/FEATURES_{}_{}_Spatial_{}.npy'.format(layers[int(layer_num)], cohort,spatial_avg), Features)
-    Y.to_csv('/home/bria/kiddraw/data/museumstation_features/METADATA_{}.csv'.format(cohort))
+    np.save('/data5/bria/kiddraw_datasets/{}/features/FEATURES_{}_{}_Spatial_{}.npy'.format(dataset,layers[int(layer_num)], cohort,spatial_avg), Features)
+    Y.to_csv('/data5/bria/kiddraw_datasets/{}/features/METADATA_{}.csv'.format(cohort))
     return layers[int(layer_num)]
 
 def convert_age(Ages):
@@ -95,7 +95,8 @@ if __name__ == "__main__":
     parser.add_argument('--cohort', help='"kid" or "adult"', default='kid')
     parser.add_argument('--spatial_avg', type=bool, help='collapse over spatial dimensions, preserving channel activation only if true', default=True)     
     parser.add_argument('--test', type=bool, help='testing only, do not save features', default=False)  
-    parser.add_argument('--ext', type=str, help='image extension type (e.g., "png")', default="png")    
+    parser.add_argument('--ext', type=str, help='image extension type (e.g., "png")', default="png")   
+    parser.add_argument('--dataset', type=str, help='dataset rendered version, e.g., rendered_111918', default="rendered_111918")    
 
     args = parser.parse_args()
     
@@ -125,5 +126,5 @@ if __name__ == "__main__":
         _Features, _Y = remove_nans(_Features, _Y) 
 
     if args.test==False:
-        layer = save_features(_Features, _Y, args.layer_ind, args.cohort,args.spatial_avg)
+        layer = save_features(_Features, _Y, args.layer_ind, args.cohort,args.spatial_avg, args.dataset)
        
