@@ -51,7 +51,7 @@ if __name__ == "__main__":
     ## get name of model and split type to get predictions for
     layer_ind = args.layer_ind
     test_index = np.asarray([args.test_index])
-
+    dataset = args.dataset
 
     ### Load features, balance dataset
     KF, KM = load_features('kid',layer_ind,dataset)
