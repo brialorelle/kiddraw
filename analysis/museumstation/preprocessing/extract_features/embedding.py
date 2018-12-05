@@ -165,12 +165,13 @@ class FeatureExtractor():
         def get_metadata_from_path(path,dataset):
 
             if self.dataset=='rendered_111918':
-                path.split('/')[-1].split('_')[0]
+                label = path.split('/')[-1].split('_')[0]
             else:
                 label = path.split('/')[-2]   
+
             if self.cohort == 'kid':
                 age = path.split('/')[-1].split('_')[2]
-                session = path.split('/')[-1].split('.')[0].split('_')[-2] + '_' + path.split('/')[-1].split('.')[0].dsplit('_')[-1]
+                session = path.split('/')[-1].split('.')[0].split('_')[-2] + '_' + path.split('/')[-1].split('.')[0].split('_')[-1]
             elif self.cohort == 'adult':
                 age = 'adult'
                 session = 'unknown'
