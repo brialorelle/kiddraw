@@ -15,8 +15,8 @@ from imblearn.under_sampling import RandomUnderSampler
 
 def load_features(cohort, layer_num,dataset):
     layers = ['P1','P2','P3','P4','P5','FC6','FC7']    
-    F = np.load('/data5/bria/kiddraw_datasets/{}}/features/FEATURES_{}_{}_Spatial_True.npy'.format(dataset,layers[layer_num],cohort))
-    M = pd.read_csv('/data5/bria/kiddraw_datasets/{}}/features/METADATA_{}.csv'.format(dataset, cohort)) 
+    F = np.load('/data5/bria/kiddraw_datasets/{}/features/FEATURES_{}_{}_Spatial_True.npy'.format(dataset,layers[layer_num],cohort))
+    M = pd.read_csv('/data5/bria/kiddraw_datasets/{}/features/METADATA_{}.csv'.format(dataset, cohort)) 
     M = M[['label','age','session']]
     return F, M
 
