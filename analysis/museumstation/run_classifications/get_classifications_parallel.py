@@ -13,10 +13,10 @@ from sklearn import linear_model, datasets, neighbors
 from imblearn.under_sampling import RandomUnderSampler
 
 
-def load_features(cohort, layer_num):
+def load_features(cohort, layer_num,dataset):
     layers = ['P1','P2','P3','P4','P5','FC6','FC7']    
-    F = np.load('srcd-features/museumstation_features/FEATURES_{}_{}_Spatial_True.npy'.format(layers[layer_num],cohort))
-    M = pd.read_csv('srcd-features/museumstation_features/METADATA_{}.csv'.format(cohort)) 
+    F = np.load('/data5/bria/kiddraw_datasets/{}}/features/FEATURES_{}_{}_Spatial_True.npy'.format(dataset,layers[layer_num],cohort))
+    M = pd.read_csv('/data5/bria/kiddraw_datasets/{}}/features/METADATA_{}.csv'.format(dataset, cohort)) 
     M = M[['label','age','session']]
     return F, M
 
@@ -41,6 +41,9 @@ if __name__ == "__main__":
                                    help='', 
                                    default='')
 
+    parser.add_argument('--dataset', type=str, 
+                                   help='which render of the dataset? defaults to rendered_080318.', 
+                                   default='rendered_080318')
 
     ##
     args = parser.parse_args()
@@ -51,7 +54,7 @@ if __name__ == "__main__":
 
 
     ### Load features, balance dataset
-    KF, KM = load_features('kid',layer_ind)
+    KF, KM = load_features('kid',layer_ind,dataset)
     X, y,KM_downsampled = balance_dataset(KF,KM)
 
     ## delete test index from test index array from 
