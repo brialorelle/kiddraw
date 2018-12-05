@@ -110,7 +110,7 @@ if __name__ == "__main__":
     
     ## extract features
     layers = ['P1','P2','P3','P4','P5','FC6','FC7']
-    extractor = FeatureExtractor(sketch_paths,layer=args.layer_ind,cohort=args.cohort,spatial_avg=args.spatial_avg)
+    extractor = FeatureExtractor(sketch_paths,layer=args.layer_ind,cohort=args.cohort,spatial_avg=args.spatial_avg, dataset=args.dataset)
     Features, Labels, Ages, Sessions = extractor.extract_feature_matrix()
     
     ## handle trials where we didn't have age information

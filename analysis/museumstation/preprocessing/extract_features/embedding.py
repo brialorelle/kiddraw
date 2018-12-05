@@ -84,7 +84,7 @@ class VGG19Embeddings(nn.Module):
         
 class FeatureExtractor():
     
-    def __init__(self,paths,layer=6, use_cuda=True, imsize=224, batch_size=64, cuda_device=0, cohort='kid',spatial_avg=True):
+    def __init__(self,paths,layer=6, use_cuda=True, imsize=224, batch_size=64, cuda_device=0, cohort='kid',spatial_avg=True, dataset='rendered_111918'):
         self.layer = layer
         self.paths = paths
         self.num_sketches = len(self.paths)
@@ -95,6 +95,7 @@ class FeatureExtractor():
         self.cuda_device = cuda_device
         self.cohort = cohort ## 'kid' if analyzing kids' drawings; 'adult' if analyzing adults' drawings
         self.spatial_avg = spatial_avg ## if true, collapse across spatial dimensions to just preserve channel activation
+        self.dataset = dataset ## if true, collapse across spatial dimensions to just preserve channel activation
         
     def extract_feature_matrix(self):
         
@@ -162,7 +163,11 @@ class FeatureExtractor():
             return vgg19  
         
         def get_metadata_from_path(path):
-            label = path.split('/')[-2]            
+
+            if self.dataset='rendered_111918':
+                path.split('/')[-1].split('_')[0]
+            else:
+                label = path.split('/')[-2]   
             if self.cohort == 'kid':
                 age = path.split('/')[-1].split('_')[2]
                 session = path.split('/')[-1].split('.')[0].split('_')[-2] + '_' + path.split('/')[-1].split('.')[0].split('_')[-1]
@@ -179,14 +184,14 @@ class FeatureExtractor():
                 session = 'unknown'
             return label, age, session        
 
-        def generator(paths, imsize=self.imsize, use_cuda=use_cuda):
+        def generator(paths, imsize=self.imsize, use_cuda=use_cuda, dataset=dataset):
             for path in paths:
                 image = load_image(path)
                 label, age, session = get_metadata_from_path(path)
                 yield (image, label, age, session)        
                                                 
         # define generator
-        generator = generator(self.paths,imsize=self.imsize,use_cuda=self.use_cuda)
+        generator = generator(self.paths,imsize=self.imsize,use_cuda=self.use_cuda, dataset=self.dataset)
         
         # initialize sketch and label matrices
         Features = []
