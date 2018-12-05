@@ -8,6 +8,14 @@ import thread
 import subprocess
 import urllib, cStringIO
 import scipy.stats as stats
+import multiprocessing
+import subprocess
+
+
+
+
+
+
 
 ## scikit learn
 import sklearn
@@ -50,6 +58,9 @@ def get_data_splits(KM,split_type):
 	# 	num_iterations = np.size(KM,0)
 	return(num_iterations)
 
+def work(cmd):
+    return subprocess.call(cmd, shell=False)
+
 ##
 # dataset = 'rendered_080318' ## srcd dataset with pre-rendered features/etc
 dataset = 'rendered_111918' ## no features yet
@@ -65,5 +76,10 @@ if __name__ == "__main__":
     	## Make CPU jobs
 		cmd_string = 'python get_classifications_parallel.py --test_index={} --layer_ind={} --dataset={}'.format(i,layer_ind,dataset)
 		print cmd_string
-    	subprocess.call(cmd_string, shell=True)
-    	# thread.start_new_thread(os.system,(cmd_string,))             
+
+        # count = multiprocessing.cpu_count()
+        # pool = multiprocessing.Pool(processes=count)
+        # print pool.map(work, ['ls'] * count)
+
+    	# subprocess.call(cmd_string, shell=True)
+    	thread.start_new_thread(os.system,(cmd_string,))             
