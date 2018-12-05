@@ -184,7 +184,7 @@ class FeatureExtractor():
                 session = 'unknown'
             return label, age, session        
 
-        def generator(paths, imsize=self.imsize, use_cuda=use_cuda, dataset=dataset):
+        def generator(paths, imsize=self.imsize, use_cuda=use_cuda, dataset=self.dataset):
             for path in paths:
                 image = load_image(path)
                 label, age, session = get_metadata_from_path(path,dataset)
