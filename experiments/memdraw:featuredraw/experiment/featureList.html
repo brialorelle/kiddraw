@@ -52,12 +52,12 @@
     <h4>
     <p id="featurePrompt" align="center">Think about what cats look like. What makes a cat look like a cat?</p> 
     </h4>
-<br>
+
 <form name="myForm" id="myForm" autocomplete="off">
-    <p><input type="text" id="box1"style="width:16%" value="" class ="userResponse" maxlength=30 onchange="validateResponse()" autocomplete="off"> </textarea></p>
-    <input type="text" id="box2"style="width:16%" value="" class ="userResponse" maxlength=30 onchange="validateResponse()" autocomplete="off"> </textarea>
+    <p><input type="text" id="box_1"style="width:16%" value="" class ="userResponse" maxlength=30 onchange="validateResponse()" autocomplete="off"> </textarea></p>
+    <input type="text" id="box_2"style="width:16%" value="" class ="userResponse" maxlength=30 onchange="validateResponse()" autocomplete="off"> </textarea>
     <br>
-    <input type="text" id="box3"style="width:16%" value="" class ="userResponse" maxlength=30 onchange="validateResponse()" autocomplete="off"> </textarea>
+    <input type="text" id="box_3"style="width:16%" value="" class ="userResponse" maxlength=30 onchange="validateResponse()" autocomplete="off"> </textarea>
     <button type = "button" id="addBox" onclick="createTextBox()">add a new box</button>
     <button type = "button" id="removeBox" onclick="removeLastTextBox()">remove last box</button>
 </form>
@@ -65,7 +65,7 @@
     <table align="center"><tr>
       <tr><td align="center">
         <button type="button" id="nextButton_QualRatings" onClick="experiment.log_response()"> Next item</button>
-        <div id="testMessage_att"> </div>
+        <div id="testMessage_att" style = "width:20vw"> </div>
       </td></tr>
     </table>
 </div>

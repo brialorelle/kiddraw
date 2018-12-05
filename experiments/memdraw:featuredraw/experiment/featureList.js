@@ -52,7 +52,7 @@ function createTextBox() {
 		var input = document.createElement("input");
 
         textBoxCounter++;
-        input.setAttribute('id','box'+textBoxCounter)
+        input.setAttribute('id','box_'+textBoxCounter)
         input.setAttribute('type','text')
         input.setAttribute('style','width:16%')
         input.setAttribute('class','userResponse')
@@ -64,26 +64,49 @@ function createTextBox() {
 		form.appendChild(br);
 		form.appendChild(input);
 
+		setEnterKey();
+
 	}
 	
 }
 
-// remove all text boxes except the first one
+// remove all text boxes except the first three
 function deleteTextBoxes(){
 	var counter = 0;
 	for (var i = textBoxCounter; i>3;i--){
-		$("#box"+i).remove();
+		removeLastTextBox()
 	}
 }
 
 // remove the last text box
 function removeLastTextBox(){
 	if (textBoxCounter > 3){
-		$("#box"+textBoxCounter).remove();
+		$("#box_"+textBoxCounter).remove();
 		textBoxCounter--;
 	}
 
 
+}
+
+// if not the last text box, 
+function setEnterKey(){
+	$('input[class="userResponse"]').keyup(function(e) {
+	    if(e.which == 13) {
+	    	var thisId = $(this).attr('id')
+	    	var nextIdNum = parseInt(thisId.split("_")[1])+1
+	    	var nextId = "#box_"+nextIdNum
+	        if (thisId==("box_"+textBoxCounter)) {
+	        	createTextBox()
+	        	console.log("if",thisId,textBoxCounter)
+	        	$(nextId).focus();
+	        }	
+	        else{
+	        	$(nextId).focus();
+	        	console.log("else",nextId,textBoxCounter)
+	        } 
+
+	    }
+	});
 }
 
 var cateCountForValidRes = 0;
@@ -159,12 +182,9 @@ $(document).ready(function() {
         
 });
 
-// add text box with enter key
-$(document).keypress(function(e) {
-    if(e.which == 13) {
-        createTextBox()
-    }
-});
+
+
+setEnterKey();
 
 
 // Show the instructions slide -- this is what we want subjects to see first.
@@ -238,7 +258,7 @@ var experiment = {
 
             
         } else {
-            var warning = 'Please make a response.'
+            var warning = 'Please fill in all text boxes or remove empty boxes.'
         	if (duplicate)
         	{
                 warning = 'Please do not enter duplicate responses.' 
@@ -280,7 +300,8 @@ var experiment = {
 			var categoryNamePlural = categories_dict[trial_info.thisCategory];
 			var prompt = "Think about what " +categoryNamePlural+" look like. What makes a " 
 			+categoryName+" look like a "+categoryName
-			+ "?\nPlease list three or more attributes, and list each attribute in a new text box.";
+			+ "?\nPlease list three or more attributes, and list each attribute in a new text box."
+			+"\n \n"+categoryNamePlural.charAt(0).toUpperCase() + categoryNamePlural.slice(1)+" have:";
 			document.getElementById("featurePrompt").innerText = prompt;
             showSlide("featureListing"); //display slide
             experiment.data.category.push(trial_info.thisCategory);
