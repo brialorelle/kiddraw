@@ -162,7 +162,7 @@ class FeatureExtractor():
 
             return vgg19  
         
-        def get_metadata_from_path(path):
+        def get_metadata_from_path(path,dataset):
 
             if self.dataset=='rendered_111918':
                 path.split('/')[-1].split('_')[0]
@@ -170,7 +170,7 @@ class FeatureExtractor():
                 label = path.split('/')[-2]   
             if self.cohort == 'kid':
                 age = path.split('/')[-1].split('_')[2]
-                session = path.split('/')[-1].split('.')[0].split('_')[-2] + '_' + path.split('/')[-1].split('.')[0].split('_')[-1]
+                session = path.split('/')[-1].split('.')[0].split('_')[-2] + '_' + path.split('/')[-1].split('.')[0].dsplit('_')[-1]
             elif self.cohort == 'adult':
                 age = 'adult'
                 session = 'unknown'
@@ -187,7 +187,7 @@ class FeatureExtractor():
         def generator(paths, imsize=self.imsize, use_cuda=use_cuda, dataset=dataset):
             for path in paths:
                 image = load_image(path)
-                label, age, session = get_metadata_from_path(path)
+                label, age, session = get_metadata_from_path(path,dataset)
                 yield (image, label, age, session)        
                                                 
         # define generator
