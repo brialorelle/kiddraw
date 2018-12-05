@@ -29,11 +29,6 @@ library(egg)
 ## Read in and clean up datafiles
 ### Read in classification outputs (from get_classifications.py)
 
-```{r}
-
-double_check <- read.csv('classification-outputs/Resampled-metadata.csv')  %>%
-  as.tibble(double_check)
-```
 
 ```{r}
 meta <- read.csv('classification-outputs/museumstation_subset_classification.csv') %>%
@@ -64,6 +59,7 @@ return(confusions_melt)
 }
 ```
 
+## Making confusion matrixes
 ```{r}
 dir.create('plots')
 
@@ -83,8 +79,6 @@ for (target_age in target_ages) {
   
   ggsave(paste0('plots','/','Age',target_age,'confusion_matrix.png'),age_plot) 
 }
-
-
 
 ```
 
@@ -170,8 +164,8 @@ cor_by_age <- d %>%
 
 (cor_by_age_plot = ggplot(cor_by_age, aes(age_numeric,mean, color=age_numeric)) +
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
-  theme_few() + 
-  labs(x='Age', y='Avg correct') +
+  theme_few(base_size = 18) + 
+  labs(x='Age', y='Average drawings recognized') +
   scale_color_viridis(option="D") + 
   theme(legend.position = "none") + 
   geom_smooth(col='grey',span=10))
@@ -202,6 +196,16 @@ ggsave('plots-nov26/prob_by_age.png',prob_by_age_plot, width = 6, height = 3)
 
 ### How do our covariates change with age? Compute CIs and plot next to accuracy.
 ```{r}
+base_size_chosen=16
+
+cor_by_age_plot_A = ggplot(cor_by_age, aes(age_numeric,mean, color=age_numeric)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  theme_few(base_size = base_size_chosen) + 
+  labs(x='Age', y='Classification accuracy') +
+  scale_color_viridis(option="D") + 
+  theme(legend.position = "none") + 
+  geom_smooth(col='grey',span=10) +
+  ggtitle('A')
 
 draw_duration <- d %>%
   group_by(age_numeric,category) %>%
@@ -227,31 +231,34 @@ avg_intensity <- d %>%
 ###
 p1=ggplot(draw_duration, aes(age_numeric,mean, color=age_numeric)) +
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
-  theme_few() +
+  theme_few(base_size = base_size_chosen) +
   labs(x='Age', y='Draw duration') +
   scale_color_viridis(option="D") +
   theme(legend.position = "none") + 
-  geom_smooth(col='grey', span = 10) 
+  geom_smooth(col='grey', span = 10) +
+  ggtitle('B')
 
 p2=ggplot(avg_intensity, aes(age_numeric,mean, color=age_numeric)) +
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
-  theme_few() +
+  theme_few(base_size = base_size_chosen) +
   labs(x='Age', y='Ink used') +
   scale_color_viridis(option="D") +
   theme(legend.position = "none") + 
-  geom_smooth(col='grey', span = 10)  
+  geom_smooth(col='grey', span = 10)  +
+  ggtitle('C')
 
 p3=ggplot(num_strokes, aes(age_numeric,mean, color=age_numeric)) +
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
-  theme_few() +
+  theme_few(base_size = base_size_chosen) +
   labs(x='Age', y='Num Strokes') +
   scale_color_viridis(option="D") +
   theme(legend.position = "none") + 
-  geom_smooth(col='grey', span = 10)  
+  geom_smooth(col='grey', span = 10)  +
+  ggtitle('D')
 
-compiledPlot = ggarrange(cor_by_age_plot,p1,p2,p3, nrow = 1)
+compiledPlot = ggarrange(cor_by_age_plot_A,p1,p2,p3, nrow = 1)
 # dir.create('plots-nov26')
-ggsave('plots-nov26/covariates_by_age.png',compiledPlot, width = 11, height = 4)
+ggsave('plots-nov26/correct_and_covariates_by_age.png',compiledPlot, width = 11, height = 4)
 
 ```
 
