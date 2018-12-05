@@ -44,7 +44,6 @@ if __name__ == "__main__":
     parser.add_argument('--dataset', type=str, 
                                    help='which render of the dataset? defaults to rendered_080318.', 
                                    default='rendered_080318')
-
     ##
     args = parser.parse_args()
 
@@ -82,16 +81,10 @@ if __name__ == "__main__":
     image_scores_2 =[]
     target_label_prob=[]
 
-
-        
     # higher tolerance and different solver for larger datasets; or else it takes foreverrrr.
     clf = linear_model.LogisticRegression(penalty='l2',C=1,tol=.1,solver='sag').fit(X_train, y_train)
         
     # scores
-    # print np.shape(X_test)
-    # print np.shape(y_test)
-    # print np.shape(X_train)
-    # print np.shape(y_train)
     this_image_score = clf.score(X_test, y_test)
     image_scores_2.append(this_image_score)
 
@@ -129,4 +122,4 @@ if __name__ == "__main__":
     image_probs_2_df.columns = clf.classes_ + " prob"
     out = pd.concat([_data,image_probs_2_df], axis=1)
 
-    out.to_csv('classification-outputs/museumstation_subset_classification_{}.csv'.format(test_index))
+    out.to_csv('classification-outputs/museumstation_subset_classification_ind_{}.csv'.format(test_index_numeric))
