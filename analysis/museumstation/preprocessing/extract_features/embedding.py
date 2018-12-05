@@ -164,7 +164,7 @@ class FeatureExtractor():
         
         def get_metadata_from_path(path):
 
-            if self.dataset='rendered_111918':
+            if self.dataset=='rendered_111918':
                 path.split('/')[-1].split('_')[0]
             else:
                 label = path.split('/')[-2]   

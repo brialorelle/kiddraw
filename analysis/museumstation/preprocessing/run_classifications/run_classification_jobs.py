@@ -51,8 +51,8 @@ def get_data_splits(KM,split_type):
 	return(num_iterations)
 
 ##
-dataset = 'rendered_080318' ## srcd dataset with pre-rendered features/etc
-# dataset = 'rendered_111918' ## no features yet
+# dataset = 'rendered_080318' ## srcd dataset with pre-rendered features/etc
+dataset = 'rendered_111918' ## no features yet
 layer_ind = 6
 KF, KM = load_features('kid',layer_ind, dataset)
 features, labels, KM_downsampled = balance_dataset(KF,KM)
