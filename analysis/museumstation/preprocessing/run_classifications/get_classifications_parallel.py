@@ -111,4 +111,4 @@ if __name__ == "__main__":
     if not os.path.exists:
         os.makedirs(args.out_path)
 
-    out.to_csv(os.path.join(out_path,'classification-outputs/museumstation_subset_classification_ind_{}.csv'.format(test_index_numeric)))
+    out.to_csv(os.path.join(args.out_path,'classification-outputs/museumstation_subset_classification_ind_{}.csv'.format(test_index_numeric)))

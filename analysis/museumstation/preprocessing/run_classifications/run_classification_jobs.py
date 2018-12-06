@@ -64,6 +64,7 @@ KF, KM = load_features('kid',layer_ind, dataset)
 features, labels, KM_downsampled = balance_dataset(KF,KM)
 num_iterations = get_data_splits(KM_downsampled,"leave-one-out")
 out_path = 'classification-outputs'
+num_iterations = 10
 
 if __name__ == "__main__":
 	print 'Now running ...'
@@ -72,5 +73,5 @@ if __name__ == "__main__":
         # Make CPU jobs
 		cmd_string = 'python get_classifications_parallel.py --test_index={} --layer_ind={} --dataset={} --out_path={}'.format(i,layer_ind,dataset,out_path)
 		print cmd_string
-        thread.start_new_thread(os.system,(cmd_string,))
+                thread.start_new_thread(os.system,(cmd_string,))
     	
