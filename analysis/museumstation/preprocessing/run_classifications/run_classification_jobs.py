@@ -14,9 +14,6 @@ import subprocess
 
 
 
-
-
-
 ## scikit learn
 import sklearn
 from sklearn.model_selection import train_test_split, cross_val_score
@@ -35,6 +32,7 @@ from model predictions, for each model and data split.
 
 It will spawn several threads to get predictions from all splits and models.
 '''
+
 def load_features(cohort, layer_num,dataset):
     layers = ['P1','P2','P3','P4','P5','FC6','FC7']    
     F = np.load('/data5/bria/kiddraw_datasets/{}/features/FEATURES_{}_{}_Spatial_True.npy'.format(dataset,layers[layer_num],cohort))
@@ -58,28 +56,21 @@ def get_data_splits(KM,split_type):
 	# 	num_iterations = np.size(KM,0)
 	return(num_iterations)
 
-def work(cmd):
-    return subprocess.call(cmd, shell=False)
 
-##
 # dataset = 'rendered_080318' ## srcd dataset with pre-rendered features/etc
 dataset = 'rendered_111918' ## no features yet
 layer_ind = 6
 KF, KM = load_features('kid',layer_ind, dataset)
 features, labels, KM_downsampled = balance_dataset(KF,KM)
 num_iterations = get_data_splits(KM_downsampled,"leave-one-out")
-num_iterations = 10
+out_path = 'classification-outputs'
 
 if __name__ == "__main__":
 	print 'Now running ...'
 	for i in range(0,num_iterations):
-    	## Make CPU jobs
-		cmd_string = 'python get_classifications_parallel.py --test_index={} --layer_ind={} --dataset={}'.format(i,layer_ind,dataset)
+    	
+        # Make CPU jobs
+		cmd_string = 'python get_classifications_parallel.py --test_index={} --layer_ind={} --dataset={} --out_path={}'.format(i,layer_ind,dataset,out_path)
 		print cmd_string
-
-        # count = multiprocessing.cpu_count()
-        # pool = multiprocessing.Pool(processes=count)
-        # print pool.map(work, cmd_string)
-
-    	# subprocess.call(cmd_string, shell=True)
-    	thread.start_new_thread(os.system,(cmd_string,))             
+        thread.start_new_thread(os.system,(cmd_string,))
+    	
