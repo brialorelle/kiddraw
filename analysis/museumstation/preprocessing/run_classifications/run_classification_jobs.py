@@ -1,4 +1,4 @@
-## libraries
+# libraries
 from __future__ import division
 
 import pandas as pd
@@ -68,7 +68,7 @@ num_iterations = 10
 
 if __name__ == "__main__":
 	print 'Now running ...'
-	for i in range(0,num_iterations):
+	for i in range(11,100):
     	
         # Make CPU jobs
 		cmd_string = 'python get_classifications_parallel.py --test_index={} --layer_ind={} --dataset={} --out_path={}'.format(i,layer_ind,dataset,out_path)
