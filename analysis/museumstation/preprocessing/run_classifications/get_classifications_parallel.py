@@ -66,7 +66,7 @@ if __name__ == "__main__":
     dataset = args.dataset
     regularize_param = args.regularize_param
     ## append regularization parameters to saving directory
-    out_path = args.out_path + "_C_" str(regularize_param)
+    out_path = args.out_path + "_C_" + str(regularize_param)
 
     ### Load features, balance dataset
     KF, KM = load_features('kid',layer_ind,dataset)
@@ -115,7 +115,7 @@ if __name__ == "__main__":
     out = pd.concat([_data,image_probs_2_df], axis=1)
 
     ## save it out
-    if not os.path.exists:
+    if not os.path.exists(out_path):
         os.makedirs(out_path)
 
     out.to_csv(os.path.join(out_path,'museumstation_subset_classification_ind_{}.csv'.format(test_index_numeric)))
