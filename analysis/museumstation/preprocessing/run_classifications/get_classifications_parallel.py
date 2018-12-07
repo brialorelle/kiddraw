@@ -52,6 +52,10 @@ if __name__ == "__main__":
     parser.add_argument('--out_path', type=str, 
                                    help='where to save outputs from classifications?.', 
                                    default='classification-outputs')
+
+    parser.add_argument('--regularize_param', type=float, 
+                                   help='Regularization parameter in logistic regression (C).', 
+                                   default='.01')
     ##
     args = parser.parse_args()
 
@@ -60,6 +64,9 @@ if __name__ == "__main__":
     test_index = np.asarray([args.test_index])
     test_index_numeric = test_index[0]
     dataset = args.dataset
+    regularize_param = args.regularize_param
+    ## append regularization parameters to saving directory
+    out_path = args.out_path + "_C_" str(regularize_param)
 
     ### Load features, balance dataset
     KF, KM = load_features('kid',layer_ind,dataset)
@@ -77,7 +84,7 @@ if __name__ == "__main__":
     num_categories=np.shape(np.unique(y))[0]
  
     # higher tolerance and different solver for larger datasets; or else it takes foreverrrr.
-    clf = linear_model.LogisticRegression(penalty='l2',C=1,tol=.1,solver='sag').fit(X_train, y_train)
+    clf = linear_model.LogisticRegression(penalty='l2',C=regularize_param,tol=.0001,solver='sag').fit(X_train, y_train)
         
     # correct or not
     correct_or_not = clf.score(X_test, y_test)
@@ -109,6 +116,6 @@ if __name__ == "__main__":
 
     ## save it out
     if not os.path.exists:
-        os.makedirs(args.out_path)
+        os.makedirs(out_path)
 
-    out.to_csv(os.path.join(args.out_path,'museumstation_subset_classification_ind_{}.csv'.format(test_index_numeric)))
+    out.to_csv(os.path.join(out_path,'museumstation_subset_classification_ind_{}.csv'.format(test_index_numeric)))

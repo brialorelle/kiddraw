@@ -49,12 +49,12 @@ def balance_dataset(KF, KM):
     Y = class_labels_downsampled
     return(X,Y,KM_downsampled)
 
-def get_data_splits(KM,split_type):
-	if split_type == "leave-one-out":
-		num_iterations = np.size(KM,0)
-	# if split_type == "k-fold":
-	# 	num_iterations = np.size(KM,0)
-	return(num_iterations)
+# def get_data_splits(KM,split_type):
+# 	if split_type == "leave-one-out":
+# 		num_iterations = np.size(KM,0)
+# 	# if split_type == "k-fold":
+# 	# 	num_iterations = np.size(KM,0)
+# 	return(num_iterations)
 
 
 # dataset = 'rendered_080318' ## srcd dataset with pre-rendered features/etc
@@ -62,16 +62,20 @@ dataset = 'rendered_111918' ## no features yet
 layer_ind = 6
 KF, KM = load_features('kid',layer_ind, dataset)
 features, labels, KM_downsampled = balance_dataset(KF,KM)
-num_iterations = get_data_splits(KM_downsampled,"leave-one-out")
+# num_iterations = get_data_splits(KM_downsampled,"leave-one-out")
 out_path = 'classification-outputs'
-num_iterations = 10
+# start_iter = 11
+# end_iter = 101
+start_iter = 1
+end_iter = 3
+regularize_param = .01
 
 if __name__ == "__main__":
 	print 'Now running ...'
-	for i in range(11,100):
+	for i in range(start_iter,end_iter):
     	
         # Make CPU jobs
-		cmd_string = 'python get_classifications_parallel.py --test_index={} --layer_ind={} --dataset={} --out_path={}'.format(i,layer_ind,dataset,out_path)
+		cmd_string = 'python get_classifications_parallel.py --test_index={} --layer_ind={} --dataset={} --out_path={} --regularize_param={}'.format(i,layer_ind,dataset,out_path,regularize_param)
 		print cmd_string
                 thread.start_new_thread(os.system,(cmd_string,))
     	
