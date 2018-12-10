@@ -33,6 +33,8 @@ from model predictions, for each model and data split.
 It will spawn several threads to get predictions from all splits and models.
 '''
 
+################################################################################################################################
+
 def load_features(cohort, layer_num):
     layers = ['P1','P2','P3','P4','P5','FC6','FC7']    
     F = np.load('/data5/bria/kiddraw_datasets/{}/features/FEATURES_{}_{}_Spatial_True.npy'.format(DATASET,layers[layer_num],cohort))
@@ -101,40 +103,42 @@ def get_classifications(test_index):
         os.makedirs(out_path_specific)
     out.to_csv(os.path.join(out_path_specific,'museumstation_subset_classification_ind_{}.csv'.format(test_index_numeric)))
 
-
-# def get_data_splits(KM,split_type):
-# 	if split_type == "leave-one-out":
-# 		num_iterations = np.size(KM,0)
-# 	# if split_type == "k-fold":
-# 	# 	num_iterations = np.size(KM,0)
-# 	return(num_iterations)
-# KF, KM = load_features('kid',layer_ind, dataset)
-# features, labels, KM_downsampled = balance_dataset(KF,KM)
-# num_iterations = get_data_splits(KM_downsampled,"leave-one-out")
-# start_iter = 11
-# end_iter = 101
+################################################################################################################################
 
 #### SPECIFY PARAMETERS
 DATASET = 'rendered_111918' ## no features yet
 LAYER_IND = 6
 OUT_PATH = 'classification-outputs'
 REGULARIZE_PARAM = .1
-test_indexes = [13,14,15,16,17,18]
-# start_iter = 1
-# end_iter = 3
 
-pool = ThreadPool(4) 
-cmd_strings = []
+# start clock
 start_time = time.time()
 
 if __name__ == "__main__":
 	print 'Now running ...'
+    parser = argparse.ArgumentParser()
 
-pool = ThreadPool(8) 
-pool.map(get_classifications, test_indexes)
-pool.close() 
-pool.join()
+    parser.add_argument('--start_ind', type=int, 
+                                   help='Start index', 
+                                   default='')
 
-end_time = time.time()
-time_took = end_time - start_time
-print '---running models for {} images took {} seconds'.format(np.shape(test_indexes)[0],time_took)
+    parser.add_argument('--end_ind', type=int, 
+                                   help='End index', 
+                                   default='')
+    
+    ## get indexes
+    args = parser.parse_args()      
+    start_ind = args.start_ind
+    end_ind = args.end_ind
+    test_indexes = range(start_ind, end_ind)
+    
+    ## run jobs
+    pool = ThreadPool(8) 
+    pool.map(get_classifications, test_indexes)
+    pool.close() 
+    pool.join()
+    
+    ## print output
+    end_time = time.time()
+    time_took = end_time - start_time
+    print '---running models for {} images took {} seconds'.format(np.shape(test_indexes)[0],time_took)
