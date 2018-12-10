@@ -33,3 +33,5 @@ analysis/museumdraw/python/features/*
 experiments/photodraw/code/node_modules.zip
 experiments/photodraw/code/images.zip
 analysis/museumstation/preprocessing-dataset_nov19/z-backup/*
+*.zip
+analysis/museumstation/feature_space_analyses/pythonTest.Rmd
