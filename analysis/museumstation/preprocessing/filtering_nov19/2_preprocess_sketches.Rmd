@@ -30,7 +30,24 @@ descriptives = read_csv(file = 'mongodb-output/MuseumStation_AllDescriptives_207
   mutate(fileNameShort = str_split_fixed(filename,"/",11)[,11]) %>%
   mutate(draw_duration_new = as.numeric(draw_duration_new)) %>%
   full_join(descriptives_v4)
+
 ```
+
+## How many drawings do we have before exclusion (not counting practice trials)?
+```{r}
+#
+practice_categories = c('shape','this circle','square','this square','something you love')
+extra_prompt = c('something you love')
+
+# 
+raw_drawing_count <- descriptives_v4 %>%
+  full_join(descriptives) %>%
+  filter(!category %in% practice_categories) %>%
+  filter(!category %in% extra_prompt)
+
+drawing_count_total = length(unique(raw_drawing_count$filename))
+```
+
 
 ## Load manual exclusions from previous filtering (incomplete)
 ```{r}
@@ -178,7 +195,12 @@ ggplot(exclusion_summary,aes(age_numeric,numExclusions,color=age_numeric)) +
   geom_point() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   facet_wrap(~category)
+
+
+drawing_count_exclusions = length(all_exclusions$sketchName)
+exclusion_percent= drawing_count_exclusions/ drawing_count_total
 ```
+We had `r drawing_count_total` excluding practice trials, and we excluded `r drawing_count_exclusions` drawings, or `r exclusion_percent`% of drawings.
 
 ### How do intensity, # of strokes, and drawing duration vary with age / category?
 ```{r}
@@ -191,8 +213,6 @@ ggplot(descriptives_full_filtered,aes(age_numeric,mean_intensity,color=category)
 ggplot(descriptives_full_filtered,aes(age_numeric,mean_intensity,color=category)) +
   geom_point(alpha=.2) 
 ```
-
-
 
 ```{r}
 ggplot(descriptives_full_filtered,aes(age_numeric,draw_duration_old,color=category)) +
