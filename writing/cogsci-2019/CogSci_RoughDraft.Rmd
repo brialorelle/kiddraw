@@ -1,5 +1,5 @@
 ---
-title: "Developmental changes in the ability to draw distinctive visual features of object categories"
+title: "Developmental changes in the ability to draw \n distinctive visual features of object categories"
 bibliography: kiddraw.bib
 csl: apa6.csl
 document-params: "10pt, letterpaper"
@@ -32,13 +32,18 @@ library(knitr)
 library(tidyverse)
 library(assertthat)
 library(ggthemes)
-library(viridis)
-library(lme4)
 library(langcog)
 library(forcats)
 library(egg)
 library(gridExtra)
 library(reticulate)
+library(readr)
+library(ggplot2)
+library(reshape2)
+library(lme4)
+library(stringr)
+library(magick) # for making montages
+library(viridis)
 theme_set(theme_few())
 ```
 
@@ -58,17 +63,152 @@ We thus build a large-scale dataset of children's drawings with the goal of usin
 
 Here, we begin the analysis of this dataset with three main goals. In recent work [@long2018drawings] with a smaller sample of drawings, the recognizaiblty of children's drawings increased across childhood, and these changes in recognizabilty were paralleled by changes in the representations of children's drawings in these high-level visual features Thus, here we first aim to both replicate and unify these findings by directly (1) examining if the intended category of children's drawings can be read out from these high-level features using a linear classifier and (2) if classifier performance increases with age. Second, given that motoric abilities also increase across this age range, we developmetrics for evaluating tracing abilities and apply these to examine the relationship children's tracing performance and classifier performance. Finally, to give insight into the kinds of changes that may explain this age-related gain in recognizability, we explore how the representations of children's drawings in high-level visual feature space changes across childhood. 
 
-# Methods
-### Participants
-Children (N = XX, M = XX years, range 2-10 years) participated in drawing game at a free-standing station in a local science museum; participants age was self-reported and no other identifying information was collected. XX additional participants started the tracing trials but did not complete any of the drawing trials. 
+```{r load-classifications}
+## Load classification data
+classification_data <- read.csv('../../data/cogsci_2019/classification-outputs/museumstation_subset_classification.csv') %>%
+  as.tibble() %>%
+  mutate(session_id = paste('cdm_',session_ids,sep="")) %>%
+  mutate(age_numeric = ages) %>%
+  mutate(age = paste('age',ages,sep="")) %>%
+  mutate(category = target_classes) %>% 
+  mutate(category_short = str_split_fixed(category," ",2)[,2]) %>%
+  mutate(image_name = paste(category,'_sketch_', age,'_', session_id,'.png',sep="")) %>%
+  select(-X) 
+```
 
+```{r load-metadata}
+## Load in meta data from mongo-db database dumps
+meta_cdm_run_v4 <- read.csv('../../data/cogsci_2019/mongodb-output/MuseumStation_AllDescriptives_7200_images_cdm_run_v4.csv') %>%
+  as.tibble()
+
+all_meta_data <- read.csv('../../data/cogsci_2019/mongodb-output/MuseumStation_AllDescriptives_20780_images_final_cdm_run_v3.csv') %>%
+  as.tibble() %>%
+  left_join(meta_cdm_run_v4) 
+
+d <- all_meta_data %>%
+  left_join(classification_data) %>%
+  filter(!is.na(image_scores))
+```
+
+# Methods
 ### Drawing Task Procedure
 We implemented a web-based drawing game in HTML/Javascript using the paper.js library and collected drawings using a touchscreen tablet on the floor of the museum;  each participant sat in front of this table-mounted touchscreen display. At the beginning of each session, children completed two tracing trials (square, complex shape) and one copying trial (square or circle), designed to assess their ability to coordinate their motor movements (see Tracing Evaluation). After the tracing trails, on each trial, a video of an experimenter verbally prompted children to draw a particular object category (e.g., “What about a dog? Can you draw a dog?”); children had up to 30 seconds to complete their drawings with their fingers. The timimg and position of each stroke was saved to an online database and permitting the calculating of the overall time spent drawing, the amount of ink used, and the number of strokes made as basic covariates.
 
-Stimuli were videos an experimenter verbally referring to 23 common object categories: XX, XX, XX, XX, XX, XX. Participants could draw a maximum of 8 stimuli per session, which were part of the drawing station for several months at a time. These categories were chosen to be likely familiar to children, to cover a wide range of superordinate categories, and to vary in the degree to which they are commonly practiced in drawings by children. 
+Stimuli were videos an experimenter verbally referring to 23 common object categories: house, couch, chair, airplane, bike, car, boat, train, bear, cat, rabbit, dog, sheep, bird, frog, fish, person, tree, bowl, phone, cup, scissors, and key. Participants could draw a maximum of 8 stimuli per session, which were part of the drawing station for several months at a time. These categories were chosen to be likely familiar to children, to cover a wide range of superordinate categories, and to vary in the degree to which they are commonly practiced in drawings by children. 
 
 ### Data Filtering
-Raw drawing data were conservatively screened for task compliance using a combination of manual and automated procedures (i.e., excluding blank drawings, pure scribbles, and drawings containing words), resulting in the exclusion of XX% of drawings. In all, we collected `r length(unique(corbyItem$imNameShort))` drawings across the 23 categories. While viewing a first subset of the drawings, we noticed many very stylized drawings by our youngest participants (2-year-olds); thus, in later versions of the drwaing station, we also presented participants with an optional survey to indicate if either another child or an adult had also drawn during the session; all drawings where intererence was reported were excluded from analyses (XX% of valid sessions in subset).
+Raw drawing data (N=15594 drawings) were conservatively screened for task compliance using a combination of manual and automated procedures (i.e., excluding blank drawings, pure scribbles, and drawings containing words), resulting in the exclusion of 23.8% of drawings. We adopted conservative screening procedures to ensure that any age-related trends we observed were not due to differences in task compliance across age. Similarily, while viewing a first subset of the drawings, we noticed many very stylized drawings by our youngest participants (2-year-olds); thus, in later versions of the drwaing station, we also presented participants with an optional survey to indicate if either another child or an adult had also drawn during the session; all drawings where intererence was reported were excluded from analyses (XX% of valid sessions in subset).
+
+### Participants
+After filtering, we analyzed data from N=`r length(unique(d$session_id))` children who were on average  `r round(mean(d$age_numeric),2)` years of age (range 2-10 years); participants age was self-reported and no other identifying information was collected. 
+
+```{r descriptives-across-age}
+### How do our covariates change with age? Compute CIs and plot next to accuracy.
+base_size_chosen=16 # size of text in plots
+
+## first summarize data  
+cor_by_age <- d %>%
+  group_by(age_numeric,category) %>%
+  summarize(avg_cor = mean(image_scores)) %>%
+  group_by(age_numeric) %>%
+  multi_boot_standard(col = "avg_cor")  
+
+draw_duration <- d %>%
+  group_by(age_numeric,category) %>%
+  summarize(avg_num_strokes = mean(num_strokes), avg_draw_duration = mean(draw_duration_old), avg_intensity = mean(mean_intensity)) %>%
+  group_by(age_numeric) %>%
+  multi_boot_standard(col = "avg_draw_duration")
+
+num_strokes <- d %>%
+  group_by(age_numeric,category) %>%
+  summarize(avg_num_strokes = mean(num_strokes), avg_draw_duration = mean(draw_duration_old), avg_intensity = mean(mean_intensity)) %>%
+  group_by(age_numeric) %>%
+  multi_boot_standard(col = "avg_num_strokes") 
+
+avg_intensity <- d %>%
+  group_by(age_numeric,category) %>%
+  summarize(avg_num_strokes = mean(num_strokes), avg_draw_duration = mean(draw_duration_old), avg_intensity = mean(mean_intensity)) %>%
+  group_by(age_numeric) %>%
+  multi_boot_standard(col = "avg_intensity")
+
+###
+cor_by_age_plot_A = ggplot(cor_by_age, aes(age_numeric,mean, color=age_numeric)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  theme_few(base_size = base_size_chosen) + 
+  labs(x='Age', y='Classification accuracy') +
+  scale_color_viridis(option="D") + 
+  theme(legend.position = "none") + 
+  geom_smooth(col='grey',span=10) +
+  ggtitle('A')
+
+p1=ggplot(draw_duration, aes(age_numeric,mean, color=age_numeric)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  theme_few(base_size = base_size_chosen) +
+  labs(x='Age', y='Draw duration') +
+  scale_color_viridis(option="D") +
+  theme(legend.position = "none") + 
+  geom_smooth(col='grey', span = 10) +
+  ggtitle('B')
+
+p2=ggplot(avg_intensity, aes(age_numeric,mean, color=age_numeric)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  theme_few(base_size = base_size_chosen) +
+  labs(x='Age', y='Ink used') +
+  scale_color_viridis(option="D") +
+  theme(legend.position = "none") + 
+  geom_smooth(col='grey', span = 10)  +
+  ggtitle('C')
+
+p3=ggplot(num_strokes, aes(age_numeric,mean, color=age_numeric)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  theme_few(base_size = base_size_chosen) +
+  labs(x='Age', y='Num Strokes') +
+  scale_color_viridis(option="D") +
+  theme(legend.position = "none") + 
+  geom_smooth(col='grey', span = 10)  +
+  ggtitle('D')
+```
+
+```{r fig.env="figure", fig.pos = "H", fig.align = "center", out.width="100%",  fig.cap = "Leave-one-out classification accuracy (A), the amount of time spent drawing in seconds (B), the amount of ink used (i.e., mean intensity of the drawings) (C), and the number of strokes used (D) are plotted as a function of children’s age. "}
+compiledPlot = ggarrange(cor_by_age_plot_A,p1,p2,p3, nrow = 1)
+# dir.create('plots-nov26')
+# ggsave('plots-nov26/correct_and_covariates_by_age.png',compiledPlot, width = 11, height = 4)
+```
+
+```{r}
+## INFERENTIAL STATS - Accuracy
+mod_covariates <- glmer(image_scores ~ scale(age_numeric) +
+                          scale(draw_duration_old) +
+                          scale(mean_intensity) +
+                          scale(num_strokes) +
+                        (1|session_id) +
+                        (1|category),
+      data = d, family="binomial")
+mod_covariates_out=summary(mod_covariates)
+# kable(summary(mod_covariates)$coef, digits = 3)
+```
+
+```{r exampleDrawings, fig.env = "figure*", fig.pos = "h", out.width="100%", fig.align = "center", set.cap.width=T, num.cols.cap=2, fig.cap = "Example drawings made by children ages 4-10 of several object categories."}
+img <- png::readPNG("images/drawings_by_classification_figure.png")
+grid::grid.raster(img)
+```
+
+```{r}
+## INFERENTIAL STATS - Probabilities
+d_correct <- d %>%
+  filter(image_scores == 1)
+
+mod_covariates_correct_only <- lmer(target_label_prob ~ scale(age_numeric) +
+                          scale(draw_duration_old) +
+                          scale(mean_intensity) +
+                          scale(num_strokes) +
+                        (1|session_id) +
+                        (1|category),
+      data = d_correct)
+mod_covariates_correct_only_out=summary(mod_covariates_correct_only)
+# kable(summary(mod_covariates_correct_only)$coef, digits = 3)
+```
+
 
 ### Tracing Evaluation
 
@@ -87,9 +227,9 @@ To explore changes in the visual features of these drawings, for each age group 
 For representational similarity analysis, the Pearson correlation distances between these average feature vectors for each category was computed [@kriegeskorte2008RSA] to contruct 23x23 representational dissimilarity matrices (RDM); these RDMs provide a compact description of the layout of these cateogries in the high-dimensional feature space. Following @kriegeskorte2008RSA, we computed the Spearman rank correlations between the RDMs between at each age vs. the oldest children in our sample (10-year-olds). Estimates of standard error for the both the Spearman correlation between RDMs, were generated by jackknife resampling of the 23 object categories. 
 
 # Results
-Overall, we found that the model’s classification accuracy increased with age (see Figure X). Further, the average probability assigned to the target category increase with age even when restricting our analyses to drawings that were correctly classifier, suggesting that classification confidence also increases with age.
+Overall, we found that the model’s classification accuracy increased with age (see Figure X). Further, the average probability assigned to the target category increase with age even when restricting our analyses to drawings that were correctly classified, suggesting that classification confidence also increases with age (see Figure X)
 
-Next, we examined the contributions of basic task-covariates (e.g., number of strokes, ink used, time spent drawing) as well as tracing performance to these gains in classification (see Figure XX). *Briefly, tracing performance was evaluated by terms that take into account both the spatial error and shape error in XX metric; this metric was validated on a sample of human-judgements on 2000 tracings (r=XX, p=XX, ...).*   Our mixed-effects model revealed that both the classification accuracy of drawings as well as classification confidence (for correct drawings only) reliably increased with age when accounting for these covariates — tracing ability, the amount of time spent drawing, the number of strokes, and total ink used and accounting for variation across object categories and individual children. (classification accuracy: $\beta$ = `r format(modelOut$coefficients[2,1],digits=2)`, SE = `r format(modelOut$coefficients[2,2],digits=2) `, Z = `r format(modelOut$coefficients[2,3],digits=2)`, classification confidence: $\beta$ = `r format(modelOut$coefficients[2,1],digits=2)`, SE = `r format(modelOut$coefficients[2,2],digits=2) `, Z = `r format(modelOut$coefficients[2,3],digits=2)` ). All model coefficients can be seen in Table 1. 
+Next, we examined the contributions of basic task-covariates (e.g., number of strokes, ink used, time spent drawing) as well as tracing performance to these gains in classification (see Figure XX). *Briefly, tracing performance was evaluated by terms that take into account both the spatial error and shape error in XX metric; this metric was validated on a sample of human-judgements on 2000 tracings (r=XX, p=XX, ...).*   Our mixed-effects model revealed that both the classification accuracy of drawings as well as classification confidence (for correct drawings only) reliably increased with age when accounting for these covariates — tracing ability, the amount of time spent drawing, the number of strokes, and total ink used and accounting for variation across object categories and individual children. (classification accuracy: $\beta$ = `r format(mod_covariates_out$coefficients[2,1],digits=2)`, SE = `r format(mod_covariates_out$coefficients[2,2],digits=2) `, Z = `r format(mod_covariates_out$coefficients[2,3],digits=2)`, classification confidence: $\beta$ = `r format(mod_covariates_out$coefficients[2,1],digits=2)`, SE = `r format(mod_covariates_out$coefficients[2,2],digits=2) `, Z = `r format(mod_covariates_out$coefficients[2,3],digits=2)` ). All model coefficients can be seen in Table 1. 
 
 To investigate the underlying source of these changes in recognizability, we examined changes in this feature space across age. First, the degree to which drawings elicited robust, variable responses in this feature space increased with children's age, suggesting that older children's drawings may simply contain more detailed and more variable high-level visual features (stats). Relatedly, we also found that the overall distnace between category centers and the average of the feature space increased wiht age, suggestiong an overall expnaion of the feature space with age (stats) Second, as in prior work, we found that the correlation bewteen RDMs generally increased with age, suggesting that part of the gain in category classificaiton across age can be attributed to shifts in the relative positions of the category center (stats.) Finally, we also observed a small but consistent decrease in within-category dispersions decreased with age, as well as an overall increase in visual discriminability (i.e., higher-dimensional analog of d-prime) (mean d-prime across all category pairs, 2-yrs, M=0.3, 3-yrs, M=0.27, 4-yrs, M=0.35, 5-yrs, M=0.42, 6-yrs, M=0.45, 7-yrs, M=0.49, 8-yrs, M=0.49, 9-yrs, M=0.51). 
 
@@ -103,9 +243,9 @@ To investigate the underlying source of these changes in recognizability, we exa
 ## Understand which features of objects drive changes in recognition, and how these are related to memory
 ## Understand relative contributions of cultural conventions (and item effets)
 
-At the same time, children are also continuously learning about new object categories and their properties. How might this learning affect children's internal representations (and drawings) of different object categories? One possibility is that the bulk of the development change revolves around building more detailed representations: children may be learning the suite of visual features and object parts that are diagnostic of various object categories. On this account, learning what tigers tend to look like does not change children's perceptual representations of cheetahs---or how they draw them. A second possibility is that learning about new categories actually changes the similarity structure of children’s visual object concepts [@goldstone2001altering]. Finally, as children learn about the hierarchical structure of object categories (i.e., living thing--animal--mammal--dog) and their typical properties (e.g., most mammals have four legs) this might differentially change which visual features take precedence in their internal representations. Future work that links children's categorization abilities with their drawing behaviors will help explore these possibilities.
+<!-- At the same time, children are also continuously learning about new object categories and their properties. How might this learning affect children's internal representations (and drawings) of different object categories? One possibility is that the bulk of the development change revolves around building more detailed representations: children may be learning the suite of visual features and object parts that are diagnostic of various object categories. On this account, learning what tigers tend to look like does not change children's perceptual representations of cheetahs---or how they draw them. A second possibility is that learning about new categories actually changes the similarity structure of children’s visual object concepts [@goldstone2001altering]. Finally, as children learn about the hierarchical structure of object categories (i.e., living thing--animal--mammal--dog) and their typical properties (e.g., most mammals have four legs) this might differentially change which visual features take precedence in their internal representations. Future work that links children's categorization abilities with their drawing behaviors will help explore these possibilities. -->
 
-This work integrates novel methods to investigate children's internal representations of object categories and how they are linked to their developing perceptual, cognitive, and motor abilities. We propose that a full understanding of how we come to produce visual abstractions will help uncover the factors that shape adult object representations.
+<!-- This work integrates novel methods to investigate children's internal representations of object categories and how they are linked to their developing perceptual, cognitive, and motor abilities. We propose that a full understanding of how we come to produce visual abstractions will help uncover the factors that shape adult object representations. -->
 
 \vspace{1em} \fbox{\parbox[b][][c]{7.3cm}{\centering All data and code for these analyses are available at\ \url{https://github.com/brialorelle/kiddraw}}} \vspace{1em}
 
