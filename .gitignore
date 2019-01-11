@@ -38,4 +38,6 @@ analysis/museumstation/feature_space_analyses/pythonTest.Rmd
 analysis/museumstation/preprocessing/run_classifications/classification-outputs_C_0.1/*
 analysis/museumstation/preprocessing/run_classifications/count_classification_outputs.nb.html
 data/cogsci_2019/classification-outputs/Classification_Outputs1985.csv
+data/cogsci_2019/*
 analysis/museumstation/preprocessing/run_classifications/compiled_classifications/Classification_Outputs1985.csv
+analysis/museumstation/preprocessing/run_classifications/compiled_classifications/Classification_Outputs8498.csv
