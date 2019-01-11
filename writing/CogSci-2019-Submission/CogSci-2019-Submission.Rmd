@@ -287,10 +287,58 @@ accuracy_all_covariates <- glmer(correct_or_not ~ scale(avg_tracing_rating)*scal
                         (1|session_id) +
                         (1|category),
       data = d, family="binomial")
+
+accuracy_all_covariates_no_int <- glmer(correct_or_not ~ scale(avg_tracing_rating)+scale(age_numeric) +
+                          scale(draw_duration) +
+                          scale(mean_intensity) +
+                          scale(num_strokes) +
+                        (1|session_id) +
+                        (1|category),
+      data = d, family="binomial")
+
 accuracy_all_covariates_out=summary(accuracy_all_covariates)
 
-# xtable::xtable(summary(accuracy_all_covariates)$coef, digits=3, caption = "Model coefficients of a GLMM predicting the recognziability of each drawing")
 ```
+
+
+```{r}
+
+accuracy_no_age <- glmer(correct_or_not ~ scale(avg_tracing_rating) + scale(draw_duration) +
+                          scale(mean_intensity) +
+                          scale(num_strokes) +
+                        (1|session_id) +
+                        (1|category),
+      data = d, family="binomial")
+
+accuracy_no_age_or_tracing <- glmer(correct_or_not ~ scale(draw_duration) +
+                          scale(mean_intensity) +
+                          scale(num_strokes) +
+                        (1|session_id) +
+                        (1|category),
+      data = d, family="binomial")
+
+accuracy_no_tracing <- glmer(correct_or_not ~ scale(age_numeric) +
+                          scale(draw_duration) +
+                          scale(mean_intensity) +
+                          scale(num_strokes) +
+                        (1|session_id) +
+                        (1|category),
+      data = d, family="binomial")
+accuracy_no_tracing_out=summary(accuracy_no_tracing)
+
+###
+null = r.squaredGLMM(accuracy_no_age_or_tracing)
+no_age = r.squaredGLMM(accuracy_no_age)
+no_tracing = r.squaredGLMM(accuracy_no_tracing)
+all = r.squaredGLMM(accuracy_all_covariates)
+no_int = r.squaredGLMM(accuracy_all_covariates_no_int)
+```
+
+With task covariates, without age or tracing: marginal r^2 = `r round(null[1,1],3)`
+With task covariates, with age but no tracing: marginal r^2 = `r round(no_tracing[1,1],3)`
+With task covariates, without but with tracing: marginal r^2 = `r round(no_age[1,1],3)`
+With all covariates: marginal r^2 = `r round(all[1,1],3)`
+
 
 ```{r inferential-stats-2, cache=TRUE}
 ## INFERENTIAL STATS 2- Probabilities for correctly classified only
@@ -307,6 +355,7 @@ probs_all_covariates <- glmer(target_label_prob ~ scale(avg_tracing_rating)*scal
 probs_all_covariates_out=summary(probs_all_covariates)
 
 ```
+
 
 ### Distinctiveness Analyses
 We evaluated how distinct different category clusters were at each age by calculating changes in a high-dimensional analogue of d-prime (distinctiveness). This metric computes how distinct two category representations (e.g., bird, rabbit) are by accounting for both the relative distances between two categories as well as their relative overlap. For each pair of categories, we first computed the mean feature vector, which allows an estimate of the category center. To assess the dispersion of each category,  we computed the root-mean-squared deviation of drawings from this category center using euclidean distance. Using these two metrics, we can then compute this sensitivity measure by taking the euclidean distance between any two category centers and dividing it by the square root of half of the sum of the two category dispersions.  Formally, this is specified as: 
