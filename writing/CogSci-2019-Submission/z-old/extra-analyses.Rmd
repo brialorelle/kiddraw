@@ -9,6 +9,28 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+base_size_chosen = 16
+## Compute target_label_prob averages within quantiles / age
+num_quantiles = 10
+# 
+# # compute quantiles without knowing about age
+d_tracing <- d %>%
+  filter(!is.na(avg_tracing_rating)) %>%
+  mutate(avg_spatial_quantile = ntile(avg_spatial,num_quantiles)) %>%
+  mutate(avg_shape_quantile = ntile(avg_shape,num_quantiles)) %>%
+  mutate(avg_tracing_rating_quantile = ntile(avg_tracing_rating,num_quantiles))
+# 
+ggplot(d_tracing, aes(avg_tracing_rating,correct_or_not,color=age_numeric)) +
+  geom_jitter(alpha=.2, height=.1, width=.1) +
+  theme_few(base_size = base_size_chosen) +
+  labs(x='Normalized tracing score', y='Classification accuracy') +
+  scale_color_viridis(option="D") +
+  theme(legend.position = "none") +
+  geom_smooth(col='grey',span=20, method='lm') +
+  facet_grid(~age_numeric)
+```
+
 ```{r include=FALSE}
 ### Plot results only for unfamiliar items
 unfamiliar_list = c('key','sheep','scissors','couch','bear','frog','phone')
@@ -69,12 +91,14 @@ ggplot(d, aes(age_numeric,target_label_prob, color=age_numeric)) +
   geom_smooth(method='lm', color = "grey")
 
 ggplot(d, aes(age_numeric,correct_or_not, color=age_numeric)) +
-  geom_jitter(alpha=.1, width=.2, height=.1) + 
+  geom_jitter(alpha=.05, width=.2, height=.1) + 
   theme_few(base_size = base_size_chosen) +
   labs(x='Age', y='Probability') +
   scale_color_viridis(option="D") +
   theme(legend.position = "none") + 
   geom_smooth(method='lm', color = "grey")
+
+
 
 
 ```
