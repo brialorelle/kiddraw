@@ -340,7 +340,7 @@ In order to estimate developmental trends in children’s ability to produce rec
 
 ## Measuring Category-Diagnostic Information in Drawings
 We evaluated how distinct category clusters were at each age by calculating changes in a high-dimensional analogue of d-prime (distinctiveness, see Figure 6). This metric computes how distinct two category representations (e.g., bird, rabbit) are by accounting for both the distance between two categories as well as the dispersion within each category. For each pair of categories in each age group, we first defined the category center as the mean feature vector. We then computed the dispersion of each category as the root-mean-squared Euclidean distance of each drawing vector from this category center. By direct analogy with d-prime, we then combine these estimates by dividing the Euclidean distance between category centers by the quadratic mean of the two category dispersions.  Formally, this is specified as: 
-$D(d)_{ij} = \frac{\sqrt{\sum_{i=1}^n (\vec{r}_{i}-\vec{r}_{j})^2}} {\sqrt{0.5 * (s_{i}^2 + s_{j}^2})},$ where $D$ represents the distinctiveness between the $i$th and $j$th object categories, $\vec{r}_{i}$ and $\vec{r}_{j}$ are their mean feature vectors, respectively, and where $s$ represents the category dispersion. 
+$D_{ij} = \frac{\lVert\vec{r}_{i}-\vec{r}_{j} \rVert_{2} } {\sqrt{\frac{1}{2} (s_{i}^2 + s_{j}^2})}$, where $D$ represents the distinctiveness between the $i$th and $j$th object categories, $\vec{r}_{i}$ and $\vec{r}_{j}$ are their mean feature vectors, respectively, and where $s$ represents the category dispersion. 
 
 ```{r inferential-stats-1, cache=FALSE}
 ## INFERENTIAL STATS 1- Classification accuracy
