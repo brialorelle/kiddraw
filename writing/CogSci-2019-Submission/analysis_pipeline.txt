@@ -29,11 +29,13 @@ Step 6: Tracing Evaluation - Hosted in external repository.
 
 Overall repository: https://github.com/Renata1995/shapedraw/tree/master/analysis/tracing
 
-Pull tracing svg images from the museumstation db and write attributes to a csv file: https://github.com/Renata1995/shapedraw/blob/master/analysis/tracing/preprocess_museumstation-tracing_v3v4.ipynb
+Pull tracing svg images from the database and write attributes to a csv file: https://github.com/Renata1995/shapedraw/blob/master/analysis/tracing/preprocess_museumstation-tracing_v3v4.ipynb
 
 Apply the registration model on tracing images to get shape and spatial error: https://github.com/Renata1995/shapedraw/blob/master/analysis/tracing/shape_spatial_large.ipynb
 
 Combine mturk ratings and model results into one csv file: https://github.com/Renata1995/shapedraw/blob/master/analysis/tracing/tracing_ratings_preprocessing.ipynb
+
+Fit a linear mixed-effects model on rated tracings and make predictions on new tracings: https://github.com/Renata1995/shapedraw/blob/master/analysis/tracing/museumstation_tracing.Rmd
 
 Step 7: Main analyses
 Hosted in brialorelle > kiddraw⁩ > writing > CogSci-2019-Submission, along with the rest of the paper
