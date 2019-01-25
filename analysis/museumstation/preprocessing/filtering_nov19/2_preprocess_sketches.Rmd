@@ -153,8 +153,8 @@ write.csv(descriptives_full_filtered, "filtered_dataset/output-csvs/cdm_descript
 ```{r}
 ## Render out new copy of practice shapes
 pracImagesDir = 'practice_shapes_filtered'
-dir.create(pracImagesDir)
-file.copy(practice_shapes_filtered$fullPath, to = file.path(pracImagesDir,practice_shapes_filtered$fileNameShort))
+# dir.create(pracImagesDir)
+# file.copy(practice_shapes_filtered$fullPath, to = file.path(pracImagesDir,practice_shapes_filtered$fileNameShort))
 
 # ## Render out new copy of filtered dataset / rename shapes
 # dir.create('dataset_nov19/sketches_filtered_copy')
@@ -185,9 +185,13 @@ all_exclusions <- drawings_to_exclude %>%
   rename(sketchName = X1) %>%
   mutate(category = str_split_fixed(sketchName,'_',4)[,1]) %>%
   mutate(age = str_split_fixed(sketchName,'_',4)[,3]) %>%
-  mutate(age_numeric = str_split_fixed(age,'age',2)[,2])
+  mutate(age_numeric = str_split_fixed(age,'age',2)[,2]) %>%
+  filter(!category %in% practice_categories) %>%
+  filter(!category %in% extra_prompt) 
 
 exclusion_summary <- all_exclusions %>%
+  filter(!category %in% practice_categories) %>%
+  filter(!category %in% extra_prompt) %>%
   group_by(age_numeric, category) %>%
   summarise(numExclusions = n())
 
@@ -196,8 +200,7 @@ ggplot(exclusion_summary,aes(age_numeric,numExclusions,color=age_numeric)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   facet_wrap(~category)
 
-
-drawing_count_exclusions = length(all_exclusions$sketchName)
+drawing_count_exclusions = length(unique(all_exclusions$sketchName))
 exclusion_percent= drawing_count_exclusions/ drawing_count_total
 ```
 We had `r drawing_count_total` excluding practice trials, and we excluded `r drawing_count_exclusions` drawings, or `r exclusion_percent`% of drawings.
