@@ -340,7 +340,7 @@ In order to estimate developmental trends in children’s ability to produce rec
 
 ## Measuring Category-Diagnostic Information in Drawings
 We evaluated how distinct category clusters were at each age by calculating changes in a high-dimensional analogue of d-prime (distinctiveness, see Figure 6). This metric computes how distinct two category representations (e.g., bird, rabbit) are by accounting for both the distance between two categories as well as the dispersion within each category. For each pair of categories in each age group, we first defined the category center as the mean feature vector. We then computed the dispersion of each category as the root-mean-squared Euclidean distance of each drawing vector from this category center. By direct analogy with d-prime, we then combine these estimates by dividing the Euclidean distance between category centers by the quadratic mean of the two category dispersions.  Formally, this is specified as: 
-$D(d)_{ij} = \frac{\sqrt{\sum_{i=1}^n (\vec{r}_{i}-\vec{r}_{j})^2}} {\sqrt{1/2 * (CD_{i}^2 + CD_{j}^2})},$ where $\vec{r}_{i}$ and $\vec{r}_{j}$ are the mean feature vectors for the $i$th and $j$th object categories, respectively, and where $CD$ represents the category dispersion, or the root-mean-squared deviation of each category, and where $D$ represents the distinctiveness of two categories. 
+$D(d)_{ij} = \frac{\sqrt{\sum_{i=1}^n (\vec{r}_{i}-\vec{r}_{j})^2}} {\sqrt{0.5 * (CD_{i}^2 + CD_{j}^2})},$ where $\vec{r}_{i}$ and $\vec{r}_{j}$ are the mean feature vectors for the $i$th and $j$th object categories, respectively, and where $CD$ represents the category dispersion, or the root-mean-squared deviation of each category, and where $D$ represents the distinctiveness of two categories. 
 
 ```{r inferential-stats-1, cache=FALSE}
 ## INFERENTIAL STATS 1- Classification accuracy
@@ -452,7 +452,8 @@ no_int = r.squaredGLMM(accuracy_all_covariates_no_int)
 
 
 ```{r drawingExamples, include = T, fig.env = "figure*", fig.pos = "h", fig.align='center', fig.width=8, fig.height=2.5, set.cap.width=T, num.cols.cap=2, fig.align = "center", fig.cap = "Randomly sampled drawings from eight categories ordered by the probability that the sketch was assigned to the correct target category. All sketches depicted here were correctly classified."}
-examples <- png::readPNG("figs/drawings_by_classification_figure_smaller.png")
+# examples <- png::readPNG("figs/drawings_by_classification_figure_smaller.png")
+examples <- png::readPNG("figs/drawingExamples-1.pdf")
 grid::grid.raster(examples)
 ```
 
