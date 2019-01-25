@@ -154,7 +154,7 @@ We developed an automated procedure for evaluating how accurately participants p
 
 To compute these error terms, we applied an image registration algorithm, Airlab [@sandkuhler2018], to align each tracing to the target shape, yielding an affine transformation matrix minimizing the pixel-wise normalized correlation loss $Loss_{NCC} = - \frac{\sum S \cdot T - \sum E(S) E(T)}{N \sum Var(S) Var(T)}$ between the transformed tracing and the target shape, where $N$ is the number of pixels in both images. 
 
-The shape error was defined to be the z-scored cross-correlation loss between the transformed tracing and the target shape. The spatial error was defined to be a combination of three sources of error: location, orientation, and size error, derived by decomposing the affine transformation into translation, rotation, and scaling components. The resulting raw translation, rotation, and scaling errors were then z-scored (across all tracings in the dataset, independently within each spatial error dimension) before being summed to yield the spatial error. 
+The shape error was defined to be the z-scored cross-correlation loss between the transformed tracing and the target shape. The spatial error was defined to be a combination of three sources of error: location, orientation, and size error, derived by decomposing the affine transformation into translation, rotation, and scaling components. The resulting raw translation, rotation, and scaling errors were then z-scored independently within each spatial error dimension, then summed. This sum was z-scored again to yield the combined spatial error. 
 
 
 ```{r}
