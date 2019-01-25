@@ -29,6 +29,7 @@ analysis/museumdraw/python/plots/*
 analysis/museumdraw/python/features/*
 .idea
 *.png
+*.tex
 ._*
 experiments/photodraw/code/node_modules.zip
 experiments/photodraw/code/images.zip
@@ -40,3 +41,6 @@ analysis/museumstation/preprocessing/run_classifications/count_classification_ou
 analysis/museumstation/preprocessing/run_classifications/compiled_classifications/Classification_Outputs1985.csv
 analysis/museumstation/preprocessing/run_classifications/compiled_classifications/Classification_Outputs8498.csv
 writing/CogSci-2019-Submission/CogSci-2019-Submission-Trimmed_cache/*
+
+analysis/museumstation/preprocessing/extract_features/z-old/*
+analysis/museumstation/preprocessing/run_classifications/z-old/*
