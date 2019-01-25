@@ -71,7 +71,7 @@ theme_set(theme_few())
 # Introduction 
 
 
-Children draw prolifically, providing a rich source of potential insight into their emerging understanding of the world [@kellogg1969analyzing]. Accordingly, drawings have often been used as a method for probing developmental change in a wide variety of domains [@piaget1929child; @karmiloff1990constraints; @fury1997children; @arden2014genes]. In particular, drawings have long provided inspiration for scientists investigating how children represent visual concepts [@minsky1972artificial]. For example, even when drawing from observation, children tend to include features that are not visible from their vantage point, yet are diagnostic of category membership (e.g., a handle on a mug) [@bremmer1984prior; @barrett1976symbolism]. Here, the key idea is that as children learn the diagnostic properties of objects and how to recognize them, they may express this knowledge in their drawings of these categories. Indeed, children’s visual recognition abilities have a protracted developmental trajectory: configural visual processing—or the ability to process relationships between object parts [@nishimura2009; @juttner2016developmental; @juttner2006developmental]— matures slowly throughout middle childhood, as does the ability to recognize objects in unusual poses or lighting conditions [@bova2007].  
+Children draw prolifically, providing a rich source of potential insight into their emerging understanding of the world [@kellogg1969analyzing]. Accordingly, drawings have often been used as a method for probing developmental change in a wide variety of domains [@piaget1929child; @karmiloff1990constraints; @fury1997children; @arden2014genes]. In particular, drawings have long provided inspiration for scientists investigating how children represent visual concepts [@minsky1972artificial]. For example, even when drawing from observation, children tend to include features that are not visible from their vantage point, yet are diagnostic of category membership (e.g., a handle on a mug) [@bremmer1984prior; @barrett1976symbolism]. Here, the key idea is that as children learn the diagnostic properties of objects and how to recognize them, they may express this knowledge in their drawings of these categories. Indeed, children’s visual recognition abilities have a protracted developmental trajectory: configural visual processing—or the ability to process relationships between object parts [@nishimura2009; @juttner2016developmental; @juttner2006developmental]—matures slowly throughout middle childhood, as does the ability to recognize objects in unusual poses or lighting conditions [@bova2007].  
 
 Inspired by this prior work, our goal is to understand how developmental changes in how children draw visual concepts relate to developmental changes in their representations of these visual concepts and their diagnostic properties. In particular, we hypothesize that children’s drawings may become more recognizable as children learn the distinctive features of particular categories that set them apart from other similar objects. However, this goal raises several methodological challenges to overcome.
 
@@ -127,11 +127,6 @@ d <- classification_data %>%
 ```{r load-tracing}
 ## Load tracing data
 tracing <- read.csv('../../data/cogsci_2019/tracing_eval/tracing_eval.csv') %>%
-  mutate(age_numeric = age) %>%
-  mutate(age = paste0("age",age_numeric)) %>%
-  mutate(age = as.factor(age))
-
-tracing_mturk <- read.csv('../../data/cogsci_2019/tracing_eval/tracing_eval.csv') %>%
   mutate(age_numeric = age) %>%
   mutate(age = paste0("age",age_numeric)) %>%
   mutate(age = as.factor(age))
@@ -194,10 +189,10 @@ grid::grid.raster(img)
 
 
 ## Measuring Object Drawing Recognizability
-We also developed an automated procedure for evaluating how well participants included category-diagnostic information in their drawings, by examining classification performance by a deep convolutional neural network model. 
+We also developed an automated procedure for evaluating how well participants included category-diagnostic information in their drawings, by examining classification performance on the features extracted by a deep convolutional neural network model. 
 
 ### Visual Encoder
-To encode the high-level visual features of each sketch, we used the VGG-19 architecture [@simonyan2014very], a deep convolutional neural network that was pre-trained on Imagenet classification [@deng2009imagenet]. We used model activations in the second-to-last layer of this network, which contain more explicit representations of object identity than earlier layers do [@FanCommon2018; @yamins2014performance; @long2018drawings]. Raw feature representations in this layer consist of flat 4096-dimensional vectors, to which we applied channel-wise normalization before further analysis. 
+To encode the high-level visual features of each sketch, we used the VGG-19 architecture [@simonyan2014very], a deep convolutional neural network pre-trained on Imagenet classification [@deng2009imagenet]. We used model activations in the second-to-last layer of this network, which contain more explicit representations of object identity than earlier layers do [@FanCommon2018; @yamins2014performance; @long2018drawings]. Raw feature representations in this layer consist of flat 4096-dimensional vectors, to which we applied channel-wise normalization before further analysis. 
 
 ### Logistic Regression Classifier
 Next, we used these features to train an object category decoder. To avoid any bias due to imbalance in the distribution of drawings over categories and ages (since groups of categories ran at the station for different times), we sampled from our full dataset such that there were an equal number of drawings of each of the 23 categories (N=8694 drawings total). We then trained a 23-way logistic classifier with L2 regularization under leave-one-out cross-validation to estimate the recognizability of every drawing in our dataset. This classifier yields both a categorical decision over categories, as well as the probability assigned to each category. 
@@ -206,19 +201,6 @@ Next, we used these features to train an object category decoder. To avoid any b
 ### How do our covariates change with age? Compute means and CIs; Group by age/category
 
 ## first summarize data  
-cor_only_prob_by_age <- d %>%
-  filter(correct_or_not==1 ) %>%
-  group_by(age_numeric,category) %>%
-  summarize(avg_prob = mean(target_label_prob)) %>%
-  group_by(age_numeric) %>%
-  multi_boot_standard(col = "avg_prob") 
-
-prob_by_age <- d %>%
-  group_by(age_numeric,category) %>%
-  summarize(avg_prob = mean(target_label_prob)) %>%
-  group_by(age_numeric) %>%
-  multi_boot_standard(col = "avg_prob")  
-
 cor_by_age <- d %>%
   group_by(age_numeric,category) %>%
   summarize(avg_cor = mean(correct_or_not)) %>%
@@ -254,32 +236,6 @@ tracing_scores <- d %>%
 ## Make compiled plot of descriptives
 base_size_chosen=10 # size of text in plots
 smooth_alpha=.2
-
-cor_only_prob_by_age_plot = ggplot(cor_only_prob_by_age, aes(age_numeric,mean, color=age_numeric)) +
-  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
-  theme_few(base_size = base_size_chosen) + 
-  labs(x='Age', y='Target label probability') +
-  scale_color_viridis(option="D") + 
-  theme(legend.position = "none") + 
-  geom_smooth(col='grey',span=10) +
-  ylim(.05,.075)
-
-cor_by_age_plot = ggplot(cor_by_age, aes(age_numeric,mean, color=age_numeric)) +
-  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
-  theme_few(base_size = base_size_chosen) + 
-  labs(x='Age', y='Proportion correct') +
-  scale_color_viridis(option="D") + 
-  theme(legend.position = "none") + 
-  geom_smooth(col='grey',span=10, alpha=smooth_alpha) 
-
-prob_by_age_plot = ggplot(prob_by_age, aes(age_numeric,mean, color=age_numeric)) +
-  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
-  theme_few(base_size = base_size_chosen) + 
-  labs(x='Age', y='Target label probability') +
-  scale_color_viridis(option="D") + 
-  theme(legend.position = "none") + 
-  geom_smooth(col='grey',span=10, alpha=smooth_alpha) +
-  ylim(.05,.075)
 
 cor_by_age_plot_A = ggplot(cor_by_age, aes(age_numeric,mean, color=age_numeric)) +
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
@@ -385,14 +341,14 @@ accuracy_no_tracing <- glmer(correct_or_not ~ scale(age_numeric) +
                         (1|session_id) +
                         (1|category),
       data = d, family="binomial")
-accuracy_no_tracing_out=summary(accuracy_no_tracing)
+
 
 ###
 null = r.squaredGLMM(accuracy_no_age_or_tracing)
 no_age = r.squaredGLMM(accuracy_no_age)
 no_tracing = r.squaredGLMM(accuracy_no_tracing)
 all = r.squaredGLMM(accuracy_all_covariates)
-no_int = r.squaredGLMM(accuracy_all_covariates_no_int)
+no_int = r.squaredGLMM(accuracy_all_covariates_no_int) # no_int = no interaction between tracing/age
 ```
 
 
@@ -416,50 +372,13 @@ no_int = r.squaredGLMM(accuracy_all_covariates_no_int)
 \end{table}
 
 
-```{r}
-
-accuracy_no_age <- glmer(correct_or_not ~ scale(avg_tracing_rating) + scale(draw_duration) +
-                          scale(mean_intensity) +
-                          scale(num_strokes) +
-                        (1|session_id) +
-                        (1|category),
-      data = d, family="binomial")
-
-accuracy_no_age_or_tracing <- glmer(correct_or_not ~ scale(draw_duration) +
-                          scale(mean_intensity) +
-                          scale(num_strokes) +
-                        (1|session_id) +
-                        (1|category),
-      data = d, family="binomial")
-
-accuracy_no_tracing <- glmer(correct_or_not ~ scale(age_numeric) +
-                          scale(draw_duration) +
-                          scale(mean_intensity) +
-                          scale(num_strokes) +
-                        (1|session_id) +
-                        (1|category),
-      data = d, family="binomial")
-accuracy_no_tracing_out=summary(accuracy_no_tracing)
-
-###
-null = r.squaredGLMM(accuracy_no_age_or_tracing)
-no_age = r.squaredGLMM(accuracy_no_age)
-no_tracing = r.squaredGLMM(accuracy_no_tracing)
-all = r.squaredGLMM(accuracy_all_covariates)
-no_int = r.squaredGLMM(accuracy_all_covariates_no_int)
-```
-
-
-
 ```{r drawingExamples, include = T, fig.env = "figure*", fig.pos = "h", fig.align='center', fig.width=8, fig.height=2.5, set.cap.width=T, num.cols.cap=2, fig.align = "center", fig.cap = "Randomly sampled drawings from eight categories ordered by the probability that the sketch was assigned to the correct target category. All sketches depicted here were correctly classified."}
 examples <- png::readPNG("figs/drawings_by_classification_figure_smaller.png")
 grid::grid.raster(examples)
 ```
 
-
-
 # Results
-Overall, drawing classification accuracy increased with age (see Figure 2A). Our mixed-effects model on drawing classification revealed that this age-related gain held when controlling for task covariates—-the amount of time spent drawing, the number of strokes, and total ink used  (Figures 2B, C, and D)—-and for variation across object categories and individual children (operationalized by random intercepts for both categories and participants). All model coefficients can be found in Table 1.
+Overall, drawing classification accuracy increased with age (see Figure 2A). Our mixed-effects model on drawing classification revealed that this age-related gain held when accounting for task covariates—-the amount of time spent drawing, the number of strokes, and total ink used  (Figures 2B, C, and D)—-and for variation across object categories and individual children (operationalized by random intercepts for both categories and participants). All model coefficients can be found in Table 1.
 
 We next examined the relationship between children's ability to trace complex shapes and the subsequent recognizability of their drawings. Overall, we found that tracing abilities increased with age (see Figure 2E) and that individual’s tracing abilities were good predictors of the recognizability of the drawings they produced. This main effect of tracing ability also held when accounting for task covariates (number of strokes, time spent drawing, ink used). However, we found that children’s tracing abilities did not interact with the age-related gains in classification we observed (see Figure 4): there was no interaction between age and tracing ability and we observed age-related classification gains at each level of tracing ability.
 
@@ -469,16 +388,7 @@ What changes in the feature space might be driving increases in classification a
 
 Taken together, these results suggest that developmental changes in these high-level visual features of children's drawings directly lead to gains in classification accuracy, and that these age-related gains in classification are not entirely explainable by visuomotor developments. 
 
-```{r targ-prob-by-tracing} 
-# tracing_plot = ggplot(d, aes(avg_tracing_rating,correct_or_not,color=age_numeric)) +
-#   geom_jitter(alpha=.2, height=.1, width=.1) +
-#   theme_few(base_size = base_size_chosen) +
-#   labs(x='Normalized tracing score', y='Classification accuracy') +
-#   scale_color_viridis(option="D") +
-#   theme(legend.position = "none") +
-#   geom_smooth(col='grey',span=20, method='lm') +
-#   facet_grid(~age_numeric)
-
+```{r class-accuracy-by-tracing} 
 ## Compute target_label_prob averages within quantiles / age
 num_quantiles = 4
 
@@ -492,12 +402,6 @@ avg_by_tracing <- d %>%
   group_by(avg_tracing_rating_quantile,age_numeric) %>%
   multi_boot_standard(col = "correct_or_not")
 
-probs_by_tracing <- d %>%
-  filter(correct_or_not==1)%>%
-  filter(!is.na(avg_tracing_rating_quantile)) %>%
-  group_by(avg_tracing_rating_quantile,age_numeric) %>%
-  multi_boot_standard(col = "target_label_prob")
-
 avg_by_tracing$avg_tracing_rating_quantile = as.factor(avg_by_tracing$avg_tracing_rating_quantile)
 levels(avg_by_tracing$avg_tracing_rating_quantile)=c("Tracing Quartile 1","Tracing Quartile 2","Tracing Quartile 3","Tracing Quartile 4")
 
@@ -508,15 +412,6 @@ avg_by_tracing_plot = ggplot(avg_by_tracing, aes(age_numeric,mean, color=avg_tra
   theme(legend.position = "none") +
   geom_smooth(col='grey', span = 10, method='lm')  +
   facet_grid(~avg_tracing_rating_quantile)
-
-# ggplot(probs_by_tracing, aes(age_numeric,mean, color=avg_tracing_rating_quantile)) +
-#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper,alpha=.2)) +
-#   theme_few(base_size = base_size_chosen) +
-#   labs(x='Age', y='Target probability') +
-#   theme(legend.position = "none") +
-#   geom_smooth(col='grey', span = 10, method='lm')  +
-#   facet_grid(~avg_tracing_rating_quantile)
-
 ```
 
 ```{r tracingResults, include = T, fig.env = "figure*", fig.pos = "h", fig.width=7, fig.height=2, set.cap.width=T, num.cols.cap=2, fig.cap = "Data are divided into four quantiles based on the distribution of tracing scores in the entire dataset; these divisions represent the data in each panel. In each panel, the average probability assigned to the target class is plotted as a function of child’s age.  Error bars represent 95\\% CIs bootstrapped within each age group and subset of tracing scores."}
@@ -531,7 +426,7 @@ grid::grid.raster(examples)
 # General Discussion
 How do children represent different object categories throughout childhood? Drawings are a rich potential source of information about how visual representations change over development. One possibility is that older children’s drawings are more recognizable because children are better able to include the distinctive features of particular categories that set them apart from other similar objects. Supporting this hypothesis, the high-level visual features present in children’s drawings could be used to estimate the category children were intending to draw, and these classifications became more accurate as children became older. These age-related gains in classification were not entirely explainable by either low-level task covariates (e.g., amount of time spent drawing, average intensity, or number of strokes) or children’s tracing abilities.  
 
-Taken together, these results suggest that children’s drawings contain more distinctive features as they grow older, perhaps reflecting a change in their internal representations of these categories. However, one possibility is that children simply learn routines to draw certain categories—perhaps from direct instruction or observation. Nonetheless, our results held even when restricted to a subset of very rarely drawn categories (e.g., “couch”, ”scissors”, ”key”,) providing evidence against a simple version of this idea.
+Taken together, these results suggest that children’s drawings contain more distinctive features as they grow older, perhaps reflecting a change in their internal representations of these categories. However, one possibility is that children simply learn routines to draw certain categories—perhaps from direct instruction or observation. Nonetheless, our results held even when restricted to a subset of very rarely drawn categories (e.g., “couch”, ”scissors”, ”key”,) providing evidence against a simple version of this idea
 
 Thus, these results open the door for future work to examine the ways in which children’s drawings are linked to their changing visual concepts. One possibility is that children’s drawing of object categories are intimately linked to their visual recognition behaviors: children who produce these more distinctive features in their drawings have finer-grained perceptual representations of these categories. On this account, younger children who tend to not draw these features have lossier visual representations of these categories and show poorer recognition behavior. A second possibility is that when children are asked to draw “a rabbit” they retrieve a list of diagnostic attributes that rabbits possess (e.g., long ears, whiskers).  If so, we might observe a relationship between the attributes that children generate when asked to verbally describe “a rabbit” and the features that children include in their drawings.   
 
