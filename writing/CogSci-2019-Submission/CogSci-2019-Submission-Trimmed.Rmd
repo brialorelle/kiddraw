@@ -8,31 +8,28 @@ document-params: "10pt, letterpaper"
 
 author-information: > 
     \author{{\large \bf Bria Long (bria@stanford.edu)} \\ Department of Psychology, 450 Serra Mall \\ Stanford, CA 94305
-    \AND {\large \bf Judith E. Fan (jefan@stanford.edu)} \\Department of Psychology, 450 Serra Mall \\ Stanford, CA 94305
+    \AND {\large \bf Judith E. Fan (jefan@ucsd.edu)} \\Department of Psychology, 9500 Gilman Drive \\ La Jolla, CA 92093
     \AND {\large \bf Zixian Chai (zchai14@stanford.edu)} \\Department of Psychology, 450 Serra Mall \\ Stanford, CA 94305
     \AND {\large \bf Michael C. Frank (mcfrank@stanford.edu)} \\Department of Psychology, 450 Serra Mall \\ Stanford, CA 94305}
 
 abstract: > 
   How do children's visual concepts change across childhood, and how might
-  these changes be reflected in their drawings of object categories? Here, we    
+  these changes be reflected in their drawings? Here we    
   investigate developmental changes in children’s ability to emphasize the relevant  
-  visual distinctions between object categories in their drawings. We collected a
-  large-scale dataset of children's drawings from a free-standing drawing station in a
-  children's museum, gathering over 13K drawings from children ages 2-10 years. We
+  visual distinctions between object categories in their drawings. We collected over 13K drawings 
+  from children aged 2-10 years via a free-standing drawing station in a children's museum. We
   hypothesized that older children would produce more recognizable drawings, and that
-  this gain in recognizability would not be entirely explained by concurrent 
-  visuomotor developments. To evaluate this prediction, we first applied a pretrained
-  deep convolutional neural network model (VGG-19) to extract a high-level feature
-  representation of all drawings. We then assessed the degree to which these drawings
-  were recognizable by training a linear classifier on these features, and we
-  quantified children's concurrent visuomotor development by assessing their ability to
+  this gain in recognizability would not be entirely explained by concurrent development
+  in visuomotor control. To measure recognizability, we applied a pretrained
+  deep convolutional neural network model to extract a high-level feature
+  representation of all drawings, and then trained a multi-way linear classifier on these features.
+  To measure visuomotor control, we developed an automated procedure to measure their ability to
   accurately trace complex shapes. We found consistent gains in the recognizability of
-  drawings across childhood that were not attributable to children's developing
-  visuomotor abilities. Furthermore, these gains in classification were accompanied by
-  an increase in the distinctiveness between pairs of categories (e.g., dogs vs.
-  rabbits) in this visual feature space.  Overall, these results demonstrate
-  that children's drawings include increasingly more distinctive visual features as
-  they grow older.
+  drawings across ages that were not fully explained by children's ability to
+  trace complex shapes accurately. Furthermore, these gains were accompanied by
+  an increase in how distinct different categories were in feature space.  
+  Overall, these results demonstrate that children's drawings include increasingly 
+  more distinctive visual features as they grow older.
 
 keywords: >
     object representations; child development; visual production; deep neural networks
