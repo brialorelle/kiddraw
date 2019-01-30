@@ -28,7 +28,7 @@ abstract: >
   drawings across ages that were not fully explained by children's ability to
   trace complex shapes accurately. Furthermore, these gains were accompanied by
   an increase in how distinct different categories were in feature space.  
-  Overall, these results demonstrate that children's drawings include increasingly 
+  Overall, these results demonstrate that children's drawings include 
   more distinctive visual features as they grow older.
 
 keywords: >
