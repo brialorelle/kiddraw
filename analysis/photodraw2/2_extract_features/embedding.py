@@ -167,7 +167,7 @@ class FeatureExtractor():
             if self.dataset=='rendered_111918':
                 label = path.split('/')[-1].split('_')[0]
             elif self.dataset=='photodraw2_020519':
-                label = path.split('/')[0]   
+                label = path.split('/')[-1].split('_')[1]   
                 condition = path.split('/')[-1].split('_')[0]
             else:
                 label = path.split('/')[-2]   
