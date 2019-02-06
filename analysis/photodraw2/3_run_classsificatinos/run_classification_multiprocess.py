@@ -75,7 +75,8 @@ def get_classifications(test_index):
  
     # run model
     clf = linear_model.LogisticRegression(penalty='l2',C=REGULARIZE_PARAM,tol=.1,solver='sag').fit(X_train, y_train)
-        
+    print 'running regression...'
+
     # get outputs and save relevant info
     correct_or_not = clf.score(X_test, y_test) # correct or not
     probs = clf.predict_proba(X_test)   # probabilities
@@ -99,6 +100,7 @@ def get_classifications(test_index):
     out = pd.concat([_data,image_probs_2_df], axis=1)
 
     ## save it out
+    print 'finished and saving!'
     if not os.path.exists(out_path_specific):
         os.makedirs(out_path_specific)
     out.to_csv(os.path.join(out_path_specific,'photodraw2_subset_classification_ind_{}.csv'.format(test_index_numeric)))
@@ -133,7 +135,8 @@ if __name__ == "__main__":
     test_indexes = range(start_ind, end_ind)
     
     ## run jobs
-    pool = ThreadPool(8) 
+    pool = ThreadPool(8)
+    print 'spawning jobs...'
     pool.map(get_classifications, test_indexes)
     pool.close() 
     pool.join()
