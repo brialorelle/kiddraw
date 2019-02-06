@@ -130,7 +130,7 @@ if __name__ == "__main__":
         
     # organize metadata into dataframe
     if args.dataset=='photodraw2_020519':
-        Y = make_dataframe(Labels,Ages,Sessions,Conditions)
+        Y = make_dataframe_photodraw(Labels,Ages,Sessions,Conditions)
     else:
         Y = make_dataframe(Labels,Ages,Sessions)
     _Features, _Y = preprocess_features(Features, Y)
