@@ -1,0 +1,419 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "## remember to run conn_cocolab from the terminal before running cells in this notebook!\n",
+    "import os\n",
+    "import urllib, cStringIO\n",
+    "\n",
+    "import pymongo as pm\n",
+    "\n",
+    "import matplotlib\n",
+    "from matplotlib import pylab, mlab, pyplot\n",
+    "%matplotlib inline\n",
+    "from IPython.core.pylabtools import figsize, getfigs\n",
+    "plt = pyplot\n",
+    "import seaborn as sns\n",
+    "sns.set_context('poster')\n",
+    "sns.set_style('white')\n",
+    "\n",
+    "import numpy as np\n",
+    "from __future__ import division\n",
+    "import scipy.stats as stats\n",
+    "import pandas as pd\n",
+    "import json\n",
+    "import re\n",
+    "\n",
+    "from PIL import Image\n",
+    "import base64\n",
+    "import datetime\n",
+    "\n",
+    "# import svg_render_helpers as rdh\n",
+    "from scipy.spatial import distance"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### file hierarchy and database connection vars"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "## directory & file hierarchy\n",
+    "# iterationName = 'CDM_photodraw_e2_testing'\n",
+    "iterationName = 'CDM_photodraw_e2'\n",
+    "exp_path = 'photodraw'\n",
+    "analysis_dir = os.getcwd()\n",
+    "exp_dir = os.path.abspath(os.path.join(os.getcwd(),'../..','experiments'))\n",
+    "##\n",
+    "sketch_dir = os.path.join(analysis_dir,'sketches_CDM_included_only')\n",
+    "if not os.path.exists(sketch_dir):\n",
+    "    os.makedirs(sketch_dir)\n",
+    "\n",
+    "## dir where we can keep all sketches not binned by category    "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "# set vars \n",
+    "auth = pd.read_csv('auth.txt', header = None) # this auth.txt file contains the password for the sketchloop user\n",
+    "pswd = auth.values[0][0]\n",
+    "user = 'sketchloop'\n",
+    "host = 'rxdhawkins.me' ## cocolab ip address\n",
+    "\n",
+    "# have to fix this to be able to analyze from local\n",
+    "import pymongo as pm\n",
+    "conn = pm.MongoClient('mongodb://sketchloop:' + pswd + '@127.0.0.1')\n",
+    "db = conn['kiddraw']\n",
+    "coll = db['CDM_photodraw_e2']\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Preprocessing data and rendering images"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Notes:\n",
+    "There are two types of records in the database: 'stroke' and 'finalImage'. This is stored under the key: 'dataType'.\n",
+    "The 'stroke'-type of record contains the svg string information. Every stroke event is stored as a separate record.\n",
+    "The session identifier is called \"sessionId\".\n",
+    "\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "We currently have 125 total sessions.\n"
+     ]
+    }
+   ],
+   "source": [
+    "total_sessions = coll.find().distinct('sessionId') ## this returns ALL sessions in this collection.\n",
+    "print 'We currently have {} total sessions.'.format(len(total_sessions))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "exclude_ids = ['102618_3',\n",
+    "'111218_7',\n",
+    "'112818_3',\n",
+    "'121918_1',\n",
+    "'010919_5',\n",
+    "'010919_10',\n",
+    "'test',\n",
+    "'012119_8'\n",
+    "'012119_9',\n",
+    "'Test',\n",
+    "'']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "We currently have 95 total session after exclusions/tests.\n"
+     ]
+    }
+   ],
+   "source": [
+    "sessions_to_render =  coll.find({'$and': [{'dataType':'finalImage'},{'subID': {\"$nin\": exclude_ids}}]}).distinct('sessionId')\n",
+    "print 'We currently have {} total session after exclusions/tests.'.format(len(sessions_to_render))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "We currently have 93 total subIDs after exclusions/tests.\n"
+     ]
+    }
+   ],
+   "source": [
+    "subIDS_to_render =  coll.find({'$and': [{'dataType':'finalImage'},{'subID': {\"$nin\": exclude_ids}}]}).distinct('subID')\n",
+    "print 'We currently have {} total subIDs after exclusions/tests.'.format(len(subIDS_to_render))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 35,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "images/square.png\n",
+      "images/square.png\n",
+      "images/shape.png\n",
+      "images_photocues/rectangle.png\n",
+      "images_photocues/watch_1.png\n",
+      "images_photocues/bike_1.png\n",
+      "images_photocues/chair_3.png\n",
+      "images_photocues/car_3.png\n",
+      "images_photocues/tree_1.png\n",
+      "images_photocues/rabbit_1.png\n"
+     ]
+    },
+    {
+     "ename": "KeyError",
+     "evalue": "'imageName'",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mKeyError\u001b[0m                                  Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-35-40f952c0ff04>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m()\u001b[0m\n\u001b[1;32m      2\u001b[0m \u001b[0;32mfor\u001b[0m \u001b[0mimage_rec\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mimage_recs\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      3\u001b[0m     \u001b[0mimage_rec\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 4\u001b[0;31m     \u001b[0;32mprint\u001b[0m \u001b[0mimage_rec\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m'imageName'\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;31mKeyError\u001b[0m: 'imageName'"
+     ]
+    }
+   ],
+   "source": [
+    "image_recs = this_collection.find({'$and': [{'subID':'102618_1'}, {'dataType':'finalImage'}]}).sort('time')  \n",
+    "for image_rec in image_recs:\n",
+    "    image_rec\n",
+    "    print image_rec['imageName']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 36,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{u'CB': u'2',\n",
+       " u'_id': ObjectId('5bd3576f07aab50b0dedb3d3'),\n",
+       " u'age': u'age4',\n",
+       " u'category': u'triangle',\n",
+       " u'condition': u'S',\n",
+       " u'dataType': u'finalImage',\n",
+       " u'date': u'2018-10-26T18:05:35.390Z',\n",
+       " u'endTrialTime': 1540577135390.0,\n",
+       " u'imgData': u'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',\n",
+       " u'location': u'CDM',\n",
+       " u'sessionId': u'CDM_photodraw_e21540576907849',\n",
+       " u'startTrialTime': 1540577122971.0,\n",
+       " u'subID': u'102618_1',\n",
+       " u'trialNum': 9}"
+      ]
+     },
+     "execution_count": 36,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "image_rec"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 32,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "really_run_this = 1\n",
+    "if really_run_this:\n",
+    "    \n",
+    "    ## img writing parameters\n",
+    "    imsize = 224\n",
+    "    \n",
+    "    ## desired output: a dataframe that has trials on the rows, and the following columns:\n",
+    "    ## category, age, number of strokes, mean_pixel_intensity, bounding_box_coordinates_LTRB, list of strokes, \n",
+    "    ## PNG string, submission_time, submission_date\n",
+    "    ## to be saved out as a nice tidy CSV\n",
+    "    session_id = []\n",
+    "    trial_num = []\n",
+    "    category = []\n",
+    "    num_strokes = []\n",
+    "    mean_pixel_intensity = []\n",
+    "    bounding_box_coords = []\n",
+    "    svg = []\n",
+    "    svg_times = []\n",
+    "    png = []\n",
+    "    submit_time = []\n",
+    "    submit_date = []\n",
+    "    draw_duration = []\n",
+    "    draw_duration_strokes = []\n",
+    "    filename = []\n",
+    "    age=[]\n",
+    "    countErr = 0\n",
+    "    condition=[]\n",
+    "    readadble_date = []\n",
+    "    exclude_session_id = []\n",
+    "    include_age = ['age4']\n",
+    "\n",
+    "    for s in total_sessions:\n",
+    "        this_collection = coll\n",
+    "        image_recs = this_collection.find({'$and': [{'sessionId':s}, {'dataType':'finalImage'}]}).sort('time')  \n",
+    "        \n",
+    "        for imrec in image_recs:  \n",
+    "                stroke_recs = this_collection.find({'$and': [ \n",
+    "                                                  {'sessionId':s}, \n",
+    "                                                  {'dataType':'stroke'},\n",
+    "                                                  {'category': imrec['category']}]}).sort('time')   \n",
+    "\n",
+    "                if stroke_recs.count() > 0: ## only include trials if the drawings are not blank            \n",
+    "                    session_id.append(imrec['sessionId'])        \n",
+    "                    trial_num.append(imrec['trialNum']) \n",
+    "                    category.append(imrec['category'])\n",
+    "\n",
+    "                    try:    \n",
+    "                        png.append(imrec['imgData'])\n",
+    "                        submit_time.append(imrec['endTrialTime'])\n",
+    "                        submit_date.append(imrec['date'])\n",
+    "                        age.append(imrec['age'])\n",
+    "                        condition.append(imrec['condition'])\n",
+    "                        filename.append(os.path.join(sketch_dir,'{}_sketch_{}_{}_{}.png'.format(imrec['category'], imrec['sessionId'], imrec['condition'], imrec['age'])))\n",
+    "                        num_strokes.append(stroke_recs.count())\n",
+    "                        draw_duration.append(imrec['endTrialTime'] - imrec['startTrialTime'])\n",
+    "\n",
+    "                        _svg = [] # this keeps track of the strokes from THIS final image\n",
+    "                        _svg_times = []\n",
+    "                        for strec in stroke_recs:\n",
+    "                            _svg.append(strec['svg'])\n",
+    "                            _svg_times.append(strec['endStrokeTime'])\n",
+    "                        draw_duration_strokes.append((_svg_times[-1] - _svg_times[0])/1000) ## in seconds\n",
+    "\n",
+    "                        ## and write out image data here too\n",
+    "                        imgData = imrec['imgData'];\n",
+    "                        filestr = base64.b64decode(imgData)\n",
+    "                        child_dir = os.path.join(sketch_dir,imrec['sessionId'])\n",
+    "                        if not os.path.exists(child_dir):\n",
+    "                            os.makedirs(child_dir)\n",
+    "                        fname = os.path.join(child_dir,'{}_sketch_{}_{}_{}.png'.format(imrec['category'],imrec['sessionId'],imrec['condition'], imrec['age']))\n",
+    "                        with open(fname, \"wb\") as fh:\n",
+    "                            fh.write(imgData.decode('base64'))  \n",
+    "\n",
+    "                    except Exception as e:\n",
+    "                        print('something went wrong with an image')\n",
+    "                        print e\n",
+    "                        countErr = countErr + 1\n",
+    "                        print imrec['category']\n",
+    "                        child_dir = os.path.join(sketch_dir,'noname')\n",
+    "                        if not os.path.exists(child_dir):\n",
+    "                            os.makedirs(child_dir)\n",
+    "                        fname = os.path.join(child_dir,'{}_sketch_{}_{}.png'.format(imrec['category'], 'noname',imrec['sessionId']))\n",
+    "                        with open(fname, \"wb\") as fh:\n",
+    "                            fh.write(imgData.decode('base64'))                   "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "## How many session IDs do we have?\n",
+    "count_subs = np.size(np.unique(session_id))\n",
+    "print 'We have {}  subjects after exclusions.'.format(count_subs)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "## How many drawings do we have in each condition?  \n",
+    "print 'We have {} semantic drawings.'.format(condition.count(\"S\"))\n",
+    "print 'We have {} perception drawings.'.format(condition.count(\"P\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Save out data into a dataframe"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "really_run_this = 1 \n",
+    "## compile data\n",
+    "if really_run_this:\n",
+    "    X = pd.DataFrame([session_id,age,trial_num,condition,category,submit_time,submit_date,num_strokes,svg,svg_times,png,draw_duration,avg_stroke_length,filename])\n",
+    "    X = X.transpose()\n",
+    "    X.columns = ['session_id','age','trial_num','condition','category','submit_time','submit_date','num_strokes','svg','svg_times','png','draw_duration', 'avg_stroke_length','filename']"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 2",
+   "language": "python",
+   "name": "python2"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 2
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython2",
+   "version": "2.7.14"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 1
+}
