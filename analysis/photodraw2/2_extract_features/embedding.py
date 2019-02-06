@@ -194,7 +194,7 @@ class FeatureExtractor():
         def generator(paths, imsize=self.imsize, use_cuda=use_cuda, dataset=self.dataset):
             for path in paths:
                 image = load_image(path)
-                if self.dataset='photodraw2_020519':
+                if self.dataset=='photodraw2_020519':
                     label, age, session, condition = get_metadata_from_path(path,dataset)
                     yield (image, label, age, session,condition)        
                 else:
