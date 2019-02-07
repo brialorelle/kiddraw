@@ -118,4 +118,4 @@ for this_ind in range(start_ind, end_ind):
 ## print output
 end_time = time.time()
 time_took = end_time - start_time
-print '---running models for {} images took {} seconds'.format(np.shape(test_indexes)[0],time_took)
+print '---running classifications for {} images took {} seconds'.format(np.shape(range(start_ind, end_ind))[0],time_took)
