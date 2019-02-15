@@ -1,0 +1,207 @@
+---
+title: "Examine_photodraw_classifications"
+author: "Bria Long"
+date: "2/6/2019"
+output: html_document
+---
+
+```{r, libraries}
+library(knitr)
+library(tidyverse)
+library(assertthat)
+library(ggthemes)
+library(langcog)
+library(forcats)
+library(egg)
+library(gridExtra)
+library(reticulate)
+library(readr)
+library(ggplot2)
+library(reshape2)
+library(lme4)
+library(stringr)
+library(viridis)
+library(MuMIn)
+theme_set(theme_few())
+```
+
+```{r load-classifications}
+## Load classification data
+classification_data <- read.csv('compiled_classifications/Classification_Outputs1092.csv') %>%
+  as.tibble() %>%
+  # mutate(session_id = paste('cdm_',session_id,sep="")) %>%
+  mutate(age_numeric = age) %>%
+  mutate(age = paste('age',age,sep="")) %>%
+  mutate(age = as.factor(age)) %>%
+  mutate(category = target_label) %>% 
+  # mutate(image_name = paste(category,'_sketch_', age,'_', session_id,'.png',sep="")) %>%
+  select(-X) 
+```
+
+
+```{r}
+## Load in meta data from mongo-db database dumps
+metadata_photodraw <- read.csv('mongodb-output/Photodraw2_AllDescriptives_1475_images_final_CDM_photodraw_e2_no_blanks.csv') %>%
+  as.tibble() %>%
+  mutate(session_id = str_split_fixed(session_id,"_",2)[,2]) %>%
+  mutate(session_id = as.factor(session_id)) %>%
+  mutate(draw_duration_new = replace(draw_duration_new, draw_duration_new > 30,30))
+
+## join with classification data
+d <- classification_data %>%
+  left_join(metadata_photodraw) %>%
+  mutate(age_numeric = as.numeric(str_split_fixed(age,'age',2)[,2]))
+```
+
+
+
+```{r descriptives-across-age}
+### How do our covariates change with age? Compute means and CIs; Group by age/category
+
+## first summarize data  
+cor_by_age <- d %>%
+  group_by(session_id,condition,age_numeric) %>%
+  summarize(avg_cor = mean(correct_or_not)) %>%
+  group_by(age_numeric,condition) %>%
+  multi_boot_standard(col = "avg_cor")  
+
+base_size_chosen=12; smooth_alpha=.2
+ggplot(cor_by_age, aes(age_numeric,mean, color=condition)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  theme_few(base_size = base_size_chosen) + 
+  labs(x='Age', y='Classification accuracy') +
+  ylim(0,1) + 
+  geom_hline(yintercept = 1/12, linetype="dashed", color="grey") 
+```
+
+```{r}
+cor_by_age_by_cond_by_category <- d %>%
+  group_by(session_id,condition,age_numeric,category) %>%
+  summarize(avg_cor = mean(correct_or_not)) %>%
+  group_by(age_numeric,condition,category) %>%
+  multi_boot_standard(col = "avg_cor")  
+
+ggplot(cor_by_age_by_cond_by_category, aes(age_numeric,mean, color=condition)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  theme_few(base_size = base_size_chosen) + 
+  labs(x='Age', y='Classification accuracy') +
+  # scale_color_viridis(option="D") + 
+  # theme(legend.position = "none") + 
+  # geom_smooth(col='grey',span=10, alpha=smooth_alpha) +
+  ylim(0,1) + 
+  geom_hline(yintercept = 1/12, linetype="dashed", color="grey") +
+  facet_wrap(~category)
+
+
+```
+
+
+```{r}
+full_model <- glmer(correct_or_not ~ condition*scale(age_numeric) + scale(draw_duration_new) +
+                          scale(mean_intensity) +
+                          scale(num_strokes) +
+                        (1|session_id) +
+                        (1|category),
+      data = d, family="binomial")
+
+```
+
+```{r}
+
+cor_by_age <- d %>%
+  group_by(session_id,condition,age_numeric) %>%
+  summarize(avg_cor = mean(correct_or_not)) %>%
+  group_by(age_numeric,condition) %>%
+  multi_boot_standard(col = "avg_cor") 
+
+draw_duration <- d %>%
+  group_by(session_id,condition,age_numeric) %>%
+  summarize(avg_draw_duration = mean(draw_duration_new)) %>%
+  group_by(age_numeric,condition) %>%
+  multi_boot_standard(col = "avg_draw_duration")
+
+num_strokes <- d %>%
+  group_by(session_id,condition,age_numeric) %>%
+  summarize(avg_num_strokes = mean(num_strokes)) %>%
+  group_by(age_numeric,condition) %>%
+  multi_boot_standard(col = "avg_num_strokes") 
+
+avg_intensity <- d %>%
+  group_by(session_id,condition,age_numeric) %>%
+  summarize(avg_intensity = mean(mean_intensity)) %>%
+  group_by(age_numeric,condition) %>%
+  multi_boot_standard(col = "avg_intensity")
+
+
+
+
+
+# tracing_scores <- d %>%
+#   distinct(session_id,age_numeric,avg_tracing_rating) %>%
+#   filter(!is.na(avg_tracing_rating)) %>%
+#   group_by(age_numeric) %>%
+#   multi_boot_standard(col = "avg_tracing_rating")
+```
+
+
+
+```{r plot-descriptives-across-age}
+## Make compiled plot of descriptives
+base_size_chosen=18 # size of text in plots
+smooth_alpha=.2
+
+cor_by_age_plot_A = ggplot(cor_by_age, aes(age_numeric,mean, color=condition)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), position = position_dodge(width = 0.5)) + 
+  theme_few(base_size = base_size_chosen) + 
+  labs(x='Age', y='Classification accuracy') +
+  # scale_color_viridis(option="D") + 
+  theme(legend.position = "none") +
+  # geom_smooth(col='grey',span=10, alpha=smooth_alpha) +
+  # ggtitle('A') + 
+  ylim(0,.75) + 
+  geom_hline(yintercept = 1/12, linetype="dashed", color="grey")
+
+p1=ggplot(draw_duration, aes(age_numeric,mean, color=condition)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), position = position_dodge(width = 0.5)) +
+  theme_few(base_size = base_size_chosen) +
+  labs(x='Age', y='Draw duration (s)') +
+  # scale_color_viridis(option="D") +
+  theme(legend.position = "none") + 
+  ylim(0,20) 
+  # geom_smooth(col='grey', span = 10) +
+  # ggtitle('B')
+
+p2=ggplot(avg_intensity, aes(age_numeric,mean, color=condition)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), position = position_dodge(width = 0.5)) +
+  theme_few(base_size = base_size_chosen) +
+  labs(x='Age', y='Ink used (mean intensity)') +
+  # scale_color_viridis(option="D") +
+  theme(legend.position = "none") + 
+  ylim(.02,.08) 
+  # geom_smooth(col='grey', span = 10,alpha=smooth_alpha)  +
+  # ggtitle('C')
+
+p3=ggplot(num_strokes, aes(age_numeric,mean, color=condition)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), position = position_dodge(width = 0.5)) +
+  theme_few(base_size = base_size_chosen) +
+  labs(x='Age', y='Number of strokes') +
+  # scale_color_viridis(option="D") +
+  theme(legend.position = "right") +
+  ylim(0,15) 
+  # geom_smooth(col='grey', span = 10,alpha=smooth_alpha)  +
+  # ggtitle('D')
+        
+# p4=ggplot(tracing_scores, aes(age_numeric,mean, color=age_numeric)) +
+#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+#   theme_few(base_size = base_size_chosen) +
+#   labs(x='Age', y='Normalized tracing score') +
+#   # scale_color_viridis(option="D") +
+#   theme(legend.position = "none") + 
+#   geom_smooth(col='grey', span = 10,alpha=smooth_alpha)  +
+#   ggtitle('E')
+```
+
+```{r}
+ggarrange(cor_by_age_plot_A,p1,p2,p3, nrow = 1)
+
+```
