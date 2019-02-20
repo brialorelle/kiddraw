@@ -55,33 +55,41 @@ function shuffle (a)
     return o;
 }
 
-//
-function getButtonCategory(clicked_id) {
-    return function(element) {
-        return (element.buttonIndex == clicked_id)
-        alert('get button category')
-    }
-}
+
 
 function clickResponse(clicked_id){
+    //is triggered by functions attached to 
     temp = buttonList.filter(getButtonCategory(clicked_id))
-    curr_category = stimListTest[curTrial].category
-    clicked_category = temp[0].category
-    if (curr_category == clicked_category){
-        feedback.play();
+    curr_category = stimListTest[curTrial].category // category of the sketch
+    clicked_category = temp[0].category // this is set below by counterbalancing code; category of clicked button
+    
+    // in any case, give some feedback that we hit a button for 500 seconds
+    $('#' + temp[0].buttonIndex).css({"border":"solid 7px #999"});
+    setTimeout (function(){
+            $('#' + temp[0].buttonIndex).css({"border":"none"});
+        },500);
+    
+    if (curr_category == clicked_category){ // if corrrect
+        feedback.play(); // play feedback noise
+
         // and change color of border around sketchpad
-        $('#sketchpad').css({"border":"solid 5px #17a2b8"});
+        $('#sketchpad').css({"border":"solid 10px #17a2b8"})
         setTimeout (function(){
             $('#sketchpad').css({"border":"solid 5px #999"});
-        },500);
+        },750);
         if (curTrial>numPracTrials){
            correctCount = correctCount + 1
         }
-        // place stars
-        // if (correctCount%5==1)
     } 
     saveGuessData(clicked_category) // save first!
     increaseTrial(); // save data and increase trial counter
+}
+
+// used in above function to get category that was lickced
+function getButtonCategory(clicked_id) {
+    return function(element) {
+        return (element.buttonIndex == clicked_id)
+    }
 }
 
 function increaseTrial(){
@@ -96,7 +104,7 @@ function increaseTrial(){
     // wait 2 seconds
     setTimeout(function() {
         startGuessing()
-    }, 1000);
+    }, 1500);
     
 }
 
@@ -206,66 +214,33 @@ function showNextSketch(){
     }
 }
 
-function monitorProgress(){
 
-    // console.log('starting monitoring')
-    // $('.progress').show(); // don't show progress bar until we start monitorung
-    // progress(timeLimit, timeLimit, $('.progress')); // show progress bar
-};
-
-
-
-//  monitors the progress and changes the js elements associated with timeout bar
-// function progress(timeleft, timetotal, $element) {
-//     var progressBarWidth = timeleft * $element.width()/ timetotal;
-//     var totalBarWidth = $element.width();
-//     $element.find('.progress-bar').attr("aria-valuenow", timeleft).text(timeleft)
-//     $element.find('.progress-bar').animate({ width: progressBarWidth }, timeleft == timetotal ? 0 : 1000, "linear");
-//     console.log("clicked submit = " + clickedSubmit)
-//     console.log("time left = " + timeleft)
-
-//     if(timeleft > 0 & clickedSubmit==0) {
-//         setTimeout(function() {
-//             progress(timeleft - 1, timetotal, $element);
-//         }, 1000);
-//     }
-//     else if(timeleft == 0 & clickedSubmit==0){
-//         console.log("trial timed out")
-//         increaseTrial();
-//         clickedSubmit = 1 // it's as if we clicked submit
-//         disableDrawing = true // can't draw after trial timed out
-//         $("#sketchpad").css({"background":"linear-gradient(#17a2b81f, #17a2b81f)", "opacity":"0.5"});
-//         return; //  get out of here
-//     }
-//     else if (clickedSubmit==1){
-//         console.log("exiting out of progress function")
-//         $element.find('.progress-bar').width(totalBarWidth)
-//         return; //  get out of here, data being saved by other button
-//     }
-// };
 
 function saveGuessData(clicked_category){
-// NEEDS MODIFICTIONS
-// get critical trial variables
     var clicked_category = clicked_category
-    var category = stimListTest[curTrial].category;
-    var age = $('.active').attr('id');
+    var intended_category = stimListTest[curTrial].category;
+    var sketch_path = stimListTest[curTrial].src;
+    var producer_age = stimListTest[curTrial].age;
+    var recognizer_age = $('.active').attr('id');
 
     // test stirng
     readable_date = new Date();
     current_data = {
-                dataType: 'finalImage',
-                sessionId: sessionId, // each child
-                category: category, // drawing category
-                clicked_category: clicked_category, // clicked category
+                dataType: 'guessData',
                 dbname:'kiddraw',
                 colname: version, 
                 location: mode,
-                trialNum: curTrial,
+                trialNum: curTrial, // current trial in guessing session
+                sessionId: sessionId, // each guesser
+                recognizer_age: recognizer_age, // their age
+                intended_category: intended_category, // inteded category of sketch
+                producer_age: producer_age, // age of producer who made the sketch
+                sketch_path: sketch_path, // which exact sketch recognizers are seeing
+                clicked_category: clicked_category, // category that recognizers clicked 
                 endTrialTime: Date.now(), // when trial was complete, e.g., now
                 startTrialTime: startTrialTime, // when trial started, global variable
                 date: readable_date,
-                age: age};
+            };
 
     // send data to server to write to database
     socket.emit('current_data', current_data);
@@ -324,9 +299,6 @@ function endExperiment(){
         }
     }, 60000);
 }
-
-
-
 
 
 
@@ -400,7 +372,6 @@ window.onload = function() {
         $('#mainExp').hide();
         $('#drawing').hide();
         endExperiment();
-
     });
 
     // last "end" button after child has completed all trials
