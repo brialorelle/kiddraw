@@ -283,7 +283,9 @@ function restartExperiment() {
     // send data to server to write to database
     socket.emit('current_data', current_data);
     console.log('sending survey data')
-    window.location.reload(true);
+    
+    // send back to the landing page (not beginning of guessing game)
+    window.location.href="https://rxdhawkins.me:8881/landing_page.html"
 }
 
 function endExperiment(){
