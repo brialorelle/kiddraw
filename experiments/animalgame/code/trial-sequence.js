@@ -104,7 +104,7 @@ function increaseTrial(){
     // wait 2 seconds
     setTimeout(function() {
         startGuessing()
-    }, 1500);
+    }, 1250);
     
 }
 
