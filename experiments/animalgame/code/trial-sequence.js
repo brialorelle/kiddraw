@@ -75,7 +75,7 @@ function clickResponse(clicked_id){
         // and change color of border around sketchpad
         $('#sketchpad').css({"border":"solid 10px #17a2b8"})
         setTimeout (function(){
-            $('#sketchpad').css({"border":"solid 5px #999"});
+            $('#sketchpad').css({"border":"solid 10px #999"});
         },750);
         if (curTrial>numPracTrials){
            correctCount = correctCount + 1

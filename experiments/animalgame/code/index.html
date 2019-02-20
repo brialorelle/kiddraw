@@ -78,7 +78,7 @@
             </p>
         </div>
         <div class="slideButton">
-            <button class="btn btn-info startExp" id="startCDM"> &nbsp LET'S DRAW ! &nbsp </button>
+            <button class="btn btn-info startExp" id="startCDM"> &nbsp LET'S PLAY! &nbsp </button>
         </div>
     </div>
 
@@ -89,33 +89,29 @@
                 <source src="videos/love.mp4" type="video/mp4">
             </video>
         </div>
-
+            <!-- Canvas and sketch divs-->
             <canvas id="sketchpad"></canvas>
             <div id="drawing" style="display:none">
             <img id ="sketch" style="display:none"></img>
             <div class="row" id="submit_div" style="width:100%;">
-
-                <!-- <div class="col-sm-2 drawingButton imageButton"> -->
+            
+            <!-- Main four response buttons-->
                 <div class="col drawingButton imageButton">
                     <p id="keepGoing_1_txt"> Bird </p>
                     <img class="keepGoingButton" id="keepGoing_1" src="images_photocues/bird.jpg" onclick="clickResponse(this.id)"></img>
                 </div>
 
-                <!-- <div class="col-sm-2 drawingButton imageButton"> -->
                 <div class="col drawingButton imageButton">
                     <p id="keepGoing_2_txt"> Cat </p>
                     <img class="keepGoingButton" id="keepGoing_2" src="photocues/cat.jpg" onclick="clickResponse(this.id)"></img>
                 </div>
 
-                <!-- <div class="col-sm-2 drawingButton imageButton" > -->
                 <div class="col drawingButton imageButton">
                     <p id="keepGoing_3_txt"> Rabbit </p>
                     <img class="keepGoingButton"  id="keepGoing_3" src="photocues/rabbit.jpg" onclick="clickResponse(this.id)"></img>
                 </div>
-                <!-- <div class = "col-sm-2 drawingButton imageButton"> -->
                 <div class="col drawingButton imageButton">
                     <p id="keepGoing_4_txt"> Chair </p>
-                    <!-- <button class="responseButton"  id="keepGoing_4" onclick="clickResponse(this.id)"></img> -->
                     <img class="keepGoingButton"  id="keepGoing_4" src="photocues/dog.jpg" onclick="clickResponse(this.id)"></img>
                 </div>
             </div>
