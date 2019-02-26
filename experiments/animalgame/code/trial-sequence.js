@@ -113,12 +113,14 @@ function startGuessing(){
     maxTrials = stimListTest.length;
     if (curTrial==0){
         $(consentPage).fadeOut('fast'); // fade out age screen
+        $('#sketchpad').hide();
         showIntroVideo();  
     }
     else if (curTrial>0 && curTrial<maxTrials) {
     	console.log('starting non-intro trial')
      	$(consentPage).fadeOut('fast'); // fade out age screen
      	$('#drawing').fadeIn('fast'); // fade out age screen
+     	$('#sketchpad').show();
         beginTrial()
     }
     else if (curTrial==maxTrials){
