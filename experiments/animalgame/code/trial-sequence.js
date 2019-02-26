@@ -10,7 +10,7 @@ paper.install(window);
 socket = io.connect();
 
 // set global variables
-var curTrial=1 // global variable, trial counter : SET TO 1 FOR DEBUGGING, SHOULD BE 0
+var curTrial=0 // global variable, trial counter : SET TO 1 FOR DEBUGGING, SHOULD BE 0
 var clickedSubmit=0; // whether an image is submitted or not
 var language = "English";
 
@@ -536,7 +536,7 @@ window.onload = function() {
                 } 
 
                 // also add in introductory video trial
-                intro = {"category":"intro", "video": "intro.mp4","image":"images/lab_logo_stanford.png"}
+                intro = {"category":"intro", "video": "animalgame_intro.mp4","image":"images/lab_logo_stanford.png"}
                 stimListTest.unshift(intro)
 
                 ///// make this result of ajax function
