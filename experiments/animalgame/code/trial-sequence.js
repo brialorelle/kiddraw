@@ -118,9 +118,9 @@ function startGuessing(){
     }
     else if (curTrial>0 && curTrial<maxTrials) {
     	console.log('starting non-intro trial')
+     	
      	$(consentPage).fadeOut('fast'); // fade out age screen
      	$('#drawing').fadeIn('fast'); // fade out age screen
-     	$('#sketchpad').show();
         beginTrial()
     }
     else if (curTrial==maxTrials){
@@ -183,6 +183,7 @@ function beginTrial(){
     //
     if (curTrial==1) {
         $('#drawing').show();
+        $('#sketchpad').show();
         instructions.play() // play instructions audio
     }
     else if (curTrial==(numPracTrials + 1)){
