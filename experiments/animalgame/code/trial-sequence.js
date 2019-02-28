@@ -526,7 +526,7 @@ window.onload = function() {
                             practice_trial_img = ['photos/' + this_sketch_category + "_" + random_index + ".png"];
                             prac_index = (j+1)*10 // every 10th trial
                             // Push all of the relevant info into the stimuli list; requires sketches to be named correctly...
-                            stimListTest.splice(prac_index, 0, {"age": "photo", "category": this_sketch_category, "src": practice_trial_img});
+                            stimListTest.splice(prac_index, 0, {"age": this_age, "category": this_sketch_category, "src": practice_trial_img});
                 } 
 
                 // Now also get the practice trials and put it at beginning
