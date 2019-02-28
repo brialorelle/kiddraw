@@ -24,14 +24,15 @@ trace2 = {"category":"shape", "video": "trace_shape.mp4","image":"images/shape.p
 intro = {"category":"intro", "video": "intro.mp4","image":"images/lab_logo_stanford.png"}
 
 // round 1 -- finished June 1, 2018
-var stimListTest = [{"category": "a bear", "video": "bear.mp4"},
-    {"category": "a cat", "video": "cat.mp4"},
-    {"category": "a frog", "video": "frog.mp4"},
-    {"category": "a sheep", "video": "sheep.mp4"},
-    {"category": "a key", "video": "key.mp4"},
-    {"category": "a phone", "video": "phone.mp4"},
-    {"category": "a scissors", "video": "scissors.mp4"},
-    {"category": "a train", "video": "train.mp4"} ]
+
+var stimListTest = [{"category": "a bottle", "video": "bottle.mp4"},
+    {"category": "a cactus", "video": "cactus.mp4"},
+    {"category": "a camel", "video": "camel.mp4"},
+    {"category": "a hat", "video": "hat.mp4"},
+    {"category": "a lamp", "video": "lamp.mp4"},
+    {"category": "a tiger", "video": "tiger.mp4"},
+    {"category": "a watch", "video": "watch.mp4"},
+    {"category": "a whale", "video": "whale.mp4"} ]
 
 var stimListTest = shuffle(stimListTest)
 stimListTest.push(lastTrial)
@@ -46,14 +47,14 @@ var stimLang = {
     "this square": "this square",
     "square": "square",
     "shape": "shape",
-    "a bear": "a bear",
-    "a cat": "a cat",
-    "a sheep": "a sheep",
-    "a key": "a key",
-    "a phone": "a phone",
-    "a train": "a train",
-    "a frog": "a frog",
-    "a scissors": "a pair of scissors",
+    "a bottle": "a bottle",
+    "a cactus": "a cactus",
+    "a camel": "a camel",
+    "a hat": "a hat",
+    "a lamp": "a lamp",
+    "a tiger": "a tiger",
+    "a watch": "a watch",
+    "a whale": "a whale",
     "something you love": "something you love"}
 
 var cuesLang = {
@@ -77,7 +78,7 @@ var strokeThresh = 3; // each stroke needs to be at least this many pixels long 
 
 // current mode and session info
 var mode = "CDM";
-var version ="cdm_run_v4";
+var version ="cdm_run_v5";
 var sessionId= version + Date.now().toString();
 var consentPage = '#consentCDM';
 var thanksPage = "#thanksPage";
