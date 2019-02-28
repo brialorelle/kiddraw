@@ -15,7 +15,7 @@ library(assertthat)
 ## Import descriptives csv
 
 ```{r cars}
-d <- read.csv("photodraw2_descriptives/Photodraw2_AllDescriptives_1475_images_final_CDM_photodraw_e2_no_blanks.csv") %>%
+d <- read.csv("photodraw2_descriptives/MuseumStation_AllDescriptives_1507_images_final_CDM_photodraw_e2.csv") %>%
   as.tibble() %>%
   mutate(age_numeric =as.numeric(str_split_fixed(age,'age',2)[,2]))
 ```
