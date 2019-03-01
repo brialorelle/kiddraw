@@ -15,7 +15,7 @@ library(assertthat)
 ## Import descriptives csv
 
 ```{r cars}
-d <- read.csv("photodraw2_descriptives/MuseumStation_AllDescriptives_1507_images_final_CDM_photodraw_e2.csv") %>%
+d <- read.csv("photodraw2_descriptives/MuseumStation_AllDescriptives_1619_images_final_CDM_photodraw_e2.csv") %>%
   as.tibble() %>%
   mutate(age_numeric =as.numeric(str_split_fixed(age,'age',2)[,2]))
 ```
@@ -59,6 +59,11 @@ d <- d %>%
 
 ```
 
+## Filter any duplicate filenames just in case
+```{r}
+d <- unique(d)
+```
+
 ### Check our CB by age counterbalancing
 ```{r cb-by-age}
 cb_by_age<- d %>%
@@ -90,4 +95,54 @@ ggplot(cat_by_cond_by_age, aes(x = age_numeric, y = num_drawings, col=condition)
   geom_point() +
   facet_wrap(~category)
 ```
+
+
+### Write out cleaned descriptives file
+```{r}
+d_out <- d %>%
+  filter(age_numeric<9)  # get rid of 1 9-year-old for pilot recognition ratings
+
+write_csv(d_out, 'photodraw2_descriptives/Photodraw2_SRCD_cleaned_data_4-8.csv')
+```
+
+
+
+```{r}
+## Get randomized chunks for recognition batches
+
+sample_set <- d %>%
+  filter(age_numeric<9) %>%# get rid of 1 9-year-old for pilot recognition ratings
+  filter(!category %in% prac_trials) %>% # no prac trials
+  mutate(filename_short = str_split_fixed(filename,'/',10)[,10]) %>%
+  distinct(subID,age_numeric,category,condition,filename_short,image_name) %>%
+  rename(filename = filename_short)
+
+##
+max_iter=10
+
+for (iteration in 1:max_iter) {
+
+    if (iteration==max_iter){
+      # whatever we have left if on last iteration
+      write_csv(sample_set,paste0('recognition_rating_chunks/chunk_',iteration,'photodraw2_srcd_recognition.csv'))
+    }
+    # for all the other iterations
+    else if (iteration<max_iter){
+  
+    this_chunk <- sample_set %>%
+      group_by(age_numeric,category) %>%
+      sample_n(., 2, replace=FALSE)
+    
+    print (length(this_chunk$filename))
+    write_csv(this_chunk,paste0('recognition_rating_chunks/chunk_',iteration,'_photodraw2-test.csv'))
+    
+    sample_set <- sample_set %>%
+      filter(!filename %in% this_chunk$filename)
+    
+    print (length(sample_set$filename))
+    }
+}
+
+  
+
 ```
