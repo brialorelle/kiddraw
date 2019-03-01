@@ -33,8 +33,8 @@ d %>%
 d %>%
   filter(producer_age != 'photo') %>% ## exclude catch trials
   group_by(sketch_path) %>%
-  summarize(num_guesses = n()) %>%
-  kable()
+  summarize(num_guesses = n()) 
+  # kable()
 ```
 
 ## Look at avg correct by producer age (photo = ceiling)
@@ -44,6 +44,7 @@ levels(d$intended_category)<-c("bird",   "dog" ,   "fish"   ,"rabbit", "dont_kno
 
 # summarize avg correct by producer age  
 d %>%
+  filter(recognizer_age!= 'adult') %>%
   mutate(correct_or_not = (clicked_category == intended_category)) %>%
   group_by(producer_age) %>%
   summarize(avg_correct = mean(correct_or_not))
