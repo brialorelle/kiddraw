@@ -124,7 +124,7 @@ for (iteration in 1:max_iter) {
 
     if (iteration==max_iter){
       # whatever we have left if on last iteration
-      write_csv(sample_set,paste0('recognition_rating_chunks/chunk_',iteration,'photodraw2_srcd_recognition.csv'))
+      write_csv(sample_set,paste0('recognition_rating_chunks/chunk_',iteration,'_photodraw2_srcd_recognition.csv'))
     }
     # for all the other iterations
     else if (iteration<max_iter){
@@ -134,7 +134,7 @@ for (iteration in 1:max_iter) {
       sample_n(., 2, replace=FALSE)
     
     print (length(this_chunk$filename))
-    write_csv(this_chunk,paste0('recognition_rating_chunks/chunk_',iteration,'_photodraw2-test.csv'))
+    write_csv(this_chunk,paste0('recognition_rating_chunks/chunk_',iteration,'photodraw2_srcd_recognition.csv'))
     
     sample_set <- sample_set %>%
       filter(!filename %in% this_chunk$filename)
