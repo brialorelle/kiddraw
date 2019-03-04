@@ -45,87 +45,169 @@ function shuffle (a)
 
 $(document).ready(function() {
 
+// chunk = 1
 
 $.ajax({
     type: "GET",
-    url: "recognition_rating_chunks/chunk_" + random(1,10) + "photodraw2_srcd_recognition.csv",
+    url: "recognition_rating_chunks/chunk_" + 1 + "photodraw2_srcd_recognition.csv",
     dataType: "text",
     success: function(data) {
+
             results = Papa.parse(data); // parse csv file
 
-            //set up image names
+            //set up image arrays for both practice/catch trials 
+            pracArray = new Array();
+            chunk = 1;
+            
+            prac_categories = ['bird','dog','fish','rabbit'] 
+            index=0
+            for (i = 0; i < 3; i++){ // 3 exemplars for 4 categories = 12 validation trials
+
+                for(j = 0; j < (prac_categories.length); j++){
+                    this_prac_category = prac_categories[j]
+                    var session_id= 'null'
+                    var age = 'photo'
+                    var category = this_prac_category;
+                    var condition = 'practice'
+                    var file_name = ['photos/' + this_prac_category + '_' + (i+1)  + '.png']
+                    var photo_cue = 'null'
+                    pracArray[index] = new Image();
+                    pracArray[index].src = file_name;
+                    pracArray[index].category = category;
+                    pracArray[index].age = age;
+                    pracArray[index].condition = condition;
+                    pracArray[index].session_id = session_id;
+                    pracArray[index].photo_cue = photo_cue;
+                    pracArray[index].chunk = chunk;
+                    index = index+1
+                    }
+            }
+
+            // set up image arrays for
             imgArray = new Array();
-            for (i = 1; i < results.data.length; i++) {
-                var session_id= results.data[i][0]; //starts i at 1 to get rid of header
-                var age = results.data[i][1];
-                var category = results.data[i][2];
-                var condition = results.data[i][3];
-                var file_name = results.data[i][4];
-                var photo_cue = results.data[i][5];
+            for (i = 0; i < results.data.length-2; i++) { // length -2 because of etra line, i+1 because of header
+                var session_id= results.data[i+1][2]; 
+                var age = results.data[i+1][4];
+                var category = results.data[i+1][0];
+                var condition = results.data[i+1][1];
+                var file_name = results.data[i+1][5];
+                var photo_cue = results.data[i+1][3];
                 imgArray[i] = new Image();
                 imgArray[i].src = file_name;
                 imgArray[i].category = category;
                 imgArray[i].age = age;
                 imgArray[i].condition = condition;
+                imgArray[i].session_id = session_id;
+                imgArray[i].photo_cue = photo_cue;
+                imgArray[i].chunk = chunk;
             }
-            numTrialsExperiment = results.data.length-1;    // -1 for the header  
+            
+
+            //First add 9 catch trials
+            catchTrials = shuffle(pracArray.slice(3,12))
+            imgArray = catchTrials.concat(imgArray)
+
+
+            // // shuffle the imgArray so they appear in random order
+            imgArray = shuffle(imgArray)
+
+            // // then add in 4 training trials at the beginning
+            trainingTrials = shuffle(pracArray.slice(0,3))
+            imgArray = trainingTrials.concat(imgArray)
+        
+            // calculate total num trials
+            numTrialsExperiment = results.data.length-2 + 12;  // -1 for the header, -1 for weird extra line, + 12 practice
 
             // set up uptake experiment slides.
             trials = [];
-            for (i = 1; i < numTrialsExperiment+1; i++) {
+            for (i = 0; i < numTrialsExperiment; i++) {
             trial = {
-                thisImageName: imgArray[i].src,
-                thisImageCategory: imgArray[i].category,
-                imageSet: imgArray[i].imageSet,
+                this_sketch_name: imgArray[i].src,
+                this_sketch_category: imgArray[i].category,
+                producer_age: imgArray[i].age,
+                condition: imgArray[i].condition,
+                drawing_session_id: imgArray[i].session_id,
+                photo_cue: imgArray[i].photo_cue,
+                chunk: imgArray[i].chunk,
                 slide: "recognitionRatings",
-                behavior: "",
-                trial_number: i+1,
+                trial_number: i,
             }
             trials.push(trial);
             }
-            trials=shuffle(trials);
+            
         }
      });
 });
 
 
-var availableTags = ["airplane",
-"boat",
-"train",
-"truck",
-"bike",
-"wagon",
-"tractor",
-"machine"
-"bird",
-"frog",
-"fish",
-"horse",
-"car",
-""
-"cat",
-"chair",
-"cup",
-"hat",
-"house",
-"rabbit"
-"tree"
-"watch"]
+ 
 
 
-$("#recognitionInput").autocomplete({
-            source: availableTags,
-            change: function (event, ui) {
-                if(!ui.item){
-                    //http://api.jqueryui.com/autocomplete/#event-change -
-                    // The item selected from the menu, if any. Otherwise the property is null
-                    //so clear the item for force selection
-                    $("#recognitionInput").val("");
-                }
+$(function() {
+    var availableTags = [
+    "airplane",
+    "boat",
+    "train",
+    "truck",
 
-            }
+    "bike",
+    "binoculars",
+    "tractor",
+    "glasses",
 
-        });
+    "bird",
+    "frog",
+    "fish",
+    "horse",
+
+    "car",
+    "dumbbell",
+    "toilet",
+    "dresser",
+
+    "cat",
+    "dog",
+    "cow",
+    "hedgehog",
+
+    "rabbit",
+    "camel",
+    "whale",
+    "duck",
+
+    "chair",
+    "couch",
+    "radio",
+    "television",
+
+    "cup",
+    "bottle",
+    "vase",
+    "bench",
+
+    "hat",
+    "computer",
+    "table",
+    "pillow",
+
+    "house",
+    "purse",
+    "door",
+    "bed",
+
+    "tree",
+    "feather",
+    "lollipop",
+    "microphone",
+
+    "watch",
+    "teapot",
+    "guitar",
+    "snail"];
+    $( "#recognitionInput" ).autocomplete({
+      source: availableTags
+    });
+  } );
 
 
 // Show the instructions slide -- this is what we want subjects to see first.
@@ -136,10 +218,17 @@ var experiment = {
 
 	// The object to be submitted.
 	data: {
+        this_sketch_name: [],
+        this_sketch_category: [],
+        producer_age: [],
+        condition: [],
+        drawing_session_id: [],
+        photo_cue: [],
+        slide: [],
+        trial_number: [],
         trial_type:[],
 		rating: [],
-		imageName: [],
-        imageSet: [],
+        chunk: [],
         comments: [],
 	},
 
@@ -162,18 +251,18 @@ var experiment = {
         var response = input.value;
 
         // if there is something in the response, log it
-        if (input && response) {
+        // if (input && response) {
             response_logged = true;
             experiment.data.rating.push(response);
             experiment.next();
             $("#recognitionInput").val(""); // clear value
             
-        } else {
-            $("#testMessage_att").html('<font color="red">' + 
-            'Please make a response!' + 
-             '</font>');
+        // } else {
+        //     $("#testMessage_att").html('<font color="red">' + 
+        //     'Please make a response!' + 
+        //      '</font>');
             
-        }
+        // }
     },
 	
 	// The work horse of the sequence - what to do on every trial.
@@ -198,10 +287,18 @@ var experiment = {
 
 			// check which trial type you're in and display correct slide
 			if (trial_info.slide == "recognitionRatings") {
-                document.getElementById("imagePlaceholder").src = trial_info.thisImageName;
+                document.getElementById("imagePlaceholder").src = trial_info.this_sketch_name;
                 showSlide("recognitionRatings"); //display slide
-                experiment.data.imageName.push(trial_info.thisImageName);
-                experiment.data.imageSet.push(trial_info.imageSet);
+
+                // push all relevant data
+                experiment.data.this_sketch_name.push(trial_info.this_sketch_name)
+                experiment.data.this_sketch_category.push(trial_info.this_sketch_category)
+                experiment.data.producer_age.push(trial_info.producer_age)
+                experiment.data.condition.push(trial_info.condition)
+                experiment.data.drawing_session_id.push(trial_info.drawing_session_id)
+                experiment.data.photo_cue.push(trial_info.photo_cue)
+                experiment.data.trial_number.push(trial_info.trial_number)
+                experiment.data.chunk.push(trial_info.chunk)
 	    	    }
 		experiment.data.trial_type.push(trial_info.slide);
 		}
