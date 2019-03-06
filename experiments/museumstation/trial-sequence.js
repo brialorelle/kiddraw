@@ -358,7 +358,8 @@ function restartExperiment() {
     // send data to server to write to database
     socket.emit('current_data', current_data);
     console.log('sending survey data')
-    window.location.reload(true);
+    
+    window.location.href="https://rxdhawkins.me:8881/landing_page.html" // load back to regular landing page
 }
 
 function endExperiment(){
@@ -626,17 +627,11 @@ window.onload = function() {
         time = new Date().getTime();
     });
 
-    var refreshTime = 90000
+    var refreshTime = 120000
     function refresh() {
         if (new Date().getTime() - time >= refreshTime) {
-            if($("#landingPage").css("display")=="none") {
-                window.location.reload(true);
+                window.location.href="https://rxdhawkins.me:8881/landing_page.html"
                 console.log("No user activities. Reload.")
-            }else{
-                //if the current page is the landingPage, reset time and wait again
-                time = new Date().getTime();
-                setTimeout(refresh, refreshTime);
-            }
         } else {
             setTimeout(refresh, refreshTime);
         }
