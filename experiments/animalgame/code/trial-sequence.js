@@ -429,6 +429,7 @@ window.onload = function() {
         } else {
             setTimeout(refresh, refreshTime);
         }
+    }
 
 
     setTimeout(refresh, refreshTime);
