@@ -29,7 +29,19 @@
     <button type="button" onclick="this.blur(); experiment.next();">Start</button>
 
     <p class="block-text">
-    In this survey, you'll be asked to recognize what is depicted in close to 100 different sketches. You'll choose an answer from a drop down menu.
+    In this survey, your goal is to label the object depicted in 100 different sketches and photos. You’ll be shown each image one at a time, start typing a suggested label in a text box, and then choose a label from a word bank. Please keep in mind that there are only certain labels in the word bank, and take a moment familiarize yourself with the words in the word bank below. During the task, choices in the word bank that contain the same letters as what you are typing will appear so you do <b> not </b> need to memorize the word bank before you start.
+    
+    Guesses are encouraged, but if you cannot make any guess about the label of the depicted object you can also select "other/can't tell." 
+
+
+    <p class="block-text" id="legal">
+    <b>Word Bank:  airplane, bed, bench, bike, binoculars, bird, boat, bottle, camel, car, cat,       
+    chair, computer, couch, cow, cup, dog, door, dresser, duck, dumbbell, feather,   
+    fish, frog, glasses, guitar, hat, hedgehog, horse, house, lollipop, microphone, pillow,    
+    purse, rabbit, radio, snail, table, teapot, television, toilet, tractor, train, tree,      
+    truck, vase, watch, whale, cannot tell at all, choice doesn't appear. </b>
+
+    </p>
     <p class="block-text" id="legal">By answering the following questions, you are participating in a study being performed by cognitive scientists in the Stanford Department of Psychology. If you have questions about this research, please contact us at <a href="mailto://bria@stanford.edu.">bria@stanford.edu</a>.
       You must be at least 18 years old to participate. Your participation in this research is voluntary. You may decline to answer any or all of the following questions. You may decline further participation, at any time, without adverse consequences.
       Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you. Note however that we have recently been made aware that your public Amazon.com profile can be accessed via your
@@ -57,7 +69,7 @@
 
 <br>
   <!-- Slider -->
-  <input id="recognitionInput" class="ui-widget" autocomplete="on">
+  <input id="recognitionInput" class="ui-widget" autocomplete="on" tabindex="-1">
   </input>
 
     <!-- Next button and "please make a response" message -->
@@ -86,7 +98,7 @@
 </div>
 
   
-<script src="sketchRecognize.js"></script>
+<script src="sketchRecognize_batch6.js"></script>
 </body>
 
 </html>

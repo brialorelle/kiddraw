@@ -1,0 +1,104 @@
+
+<!-- ## Code -->
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Judge some drawings !</title>
+  <script src="jquery-1.11.2.min.js"></script>
+  <script src="mmturkey-0.6.js"></script>
+   <script src="papaparse.js"></script>
+   <script src="jquery-ui.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="uptake_style.css" />
+  <link rel="stylesheet" href="jquery-ui.css" /> 
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+ <!-- The instructions slide. -->
+  <div class="slide" id="instructions">
+    <br>
+    <img src="images/stanford.png" alt="Stanford University">
+    <p id='logo-text'>Stanford Language and Cognition Lab</p>
+    <br>
+    <br>
+<br>
+    <button type="button" onclick="this.blur(); experiment.next();">Start</button>
+
+    <p class="block-text">
+    In this survey, your goal is to label the object depicted in 100 different sketches and photos. You’ll be shown each image one at a time, start typing a suggested label in a text box, and then choose a label from a word bank. Please keep in mind that there are only certain labels in the word bank, and take a moment familiarize yourself with the words in the word bank below. During the task, choices in the word bank that contain the same letters as what you are typing will appear so you do <b> not </b> need to memorize the word bank before you start.
+    
+    Guesses are encouraged, but if you cannot make any guess about the label of the depicted object you can also select "other/can't tell." 
+
+
+    <p class="block-text" id="legal">
+    <b>Word Bank:  airplane, bed, bench, bike, binoculars, bird, boat, bottle, camel, car, cat,       
+    chair, computer, couch, cow, cup, dog, door, dresser, duck, dumbbell, feather,   
+    fish, frog, glasses, guitar, hat, hedgehog, horse, house, lollipop, microphone, pillow,    
+    purse, rabbit, radio, snail, table, teapot, television, toilet, tractor, train, tree,      
+    truck, vase, watch, whale, cannot tell at all, choice doesn't appear. </b>
+
+    </p>
+    <p class="block-text" id="legal">By answering the following questions, you are participating in a study being performed by cognitive scientists in the Stanford Department of Psychology. If you have questions about this research, please contact us at <a href="mailto://bria@stanford.edu.">bria@stanford.edu</a>.
+      You must be at least 18 years old to participate. Your participation in this research is voluntary. You may decline to answer any or all of the following questions. You may decline further participation, at any time, without adverse consequences.
+      Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you. Note however that we have recently been made aware that your public Amazon.com profile can be accessed via your
+      worker ID if you do not choose to opt out. If you would like to opt out of this feature, you may follow instructions available <a href="https://www.amazon.com/gp/help/customer/display.html?nodeId=16465241">here</a>.</p>
+  </div>
+
+
+  <!-- Progress Bar -->
+
+<div class="progress">
+  <div id="progress" class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+  </div>
+</div>
+
+
+<!-- Questionnaire slide 1 - Recogniton Ratings -->
+
+<div class="slide" id="recognitionRatings">
+  <div align="center">
+    <h4>
+    <p id="drawingPrompt">What does this look like?</p> 
+    <p> Start typing and choose your answer below </p>
+    </h4>
+    <img src="images/toy.png" width=200px height=200px id="imagePlaceholder">
+
+<br>
+  <!-- Slider -->
+  <input id="recognitionInput" class="ui-widget" autocomplete="on" tabindex="-1">
+  </input>
+
+    <!-- Next button and "please make a response" message -->
+    <table align="center"><tr>
+      <tr> <br> </br> </tr>
+      <tr> <br> </br> </tr>
+      <td align="center">
+        <button type="button" id="nextButton_QualRatings" onClick="experiment.log_response()"> next</button>
+      </td> 
+      <tr><td align="center">
+        <div id="testMessage_att"> </div>
+      </td></tr>
+    </table>
+  </div>
+</div>
+
+  
+ <!-- Debriefing slide-->
+  <div class="slide" id="debriefing">
+      <p><b>Do you have any comments about this survey?</b></p>
+      <p>
+        <input type="text" id="comments" name="comments" style="width:40%" value="">
+        </textarea>
+        <button type="button" id="debriefsubmit" onClick="experiment.submit_comments()">Submit</button>
+  </p> 
+</div>
+
+  
+<script src="sketchRecognize_batch5.js"></script>
+</body>
+
+</html>

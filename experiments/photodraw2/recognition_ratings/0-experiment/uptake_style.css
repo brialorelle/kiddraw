@@ -35,6 +35,11 @@ input, select, button {
   font-family: Georgia, serif;
   font-size: 14px;
 }
+
+input{
+  border: 1px solid #999;
+}
+
 input[type="radio"] {
   margin: 15px 15px;
 }
