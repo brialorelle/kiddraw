@@ -7,8 +7,10 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
 library(tidyverse)
 library(knitr)
+library(ggplot2)
 library(assertthat)
 ```
 
@@ -28,36 +30,66 @@ d %>%
 ```
 
 ### Look at counts by individual sketch; should be low at first and randomly distributed
-```{r cat-by-condition-by-age}
-
+```{r}
 guess_by_sketch <- d %>%
   filter(producer_age != 'photo') %>% ## exclude catch trials
   group_by(sketch_path) %>%
   summarize(num_guesses = n()) 
   # kable()
 ```
+
+
 ```{r}
+# make similar levels
+d$intended_category <- factor(d$intended_category, levels=levels(d$clicked_category))
+
+# compute accurcy
+d <- d %>%
+  mutate(correct_or_not = (clicked_category == intended_category))  
+
+# get list of non-compliant subs
 bad_subs <- d %>%
   group_by(sessionId) %>%
   filter(producer_age == "photo") %>%
-  mutate(correct_or_not = (clicked_category == intended_category)) %>%
   summarize(avg_photo_correct = mean(correct_or_not)) %>%
   filter(avg_photo_correct < .5)
 
+# filter bad subs
+d <- d %>%
+  filter(!sessionId %in% bad_subs$sessionId) 
 ```
+
+
 ## Look at avg correct by producer age (photo = ceiling)
 ```{r plot-counts}
 # need to have dont_know as level even though it is never presnet for mutate fuction
 levels(d$intended_category)<-c("bird",   "dog" ,   "fish"   ,"rabbit", "dont_know")
 
 # summarize avg correct by producer age  
-d %>%
+by_producer <- d %>%
   filter(recognizer_age!= 'adult') %>%
-  filter(!sessionId %in% bad_subs$sessionId) %>%
-  mutate(correct_or_not = (clicked_category == intended_category)) %>%
   group_by(producer_age) %>%
   summarize(avg_correct = mean(correct_or_not))
 
+by_recognizer <- d %>%
+  filter(recognizer_age!= 'adult') %>%
+  group_by(recognizer_age) %>%
+  summarize(avg_correct = mean(correct_or_not))
+```
+
+```{r}
+both <- d %>%
+  group_by(recognizer_age,producer_age) %>%
+  summarize(avg_correct = mean(correct_or_not)) 
+
+kable(both)
 
 ```
+
+```{r}
+ggplot(both,aes(x=producer_age, y=avg_correct, col=recognizer_age)) +
+  geom_point(aes(x=producer_age, y=avg_correct, col=recognizer_age)) +
+  geom_smooth() +
+  facet_wrap(~recognizer_age) 
+  
 ```
