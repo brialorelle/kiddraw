@@ -166,7 +166,7 @@ class FeatureExtractor():
 
             if self.dataset=='rendered_111918':
                 label = path.split('/')[-1].split('_')[0]
-            elif self.dataset=='photodraw2_020519':
+            elif self.dataset=='photodraw2_030719':
                 label = path.split('/')[-1].split('_')[1]   
                 condition = path.split('/')[-1].split('_')[0]
             else:
@@ -186,7 +186,7 @@ class FeatureExtractor():
                 print('Need to specify a cohort: "kid" or "adult"!')
                 age = 'unknown'
                 session = 'unknown'
-            if self.dataset=='photodraw2_020519':
+            if self.dataset=='photodraw2_030719':
                 return label, age, session, condition        
             else:
                 return label, age, session
@@ -194,7 +194,7 @@ class FeatureExtractor():
         def generator(paths, imsize=self.imsize, use_cuda=use_cuda, dataset=self.dataset):
             for path in paths:
                 image = load_image(path)
-                if self.dataset=='photodraw2_020519':
+                if self.dataset=='photodraw2_030719':
                     label, age, session, condition = get_metadata_from_path(path,dataset)
                     yield (image, label, age, session,condition)        
                 else:
@@ -233,7 +233,7 @@ class FeatureExtractor():
                     print('Batch {}'.format(n + 1))            
                 for b in range(batch_size):
                     try:
-                        if self.dataset=='photodraw2_020519':
+                        if self.dataset=='photodraw2_030719':
                             sketch, label, age, session, condition = generator.next()
                             sketch_batch[b] = sketch 
                             label_batch.append(label)
@@ -279,7 +279,7 @@ class FeatureExtractor():
         Ages = np.array([item for sublist in Ages for item in sublist])
         Sessions = np.array([item for sublist in Sessions for item in sublist])
 
-        if self.dataset=='photodraw2_020519':
+        if self.dataset=='photodraw2_030719':
             Conditions = np.array([item for sublist in Conditions for item in sublist])
             return Features, Labels, Ages, Sessions, Conditions
         else:

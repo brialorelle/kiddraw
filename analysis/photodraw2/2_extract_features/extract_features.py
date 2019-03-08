@@ -118,7 +118,7 @@ if __name__ == "__main__":
     layers = ['P1','P2','P3','P4','P5','FC6','FC7']
     extractor = FeatureExtractor(sketch_paths,layer=args.layer_ind,cohort=args.cohort,spatial_avg=args.spatial_avg, dataset=args.dataset)
     
-    if args.dataset=='photodraw2_020519':
+    if args.dataset=='photodraw2_030719':
         Features, Labels, Ages, Sessions, Conditions = extractor.extract_feature_matrix()
     else:
         Features, Labels, Ages, Sessions = extractor.extract_feature_matrix()
@@ -129,7 +129,7 @@ if __name__ == "__main__":
         Ages = convert_age(Ages)       
         
     # organize metadata into dataframe
-    if args.dataset=='photodraw2_020519':
+    if args.dataset=='photodraw2_030719':
         Y = make_dataframe_photodraw(Labels,Ages,Sessions,Conditions)
     else:
         Y = make_dataframe(Labels,Ages,Sessions)
