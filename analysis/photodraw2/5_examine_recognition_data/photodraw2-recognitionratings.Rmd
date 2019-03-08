@@ -16,16 +16,17 @@ library(langcog)
 library(lmerTest)
 library(viridis)
 library(jsonlite)
+library(egg)
 theme_set(theme_few())
 ```
 
-
-```{r}
+# Part 1: Setup
+### Load in recognition data
+```{r message=FALSE}
 d.raw <- data.frame()
-files <- dir("raw_recongition_data/")
-
+files <- dir("raw_recognition_data/")
 for (f in files) {
-  jf <- paste("raw_recongition_data/",f,sep="")
+  jf <- paste("raw_recognition_data/",f,sep="")
   jd <- fromJSON(paste(readLines(jf), collapse=""))
   id <- data.frame(workerid = jd$WorkerId, 
                    guessed_category = jd$answers$data$rating,
@@ -43,37 +44,62 @@ for (f in files) {
 
 ```
 
-### Compute accuracy
+### Check number of raters per chunk and image
+```{r}
+raters_per_chunk <- d.raw %>%
+  distinct(workerid, chunk) %>%
+  group_by(chunk) %>%
+  summarize(count = n())
+
+raters_per_image <- d.raw %>%
+  distinct(this_sketch_name, workerid) %>%
+  group_by(this_sketch_name) %>%
+  summarize(count = n())
+```
+
+### Make guess/actual cateogries comparable
 ```{r}
 d <- d.raw
 d$guessed_category = as.factor(d$guessed_category)
 d$actual_category <- factor(d$actual_category, levels=levels(d$guessed_category))
 
+d <- d %>%
+  mutate(correct_or_not = (actual_category == guessed_category)) 
+```
 
+### Compute bad workers (relaunch hits to replace in batches)
+```{r}
+prac_thres = 11/12 ## 12 practice trials -- if you missed more than 1, exclude
+
+# compute who didn't pass this threshold
+bad_workers <- d %>%
+  filter(condition=='practice') %>%
+  group_by(workerid, chunk) %>%
+  summarize(avg_prac_correct = mean(correct_or_not)) %>%
+  filter(avg_prac_correct < prac_thres)
+
+# filter from dataset
+d <- d %>%
+  filter(!workerid %in% bad_workers$workerid)
+
+raters_per_chunk_filtered <- d %>%
+  distinct(workerid, chunk) %>%
+  group_by(chunk) %>%
+  summarize(count = n())
+```
+
+### Compute accuracy for each sketch, averaging over turkers
+```{r}
 avg_by_sketch <- d %>%
   filter(condition != 'practice') %>%
   mutate(sketch_name = str_split_fixed(this_sketch_name, '/',9)[,9]) %>%
   mutate(sketch_name = as.factor(sketch_name)) %>%
   mutate(correct_or_not = (actual_category == guessed_category)) %>%
   group_by(sketch_name,age,condition,actual_category, subID) %>%
-  summarize(avg_sketch_correct = mean(correct_or_not))
-
+  summarize(avg_sketch_correct = mean(correct_or_not)) # averages over raters
 ```
 
-```{r}
- quick_summary <- avg_by_sketch %>%
-  group_by(age,condition) %>%
-  summarize(avg_correct =  mean(avg_sketch_correct))
-```
-
-```{r}
-
-ggplot(quick_summary, aes(x=age, y=avg_correct, col=condition)) +
-  geom_point()
-
-```
-
-#### Convert alphanumeric age to numeric age in python csv
+### Read in python descriptives and join with recognition ratings
 ```{r}
 sketch_descriptives <- read_csv('sketch_descriptives/Photodraw2_SRCD_cleaned_data_4-8.csv') %>%
   as.tibble() %>%
@@ -81,59 +107,36 @@ sketch_descriptives <- read_csv('sketch_descriptives/Photodraw2_SRCD_cleaned_dat
   mutate(subID = as.factor(subID)) %>%
   mutate(condition = as.factor(condition)) %>%
   mutate(age = as.factor(age_numeric)) %>%
-  mutate(sketch_name = str_split_fixed(filename,'/',12)[,12])
+  mutate(sketch_name = str_split_fixed(filename,'/',12)[,12]) %>%
+  mutate(session_id = str_split_fixed(session_id, '_', 2)[,2]) %>%
+  mutate(session_id = as.factor(session_id))
 
 joined <- left_join(avg_by_sketch,sketch_descriptives, by =c('sketch_name','subID','age','condition','actual_category'))
 ```
 
-### Sanity check number of raters per image
+### Sanity check joining of two datasets
 ```{r}
-# ratersPerImage <- r %>%
-#   distinct(imageName, workerid) %>%
-#   group_by(imageName) %>%
-#   summarize(count = n()) 
-# 
-# assert_that(sum(ratersPerImage$count==30)==(length(unique(r$imageName))))
+unique_sketches <- d %>%
+  filter(condition!='practice') %>%
+  distinct(this_sketch_name)
+ 
+assert_that(length(unique_sketches$this_sketch_name)==length(joined$sketch_name))
 ```
-
-#### Sanity check number of kids in each condition and age
-# ```{r}
-# r %>%
-#   distinct(sessionId, condition, age) %>%
-#   group_by(condition) %>%
-#   summarize(count = n()) %>%
-#   kable()
-```
-
-#### And distribution across age groups and conditions
-```{r}
-<!-- r %>% -->
-<!--   distinct(sessionId, condition, age) %>% -->
-<!--   group_by(condition,age) %>% -->
-<!--   summarize(count = n())  -->
-```
-
 
 # Part 2: Descriptive statistics 
 ### Take a look at the raw rating data 
 Highest chosen category is correct one;  confusions look more or less reasonable.
 ```{r}
-ratingConfusions <- r %>%
-  group_by(category, rating)  %>%
+ratingConfusions <- d %>%
+  group_by(actual_category, guessed_category)  %>%
   summarize(number = n()) %>%
-  group_by(category) %>%
+  group_by(actual_category) %>%
   mutate(prop = number / sum(number)) %>%
-  complete(rating, fill = list(prop = 0))
-
-## Reorder so that we have a meaningful confusion matrix
-ratingConfusions$category <- factor(ratingConfusions$category, levels = c("rabbit","cat", "cup","shoe","train"))
-
-ratingConfusions$rating <- factor(ratingConfusions$rating, levels = c( "rabbit","cat", "cup","shoe","train","bus","car","couch","bird","mouse","dog","horse","bear","lion","arm",
-"hat","book","bottle","spoon","lamp","other","cannot tell at all"))
+  complete(guessed_category, fill = list(prop = 0))
 
 ## Plot it
 ggplot(ratingConfusions, 
-       aes(x = rating, y = category, fill = prop)) + 
+       aes(x = guessed_category, y = actual_category, fill = prop)) + 
   geom_tile() + 
   ylab("True Category") + 
   xlab("Rated as") + 
@@ -141,218 +144,273 @@ ggplot(ratingConfusions,
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
 ```
 
+### Compute accuracy by condition/age
+```{r}
+ cond_by_age <- avg_by_sketch %>%
+  group_by(subID,condition,age) %>% # group at level of individual subjects/conditions
+  summarize(avg_sub_by_cond_correct = mean(avg_sketch_correct)) %>% # average over sketch recognition accuracies
+  group_by(age,condition) %>% # group by age/condition
+  multi_boot_standard(col='avg_sub_by_cond_correct')  
+```
 
-### Look at num strokes / duration per condition
+### Plot main results of recognition rtaings
+```{r}
+ggplot(cond_by_age, aes(x=age, y=mean, col=condition)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), position = position_dodge(width = 0.5))
+```
+
+### Average and plot next to covariates
 
 ```{r}
-ggplot(d, aes(num_strokes)) +
-  geom_histogram(binwidth=2) + 
-  facet_grid(~condition)
+cor_by_age <- joined %>%
+  group_by(subID,condition,age_numeric) %>%
+  summarize(avg_cor = mean(avg_sketch_correct)) %>%
+  group_by(age_numeric,condition) %>%
+  multi_boot_standard(col = "avg_cor") 
 
-ggplot(d, aes(draw_duration)) +
-  geom_histogram(binwidth=2) + 
-  facet_grid(~condition)
 
+joined$draw_duration_new[joined$draw_duration_new>30]=30 ## some weird draw durations > 30 seconds?
+draw_duration <- joined %>%
+  group_by(subID,condition,age_numeric) %>%
+  summarize(avg_draw_duration = mean(draw_duration_new)) %>%
+  group_by(age_numeric,condition) %>%
+  multi_boot_standard(col = "avg_draw_duration")
+
+num_strokes <- joined %>%
+  group_by(subID,condition,age_numeric) %>%
+  summarize(avg_num_strokes = mean(num_strokes)) %>%
+  group_by(age_numeric,condition) %>%
+  multi_boot_standard(col = "avg_num_strokes") 
+
+avg_intensity <- joined %>%
+  group_by(subID,condition,age_numeric) %>%
+  summarize(avg_intensity = mean(mean_intensity)) %>%
+  group_by(age_numeric,condition) %>%
+  multi_boot_standard(col = "avg_intensity")
+
+# tracing_scores <- d %>%
+#   distinct(session_id,age_numeric,avg_tracing_rating) %>%
+#   filter(!is.na(avg_tracing_rating)) %>%
+#   group_by(age_numeric) %>%
+#   multi_boot_standard(col = "avg_tracing_rating")
 ```
 
 
+### Make compiled plot with accuracy and descriptives
+```{r plot-descriptives-across-age}
+## Make compiled plot of descriptives
+base_size_chosen=18 # size of text in plots
+smooth_alpha=.2
 
-## How different are individual participants?
+cor_by_age_plot_A = ggplot(cor_by_age, aes(age_numeric,mean, color=condition)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), position = position_dodge(width = 0.5)) + 
+  theme_few(base_size = base_size_chosen) + 
+  labs(x='Age', y='Average adult recognition') +
+  # scale_color_viridis(option="D") + 
+  theme(legend.position = "none") +
+  # geom_smooth(col='grey',span=10, alpha=smooth_alpha) +
+  # ggtitle('A') + 
+  ylim(0,1) + 
+  geom_hline(yintercept = 1/12, linetype="dashed", color="grey")
+
+p1=ggplot(draw_duration, aes(age_numeric,mean, color=condition)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), position = position_dodge(width = 0.5)) +
+  theme_few(base_size = base_size_chosen) +
+  labs(x='Age', y='Draw duration (s)') +
+  # scale_color_viridis(option="D") +
+  theme(legend.position = "none") + 
+  ylim(0,20) 
+  # geom_smooth(col='grey', span = 10) +
+  # ggtitle('B')
+
+p2=ggplot(avg_intensity, aes(age_numeric,mean, color=condition)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), position = position_dodge(width = 0.5)) +
+  theme_few(base_size = base_size_chosen) +
+  labs(x='Age', y='Ink used (mean intensity)') +
+  # scale_color_viridis(option="D") +
+  theme(legend.position = "none") + 
+  ylim(.02,.08) 
+  # geom_smooth(col='grey', span = 10,alpha=smooth_alpha)  +
+  # ggtitle('C')
+
+p3=ggplot(num_strokes, aes(age_numeric,mean, color=condition)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), position = position_dodge(width = 0.5)) +
+  theme_few(base_size = base_size_chosen) +
+  labs(x='Age', y='Number of strokes') +
+  # scale_color_viridis(option="D") +
+  theme(legend.position = "right") +
+  ylim(0,15) 
+  # geom_smooth(col='grey', span = 10,alpha=smooth_alpha)  +
+  # ggtitle('D')
+        
+# p4=ggplot(tracing_scores, aes(age_numeric,mean, color=age_numeric)) +
+#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+#   theme_few(base_size = base_size_chosen) +
+#   labs(x='Age', y='Normalized tracing score') +
+#   # scale_color_viridis(option="D") +
+#   theme(legend.position = "none") + 
+#   geom_smooth(col='grey', span = 10,alpha=smooth_alpha)  +
+#   ggtitle('E')
+```
+### Render jointed plot
 ```{r}
+ggarrange(cor_by_age_plot_A,p1,p2,p3, nrow = 1)
+```
 
-## Get proportion recognized for each image
-correctByImage <- r %>%
-  group_by(imNameShort) %>% # group by subjects
-  mutate(image_correct = mean(correct)) %>%
-  distinct(sessionId, category, age, image_correct, condition)
 
+### Look at this condition x age trends for each item
+```{r}
+category_by_cond <- joined %>%
+  group_by(category, age, condition) %>%
+  multi_boot_standard(col = 'avg_sketch_correct')
+
+ggplot(category_by_cond,aes(x=age, y=mean, col=condition)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), position = position_dodge(width = 0.5)) +
+  facet_wrap(~category)
+```
+
+### How different are individual participants?
+```{r}
 ## Get proportion recognized for each participant
-indiv <- r %>%
-  group_by(sessionId) %>%
-  mutate(sub_correct = mean(correct)) %>%
-  distinct(sessionId, sub_correct, age) %>% # get unique combos of sessionId and average 
+indiv <- joined %>%
+  group_by(subID) %>%
+  mutate(sub_correct = mean(avg_sketch_correct)) %>%
+  distinct(subID, sub_correct, age) %>% # get unique combos of sessionId and average 
   ungroup() %>%
-  mutate(sessionId = fct_reorder(sessionId, sub_correct, .desc=TRUE))
+  mutate(subID = fct_reorder(subID, sub_correct, .desc=TRUE))
 
 ## Plot individual children ordered from best to worst
-# ggplot(indiv, aes(x = sessionId, y = sub_correct, col = age)) +
-#   geom_point() + 
-#   # theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5)) +
-#   theme(axis.text.x = element_blank())+
-#   xlab("Individual children") +
-#   ylab("Proportion Recognized") +
-#   scale_color_viridis() +
-#   geom_hline(yintercept=1/22, col='grey') # plot chance line 
+ggplot(indiv, aes(x = subID, y = sub_correct, col = age)) +
+  geom_point() +
+  theme(axis.text.x = element_blank())+
+  xlab("Individual children") +
+  ylab("Proportion Recognized") +
+  scale_color_viridis(discrete = TRUE) +
+  geom_hline(yintercept=1/49, col='grey') # plot chance line
 
+## Plot individual children by age
 ggplot(indiv, aes(x = age, y = sub_correct, col = age)) +
-  geom_point() + 
-  # theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5)) +
+  geom_point() +
   xlab("Age") +
   ylab("Proportion Recognized") +
-  scale_color_viridis() +
-  geom_hline(yintercept=1/22, col='grey') # plot chance line 
+  scale_color_viridis(discrete=TRUE) +
+  geom_hline(yintercept=1/22, col='grey') # plot chance line
 ```
 
-
-##  How does recognizability vary acrosscondition ?
+### Look at individual children's differences b/t perception vs. semantic across age
 ```{r}
-corbyConditionAndSubID <- r %>%
-  group_by(sessionId) %>%
-  mutate(meanCorrect = mean(correct)) %>%
-  distinct(sessionId,meanCorrect,condition) %>% # get rid of duplicates
-  group_by(condition) %>%
-  multi_boot_standard(col = "meanCorrect")  
+corbyChild <- joined %>%
+  group_by(condition,subID, age) %>%
+  summarize(avgCorrect = mean(avg_sketch_correct)) %>%
+  group_by(subID,age) %>%
+  summarize(cond_diff = avgCorrect[condition=='P'] - avgCorrect[condition=='S'])
 
-ggplot(corbyConditionAndSubID, aes(x = condition, y = mean, col=condition)) + 
-  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper))  
-
-```
-
-### Look at individual children's performance in these conditions by their age
-```{r}
-corbyChild <- r %>%
-  group_by(condition,sessionId, age) %>%
-  mutate(avgCorrect = mean(correct)) 
-
-ggplot(corbyChild, aes(x = age, y = avgCorrect, col=age)) + 
+ggplot(corbyChild, aes(x = age, y = cond_diff, col=age)) + 
   geom_jitter(width = .01, alpha = .5)  +
-  facet_grid(~condition) + 
-  scale_color_viridis() +
-  ylab("Proportion Recognized")
+  scale_color_viridis(discrete=TRUE) +
+  ylab("P-S")
 ```
 
-##  How does recognizability vary across age and condition, collapsing across items?
+### Plot recognizability x num_strokes and drawing_duration
 ```{r}
-## Get the percent recognized for each age group / condition
-corbyCondition <- r %>%
-  group_by(sessionId, age, condition) %>% # group by subjects
-  summarise(meanCorrect=mean(correct)) %>% # calculate mean correct (subject-level average correct)
-  group_by(condition,age) %>% ## critical step: group by BOTH condition and age to get CIs for each combination of age (4,5,6,7) and condition (S,W,P)
-  multi_boot_standard(col = "meanCorrect")  
-
-ggplot(corbyCondition, aes(x = age, y = mean, col=age)) + 
-  scale_color_viridis()  +
-  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
-  facet_grid(~condition) 
-```
-
-## At the image level,how do num strokes / draw duration / avg_stroke_legth relate to recognizability?
-```{r} 
-corByItem <- joined %>%
-  group_by(imNameShort) %>%
-  mutate(avgCorrect = mean(correct)) %>% # IMAGE level correctness
-  distinct(imNameShort, avgCorrect, draw_duration, num_strokes, avg_stroke_length,age, condition)
-```
-
-```{r}
-ggplot(corByItem, aes(x = num_strokes, y = avgCorrect, col=condition)) +
+ggplot(joined, aes(x = num_strokes, y = avg_sketch_correct, col=condition)) +
     geom_jitter(width = .1, alpha = .5) +
     facet_grid(~age)
 
-ggplot(corByItem, aes(x = draw_duration, y = avgCorrect, col=condition)) +
+ggplot(joined, aes(x = draw_duration_new, y = avg_sketch_correct, col=condition)) +
     geom_jitter(width = .1, alpha = .5) +
     facet_grid(~age)
-```
-
-## How does this trend break down by the catergory that children drew?
-```{r}
-ggplot(correctByImage, aes(x = condition, y = image_correct, col=age)) + 
-  geom_point() +
-  facet_wrap(~category) + 
-  scale_color_viridis() 
-
-ggplot(correctByImage, aes(x = condition, y = image_correct, col=age)) + 
-  geom_jitter() +
-  facet_wrap(~category) 
 ```
 
 # Part 3: Inferential Statistics
 
-## Inferential analyses: Non-linear mixed effect model with random slopes for items and random intercepts for participants. 
+### Inferential analyses: Non-linear mixed effect model with random slopes for items and random intercepts for participants. 
 ```{r}
-corbySketch <- r %>%
-  group_by(imNameShort) %>%
-  mutate(propCorrect=mean(correct)) %>%
-  distinct(imNameShort, condition, age, category, propCorrect, sessionId) 
 
-# scale age
-corbySketch$age_sc = scale(corbySketch$age, scale = FALSE) # center but don't scale age
+# scale age, make sure condition is a factor
+joined$condition=as.factor(joined$condition)
 
-## Adding random slopes on participants causes the model to fail to converge, only keeping random intercepts.
-model_lmer <- lmer(propCorrect ~ age_sc*condition + (1 | sessionId) + (condition | category),  data = corbySketch)
+joined$age = as.numeric(joined$age)
+joined$age_sc = scale(joined$age, scale = FALSE) # center but don't scale age
+
+#
+model_lmer <- lmer(avg_sketch_correct ~ age_sc*condition + (condition | subID) + (condition | category),  data = joined)
 
 model_summary = summary(model_lmer)$coef
+kable(model_summary)
 ```
+
+### Add effort covariates to see how this changes the model
+```{r}
+
+#
+model_lmer <- lmer(avg_sketch_correct ~ age_sc*condition + draw_duration_new + num_strokes + mean_intensity + (condition | subID) + (condition | category),  data = joined)
+
+model_summary = summary(model_lmer)$coef
+kable(model_summary)
+```
+
 ### Check residuals of the model
-
-Seem relatively evenly distributed around zero; suggests lmer isn't too bad of a fit.
+Seem relatively evenly distributed around zero; suggests lmer isn't *too* bad of a fit -- maybe should use glmer though
 ```{r}
-plot(corbySketch$age,resid(model_lmer))
-plot(corbySketch$condition,resid(model_lmer))
+plot(joined$age,resid(model_lmer))
+plot(joined$condition,resid(model_lmer))
 ```
 
-### Get out some model predictions and plot them on top of both the raw data for each sketch and at the participant-averaged level
 
-```{r}
-predicted_df = data.frame(lmer_predictions = predict(model_lmer, corbySketch), age=corbySketch$age, condition=corbySketch$condition)
+# Part 4: Compare human vs machine classification
 
-## Model prediction lines overlaid on raw data fed to the model
-ggplot(data = predicted_df, aes(x=age, y=lmer_predictions)) +
-  facet_grid(~condition) +
-  scale_color_viridis()  +
-  stat_smooth(method="lm", col='grey') + # plot smoothed line over predictions
-  scale_x_discrete(limits=c(4,5,6,7),labels=c("4 yrs", "5 yrs", "6 yrs", "7 yrs")) +
-  geom_jitter(data = corbySketch, aes(x=age, y=propCorrect, col=age)) # now plot raw corbysketch data
+### Load classificaitons
+```{r load-classifications}
+classification_data <- read.csv('compiled_classifications/Classification_Outputs1200.csv') %>%
+  as.tibble() %>%
+  mutate(category = target_label) %>% 
+  select(-X) 
 ```
 
+### Join with human classifiation data (sizes will be different since some sketches eliminated for balancing by category)
 ```{r}
+all <- joined %>%
+  left_join(classification_data)
+```
 
-## Model prediction lines overlaid on subject-level CI data
-ggplot(data = predicted_df, aes(x=age, y=lmer_predictions)) +
-  facet_grid(~condition) +
-  stat_smooth(method="lm", col='grey') + # plot smoothed line
-  geom_pointrange(data = corbyCondition,aes(x = age, y = mean, col=age, ymin = ci_lower, ymax = ci_upper)) + 
-  xlab("Children's Age") +
-  ylab("Proportion Recognized")
+### Plot human classifications vs. machine classifications 
+```{r}
+ggplot(all, aes(x=avg_sketch_correct, y=correct_or_not, col=actual_category)) +
+  geom_jitter(width=.01, height=.01, alpha=.5) +
+  facet_wrap(~actual_category) + 
+  geom_smooth() + 
+  xlab('avg human accuracy') + 
+  ylab('classification accuracy')
 
 ```
 
-## Exploratory analysis: We have a somewhat uneven distribution of kids across ages (though even across condition). Do these results hold when we bin by "younger" and "older" kids to get a more even split?
-
-### Plot how accuracy differs by these age group and condition
+### Plot human classifications vs. machine target probability (graded measure of accuracy) 
 ```{r}
-r <- r %>%
-  mutate(age_group = cut(age, c(3.9, 5, 8), labels = c("4-5","6-7"))) 
-
-corbyAgeGroup <- r %>%
-  group_by(sessionId)%>%
-  mutate(meanCorrect = mean (correct)) %>%
-  distinct(sessionId, age_group, condition, meanCorrect)%>%
-  group_by(condition, age_group) %>%
-  multi_boot_standard(col="meanCorrect")
-
-ggplot(corbyAgeGroup, aes(x = condition, y = mean, col=age_group)) + 
-  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper))
+ggplot(all, aes(x=avg_sketch_correct, y=target_label_prob, col=actual_category)) +
+  geom_jitter(width=.01, alpha=.5) +
+  facet_wrap(~actual_category) + 
+  geom_smooth() + 
+  xlab('avg human accuracy') + 
+  ylab('classification probability')
 ```
 
-### Run inferential model statistics for age group
+### Compare humans vs. machines for main contrast of interest
 ```{r}
-corbySketch <- corbySketch %>%
-  mutate(age_group = cut(age, c(3.9, 5, 8), labels = c("4-5","6-7"))) 
+compare <- all %>%
+  group_by(session_id,age,condition) %>%
+  summarize(machine = mean(correct_or_not, na.rm=TRUE), human = mean(avg_sketch_correct)) 
 
-model_lmer <- lmer(propCorrect ~ age_group*condition + (1 | sessionId) + (condition | category),  data = corbySketch)
-summary(model_lmer)
+compare <- gather(compare, value="accuracy", key="which_classifier", machine, human)
+compare$which_classifier <- as.factor(compare$which_classifier)
+
+age_by_cond <- compare %>%
+  filter(!is.na(accuracy)) %>%
+  group_by(condition,age,which_classifier) %>%
+  multi_boot_standard(col='accuracy')
+
+ggplot(age_by_cond, aes(x=age, y=mean, col=condition)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), position = position_dodge(width = 0.5)) +
+  facet_wrap(~which_classifier) 
+  scale_color_brewer(palette="Dark2")
 ```
-
-Looks like we still see an interaction between age_group and condition, though the main effect of 4-5 year-olds and 6-7 year-olds is no longer significant on it's own.
-
-
-SRCD Abstract:
-
-The role of memory in children’s drawings of object categories
-Bria Long, Judy Fan, Yi Feng, Renata Chai, & Michael C. Frank
-
-Consistent with prior work (Long, Fan, & Frank, 2018), we found a strong effect of age; older children produced overall more recognizable drawings (b = `r round(model_summary[1,'Estimate'],3)`, SE =`r round(model_summary[1,'Std. Error'],3)`, z = `r round(model_summary[1,'t value'],3)`, p =`r round(model_summary[1,'Pr(>|t|)'],3)`). Contrary to our expectations, we found that overall children did not draw more recognizable drawings in the perception or working memory conditions than the semantic condition (perception condition M =`r round(corbyConditionAndSubID[3,'mean'],3)`% recognized, semantic condition, M=`r round(corbyConditionAndSubID[1,'mean'],3)`%, working memory condition, M=`r round(corbyConditionAndSubID[2,'mean'],3)`%). However, we  found an interaction between age and the perception condition (b=`r round(model_summary[6,'Estimate'],3)`, SE=`r round(model_summary[6,'Std. Error'],3)`, z= `r round(model_summary[6,'t value'],3)`, p=`r round(model_summary[6,'Pr(>|t|)'],3)`):  younger children drew less recognizable drawings in the perception condition, while the recognizability of older children's drawings slightly increased.
-
-
-
