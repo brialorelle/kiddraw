@@ -12,6 +12,8 @@ library(tidyverse)
 library(knitr)
 library(ggplot2)
 library(assertthat)
+library(langcog)
+library(viridis)
 ```
 
 ## Import descriptives csv
@@ -57,39 +59,118 @@ bad_subs <- d %>%
 # filter bad subs
 d <- d %>%
   filter(!sessionId %in% bad_subs$sessionId) 
+
+d$recognizer_age <- factor(d$recognizer_age, levels = c('age2','age3','age4','age5','age6','age7','age8','age9','age10','adult'))
 ```
 
 
+```{r}
+count_data <- d %>%
+  group_by(recognizer_age) %>%
+  summarize(count_subs = length(unique(sessionId)), total_trials = n())
+
+```
+
 ## Look at avg correct by producer age (photo = ceiling)
 ```{r plot-counts}
-# need to have dont_know as level even though it is never presnet for mutate fuction
-levels(d$intended_category)<-c("bird",   "dog" ,   "fish"   ,"rabbit", "dont_know")
-
 # summarize avg correct by producer age  
 by_producer <- d %>%
   filter(recognizer_age!= 'adult') %>%
   group_by(producer_age) %>%
-  summarize(avg_correct = mean(correct_or_not))
+  multi_boot_standard(col = 'correct_or_not')
 
 by_recognizer <- d %>%
-  filter(recognizer_age!= 'adult') %>%
   group_by(recognizer_age) %>%
-  summarize(avg_correct = mean(correct_or_not))
-```
+  filter(producer_age != 'photo') %>%
+  multi_boot_standard(col = 'correct_or_not')
 
-```{r}
+by_recognizer_photo <- d %>%
+  group_by(recognizer_age) %>%
+  filter(producer_age == 'photo') %>%
+  multi_boot_standard(col = 'correct_or_not') 
+
+
 both <- d %>%
   group_by(recognizer_age,producer_age) %>%
-  summarize(avg_correct = mean(correct_or_not)) 
+  multi_boot_standard(col = 'correct_or_not') 
+```
 
-kable(both)
+### Same thing for RT
+```{r}
+# summarize avg correct by producer age  
+by_producer_rt <- d %>%
+  filter(recognizer_age!= 'adult') %>%
+  group_by(producer_age) %>%
+  filter(correct_or_not == TRUE) %>%
+  filter(RT > 300 & RT < 20000) %>%
+  multi_boot_standard(col = 'RT')
+
+by_recognizer_rt <- d %>%
+  group_by(recognizer_age) %>%
+  filter(correct_or_not == TRUE) %>%
+  filter(producer_age != 'photo') %>%
+ filter(RT > 300 & RT < 20000) %>%
+  multi_boot_standard(col = 'RT')
+
+by_recognizer_photo_rt <- d %>%
+  group_by(recognizer_age) %>%
+  filter(producer_age == 'photo') %>%
+  filter(correct_or_not == TRUE) %>%
+  filter(RT > 300 & RT < 20000) %>%
+  multi_boot_standard(col = 'RT') 
+
+both_rt <- d %>%
+  group_by(recognizer_age,producer_age) %>%
+  filter(correct_or_not == TRUE) %>%
+  filter(RT > 300 & RT < 10000) %>%
+  multi_boot_standard(col = 'RT') 
 
 ```
 
+
+
 ```{r}
-ggplot(both,aes(x=producer_age, y=avg_correct, col=recognizer_age)) +
-  geom_point(aes(x=producer_age, y=avg_correct, col=recognizer_age)) +
-  geom_smooth() +
-  facet_wrap(~recognizer_age) 
-  
+by_recognizer$recognizer_age <- factor(by_recognizer$recognizer_age, levels = c('age2','age3','age4','age5','age6','age7','age8','age9','age10','adult'))
+
+ggplot(by_recognizer_photo,aes(x=recognizer_age, y=mean, col = recognizer_age)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  scale_color_viridis(discrete = "TRUE") + 
+  ylab('Proportion recognized')
+```
+
+```{r}
+
+by_recognizer_photo$recognizer_age <- factor(by_recognizer_photo$recognizer_age, levels = c('age2','age3','age4','age5','age6','age7','age8','age9','age10','adult'))
+
+ggplot(by_recognizer_photo,aes(x=recognizer_age, y=mean, col = recognizer_age)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  scale_color_viridis(discrete = "TRUE") + 
+  ylab('Proportion recognized - PHOTO')
+```
+
+```{r}
+ggplot(by_producer,aes(x=producer_age, y=mean, col = producer_age)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  scale_color_viridis(discrete = "TRUE") + 
+  ylab('Proportion recognized')
+```
+
+```{r}
+both$recognizer_age <- factor(both$recognizer_age, levels = c('age2','age3','age4','age5','age6','age7','age8','age9','age10','adult'))
+
+ggplot(both,aes(x=producer_age, y=mean, col=recognizer_age)) +
+  # geom_point() + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  facet_grid(~recognizer_age) 
+```
+
+
+
+```{r}
+both_rt$recognizer_age <- factor(both_rt$recognizer_age, levels = c('age2','age3','age4','age5','age6','age7','age8','age9','age10','adult'))
+
+ggplot(both_rt,aes(x=producer_age, y=mean, col=recognizer_age)) +
+  # geom_point() + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  facet_grid(~recognizer_age) 
 ```
