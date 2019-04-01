@@ -35,7 +35,7 @@ d %>%
 ```{r}
 guess_by_sketch <- d %>%
   filter(producer_age != 'photo') %>% ## exclude catch trials
-  group_by(sketch_path) %>%
+  group_by(sketch_path, intended_category, producer_age) %>%
   summarize(num_guesses = n()) 
   # kable()
 ```
