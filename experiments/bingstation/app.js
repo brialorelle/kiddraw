@@ -33,8 +33,8 @@ if(argv.mode) {
 
 
 try {
-    var privateKey  = fs.readFileSync('/etc/apache2/ssl/rxdhawkins.me.key'),
-        certificate = fs.readFileSync('/etc/apache2/ssl/rxdhawkins.me.crt'),
+    var privateKey  = fs.readFileSync('/etc/apache2/ssl/stanford-cogsci.org.key'),
+        certificate = fs.readFileSync('/etc/apache2/ssl/stanford-cogsci.org.crt'),
         intermed    = fs.readFileSync('/etc/apache2/ssl/intermediate.crt'),
         options     = {key: privateKey, cert: certificate, ca: intermed},
         server      = require('https').createServer(options,app).listen(gameport),
