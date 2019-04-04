@@ -288,7 +288,7 @@ function restartExperiment() {
     console.log('sending survey data')
     
     // send back to the landing page (not beginning of guessing game)
-    window.location.href="https://rxdhawkins.me:8881/landing_page.html"
+    window.location.href="https://stanford-cogsci.org:8881/landing_page.html"
 }
 
 function endExperiment(){
@@ -424,7 +424,7 @@ window.onload = function() {
     var refreshTime = 120000
     function refresh() {
         if (new Date().getTime() - time >= refreshTime) {
-                window.location.href="https://rxdhawkins.me:8881/landing_page.html"
+                window.location.href="https://stanford-cogsci.org:8881/landing_page.html"
                 console.log("No user activities. Reload.")
         } else {
             setTimeout(refresh, refreshTime);

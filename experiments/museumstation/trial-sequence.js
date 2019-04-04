@@ -12,7 +12,7 @@ Oct 26 2017
 // CSS: Make sure sizing works well on an iPad
 // and much more...
 
-// 0. Load dependencies
+// 0. Load dependenciese
 paper.install(window);
 socket = io.connect();
 
@@ -359,7 +359,7 @@ function restartExperiment() {
     socket.emit('current_data', current_data);
     console.log('sending survey data')
     
-    window.location.href="https://rxdhawkins.me:8881/landing_page.html" // load back to regular landing page
+    window.location.href="https://stanford-cogsci.org:8881/landing_page.html" // load back to regular landing page
 }
 
 function endExperiment(){
@@ -630,7 +630,7 @@ window.onload = function() {
     var refreshTime = 120000
     function refresh() {
         if (new Date().getTime() - time >= refreshTime) {
-                window.location.href="https://rxdhawkins.me:8881/landing_page.html"
+                window.location.href="https://stanford-cogsci.org:8881/landing_page.html"
                 console.log("No user activities. Reload.")
         } else {
             setTimeout(refresh, refreshTime);
