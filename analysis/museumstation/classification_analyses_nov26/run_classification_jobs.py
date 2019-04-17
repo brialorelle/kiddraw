@@ -62,7 +62,7 @@ if __name__ == "__main__":
 	print 'Now running ...'
 	for i in range(0,num_iterations):
     	## Make CPU jobs
-		cmd_string = 'python get_classifications_parallel.py --test_index={} --layer_ind={}'.format(i,layer_ind)
+		cmd_string = 'python get_classifications_parallel_age_balanced.py --test_index={} --layer_ind={}'.format(i,layer_ind)
 		print cmd_string
     	subprocess.call(cmd_string, shell=True)
     	# thread.start_new_thread(os.system,(cmd_string,))             
