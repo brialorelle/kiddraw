@@ -42,16 +42,18 @@ def load_features(cohort, layer_num):
     #  F = np.load('/Users/brialong/Documents/GitHub/kiddraw/analysis/museumstation/feature_space_analyses/features/{}/FEATURES_{}_{}_Spatial_True.npy'.format(DATASET,layers[layer_num],cohort))
     # M = pd.read_csv('/Users/brialong/Documents/GitHub/kiddraw/analysis/museumstation/feature_space_analyses/features/{}/METADATA_{}.csv'.format(DATASET, cohort)) 
     M = M[['label','age','session']]
+    M['age_str'] = M.age.astype(str)
+    M['label_age'] = M['label'].str.cat(M['age_str'], sep ="") 
     return F, M
 
 def balance_dataset(KF, KM):
     rus = RandomUnderSampler(random_state=0) ## always have same random under sampling
-    KF_downsampled, class_labels_downsampled = rus.fit_resample(KF, KM['label'].values)
+    KF_downsampled, class_labels_downsampled = rus.fit_resample(KF, KM['label_age'].values)
     new_samples_ind = rus.sample_indices_
     KM_downsampled = KM.loc[new_samples_ind]
     X = KF_downsampled
     Y = class_labels_downsampled
-    return(X,Y,KM_downsampled)
+    return(X,Y, KM_downsampled)
 
 def get_classifications(test_index):
     ## get name of model and split type to get predictions for
@@ -101,7 +103,7 @@ def get_classifications(test_index):
     ## save it out
     if not os.path.exists(out_path_specific):
         os.makedirs(out_path_specific)
-    out.to_csv(os.path.join(out_path_specific,'museumstation_subset_classification_ind_{}.csv'.format(test_index_numeric)))
+    out.to_csv(os.path.join(out_path_specific,'museumstation_subset_classification_ind_age_balanced_{}.csv'.format(test_index_numeric)))
 
 ################################################################################################################################
 
