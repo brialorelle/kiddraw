@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Draw Something!</title>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <link href="custom.css" media="screen" rel="stylesheet" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./node_modules/paper/dist/paper-full.js"></script>
+    <link href="https://vjs.zencdn.net/6.2.8/video-js.css" rel="stylesheet">
+    <script src="https://vjs.zencdn.net/6.2.8/video.js"></script>
+    <script src="trial-sequence.js"></script>
+       <script src="papaparse.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Schoolbell" rel="stylesheet">
+    <meta  name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
+</head>
+
+<body>
+<div>
+
+    <div id="consentCDM" style="display:none">
+        <div class="welcomeHeader">
+            <img src="images/stanfordlogo.png" alt="Stanford University" id="stanfordLogo"></img>
+            <p class='logo-text' id="labName">Stanford Language and Cognition Lab</p>
+        </div>
+
+        <div style="text-align:center">
+            <div class="btn-group" id="langOptions">
+                <button id="langChosen" class="btn btn-info dropdown-toggle" style="font-size:2.5vw" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    English
+                </button>
+                <div class="dropdown-menu" id="langDrop">
+                    <a class="dropdown-item langButton" id="English">English</a>
+                    <a class="dropdown-item langButton" id="Spanish">Español</a>
+                    <a class="dropdown-item langButton" id="Chinese">中文</a>
+                    <a class="dropdown-item langButton" id="Vietnamese">Tiếng Việt</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="kidConsent">
+            <p id="age" style="font-family: Schoolbell,cursive; text-align:center; font-size: 4vw;"> HOW OLD ARE YOU ? <p>
+
+            <button class="btn btn-light ageButton" id="age2"> &nbsp 2 &nbsp </button>
+            <button class="btn btn-light ageButton" id="age3"> &nbsp 3 &nbsp </button>
+            <button class="btn btn-light ageButton" id="age4"> &nbsp 4 &nbsp  </button>
+            <button class="btn btn-light ageButton" id="age5"> &nbsp 5 &nbsp </button>
+            <button class="btn btn-light ageButton" id="age6"> &nbsp 6 &nbsp </button>
+            <button class="btn btn-light ageButton" id="age7"> &nbsp 7 &nbsp </button>
+            <button class="btn btn-light ageButton" id="age8"> &nbsp 8 &nbsp </button>
+            <button class="btn btn-light ageButton" id="age9"> &nbsp 9 &nbsp </button>
+            <button class="btn btn-light ageButton" id="age10"> &nbsp 10+ &nbsp </button>
+            <button class="btn btn-light ageButton" id="adult"> &nbsp Adult &nbsp </button>
+            <p style="font-family: Schoolbell,cursive; font-size: 4vw; text-align:center"> <input id="checkConsent" type="checkbox"> <span id="useDrawing">   YOU CAN SAVE MY GUESSES </span> </p>
+        </div>
+        <div id="consentText">
+            <p id="notice" style="font-family: Schoolbell,cursive; text-align:center; font-size: 3.3vw;">
+                Please note——this game is only for one person at a time! Please let your child play by themselves.
+            </p>
+
+            <p id="consentForm"> By proceeding,  you and your child agree to participate in this research. Your child will be asked to draw pictures of common objects on this tablet or to guess what someone else was trying to draw.  No audio/video taping will occur and no identifiable information will be collection. Your child’s participation will take approximately 30 seconds – 5 minutes, depending on how long they choose to participate.
+
+            The guessing/drawing data collected here will be used for research purposes by the Stanford Language and Cognition Lab and the San Jose Children's Discovery Museum, and will be displayed on the Museum's website on a future date. There are no risks or benefits to participating: no identifying information will be collected, so you and your child’s identity will remain anonymous. Your child can stop drawing at any time or choose not to answer any question without penalty. For more information, email the Stanford lab at langcoglab@stanford.edu, or call 650-721-9270. If you are not satisfied with how this study is being conducted, or if you have any concerns, complaints, or general questions about the research or your rights as a participant, please contact the Stanford Institutional Review Board (IRB) to speak to someone independent of the research team at (650)-723-2480 or toll free at 1-866-680-2906.  You can also write to the Stanford IRB, Stanford University, 3000 El Camino Real, Five Palo Alto Square, 4th Floor, Palo Alto, CA 94306.
+            <div class="input-group mb-3 row" id="email-form">
+                <input type="email" id="parentEmail" class="form-control" aria-describedby="emailHelp" aria-label="Recipient's username">
+                <div class="input-group-append">
+                    <button id="sendEmail" class="btn btn-info" type="button">Email me the consent form</button>
+                </div>
+            </div>
+            <small id="emailHelp" class="form-text text-muted">If you would like a copy of the consent form, enter your email address here. We'll never share your email with anyone else.</small>
+            <div class="alert alert-info" id="emailSent" role="alert" style="display:none">
+                Email Sent!
+            </div>
+            </p>
+        </div>
+        <div class="slideButton">
+            <button class="btn btn-info startExp" id="startCDM"> &nbsp LET'S PLAY! &nbsp </button>
+        </div>
+    </div>
+
+
+    <div id="mainExp" style="display:none">
+        <div class="videoDiv" id="cueVideoDiv" style="display:none;padding:2vw;">
+            <video id="cueVideo" class="video-js vjs-nofull vjs-fullscreen-control" preload="none" playsinline>
+                <source src="videos/love.mp4" type="video/mp4">
+            </video>
+        </div>
+            <!-- Canvas and sketch divs-->
+            <canvas id="sketchpad"></canvas>
+            <div id="drawing" style="display:none">
+            <img id ="sketch" style="display:none"></img>
+            <div class="row" id="submit_div" style="width:100%;">
+            
+            <!-- Main four response buttons-->
+                <div class="col drawingButton imageButton">
+                    <p id="keepGoing_1_txt"> Car </p>
+                    <img class="keepGoingButton" id="keepGoing_1" src="photocues/car.png" onclick="clickResponse(this.id)"></img>
+                </div>
+
+                <div class="col drawingButton imageButton">
+                    <p id="keepGoing_2_txt"> Train </p>
+                    <img class="keepGoingButton" id="keepGoing_2" src="photocues/train.png" onclick="clickResponse(this.id)"></img>
+                </div>
+
+                <div class="col drawingButton imageButton">
+                    <p id="keepGoing_3_txt"> Boat </p>
+                    <img class="keepGoingButton"  id="keepGoing_3" src="photocues/boat.png" onclick="clickResponse(this.id)"></img>
+                </div>
+                <div class="col drawingButton imageButton">
+                    <p id="keepGoing_4_txt"> Airplane </p>
+                    <img class="keepGoingButton"  id="keepGoing_4" src="photocues/airplane.png" onclick="clickResponse(this.id)"></img>
+                </div>
+            </div>
+
+            <!-- Don't know and end buttons -->
+            <div class="row" id="bottomRow" style="margin-top: 2vh">
+                <div class="col-sm-6 drawingButton_Small imageButton allDone">
+                        <p id="end"> End Game </p>
+                        <img src="images/stop.jpg" ></img>
+                </div>
+                <div class = "col-sm-6 drawingButton_Small imageButton" class="keepGoingButton">
+                    <p id="keepGoing_5_txt"> Don't know </p>
+                        <img class="keepGoingButton" id="keepGoing_5" src="photocues/dont_know.jpg" onclick="clickResponse(this.id)"></img>
+                 </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<div id="thanksPage" style="display:none; text-align:center">
+    <div class="welcomeHeader">
+        <img src="images/stanfordlogo.png" alt="Stanford University" id="stanfordLogo"></img>
+        <p class='logo-text'>Stanford Language and Cognition Lab</p>
+    </div>
+    <p id="thanks" style="font-family: Arial,italic; font-size: 4vw; text-align:center"> Who played the game today? <br> Please check as many as applicable. </p>
+    
+    <div id="survey">
+    <p  style="font-family: Arial,italic;; font-size: 4vw; text-align:center"> <input id="survey_child" type="checkbox" class="checkboxSurvey"> Just me! </p>
+    <p  style="font-family: Arial,italic;; font-size: 4vw; text-align:center"> <input id="survey_parent" type="checkbox" class="checkboxSurvey">  An adult with me helped </p>
+    <p style="font-family: Arial,italic;; font-size: 4vw; text-align:center"> <input id="survey_else" type="checkbox" class="checkboxSurvey" > Another kid also played the game </p>
+    </div>
+    <p id="endInfo" style="font-family: Arial,italic; font-size: 18pt; text-align:center; padding:2vw"> To learn more, visit our lab's web page at langcog.stanford.edu. For any questions about the study, please contact Dr. Bria Long at bria@stanford.edu or Dr. Michael C. Frank at mcfrank@stanford.edu. </p>
+    <div class="imageButton endRestart" style="text-align:center">
+        <p id="restart" class="buttonDescription"> Restart </p>
+        <img class="startButton" src="images/play.jpg"></img>
+    </div>
+    <img style="width:20%" src="images/thankyou.jpg"</img>
+</div>
+
+
+
+
+</div>
+</body>
+
+</html>
+
+
