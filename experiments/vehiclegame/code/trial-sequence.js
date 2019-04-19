@@ -469,10 +469,10 @@ window.onload = function() {
                 results = Papa.parse(data); // parse csv file
                 imgArray = new Array();
                 for (i = 1; i < results.data.length; i++) {
-                    var category = results.data[i][5];
-                    var age = results.data[i][2];
-                    var session_id = results.data[i][3];
-                    var sketch_name= results.data[i][4]; //starts i at 1 to get rid of header 
+                    var category = results.data[i][4];
+                    var age = results.data[i][1];
+                    var session_id = results.data[i][2];
+                    var sketch_name= results.data[i][3]; //starts i at 1 to get rid of header 
                     var sketch_name_src = 'balanced_sketches_renamed/' + sketch_name
                     imgArray.push({
                         src: sketch_name_src,
