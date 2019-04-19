@@ -100,7 +100,7 @@ dir.create('balanced_sketches_renamed')
 
 file.copy(d_balanced$fullPath, balanced_sketches_dir)
 d_balanced$newSketchName = str_split_fixed(d_balanced$sketch_src," ",2)[,2]
-d_balanced$category_new = str_split_fixed(d_balanced$category," ",2)[,1]
+d_balanced$category_new = str_split_fixed(d_balanced$category," ",2)[,2]
 
 # 
 # ## get rid of stupid spaces in filename
@@ -108,7 +108,7 @@ file.rename(from = file.path('balanced_sketches',d_balanced$sketch_src),to=file.
 # 
 # ## write out
 d_write <- d_balanced %>%
-  select(-value,-age_check,-category_check,-fullPath, -sketch_src, -category) %>%
+  select(-sketchName,-category_check,-fullPath, -sketch_src, -category) %>%
   rename(sketch_img_name = newSketchName, category=category_new)
 
 write.csv(d_write, "balanced_sketch_paths.csv")
