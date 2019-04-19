@@ -14,11 +14,12 @@ library(ggplot2)
 library(assertthat)
 library(langcog)
 library(viridis)
+library(ggthemes)
 ```
 
 ## Import descriptives csv
 ```{r cars}
-d <- read.csv("animalgame_v1_out_test.csv") %>%
+d <- read.csv("animalgame_v1_out_april16.csv") %>%
   as.tibble() 
 ```
 
@@ -29,6 +30,7 @@ d %>%
   group_by(producer_age,intended_category) %>%
   summarize(num_drawings = n()) %>%
   kable()
+
 ```
 
 ### Look at counts by individual sketch; should be low at first and randomly distributed
@@ -40,7 +42,9 @@ guess_by_sketch <- d %>%
   # kable()
 ```
 
+We have an average of `r mean(guess_by_sketch$num_guesses)` trials per individual sketch.
 
+### Preprocess dataset
 ```{r}
 # make similar levels
 d$intended_category <- factor(d$intended_category, levels=levels(d$clicked_category))
@@ -49,29 +53,35 @@ d$intended_category <- factor(d$intended_category, levels=levels(d$clicked_categ
 d <- d %>%
   mutate(correct_or_not = (clicked_category == intended_category))  
 
+d$recognizer_age <- factor(d$recognizer_age, levels = c('age2','age3','age4','age5','age6','age7','age8','age9','age10','adult'))
+```
+
+## Filter non-compliant subjects
+```{r}
 # get list of non-compliant subs
 bad_subs <- d %>%
   group_by(sessionId) %>%
   filter(producer_age == "photo") %>%
-  summarize(avg_photo_correct = mean(correct_or_not)) %>%
-  filter(avg_photo_correct < .5)
+  summarize(avg_photo_correct = mean(correct_or_not), count_trials = n()) %>%
+  filter(avg_photo_correct < .5) 
 
 # filter bad subs
 d <- d %>%
   filter(!sessionId %in% bad_subs$sessionId) 
 
-d$recognizer_age <- factor(d$recognizer_age, levels = c('age2','age3','age4','age5','age6','age7','age8','age9','age10','adult'))
 ```
 
+We excluded `r length(bad_subs$sessionId)` subjects for having 'photo' accuracies of less than 50% correct; these subjects completed an average of `r mean(bad_subs$count_trials)` trials.
 
+## How many subjects do we have?
 ```{r}
-count_data <- d %>%
+(count_data <- d %>%
   group_by(recognizer_age) %>%
-  summarize(count_subs = length(unique(sessionId)), total_trials = n())
+  summarize(count_subs = length(unique(sessionId)), total_trials = n()))
 
 ```
 
-## Look at avg correct by producer age (photo = ceiling)
+## Compile averages to look at average correct
 ```{r plot-counts}
 # summarize avg correct by producer age  
 by_producer <- d %>%
@@ -95,7 +105,7 @@ both <- d %>%
   multi_boot_standard(col = 'correct_or_not') 
 ```
 
-### Same thing for RT
+### Compile averages by RT
 ```{r}
 # summarize avg correct by producer age  
 by_producer_rt <- d %>%
@@ -127,8 +137,7 @@ both_rt <- d %>%
 
 ```
 
-
-
+### Plot at how each group is doing on the photo catch trials (this excludes 'bad' subs)
 ```{r}
 by_recognizer$recognizer_age <- factor(by_recognizer$recognizer_age, levels = c('age2','age3','age4','age5','age6','age7','age8','age9','age10','adult'))
 
@@ -139,7 +148,6 @@ ggplot(by_recognizer_photo,aes(x=recognizer_age, y=mean, col = recognizer_age)) 
 ```
 
 ```{r}
-
 by_recognizer_photo$recognizer_age <- factor(by_recognizer_photo$recognizer_age, levels = c('age2','age3','age4','age5','age6','age7','age8','age9','age10','adult'))
 
 ggplot(by_recognizer_photo,aes(x=recognizer_age, y=mean, col = recognizer_age)) +
@@ -148,6 +156,7 @@ ggplot(by_recognizer_photo,aes(x=recognizer_age, y=mean, col = recognizer_age)) 
   ylab('Proportion recognized - PHOTO')
 ```
 
+### By producer age, collapsing across recognizer age
 ```{r}
 ggplot(by_producer,aes(x=producer_age, y=mean, col = producer_age)) +
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
@@ -155,22 +164,50 @@ ggplot(by_producer,aes(x=producer_age, y=mean, col = producer_age)) +
   ylab('Proportion recognized')
 ```
 
+## Now looking at producer x recognizer age
 ```{r}
 both$recognizer_age <- factor(both$recognizer_age, levels = c('age2','age3','age4','age5','age6','age7','age8','age9','age10','adult'))
 
 ggplot(both,aes(x=producer_age, y=mean, col=recognizer_age)) +
-  # geom_point() + 
+  theme_few() + 
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  ylab('average correct') +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1), aspect.ratio = 1) +
   facet_grid(~recognizer_age) 
 ```
 
+### Switch recognizer/producer age to re-visualize data
+```{r}
+both_plot <- both %>%
+  group_by(recognizer_age)
 
+ggplot(both_plot,aes(x=recognizer_age, y=mean, col=producer_age)) +
+  theme_few() + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  ylab('average correct') +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1), aspect.ratio = 1) +
+  facet_grid(~producer_age) +
+  scale_color_viridis(discrete=TRUE) +
+  geom_smooth()
 
+```
+
+### Check out RTs
 ```{r}
 both_rt$recognizer_age <- factor(both_rt$recognizer_age, levels = c('age2','age3','age4','age5','age6','age7','age8','age9','age10','adult'))
 
 ggplot(both_rt,aes(x=producer_age, y=mean, col=recognizer_age)) +
   # geom_point() + 
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  ylab('average RT') + 
   facet_grid(~recognizer_age) 
+```
+
+
+```{r}
+library(lme4)
+ model_lmer <- glmer(correct_or_not ~ producer_age*recognizer_age + (1 | intended_category),  data = d, family="binomial", optimizer="bobqa")
+
+
 ```
