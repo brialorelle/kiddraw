@@ -39,8 +39,8 @@ def load_features(cohort, layer_num):
     layers = ['P1','P2','P3','P4','P5','FC6','FC7']    
     F = np.load('/data3/bria/kiddraw_datasets/{}/features/FEATURES_{}_{}_Spatial_True.npy'.format(DATASET,layers[layer_num],cohort))
     M = pd.read_csv('/data3/bria/kiddraw_datasets/{}/features/METADATA_{}.csv'.format(DATASET, cohort)) 
-    #  F = np.load('/Users/brialong/Documents/GitHub/kiddraw/analysis/museumstation/feature_space_analyses/features/{}/FEATURES_{}_{}_Spatial_True.npy'.format(DATASET,layers[layer_num],cohort))
-    # M = pd.read_csv('/Users/brialong/Documents/GitHub/kiddraw/analysis/museumstation/feature_space_analyses/features/{}/METADATA_{}.csv'.format(DATASET, cohort)) 
+    # F = np.load('/Users/brialong/Documents/GitHub/kiddraw/analysis/museumstation/cogsci-2019/5_feature_space_analyses/features/{}/FEATURES_{}_{}_Spatial_True.npy'.format(DATASET,layers[layer_num],cohort))
+    # M = pd.read_csv('/Users/brialong/Documents/GitHub/kiddraw/analysis/museumstation/cogsci-2019/5_feature_space_analyses/features/{}/METADATA_{}.csv'.format(DATASET, cohort)) 
     M = M[['label','age','session']]
     M['age_str'] = M.age.astype(str)
     M['label_age'] = M['label'].str.cat(M['age_str'], sep ="") 
@@ -48,11 +48,20 @@ def load_features(cohort, layer_num):
 
 def balance_dataset(KF, KM):
     rus = RandomUnderSampler(random_state=0) ## always have same random under sampling
-    KF_downsampled, class_labels_downsampled = rus.fit_resample(KF, KM['label_age'].values)
+    KF_downsampled, class_labels_downsampled = rus.fit_resample(KF, KM['label'].values)
     new_samples_ind = rus.sample_indices_
     KM_downsampled = KM.loc[new_samples_ind]
     X = KF_downsampled
     Y = class_labels_downsampled
+    return(X,Y,KM_downsampled)
+
+def balance_dataset_by_age_and_label(KF, KM):
+    rus = RandomUnderSampler(random_state=0) ## always have same random under sampling
+    KF_downsampled, class_by_age_labels_downsampled = rus.fit_resample(KF, KM['label_age'].values)
+    new_samples_ind = rus.sample_indices_
+    KM_downsampled = KM.loc[new_samples_ind]
+    X = KF_downsampled
+    Y = np.asarray(KM_downsampled['label'])
     return(X,Y,KM_downsampled)
 
 def get_classifications(test_index):
@@ -63,7 +72,7 @@ def get_classifications(test_index):
     out_path_specific = OUT_PATH + "_C_" + str(REGULARIZE_PARAM)
     ### Load features, balance dataset
     KF, KM = load_features('kid',LAYER_IND)
-    X, y, KM_downsampled = balance_dataset(KF,KM)
+    X, y, KM_downsampled = balance_dataset_by_age_and_label(KF,KM)
     ## delete test index from test index array from 
     train_indexes = np.asarray(range(0,np.shape(X)[0]))
     train_indexes = np.delete(train_indexes,test_index)
@@ -96,7 +105,7 @@ def get_classifications(test_index):
     print 'finished and saving!'
     if not os.path.exists(out_path_specific):
         os.makedirs(out_path_specific)
-    out.to_csv(os.path.join(out_path_specific,'photodraw2_subset_classification_ind_{}.csv'.format(test_index_numeric)))
+    out.to_csv(os.path.join(out_path_specific,'museumstation_balanced_subset_classification_ind_{}.csv'.format(test_index_numeric)))
 
 ################################################################################################################################
 
