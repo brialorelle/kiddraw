@@ -176,7 +176,6 @@ button[disabled] {
     border: solid 10px #999;
     display:block;
     margin:0 auto;
-    margin-top: 3vh;
 }
 
 #stars {
