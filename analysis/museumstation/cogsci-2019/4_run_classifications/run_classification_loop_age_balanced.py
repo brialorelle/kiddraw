@@ -37,8 +37,8 @@ It will spawn several threads to get predictions from all splits and models.
 
 def load_features(cohort, layer_num):
     layers = ['P1','P2','P3','P4','P5','FC6','FC7']    
-    F = np.load('/data3/bria/kiddraw_datasets/{}/features/FEATURES_{}_{}_Spatial_True.npy'.format(DATASET,layers[layer_num],cohort))
-    M = pd.read_csv('/data3/bria/kiddraw_datasets/{}/features/METADATA_{}.csv'.format(DATASET, cohort)) 
+    F = np.load('/data5/bria/kiddraw_datasets/{}/features/FEATURES_{}_{}_Spatial_True.npy'.format(DATASET,layers[layer_num],cohort))
+    M = pd.read_csv('/data5/bria/kiddraw_datasets/{}/features/METADATA_{}.csv'.format(DATASET, cohort)) 
     # F = np.load('/Users/brialong/Documents/GitHub/kiddraw/analysis/museumstation/cogsci-2019/5_feature_space_analyses/features/{}/FEATURES_{}_{}_Spatial_True.npy'.format(DATASET,layers[layer_num],cohort))
     # M = pd.read_csv('/Users/brialong/Documents/GitHub/kiddraw/analysis/museumstation/cogsci-2019/5_feature_space_analyses/features/{}/METADATA_{}.csv'.format(DATASET, cohort)) 
     M = M[['label','age','session']]
