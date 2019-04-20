@@ -16,7 +16,7 @@ var language = "English";
 
 // current mode and session info
 var mode = "CDM";
-var version ="vehiclegame_run_pilot";
+var version ="vehiclegame_run_v1";
 var sessionId= version + Date.now().toString();
 var consentPage = '#consentCDM';
 var thanksPage = "#thanksPage";
