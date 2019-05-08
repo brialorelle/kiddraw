@@ -5,12 +5,13 @@ output: html_notebook
 
 ## Check we have values for all images
 ```{r}
-files <- dir("classification-outputs_C_0.1") 
+classification_dir = "classification-outputs-041919-balanced_C_0.1"
+files <- dir(classification_dir) 
 indexes = array()
 count=0
 for (f in files){
   count = count +1
-  this_csv = read.csv(paste0("classification-outputs_C_0.1/",f)) 
+  this_csv = read.csv(paste0(classification_dir,'/',f)) 
   indexes[count] = this_csv$index
 }
 ```
@@ -26,14 +27,14 @@ indexes_missing <- index_full_array %>%
 ## Make joined CSV
 ```{r}
 library(tidyverse)
-files <- dir("classification-outputs_C_0.1") 
+files <- dir(classification_dir) 
 indexes = array()
 options(warn=-1) # lots of warningss for full_join over and over even though it's fine
 
 count=0
 for (f in files){
   count = count +1
-  this_csv = read.csv(paste0("classification-outputs_C_0.1/",f)) 
+  this_csv = read.csv(paste0(classification_dir,'/',f)) 
   if (count==1){
     all_data = this_csv
   }
@@ -45,6 +46,6 @@ for (f in files){
 
 
 ```{r}
-write.csv(all_data, paste0('compiled_classifications/Classification_Outputs',count,'.csv'))
+write.csv(all_data, paste0('compiled_classifications/',classification_dir,'_',count,'.csv'))
 
 ```
