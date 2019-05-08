@@ -35,6 +35,12 @@ experiments/photodraw/code/node_modules.zip
 experiments/photodraw/code/images.zip
 analysis/museumstation/preprocessing-dataset_nov19/z-backup/*
 *.zip
+
+analysis/animalgame/feature_analyses_sketches/2_run_classifications/classification-outputs-animalgame_C_0.1/*
+analysis/museumstation/cogsci-2019/4_run_classifications/classification-outputs-041919-balanced_C_0.1/*
+
+
+
 analysis/museumstation/feature_space_analyses/pythonTest.Rmd
 analysis/museumstation/preprocessing/run_classifications/classification-outputs_C_0.1/*
 analysis/museumstation/preprocessing/run_classifications/count_classification_outputs.nb.html
@@ -47,6 +53,7 @@ analysis/photodraw2/3_run_classsificatinos/classification-outputs-030719_C_0.1/*
 analysis/museumstation/preprocessing/extract_features/z-old/*
 analysis/museumstation/preprocessing/run_classifications/z-old/*
 writing/CogSci-2019-Submission/CogSci-2019-Submission-Trimmed-Jan31.pdf
+
 analysis/photodraw2/1_get_sketches/descriptives_check.Rmd
 analysis/photodraw2/1_get_sketches/photodraw2_descriptives/MuseumStation_AllDescriptives_1507_images_final_CDM_photodraw_e2.csv
 analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_1000_images_CDM_photodraw_e2_start_0.csv
@@ -72,7 +79,9 @@ analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescrip
 analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_900_images_CDM_photodraw_e2_start_0.csv
 analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_1475_images_final_CDM_photodraw_e2.csv
 analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_1475_images_final_CDM_photodraw_e2_no_blanks.csv
+
 writing/CogSci-2019-Submission/z-old/CogSci_RoughDraft.Rmd
+
 analysis/bingstation/descriptives_check.Rmd
 analysis/bingstation/descriptives_check.html
 analysis/bingstation/descriptives/March27_bing_usage.csv
