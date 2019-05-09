@@ -73,7 +73,7 @@ As children learn the diagnostic properties of objects and how to recognize them
 
 Inspired by this prior work, our goal is to understand the relationship between developmental changes in how children draw visual concepts and their representations of these visual concepts.  In particular, we hypothesize that children’s drawings become more recognizable in part because children learn the distinctive features of particular categories that set them apart from other similar objects (Figure \ref{fig:drawingExamples}). If so, we would expect an increase in the distinctive visual features depicted in children's drawings (e.g., long ears to depict bunnies) that are not simply due to improvements in children's motor control abilities. However, this goal poses several methodological challenges to overcome.
 
-First, it requires a principled and generalizable approach to encoding the high-level visual properties of drawings that expose the extent to which they contain category-diagnostic information [@FanCommon2018]. This approach stands in contrast to previous approaches, which have relied upon provisional criteria specific to each study (e.g., handles for mugs) [e.g., @barrett1976symbolism; @goodenough1963goodenough], which limited their ability to make detailed predictions on new tasks or datasets. We meet this challenge by capitalizing on recent work validating the use of deep convolutional neural network (DCNN) models as a general basis for measuring the high-level visual information that drives recognition in images [@yamins2014performance]. As these models have been trained to recognize objects in photographs, units in higher layers tend to respond to the visaul features that are most useful for distinguishing between different object categories. Here, we analyze activations of a DCNN in responses to sketches, as previous work has validated both the overlap in high-level features between sparse drawings and photographs of objects and the use of these model feautres for classifying drawings [@FanCommon2018, @long2018drawings]. In particular, we evaluate whether children include distinctive features in their drawings by assessing how well these visual features can be used to identify the category (e.g., dog, bird) that children were intending to draw.
+First, it requires a principled and generalizable approach to encoding the high-level visual properties of drawings that expose the extent to which they contain category-diagnostic information [@FanCommon2018]. This approach stands in contrast to previous approaches, which have relied upon provisional criteria specific to each study (e.g., handles for mugs) [e.g., @barrett1976symbolism; @goodenough1963goodenough], which limited their ability to make detailed predictions on new tasks or datasets. We meet this challenge by capitalizing on recent work validating the use of deep convolutional neural network (DCNN) models as a general basis for measuring the high-level visual information that drives recognition in images [@yamins2014performance]. As these models have been trained to recognize objects in photographs, units in higher layers tend to respond to the visaul features that are most useful for distinguishing between different object categories. Here, we analyze activations of a DCNN in responses to sketches, as previous work has validated both the overlap in high-level features between sparse drawings and photographs of objects and the use of these model feautres for classifying drawings [@FanCommon2018; @long2018drawings]. In particular, we evaluate whether children include distinctive features in their drawings by assessing how well these visual features can be used to identify the category (e.g., dog, bird) that children were intending to draw.
 
 ```{r drawingExamples, include = T, fig.env = "figure*", fig.pos = "h", fig.align='center', fig.width=8, fig.height=2.5, set.cap.width=T, num.cols.cap=2, fig.align = "center", fig.cap = "Examples of drawings that have increasingly more distinctive visual features of their categories, making them more easily recognizable. These examples are generated from the results of the classification process outlined below."}
 examples <- png::readPNG("figs/example_animals_distinctive.png")
@@ -147,7 +147,6 @@ d <- d %>%
 Given that we could not easily monitor all environmental variables at the drawing station that could impact task engagement (e.g., ambient noise, distraction from other museum visitors), we anticipated the need to develop robust and consistent procedures for data quality assurance. We thus adopted strict screening procedures to ensure that any age-related trends we observed were not due to differences in task compliance across age. Early on, we noticed an unusual degree of sophistication in 2-year-old participants’ drawings and suspected that adult caregivers accompanying these children may not have complied with task instructions to let children draw on their own. Thus, in later versions of the drawing game, we surveyed participants to find out whether another child or an adult had also drawn during the session; all drawings where interference was reported were excluded from analyses. Out of these 2685 participants, 700 filled out the survey, and 156 reported interference from another child or adult (5.81%).  Raw drawing data ($N$ = 15594 drawings) were then screened for task compliance using a combination of manual and automated procedures (i.e., excluding blank drawings, pure scribbles, and drawings containing words), resulting in the exclusion of 15.3% of all drawings (N=13205 drawings after exclusions). After filtering, we analyzed data from `r length(unique(d$session_id))` children who were on average `r round(mean(d$age_numeric),2)` years of age (range 2-10 years).
 
 ##  Measuring Tracing Accuracy
-
 We developed an automated procedure for evaluating how accurately participants performed the tracing task, validated against empirical judgments of tracing quality. We decompose tracing accuracy into two terms: a shape error term and a spatial error term. Shape error reflects how closely the participant’s tracing matched the contours of the target shape; the spatial error reflects how closely the location, size, and orientation of the participant’s tracing matched the target shape (Figure \ref{fig:tracing-figure}).
 
 To compute these error terms, we applied an image registration algorithm, AirLab [@sandkuhler2018], to align each tracing to the target shape, yielding an affine transformation matrix minimizing the pixel-wise correlation distance between the aligned tracing, $T$, and the target shape, $S$: $Loss_{NCC} = - \frac{\sum S \cdot T - \sum E(S) E(T)}{N \sum Var(S) Var(T)}$, where $N$ is the number of pixels in both images. 
@@ -158,7 +157,6 @@ grid::grid.raster(img)
 ```
 
 The shape error was defined by the final correlation distance between the aligned tracing and the target shape. The spatial error was defined by the magnitude of three distinct error components: location, orientation, and size error, derived by decomposing the affine transformation matrix above into translation, rotation, and scaling components, respectively. In sum, this procedure yielded four values for each tracing: one value representing the shape error (i.e., the pixel-wise correlation distance) and three values representing the spatial error (i.e., magnitude of translation, rotation, scaling components). 
-
 
 ```{r}
 ## Join all tracing ids with classification data 
@@ -304,16 +302,7 @@ If children's drawings contain more features that are diagnostic of the drawn ca
 ### Measuring Category Distinctiveness
 To investigate changes to the underlying feature representation of children's drawings that may help explain variation in classification accuracy, we computed a measure of pair-wise category distinctiveness $D_{ij}$ for each pair of categories ${i,j}$ within each age. This metric is a higher-dimensional analog of d-prime that incorporates both the distance between each pair of categories as well as the dispersion within each category. We first computed the category centers as the mean feature vector for each category, $\vec{r}_{i}$ and $\vec{r}_{j}$. The distance between each pair of categories ${i,j}$ was then taken  as the Euclidean distance between their category centers, $\lVert\vec{r}_{i}-\vec{r}_{j} \rVert_{2}$. The dispersion for each category was computed as the root-mean-squared Euclidean distance of each individual drawing vector from the category center vector $\vec{r}$ and is expressed as $s$. By direct analogy with d-prime, we compute the distinctiveness $D_{ij}$ of each pair of categories ${i,j}$ by dividing the Euclidean distance between category centers by the quadratic mean of the two category dispersions, $D_{ij} = \frac{\lVert\vec{r}_{i}-\vec{r}_{j} \rVert_{2} } {\sqrt{\frac{1}{2} (s_{i}^2 + s_{j}^2})}$.
 
-```{r}
-test <- d %>%
-  filter(is.na(avg_tracing_rating)) %>%
-  distinct(session_id, target_label, avg_tracing_rating)
-
-test2 <- d %>%
-  filter(session_id %in% test$session_id)
-```
-
-
+  
 ```{r inferential-stats-1, cache=FALSE}
 ## INFERENTIAL STATS 1- Classification accuracy
 accuracy_all_covariates <- glmer(correct_or_not ~ scale(avg_tracing_rating)*scale(age_numeric) +
@@ -387,13 +376,14 @@ avg_by_tracing <- d %>%
 avg_by_tracing$avg_tracing_rating_quantile = as.factor(avg_by_tracing$avg_tracing_rating_quantile)
 levels(avg_by_tracing$avg_tracing_rating_quantile)=c("Tracing Quartile 1","Tracing Quartile 2","Tracing Quartile 3","Tracing Quartile 4")
 
-avg_by_tracing_plot = ggplot(avg_by_tracing, aes(age_numeric,mean, color=avg_tracing_rating_quantile)) +
-  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper,alpha=.2)) +
+avg_by_tracing_plot = ggplot(avg_by_tracing, aes(age_numeric,mean, color=age_numeric)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
   theme_few(base_size = base_size_chosen) +
-  labs(x='Age', y='Proportion correct') +
+  scale_color_viridis(option='D')+
+  labs(x='Age', y='Classification accuracy') +
   theme(legend.position = "none") +
-  geom_smooth(col='grey', span = 10, method='lm')  +
-  facet_grid(~avg_tracing_rating_quantile)
+  geom_smooth(col='grey', span = 10, method='lm', alpha=.2)  +
+  facet_grid(~avg_tracing_rating_quantile) 
 ```
 
 ```{r tracingResults, include = T, fig.env = "figure*", fig.pos = "h", fig.width=7, fig.height=2, set.cap.width=T, num.cols.cap=2, fig.cap = "Data are divided into four quantiles based on the distribution of tracing scores in the entire dataset; these divisions represent the data in each panel. In each panel, the average probability assigned to the target class is plotted as a function of child’s age.  Error bars represent 95\\% CIs bootstrapped within each age group and subset of tracing scores."}
@@ -416,16 +406,16 @@ Our mixed-effects model on drawing classification revealed that this age-related
   \hline
  & Estimate & Std. Error & z value & Pr($>$$|$z$|$) \\ 
   \hline
-(Intercept) & -0.700 & 0.274 & -2.555 & 0.011 \\ 
-  Tracing & 0.312 & 0.034 & 9.143 & 0.000 \\ 
-  Age & 0.272 & 0.034 & 8.075 & 0.000 \\ 
-  Draw Duration & 0.139 & 0.034 & 4.055 & 0.000 \\ 
-  Avg Intensity & -0.064 & 0.033 & -1.936 & 0.053 \\ 
-  Num. Strokes & -0.035 & 0.034 & -1.019 & 0.308 \\ 
-  Tracing*Age  & -0.017 & 0.028 & -0.613 & 0.540 \\ 
+(Intercept) & -0.714 & 0.274 & -2.606 & 0.009 \\ 
+  Tracing & 0.311 & 0.034 & 9.141 & 0.000 \\ 
+  Age & 0.282 & 0.033 & 8.499 & 0.000 \\ 
+  Draw Duration & 0.136 & 0.034 & 3.976 & 0.000 \\ 
+  Avg Intensity & -0.064 & 0.033 & -1.910 & 0.056 \\ 
+  Num. Strokes & -0.034 & 0.034 & -1.009 & 0.313 \\ 
+  Tracing*Age & 0.011 & 0.029 & 0.357 & 0.721 \\ 
    \hline
 \end{tabular}
-\caption{Model coefficients of a GLMM predicting the recognizability of each drawing.} 
+\caption{Model coefficients of a GLMM predicting the recognziability of each drawing} 
 \end{table}
 
 We next examined the relationship between children's ability to trace complex shapes and the subsequent recognizability of their drawings. Tracing abilities increased with age (Figure \ref{fig:mainResults}E) and individual’s tracing abilities were good predictors of the recognizability of the drawings they produced. This main effect of tracing ability also held when accounting for effort covariates (number of strokes, time spent drawing, ink used). However, children’s tracing abilities did not interact with the age-related gains in classification we observed (Figure \ref{fig:tracingResults}) and we observed age-related classification gains at each level of tracing ability.
