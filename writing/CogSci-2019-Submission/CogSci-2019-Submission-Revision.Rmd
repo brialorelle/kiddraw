@@ -35,7 +35,7 @@ keywords: >
     object representations; child development; visual production; deep neural networks
     
 output: cogsci2016::cogsci_paper
-#final-submission: \cogscifinalcopy
+final-submission: \cogscifinalcopy
 ---
 
 ```{r global_options, include=FALSE}
@@ -67,7 +67,6 @@ theme_set(theme_few())
 
 # Introduction 
 
-
 Children draw prolifically, providing a rich source of potential insight into their emerging understanding of the world [@kellogg1969analyzing]. Accordingly, drawings have been used to probe developmental change in a wide variety of domains [e.g., @piaget1929child; @karmiloff1990constraints; @fury1997children]. In particular, drawings have long provided inspiration for scientists investigating how children represent visual concepts [@minsky1972artificial]. For example, even when drawing from observation, children tend to include features that are not visible from their vantage point, yet are diagnostic of category membership (e.g., a handle on a mug) [@bremmer1984prior; @barrett1976symbolism]. 
 
 As children learn the diagnostic properties of objects and how to recognize them, they may express this knowledge in their drawings of these categories. Indeed, children’s visual recognition abilities have a protracted developmental trajectory: configural visual processing—the ability to process relationships between object parts [@juttner2016developmental; @juttner2006developmental]—matures slowly throughout childhood, as does the ability to recognize objects under unusual poses or lighting [@bova2007].  
@@ -93,7 +92,7 @@ We installed a drawing station that featured a tablet-based drawing game in a lo
 
 ```{r load-classifications}
 ## Load classification data
-classification_data <- read.csv('../../data/cogsci_2019/classification-outputs/classification-outputs-041919-balanced_C_0.1_2691.csv') %>%
+classification_data <- read.csv('../../data/cogsci_2019/classification-outputs/Classification_Outputs8694.csv') %>%
   as.tibble() %>%
   mutate(session_id = paste('cdm_',session_id,sep="")) %>%
   mutate(age_numeric = age) %>%
@@ -238,7 +237,7 @@ tracing_scores <- d %>%
 
 ```{r plot-descriptives-across-age}
 ## Make compiled plot of descriptives
-base_size_chosen=18 # size of text in plots
+base_size_chosen=10 # size of text in plots
 smooth_alpha=.2
 
 cor_by_age_plot_A = ggplot(cor_by_age, aes(age_numeric,mean, color=age_numeric)) +
@@ -249,8 +248,8 @@ cor_by_age_plot_A = ggplot(cor_by_age, aes(age_numeric,mean, color=age_numeric))
   theme(legend.position = "none") + 
   geom_smooth(col='grey',span=10, alpha=smooth_alpha) +
   ylim(0,.75) + 
-  geom_hline(yintercept = 1/23, linetype="dashed", color="grey")
- # ggtitle('A')  
+  geom_hline(yintercept = 1/23, linetype="dashed", color="grey") +
+ ggtitle('A')
 
 p1=ggplot(draw_duration, aes(age_numeric,mean, color=age_numeric)) +
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
@@ -259,8 +258,8 @@ p1=ggplot(draw_duration, aes(age_numeric,mean, color=age_numeric)) +
   scale_color_viridis(option="D") +
   theme(legend.position = "none") + 
   ylim(0,15) + 
-  geom_smooth(col='grey', span = 10) 
-  # ggtitle('B')
+  geom_smooth(col='grey', span = 10) +
+  ggtitle('B')
 
 p2=ggplot(avg_intensity, aes(age_numeric,mean, color=age_numeric)) +
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
@@ -269,8 +268,8 @@ p2=ggplot(avg_intensity, aes(age_numeric,mean, color=age_numeric)) +
   scale_color_viridis(option="D") +
   theme(legend.position = "none") + 
   ylim(.02,.06) + 
-  geom_smooth(col='grey', span = 10,alpha=smooth_alpha)  
-  # ggtitle('C')
+  geom_smooth(col='grey', span = 10,alpha=smooth_alpha)  +
+  ggtitle('C')
 
 p3=ggplot(num_strokes, aes(age_numeric,mean, color=age_numeric)) +
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
@@ -279,8 +278,8 @@ p3=ggplot(num_strokes, aes(age_numeric,mean, color=age_numeric)) +
   scale_color_viridis(option="D") +
   theme(legend.position = "none") +
   ylim(0,20) + 
-  geom_smooth(col='grey', span = 10,alpha=smooth_alpha)  
-  # ggtitle('D')
+  geom_smooth(col='grey', span = 10,alpha=smooth_alpha)  +
+  ggtitle('D')
         
 p4=ggplot(tracing_scores, aes(age_numeric,mean, color=age_numeric)) +
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
@@ -289,8 +288,8 @@ p4=ggplot(tracing_scores, aes(age_numeric,mean, color=age_numeric)) +
   scale_color_viridis(option="D") +
   theme(legend.position = "none") + 
   ylim(1,5) + 
-  geom_smooth(col='grey', span = 10,alpha=smooth_alpha)  
-  # ggtitle('E')
+  geom_smooth(col='grey', span = 10,alpha=smooth_alpha)  +
+  ggtitle('E')
 ```
 
 ```{r mainResults, include = T, fig.env = "figure*", fig.pos = "h", fig.width=7, fig.height=2, set.cap.width=T, num.cols.cap=2, fig.cap = " (A) Leave-one-out classification accuracy (grey dotted line indicates chance) (B) the amount of time spent drawing in seconds, (C) the amount of ink used (i.e., mean intensity of the drawings), (D) the number of strokes used, and (E) the average normalized tracing scores are plotted as a function of children’s age."}
@@ -304,6 +303,16 @@ If children's drawings contain more features that are diagnostic of the drawn ca
 
 ### Measuring Category Distinctiveness
 To investigate changes to the underlying feature representation of children's drawings that may help explain variation in classification accuracy, we computed a measure of pair-wise category distinctiveness $D_{ij}$ for each pair of categories ${i,j}$ within each age. This metric is a higher-dimensional analog of d-prime that incorporates both the distance between each pair of categories as well as the dispersion within each category. We first computed the category centers as the mean feature vector for each category, $\vec{r}_{i}$ and $\vec{r}_{j}$. The distance between each pair of categories ${i,j}$ was then taken  as the Euclidean distance between their category centers, $\lVert\vec{r}_{i}-\vec{r}_{j} \rVert_{2}$. The dispersion for each category was computed as the root-mean-squared Euclidean distance of each individual drawing vector from the category center vector $\vec{r}$ and is expressed as $s$. By direct analogy with d-prime, we compute the distinctiveness $D_{ij}$ of each pair of categories ${i,j}$ by dividing the Euclidean distance between category centers by the quadratic mean of the two category dispersions, $D_{ij} = \frac{\lVert\vec{r}_{i}-\vec{r}_{j} \rVert_{2} } {\sqrt{\frac{1}{2} (s_{i}^2 + s_{j}^2})}$.
+
+```{r}
+test <- d %>%
+  filter(is.na(avg_tracing_rating)) %>%
+  distinct(session_id, target_label, avg_tracing_rating)
+
+test2 <- d %>%
+  filter(session_id %in% test$session_id)
+```
+
 
 ```{r inferential-stats-1, cache=FALSE}
 ## INFERENTIAL STATS 1- Classification accuracy
@@ -430,7 +439,7 @@ Taken together, these results reveal developmental changes in the how well child
 # General Discussion
 How do children represent different object categories throughout childhood? Drawings are a rich potential source of information about how visual representations change over development. One possibility is that older children’s drawings are more recognizable because children are better able to include the diagnostic features of particular categories that distinguish them from other similar objects. Supporting this hypothesis, the high-level visual features present in children’s drawings could be used to estimate the category children were intending to draw, and these classifications became more accurate as children became older. These age-related gains in classification were not entirely explainable by either low-level task covariates (e.g., amount of time spent drawing, average intensity, or number of strokes) or children’s tracing abilities. In addition, these gains in classification were paralleled by an increase in the distinctiveness between the categories that children drew (Figure 5).
 
-Taken together, these results suggest that children’s drawings contain more distinctive features as they grow older, perhaps reflecting a change in their internal representations of these categories. While children could simply be learning routines to draw certain categories—perhaps from direct instruction or observation,  our results held even when restricted to a subset of very rarely drawn categories (e.g., “couch”, ”scissors”, ”key”,) arguing against a simple version of this idea.
+Taken together, these results suggest that children’s drawings contain more distinctive features as they grow older, perhaps reflecting a change in their internal representations of these categories. While children could simply be learning routines to draw certain categories—perhaps from direct instruction or observation,  our results held even when restricted to a subset of very rarely drawn categories (e.g., “couch”, ”scissors”, ”key”) arguing against a simple version of this idea.
 
 The current paper provides a substantial advance over prior work on children's drawings [@long2018drawings], providing more detailed analyses on the changes in childrens drawings over a wider range of ages, object categories, and individuals. Nonetheless, there are nevertheless limitations on the generalizability of these findings due to the nature of our dataset. First, while this dataset is large and samples a heterogenous population, all drawings were collected at a single geographical location, limiting the generalizability of these results to children from other diverse cultural or socioeconomic backgrounds. Second, while we imposed strong filtering requirements on the dataset, we were not present while the children were drawing and thus cannot be sure that we've eliminated all sources of noise or interference. Nonetheless, if children were misreporting their ages then we would only expect to see noise in our data rather than the age-related trends. Thus, these correlational results call for validation in more carefully controlled contexts and across more diverse populations.
 
