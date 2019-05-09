@@ -1,6 +1,7 @@
 ---
 title: "Count and compile classifications"
 output: html_notebook
+
 ---
 
 ## Check we have values for all images
