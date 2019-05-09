@@ -188,7 +188,7 @@ tracings_not_mturk=length(tracing_ids_remaining$session_id)
 ```
 
 Although we assumed that both shape and spatial error terms should contribute to our measure of tracing task performance, we did not know how much weight to assign to each component to best predict empirical judgments of tracing quality.
-In order to estimate these weights, we collected quality ratings from adult observers (N=70) for 1222 tracings (i.e., 50-80 tracings per shape per age). Raters were instructed to evaluate “how well the tracing matches the target shape and is aligned to the position of the target shape” on a 5-point scale. 
+In order to estimate these weights, we collected quality ratings from adult observers (N=70) for 1325 tracings (i.e., 50-80 tracings per shape per age), each of which was rated 1-5 times. Raters were instructed to evaluate “how well the tracing matches the target shape and is aligned to the position of the target shape” on a 5-point scale. 
 
 We fit an ordinal regression mixed-effects model to predict these 5-point ratings, which contained correlation distance, translation, rotation, scaling, and shape identity (square vs. star) as predictors, with random intercepts for rater. This model yielded parameter estimates that could then be used to score each tracing in the remainder of the dataset (N=`r tracings_not_mturk` tracings from `r tracing_participants_not_mturk` children). We averaged scores within session to yield a single tracing score for each participant (`r tracing_sessions_evaluated` children completed at least one tracing trial).
 
