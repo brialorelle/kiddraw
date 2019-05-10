@@ -1,0 +1,362 @@
+---
+title: "AnimalGame-Recognition-Analyses"
+author: "Bria Long"
+date: "5/8/2019"
+output: 
+  html_document:
+    toc: true
+    theme: cerulean
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(knitr)
+library(ggplot2)
+library(assertthat)
+library(langcog)
+library(viridis)
+library(ggthemes)
+library(lme4)
+library(lmerTest)
+```
+
+## Import animalgame data & import classifications (4 way classification on 560 drawings)
+```{r}
+orig_d <- read.csv("recognition_data/animalgame_v1_out_may8_final.csv") %>%
+  as.tibble() 
+
+## make copy for editing
+d <- orig_d
+
+# make similar levels
+d$intended_category <- factor(d$intended_category, levels=levels(d$clicked_category))
+
+# compute accurcy
+d <- d %>%
+  mutate(correct_or_not = (clicked_category == intended_category))  
+
+d$recognizer_age <- factor(d$recognizer_age, levels = c('age2','age3','age4','age5','age6','age7','age8','age9','age10','adult'))
+
+
+## Import classifications
+c <- read.csv("compiled_classifications/classification-outputs-animalgame_C_0.1_560.csv") %>%
+  as.tibble() %>%
+  mutate(sketch_path = paste0(target_label,'_','sketch_age',age,'_cdm_',session_id)) %>%
+  mutate(sketch_path = as.factor(sketch_path))
+```
+
+## Filter non-compliant subjects & trials
+```{r}
+
+didnt_start <- d %>%
+  group_by(sessionId) %>%
+  mutate(count_trials = max(trial_num)) %>%
+  filter(count_trials < 5)
+
+bad_subs <- d %>%
+  filter(!sessionId %in% didnt_start$sessionId) %>% # exclude subjects who didn't start
+  group_by(sessionId, recognizer_age) %>%
+  mutate(count_trials = max(trial_num)) %>%
+  filter(producer_age == "photo") %>%
+  group_by(sessionId, recognizer_age) %>%
+  summarize(avg_photo_correct = mean(correct_or_not), count_photo_trials = n(), count_trials = count_trials[1]) %>%
+  mutate(indiv_thres = (count_photo_trials - 1) / count_photo_trials) %>%
+  filter(avg_photo_correct < indiv_thres) 
+```
+  
+```{r}
+# filter bad subs & weird trials (too short or very long)
+d <- d %>%
+  filter(!sessionId %in% bad_subs$sessionId) %>%
+  filter(RT>100 & RT<10000) 
+
+num_trials_per_kid <- d %>%
+  group_by(sessionId) %>%
+  summarize(max_trials = max(trial_num)) %>%
+  summarize(average_trials = mean(max_trials))
+##
+```
+
+We started with `r length(unique(orig_d$sessionId))` subjects. For this analysis, I excluded `r length(bad_subs$sessionId)` subjects who made more than one error on the photo catch trials. These subjects completed an average of `r round(mean(bad_subs$count_trials),2)` trials so that photo accuracies would be matched across ages. The remaining `r length(unique(d$sessionId))` who met this threshold subjects completed an average of `r round(mean(num_trials_per_kid$average_trials),2)` trials
+
+### Exclusion rates in each age bin; mostly filtering out young kids not on task.
+```{r}
+bad_subs %>%
+  group_by(recognizer_age) %>%
+  summarize(count_subs = n(), avg_trials = mean(count_trials), avg_photo_trials = mean(count_photo_trials)) %>%
+  kable()
+
+```
+
+### Number of subs left in each age vs. age group
+```{r}
+## filter recognition data to just kids and wrangle variables
+kids_sketches_d <- d %>%
+  filter(producer_age != 'photo') %>% # don't look at photo trials
+  filter(recognizer_age != 'adult') %>%  # or adults
+  ## wrangle sketch paths so can be joined with classification data
+  mutate(sketch_path = as.factor(str_split_fixed(sketch_path,'/',2)[,2])) %>% 
+  mutate(sketch_path = as.factor(str_split_fixed(sketch_path,'.png',2)[,1])) %>% 
+  ## create numeric age & age bins
+  mutate(recognizer_age_numeric = as.numeric(str_split_fixed(recognizer_age,'age',2)[,2])) %>%
+  mutate(recognizer_age_group = cut(recognizer_age_numeric, c(1.9, 4, 6, 8, 10.1), labels = c("2-4 yrs","4-6 yrs","6-8 yrs","8-10 yrs"))) %>%
+  mutate(recognizer_age_group_numeric = cut(recognizer_age_numeric, c(1.9, 4, 6, 8, 10.1), labels=c(2,4,6,8))) %>%
+  mutate(recognizer_age_group_numeric = as.numeric(recognizer_age_group_numeric))
+
+d %>%
+  group_by(recognizer_age) %>%
+  summarize(num_subs = length(unique(sessionId))) %>%
+  kable()
+
+kids_sketches_d %>%
+  group_by(recognizer_age_group) %>%
+  summarize(num_subs = length(unique(sessionId))) %>%
+  kable()
+
+```
+
+### Look at classifier confusions across age
+```{r}
+categories = c('bird','fish','rabbit','dog')
+c_mod <- c %>%
+  rowwise() %>%
+  mutate(max_val = which.max(c(bird_prob, fish_prob, rabbit_prob, dog_prob))) %>%
+  mutate(assigned_category = categories[max_val]) 
+
+c_mod$assigned_category = as.factor(c_mod$assigned_category)
+c_mod$intended_category = as.factor(c_mod$target_label)
+
+```
+
+```{r plotConfusions, fig.width=8, fig.height=2}
+confusions <- c_mod %>%
+  group_by(intended_category, assigned_category,age)  %>%
+  summarize(number = n()) %>%
+  group_by(intended_category) %>%
+  mutate(prop = number / sum(number))
+
+ggplot(confusions, aes(x=assigned_category, y=intended_category, fill=prop)) +
+  geom_tile() + 
+  scale_fill_gradient(limits = c(0, 1)) + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5)) + 
+  ylab("Intended Category") + 
+  xlab("Assigned Category") +
+  scale_fill_viridis(option='A') + 
+  facet_grid(~age) +
+  theme_few()
+
+```
+
+
+
+
+## Examine recognition data by producer age, recognizer age, and interactions
+### Compile averages to look at average correct
+```{r plot-counts}
+# summarize avg correct by producer age  
+by_producer <- d %>%
+  filter(recognizer_age!= 'adult') %>%
+  group_by(producer_age) %>%
+  multi_boot_standard(col = 'correct_or_not')
+
+by_recognizer <- d %>%
+  group_by(recognizer_age) %>%
+  filter(producer_age != 'photo') %>%
+  multi_boot_standard(col = 'correct_or_not')
+
+by_recognizer_photo <- d %>%
+  group_by(recognizer_age) %>%
+  filter(producer_age == 'photo') %>%
+  multi_boot_standard(col = 'correct_or_not') 
+```
+
+
+### Look at overall recognition by recognizer age -- whelp, 2-year-olds are getting help!
+```{r}
+by_recognizer$recognizer_age <- factor(by_recognizer$recognizer_age, levels = c('age2','age3','age4','age5','age6','age7','age8','age9','age10','adult'))
+
+ggplot(by_recognizer,aes(x=recognizer_age, y=mean, col = recognizer_age)) +
+  theme_few() +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  scale_color_viridis(discrete = "TRUE") + 
+  ylab('Proportion drawings recognized') +
+  ylim(.25,.8) +
+  geom_smooth() 
+  
+```
+
+### How are recognizers in this group doing on photo trials?
+```{r}
+by_recognizer_photo$recognizer_age <- factor(by_recognizer_photo$recognizer_age, levels = c('age2','age3','age4','age5','age6','age7','age8','age9','age10','adult'))
+
+ggplot(by_recognizer_photo,aes(x=recognizer_age, y=mean, col = recognizer_age)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  scale_color_viridis(discrete = "TRUE") + 
+  ylab('Proportion recognized - PHOTO') +
+  theme_few()
+```
+
+### By producer age ONLY, collapsing across recognizer age
+```{r}
+ggplot(by_producer,aes(x=producer_age, y=mean, col = producer_age)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  scale_color_viridis(discrete = "TRUE") + 
+  ylab('Proportion recognized') +
+  theme_few()
+```
+
+### How does this trend break down by each category?
+```{r}
+both_category <- d %>%
+  group_by(producer_age,intended_category) %>%
+  # filter(recognizer_age == "adult") %>%
+  multi_boot_standard(col = 'correct_or_not') 
+
+ggplot(both_category,aes(x=producer_age, y=mean, col=producer_age)) +
+  theme_few() + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  ylab('average correct') +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1), aspect.ratio = 1) +
+  facet_grid(~intended_category) +
+  scale_color_viridis(discrete=TRUE) 
+
+### Plot at how each group is doing on the photo catch trials (this excludes 'bad' subs)
+
+```
+### Big item effects -- bird/dog are not gettting classified as well as fish/rabbit, much larger error bars than in actual recognition....
+```{r}
+cor_by_age <- c %>%
+  group_by(age,target_label) %>%
+  multi_boot_standard(col = 'correct_or_not') 
+
+ggplot(cor_by_age, aes(x=age, y=mean, col=age)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  facet_grid(~target_label) +
+  theme_few() +
+  theme(aspect.ratio = 1) +
+  ylab('average classification accuracy') + 
+  xlab('producer age') + 
+  scale_color_viridis(discrete=FALSE)
+
+```
+
+### Now looking at producer x recognizer age
+```{r}
+both <- d %>%
+  group_by(recognizer_age,producer_age) %>%
+  multi_boot_standard(col = 'correct_or_not') 
+
+levels(both$recognizer_age) = c('2 yrs','3 yrs','4 yrs','5 yrs','6 yrs','7 yrs','8 yrs','9 yrs','10 yrs','adult')
+levels(both$producer_age) = c('4 yrs','5 yrs','6 yrs','7 yrs','8 yrs','photo')
+
+(descriptives <- ggplot(both,aes(x=producer_age, y=mean, col=producer_age)) +
+  theme_few(base_size=14) + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  ylab('Proportion recognized') +
+  xlab('Age of drawer') + 
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), aspect.ratio = 1, legend.position='none') +
+  facet_wrap(~recognizer_age, scales='free_x') +
+  scale_color_viridis(discrete=TRUE))
+
+ggsave('mainResults.pdf', descriptives, width=6, height=8, dpi=300)
+```
+
+### Switch recognizer/producer age to re-visualize data
+```{r}
+both_plot <- both %>%
+  group_by(recognizer_age)
+
+ggplot(both_plot,aes(x=recognizer_age, y=mean, col=producer_age)) +
+  theme_few() + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  ylab('average correct') +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1), aspect.ratio = 1) +
+  facet_grid(~producer_age) +
+  scale_color_viridis(discrete=TRUE) +
+  geom_smooth()
+
+```
+
+
+# Distinctiveness x Age analyses
+## Compute distincitveness bins, join classifications & recognition data
+```{r}
+num_bins=10
+## compute bins for distinctiveness
+sketch_by_distinctiveness <- c %>%
+  mutate(distinct_index = ntile(target_label_prob,num_bins)) %>%
+  select(sketch_path, distinct_index, target_label_prob)
+
+##
+sketch_by_distinctiveness_high_low <- c %>%
+  mutate(distinct_index_highvlow = ntile(target_label_prob,2)) %>%
+  select(sketch_path, distinct_index_highvlow)
+
+
+## join distinctiveness bins for each sketch in dataset
+all_joined <- kids_sketches_d %>%
+  left_join(sketch_by_distinctiveness) %>%
+  left_join(sketch_by_distinctiveness_high_low)
+```
+
+### Plot distinctivenss by age interaction
+```{r fig.width=8, fig.height=2}
+distinct_by_age <- all_joined %>%
+  group_by(recognizer_age_numeric, distinct_index) %>%
+  multi_boot_standard(col='correct_or_not') %>%
+  group_by(distinct_index)
+
+ggplot(distinct_by_age, aes(x=distinct_index, y=mean, col=recognizer_age_numeric)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  geom_smooth(alpha=.2, span=2) +
+  facet_grid(~recognizer_age_numeric) +
+  theme_few() + 
+  scale_color_viridis(discrete=FALSE)
+```
+
+
+### Plot distinctivenss by age group interaction
+```{r}
+distinct_by_age <- all_joined %>%
+  group_by(recognizer_age_group, distinct_index) %>%
+  multi_boot_standard(col='correct_or_not') %>%
+  group_by(distinct_index)
+
+(distinct_by_age_plot <- ggplot(distinct_by_age, aes(x=distinct_index, y=mean, col=recognizer_age_group)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  geom_smooth(alpha=.2, span=4) +
+  facet_grid(~recognizer_age_group) +
+  theme_few(base_size = 22) + 
+  scale_x_continuous(breaks=seq(1,10,2)) +
+  xlab('Distinctiveness Index') +
+  ylab('Proportion recognized') +
+  theme(legend.position='none') + 
+  scale_color_viridis(discrete=TRUE))
+
+ggsave('DistinctByAge.pdf',distinct_by_age_plot, width=11)
+```
+
+### Explore how distinctivenss vs age group interact in glmer 
+```{r}
+model_glmer <- glmer(correct_or_not ~ distinct_index*recognizer_age_group_numeric + (1|intended_category) + (1|sessionId),  data = all_joined, family='binomial')
+summary(model_glmer)
+```
+
+```{r fig.width=6, fig.height=4}
+# to_plot <- all_joined %>%
+#   group_by(producer_age, distinct_index_highvlow) %>%
+#   multi_boot_standard(col='correct_or_not') %>%
+#   group_by(distinct_index_highvlow)
+# 
+# to_plot$distinct_index_highvlow=as.factor(to_plot$distinct_index_highvlow)
+# 
+# ggplot(to_plot, aes(x=producer_age, y=mean, col=distinct_index_highvlow)) +
+#   # geom_point(position = position_dodge(width=1)) +
+#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+#   theme_few() +
+#   geom_smooth()
+#   # facet_grid(~recognizer_age) 
+
+```
+
