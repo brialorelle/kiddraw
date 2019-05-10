@@ -7,10 +7,10 @@ csl: apa6.csl
 document-params: "10pt, letterpaper"
 
 author-information: > 
-    \author{{\large \bf Bria Long} \\ Department of Psychology \\ Stanford University \\ 450 Serra Mall \\ Stanford, CA 94305 \\ \textit{bria@stanford.edu}
-    \And {\large \bf Judith E. Fan} \\ Department of Psychology  \\ UC San Diego  \\  9500 Gilman Drive \\ La Jolla, CA 92093 \\ \textit{jefan@ucsd.edu}
-    \And {\large \bf Zixian Chai} \\ Department of Psychology  \\  Stanford University \\  450 Serra Mall \\ Stanford, CA 94305 \\ \textit{zchai14@stanford.edu}
-    \And {\large \bf Michael C. Frank} \\ Department of Psychology \\  Stanford University  \\  450 Serra Mall \\ Stanford, CA 94305 \\ \textit{mcfrank@stanford.edu}}
+    \author{{\large \bf Bria Long} \\ Department of Psychology \\ Stanford University \\ 450 Serra Mall \\ Stanford, CA 94305 \\ \texttt{bria@stanford.edu}
+    \And {\large \bf Judith E. Fan} \\ Department of Psychology  \\ UC San Diego  \\  9500 Gilman Drive \\ La Jolla, CA 92093 \\ \texttt{jefan@ucsd.edu}
+    \And {\large \bf Zixian Chai} \\ Department of Psychology  \\  Stanford University \\  450 Serra Mall \\ Stanford, CA 94305 \\ \texttt{zchai14@stanford.edu}
+    \And {\large \bf Michael C. Frank} \\ Department of Psychology \\  Stanford University  \\  450 Serra Mall \\ Stanford, CA 94305 \\ \texttt{mcfrank@stanford.edu}}
 
 abstract: > 
   How do children's visual concepts change across childhood, and how might
@@ -154,12 +154,14 @@ We developed an automated procedure for evaluating how accurately participants p
 
 To compute these error components, we applied an image registration algorithm, AirLab [@sandkuhler2018], to align each tracing to the target shape, yielding an affine transformation matrix that minimized the pixel-wise correlation distance between the aligned tracing, $T$, and the target shape, $S$: $Loss_{NCC} = - \frac{\sum S \cdot T - \sum E(S) E(T)}{N \sum Var(S) Var(T)}$, where $N$ is the number of pixels in both images. 
 
+The shape error was defined by the final correlation distance between the aligned tracing and the target shape. The spatial error was defined by the magnitude of three distinct error terms: location, orientation, and size error, derived by decomposing the affine transformation matrix above into translation, rotation, and scaling components, respectively. In sum, this procedure yielded four error values for each tracing: one value representing the shape error (i.e., the pixel-wise correlation distance) and three values representing the spatial error (i.e., magnitude of translation, rotation, scaling components). 
+
+
 ```{r tracing-figure, fig.env = "figure", fig.pos = "H", fig.align='center', fig.width=2, fig.height=3, set.cap.width=T, num.cols.cap=1, fig.cap = "Measurement of tracing task performance reflects both spatial and shape error components. Left: The grey shape is the target; the black shape is the raw tracing. After applying affine image registration, the spatial error reflects the extent of translation, rotation and scaling transformation required to minimize shape error. Right: Shape error reflects how closely the contour of the transformed tracing aligns with the target."}
 img <- png::readPNG("figs/tracing_eval.png")
 grid::grid.raster(img)
 ```
 
-The shape error was defined by the final correlation distance between the aligned tracing and the target shape. The spatial error was defined by the magnitude of three distinct error terms: location, orientation, and size error, derived by decomposing the affine transformation matrix above into translation, rotation, and scaling components, respectively. In sum, this procedure yielded four error values for each tracing: one value representing the shape error (i.e., the pixel-wise correlation distance) and three values representing the spatial error (i.e., magnitude of translation, rotation, scaling components). 
 
 ```{r}
 ## Join all tracing ids with classification data 
@@ -358,9 +360,6 @@ no_tracing = r.squaredGLMM(accuracy_no_tracing)
 all = r.squaredGLMM(accuracy_all_covariates)
 no_int = r.squaredGLMM(accuracy_all_covariates_no_int) # no_int = no interaction between tracing/age
 ```
-
-
-
 
 ```{r class-accuracy-by-tracing} 
 ## Compute target_label_prob averages within quantiles / age
