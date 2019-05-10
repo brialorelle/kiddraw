@@ -85,7 +85,7 @@ grid::grid.raster(examples)
 ```
 
 
-In sum, our paper provides an advance over our prior work investigating developmental change in drawing behavior [@long2018drawings] in three ways: first, we build a free-standing drawing station to continually crowdsource children's drawings under consistent conditions, enabling the collection of a substantially larger dataset; second, we exploit this larger dataset to characterize the category-level distinctiveness inherent to children's drawings across a wide range of ages; and third, we develop an automated procedure to analyzing concurrent changes in visuomotor control using a tracing task. 
+In sum, our paper provides an advance over our prior work investigating developmental change in drawing behavior [@long2018drawings] in three ways: first, we build a free-standing drawing station to continually crowdsource children's drawings under consistent conditions, enabling the collection of a substantially larger dataset; second, we exploit this larger dataset to characterize the category-level distinctiveness inherent to children's drawings across a wide range of ages; and third, we develop an automated procedure for analyzing concurrent changes in visuomotor control using a tracing task. 
 
 # Methods 
 ## Dataset
