@@ -7,10 +7,10 @@ csl: apa6.csl
 document-params: "10pt, letterpaper"
 
 author-information: > 
-    \author{{\large \bf Bria Long (bria@stanford.edu)} \\ Department of Psychology, 450 Serra Mall \\ Stanford, CA 94305
-    \AND {\large \bf Judith E. Fan (jefan@ucsd.edu)} \\Department of Psychology, 9500 Gilman Drive \\ La Jolla, CA 92093
-    \AND {\large \bf Zixian Chai (zchai14@stanford.edu)} \\Department of Psychology, 450 Serra Mall \\ Stanford, CA 94305
-    \AND {\large \bf Michael C. Frank (mcfrank@stanford.edu)} \\Department of Psychology, 450 Serra Mall \\ Stanford, CA 94305}
+    \author{{\large \bf Bria Long} \\ Department of Psychology \\ Stanford University \\ 450 Serra Mall \\ Stanford, CA 94305 \\ \textit{bria@stanford.edu}
+    \And {\large \bf Judith E. Fan} \\ Department of Psychology  \\ UC San Diego  \\  9500 Gilman Drive \\ La Jolla, CA 92093 \\ \textit{jefan@ucsd.edu}
+    \And {\large \bf Zixian Chai} \\ Department of Psychology  \\  Stanford University \\  450 Serra Mall \\ Stanford, CA 94305 \\ \textit{zchai14@stanford.edu}
+    \And {\large \bf Michael C. Frank} \\ Department of Psychology \\  Stanford University  \\  450 Serra Mall \\ Stanford, CA 94305 \\ \textit{mcfrank@stanford.edu}}
 
 abstract: > 
   How do children's visual concepts change across childhood, and how might
@@ -75,14 +75,15 @@ Inspired by this prior work, our goal is to understand the relationship between 
 
 First, it requires a principled and generalizable approach to encoding the high-level visual properties of drawings that expose the extent to which they contain category-diagnostic information [@FanCommon2018]. This approach stands in contrast to previous approaches, which have relied upon provisional criteria specific to each study (e.g., handles for mugs) [e.g., @barrett1976symbolism; @goodenough1963goodenough], which limited their ability to make detailed predictions on new tasks or datasets. We meet this challenge by capitalizing on recent work validating the use of deep convolutional neural network (DCNN) models as a general basis for measuring the high-level visual information that drives recognition in images [@yamins2014performance]. As these models have been trained to recognize objects in photographs, units in higher layers tend to respond to the visaul features that are most useful for distinguishing between different object categories. Here, we analyze activations of a DCNN in responses to sketches, as previous work has validated both the overlap in high-level features between sparse drawings and photographs of objects and the use of these model feautres for classifying drawings [@FanCommon2018; @long2018drawings]. In particular, we evaluate whether children include distinctive features in their drawings by assessing how well these visual features can be used to identify the category (e.g., dog, bird) that children were intending to draw.
 
+Second, it requires a large sample of drawings collected under consistent conditions from a wide range of participants to identify robust developmental patterns [e.g., @frank2017collaborative]. This is in contrast to the relatively small samples that have characterized classic studies in this domain [@karmiloff1990constraints; @bremmer1984prior]. To meet this challenge, we installed a free-standing drawing station in a local science museum, allowing us to collect a large sample of drawings (N = 13205 drawings) of 23 object categories over a wide developmental age range (i.e., 2-10 years) under consistent task conditions.
+
+Third, it requires simultaneous and detailed measurement of developmental changes in other cognitive and motor abilities that may influence children’s ability to include relevant information in their drawing [@freeman1987current; @rehrig2018does]. For example, children’s developing visuomotor abilities may limit their ability to include the diagnostic visual features in their drawings. In this paper, we focus on visuomotor control, operationalized as performance on shape tracing and copying tasks, because they share many of the same demands on controlled, visually-guided movement with our primary object drawing task. Critically, because we collected both tracings and drawings from every participant in our dataset, we are able to model the contribution of both individual and age-related variation in tracing task performance for explaining how well children produce recognizable drawings. 
+
 ```{r drawingExamples, include = T, fig.env = "figure*", fig.pos = "h", fig.align='center', fig.width=8, fig.height=2.5, set.cap.width=T, num.cols.cap=2, fig.align = "center", fig.cap = "Examples of drawings that have increasingly more distinctive visual features of their categories, making them more easily recognizable. These examples are generated from the results of the classification process outlined below."}
 examples <- png::readPNG("figs/example_animals_distinctive.png")
 grid::grid.raster(examples)
 ```
 
-Second, it requires a large sample of drawings collected under consistent conditions from a wide range of participants to identify robust developmental patterns [e.g., @frank2017collaborative]. This is in contrast to the relatively small samples that have characterized classic studies in this domain [@karmiloff1990constraints; @bremmer1984prior]. To meet this challenge, we installed a free-standing drawing station in a local science museum, allowing us to collect a large sample of drawings (N = 13205 drawings) of 23 object categories over a wide developmental age range (i.e., 2-10 years) under consistent task conditions.
-
-Third, it requires simultaneous and detailed measurement of developmental changes in other cognitive and motor abilities that may influence children’s ability to include relevant information in their drawing [@freeman1987current; @rehrig2018does]. For example, children’s developing visuomotor abilities may limit their ability to include the diagnostic visual features in their drawings. In this paper, we focus on visuomotor control, operationalized as performance on shape tracing and copying tasks, because they share many of the same demands on controlled, visually-guided movement with our primary object drawing task. Critically, because we collected both tracings and drawings from every participant in our dataset, we are able to model the contribution of both individual and age-related variation in tracing task performance for explaining how well children produce recognizable drawings. 
 
 Thus, the current paper provides a substantial advance over prior work on children's drawings [@long2018drawings] in several ways. Our larger dataset allows us to take novel analytic approaches that characterize how discriminable drawings of different categories are at each age and to directly measure changes in visual distinctiveness. Furthermore, in contrast to prior work, we develop automated procedures for scoring children's visuomotor abilities and the visual distinctiveness of their drawings, and apply these procedures across a much wider range of ages, categories, and individuals. 
 
@@ -384,7 +385,7 @@ avg_by_tracing_plot = ggplot(avg_by_tracing, aes(age_numeric,mean, color=age_num
   scale_color_viridis(option='D')+
   labs(x='Age', y='Classification accuracy') +
   theme(legend.position = "none") +
-  geom_smooth(col='grey', span = 10, method='lm', alpha=.2)  +
+  geom_smooth(col='grey', span = 10, alpha=.2)  +
   facet_grid(~avg_tracing_rating_quantile) 
 ```
 
@@ -440,7 +441,7 @@ Furthermore, they open the door for future empirical work to establish causal li
 Overall, we suggest that children’s drawings change systematically across development, and that they contain rich information about children’s underlying representations of the categories in the world around them. A full understanding of how children’s drawings reflect their emerging perceptual and conceptual knowledge will allow a unique and novel perspective on the both the development and the nature of visual concepts—the representations that allow us to easily derive meaning from what we see.
 
 # Acknowledgements
-Blinded for review. 
+We thank the San Jose Children's Discovery Museum for their collaboration and for hosting the drawing station where these data were collected. We are grateful to members of the Stanford Language and Cognition lab for their feedback. This work was funded by an NSF SPRF-FR Grant #1714726 to BLL and a Jacobs Foundation Fellowship to MCF. 
 
 # References 
 ```{r}
