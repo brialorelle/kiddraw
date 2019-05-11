@@ -52,9 +52,19 @@ categories = unique(meta$category)
 ##
 upper_thresholds=c(1,.85,.65,.45,.25,.05)
 lower_thresholds=c(.95,.80,.60,.40,.20,0)
+upper_thresholds=c(1,.85,.65,.45,.25,.05)
+all_thresholds=c(1,.95,.85,.80,.65,.60,.45,.40,.25,.20,.05,0)
+all_thresholds_str=as.character(all_thresholds)
+
+thres_by_category <- meta %>%
+  group_by(category) %>%
+  filter(correct_or_not==1) %>%
+  do(setNames(data.frame(t(quantile(.$target_label_prob, all_thresholds, na.rm=TRUE))),all_thresholds_str)) %>%
+  gather(Percentile, Threshold, '1':'0')
+
 ##
 age_thres = 0
-dir_name = 'subset_classification_examples_test'
+dir_name = 'distinctiveness_by_age_subset'
 dir.create(dir_name)
 ```
 ### Render out random sample with these parameters
@@ -63,37 +73,45 @@ dir.create(dir_name)
 ages = c('age2','age3','age4','age5','age6','age7','age8','age9','age10')
 
 for (this_category in categories){
-  # dir.create(file.path(paste(dir_name,'/',this_category, sep="")))
+  dir.create(file.path(paste(dir_name,'/',this_category, sep="")))
+  
   for (this_age in ages){
-  # dir.create(file.path(paste(dir_name,'/',this_category,'/',this_age, sep="")))
-  thres_count=0
+    dir.create(file.path(paste(dir_name,'/',this_category,'/',this_age, sep="")))
+    thres_count=0
+  
   for (upper in upper_thresholds) {
     thres_count = thres_count + 1
-    lower = lower_thresholds[thres_count]
+    this_upper = thres_by_category$Threshold[thres_by_category$category == this_category & thres_by_category$Percentile==as.character(upper_thresholds[thres_count])]
+    this_lower = thres_by_category$Threshold[thres_by_category$category == this_category & thres_by_category$Percentile==as.character(lower_thresholds[thres_count])]
+
     subset <- meta %>%
       filter(age == this_age) %>%
       group_by(category) %>%
-      mutate(upper_thres = quantile(target_label_prob, upper, na.rm = TRUE)) %>%
-      mutate(lower_thres = quantile(target_label_prob, lower, na.rm = TRUE)) %>%
+      filter(correct_or_not==1) %>%
       filter(category == this_category) %>%
-      filter(target_label_prob > lower_thres & target_label_prob < upper_thres) %>%
+      filter(target_label_prob > this_lower & target_label_prob < this_upper) %>%
       sample_n(1) %>%
+      
       mutate(image_path = paste('../2_filtering_nov19/filtered_dataset/sketches_filtered/',image_name,sep="")) %>%
       mutate(new_image_path = paste(dir_name,'/',this_category,'/',this_age, '/',
                                     round(target_label_prob,4),image_name,sep=""))
     
-    file.copy(subset$image_path, subset$new_image_path)
+    if (length(subset$index)>0){
+      file.copy(subset$image_path, subset$new_image_path)
+    }
   }
   }
 }
+```
 
+```{r}
 ### Make montages of these randomly sampled sketches for use in diagrams
 dir.create(paste0(dir_name,'/montages/'))
 for (this_age in ages){
 for (this_category in categories){
   image_read(dir(paste(dir_name, "/",this_category,'/',this_age,sep=""), full.names = TRUE)) %>%
-  image_append(stack = FALSE) %>%
-    image_write(file.path(paste0(dir_name,"/montages/", this_category,".png")))
+    image_append(stack = FALSE) %>%
+    image_write(file.path(paste0(dir_name,"/montages/", this_category, this_age,".png")))
 }
 }
 
