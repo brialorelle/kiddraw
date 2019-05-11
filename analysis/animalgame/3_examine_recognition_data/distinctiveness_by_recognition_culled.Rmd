@@ -43,12 +43,12 @@ d$recognizer_age <- factor(d$recognizer_age, levels = c('age2','age3','age4','ag
 c <- read.csv("compiled_classifications/classification-outputs-animalgame_C_0.1_560.csv") %>%
   as.tibble() %>%
   mutate(sketch_path = paste0(target_label,'_','sketch_age',age,'_cdm_',session_id)) %>%
-  mutate(sketch_path = as.factor(sketch_path))
+  mutate(sketch_path = as.factor(sketch_path)) %>%
+  filter(correct_or_not==1)
 ```
 
 ## Filter non-compliant subjects & trials
 ```{r}
-
 didnt_start <- d %>%
   group_by(sessionId) %>%
   mutate(count_trials = max(trial_num)) %>%
@@ -62,7 +62,8 @@ bad_subs <- d %>%
   group_by(sessionId, recognizer_age) %>%
   summarize(avg_photo_correct = mean(correct_or_not), count_photo_trials = n(), count_trials = count_trials[1]) %>%
   mutate(indiv_thres = (count_photo_trials - 1) / count_photo_trials) %>%
-  filter(avg_photo_correct < indiv_thres) 
+  # filter(avg_photo_correct < indiv_thres) %>%
+  filter(avg_photo_correct < .8) 
 ```
   
 ```{r}
@@ -334,12 +335,12 @@ distinct_by_age <- all_joined %>%
   theme(legend.position='none') + 
   scale_color_viridis(discrete=TRUE))
 
-ggsave('DistinctByAge.pdf',distinct_by_age_plot, width=11)
+ggsave('DistinctByAge.svg',distinct_by_age_plot, width=11)
 ```
 
 ### Explore how distinctivenss vs age group interact in glmer 
 ```{r}
-model_glmer <- glmer(correct_or_not ~ distinct_index*recognizer_age_group_numeric + (1|intended_category) + (1|sessionId),  data = all_joined, family='binomial')
+model_glmer <- glmer(correct_or_not ~ scale(distinct_index)*scale(recognizer_age_group_numeric) + (1|intended_category) + (1|sessionId),  data = all_joined, family='binomial')
 summary(model_glmer)
 ```
 
