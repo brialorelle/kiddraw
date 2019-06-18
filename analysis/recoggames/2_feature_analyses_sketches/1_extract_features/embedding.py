@@ -166,7 +166,7 @@ class FeatureExtractor():
 
             if self.dataset=='rendered_111918':
                 label = path.split('/')[-1].split('_')[0]
-            elif self.dataset=='animalgame':
+            elif self.dataset=='animalgame' || self.dataset=='vehiclegame':
                 label = path.split('/')[-1].split('_')[0]
             else:
                 label = path.split('/')[-2]   
