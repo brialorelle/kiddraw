@@ -50,23 +50,72 @@ meta <- read.csv('classification_outputs/Classification_Outputs8694.csv') %>%
 categories = c('rabbit')
 categories = unique(meta$category)
 ##
-upper_thresholds=c(1,.85,.65,.45,.25,.05)
-lower_thresholds=c(.95,.80,.60,.40,.20,0)
-upper_thresholds=c(1,.85,.65,.45,.25,.05)
-all_thresholds=c(1,.95,.85,.80,.65,.60,.45,.40,.25,.20,.05,0)
+# upper_thresholds=c(1,.85,.65,.45,.25,.05)
+# lower_thresholds=c(.95,.80,.60,.40,.20,0)
+# all_thresholds=c(1,.95,.85,.80,.65,.60,.45,.40,.25,.20,.05,0)
+
+upper_thresholds=c(1,.90,.80,.70,.60,.50,.40)
+lower_thresholds=c(.95,.85,.75,.65,.55,.45,.35)
+all_thresholds=c(1,.95,.90,.85,.80,.75,.70,.65,.60,.55,.50,.45,.40,.35)
+
+
 all_thresholds_str=as.character(all_thresholds)
 
 thres_by_category <- meta %>%
+  # filter(correct_or_not==1) %>%
   group_by(category) %>%
-  filter(correct_or_not==1) %>%
   do(setNames(data.frame(t(quantile(.$target_label_prob, all_thresholds, na.rm=TRUE))),all_thresholds_str)) %>%
-  gather(Percentile, Threshold, '1':'0')
+  gather(Percentile, Threshold, '1':'0.35')
 
 ##
 age_thres = 0
-dir_name = 'distinctiveness_by_age_subset'
+dir_name = 'distinctiveness_by_category_correct_and_incorrect_35_start_sample2_take2'
 dir.create(dir_name)
 ```
+
+### Render out random sample with these parameters
+```{r eval=FALSE}
+##
+for (this_category in categories){
+  dir.create(file.path(paste(dir_name,'/',this_category, sep="")))
+  thres_count=0
+  
+  for (upper in upper_thresholds) {
+    thres_count = thres_count + 1
+    this_upper = thres_by_category$Threshold[thres_by_category$category == this_category & thres_by_category$Percentile==as.character(upper_thresholds[thres_count])]
+    this_lower = thres_by_category$Threshold[thres_by_category$category == this_category & thres_by_category$Percentile==as.character(lower_thresholds[thres_count])]
+
+    subset <- meta %>%
+      # filter(age == this_age) %>%
+      # group_by(category) %>%
+      # filter(correct_or_not==1) %>%
+      filter(category == this_category) %>%
+      filter(target_label_prob > this_lower & target_label_prob < this_upper) %>%
+      sample_n(2) %>%
+      
+      mutate(image_path = paste('../2_filtering_nov19/filtered_dataset/sketches_filtered/',image_name,sep="")) %>%
+      mutate(new_image_path = paste(dir_name,'/',this_category,'/',
+                                    round(target_label_prob,4),image_name,sep=""))
+    
+    if (length(subset$index)>0){
+      file.copy(subset$image_path, subset$new_image_path)
+    }
+  }
+  }
+
+
+### Make montages of these randomly sampled sketches for use in diagrams
+dir.create(paste0(dir_name,'/montages/'))
+for (this_category in categories){
+  image_read(dir(paste(dir_name, "/",this_category,sep=""), full.names = TRUE)) %>%
+    image_append(stack = FALSE) %>%
+    image_write(file.path(paste0(dir_name,"/montages/", this_category,".png")))
+}
+
+```
+
+
+
 ### Render out random sample with these parameters
 ```{r eval=FALSE}
 ##
