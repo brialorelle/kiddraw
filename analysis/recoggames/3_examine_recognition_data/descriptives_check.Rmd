@@ -19,7 +19,7 @@ library(ggthemes)
 
 ## Import descriptives csv
 ```{r cars}
-d <- read.csv("animalgame_v1_out_april16.csv") %>%
+d <- read.csv("recognition_data/vehiclegame_v1_out_june14.csv") %>%
   as.tibble() 
 ```
 
