@@ -6,7 +6,8 @@ output: html_notebook
 
 ## Check we have values for all images
 ```{r}
-classification_dir = "classification-outputs-animalgame_C_0.1"
+library(tidyverse)
+classification_dir = "classification-outputs-vehiclegame_C_0.1"
 files <- dir(classification_dir) 
 indexes = array()
 count=0
@@ -27,7 +28,7 @@ indexes_missing <- index_full_array %>%
 
 ## Make joined CSV
 ```{r}
-library(tidyverse)
+
 files <- dir(classification_dir) 
 indexes = array()
 options(warn=-1) # lots of warningss for full_join over and over even though it's fine
