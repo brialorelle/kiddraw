@@ -1,0 +1,256 @@
+---
+title: "Examine LOO classification outputs (data subset)"
+author: "Bria Long"
+date: "started 11/20/2018"
+output: 
+  html_document:
+    toc: true # make table of contents
+    toc_depth: 3
+    theme: united
+    highlight: tango 
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(readr)
+library(assertthat)
+library(knitr)
+library(ggplot2)
+library(reshape2)
+library(ggthemes)
+library(lme4)
+library(stringr)
+library(magick) # for making montages
+library(langcog)
+library(viridis)
+library(egg)
+```
+
+## Read in and clean up datafiles
+### Read in classification outputs (from get_classifications.py)
+
+```{r}
+meta <- read.csv('compiled_classifications/classification-outputs-animalgame_C_0.1_560.csv') %>%
+  as.tibble() %>%
+  mutate(session_id = paste('cdm_',session_id,sep="")) %>%
+  mutate(age_numeric = age) %>%
+  mutate(age = paste('age',age,sep="")) %>%
+  mutate(category = target_label) %>% 
+  mutate(category_short = str_split_fixed(category," ",2)[,2]) %>%
+  mutate(image_name = paste(category,'_sketch_', age,'_', session_id,'.png',sep="")) %>%
+  select(-X,-X.1, index) 
+```
+
+
+
+##Render out subsets of classifications by classification scores
+#### Set parameters
+```{r}
+### Set parameters first
+categories = c('rabbit')
+categories = unique(meta$category)
+##
+# upper_thresholds=c(1,.85,.65,.45,.25,.05)
+# lower_thresholds=c(.95,.80,.60,.40,.20,0)
+# all_thresholds=c(1,.95,.85,.80,.65,.60,.45,.40,.25,.20,.05,0)
+
+# upper_thresholds=c(1,.90,.80,.70,.60,.50,.40)
+# lower_thresholds=c(.95,.85,.75,.65,.55,.45,.35)
+# all_thresholds=c(1,.95,.90,.85,.80,.75,.70,.65,.60,.55,.50,.45,.40,.35)
+
+lower_limit = .45
+int=-.1
+upper_thresholds = seq(1,lower_limit+.05,-.1)
+lower_thresholds = seq(.95, lower_limit, -.1)
+all_thresholds = seq(1,lower_limit, -.05)
+all_thresholds_str=as.character(all_thresholds)
+
+thres_by_category <- meta %>%
+  # filter(correct_or_not==1) %>%
+  group_by(category) %>%
+  do(setNames(data.frame(t(quantile(.$target_label_prob, all_thresholds, na.rm=TRUE))),all_thresholds_str)) %>%
+  gather(Percentile, Threshold, '1':'0.45')
+
+##
+age_thres = 0
+dir_name = 'sketch_examples/distinctiveness_by_category_correct_and_incorrect_45_start_sample2_take2'
+dir.create(dir_name)
+```
+
+### Render out random sample with these parameters
+```{r eval=FALSE}
+##
+for (this_category in categories){
+  dir.create(file.path(paste(dir_name,'/',this_category, sep="")))
+  thres_count=0
+  
+  for (upper in upper_thresholds) {
+    thres_count = thres_count + 1
+    this_upper = thres_by_category$Threshold[thres_by_category$category == this_category & thres_by_category$Percentile==as.character(upper_thresholds[thres_count])]
+    this_lower = thres_by_category$Threshold[thres_by_category$category == this_category & thres_by_category$Percentile==as.character(lower_thresholds[thres_count])]
+
+    subset <- meta %>%
+      # filter(age == this_age) %>%
+      # group_by(category) %>%
+      # filter(correct_or_not==1) %>%
+      filter(category == this_category) %>%
+      filter(target_label_prob > this_lower & target_label_prob < this_upper) %>%
+      sample_n(1) %>%
+      
+      mutate(image_path = paste('sketches/animalgame/',image_name,sep="")) %>%
+      mutate(new_image_path = paste(dir_name,'/',this_category,'/',
+                                    round(target_label_prob,4),image_name,sep=""))
+    
+    if (length(subset$index)>0){
+      file.copy(subset$image_path, subset$new_image_path)
+    }
+  }
+  }
+
+
+### Make montages of these randomly sampled sketches for use in diagrams
+dir.create(paste0(dir_name,'/montages/'))
+for (this_category in categories){
+  image_read(dir(paste(dir_name, "/",this_category,sep=""), full.names = TRUE)) %>%
+    image_append(stack = FALSE) %>%
+    image_write(file.path(paste0(dir_name,"/montages/", this_category,".png")))
+}
+
+```
+
+
+
+### Render out random sample with these parameters
+```{r eval=FALSE}
+##
+ages = c('age2','age3','age4','age5','age6','age7','age8','age9','age10')
+
+for (this_category in categories){
+  dir.create(file.path(paste(dir_name,'/',this_category, sep="")))
+  
+  for (this_age in ages){
+    dir.create(file.path(paste(dir_name,'/',this_category,'/',this_age, sep="")))
+    thres_count=0
+  
+  for (upper in upper_thresholds) {
+    thres_count = thres_count + 1
+    this_upper = thres_by_category$Threshold[thres_by_category$category == this_category & thres_by_category$Percentile==as.character(upper_thresholds[thres_count])]
+    this_lower = thres_by_category$Threshold[thres_by_category$category == this_category & thres_by_category$Percentile==as.character(lower_thresholds[thres_count])]
+
+    subset <- meta %>%
+      filter(age == this_age) %>%
+      group_by(category) %>%
+      filter(correct_or_not==1) %>%
+      filter(category == this_category) %>%
+      filter(target_label_prob > this_lower & target_label_prob < this_upper) %>%
+      sample_n(1) %>%
+      
+      mutate(image_path = paste('../2_filtering_nov19/filtered_dataset/sketches_filtered/',image_name,sep="")) %>%
+      mutate(new_image_path = paste(dir_name,'/',this_category,'/',this_age, '/',
+                                    round(target_label_prob,4),image_name,sep=""))
+    
+    if (length(subset$index)>0){
+      file.copy(subset$image_path, subset$new_image_path)
+    }
+  }
+  }
+}
+```
+
+```{r}
+### Make montages of these randomly sampled sketches for use in diagrams
+dir.create(paste0(dir_name,'/montages/'))
+for (this_age in ages){
+for (this_category in categories){
+  image_read(dir(paste(dir_name, "/",this_category,'/',this_age,sep=""), full.names = TRUE)) %>%
+    image_append(stack = FALSE) %>%
+    image_write(file.path(paste0(dir_name,"/montages/", this_category, this_age,".png")))
+}
+}
+
+```
+#### Correct only
+```{r eval=FALSE}
+##
+age_thres = 4
+dir_name = 'subset_classification_examples_ages4_10_correct_only'
+dir.create(dir_name)
+
+##
+for (this_category in categories){
+  dir.create(file.path(paste(dir_name,'/',this_category,sep="")))
+  thres_count=0
+  
+  for (upper in upper_thresholds) {
+    thres_count = thres_count + 1
+    lower = lower_thresholds[thres_count]
+    subset <- meta %>%
+      filter(age_numeric > age_thres) %>%
+      filter(image_scores==1 ) %>%
+      group_by(category) %>%
+      mutate(upper_thres = quantile(target_label_prob, upper, na.rm = TRUE)) %>%
+      mutate(lower_thres = quantile(target_label_prob, lower, na.rm = TRUE)) %>%
+      filter(category == this_category) %>%
+      filter(target_label_prob > lower_thres & target_label_prob < upper_thres) %>%
+      sample_n(2) %>%
+      mutate(image_path = paste('srcd-features/museumstation_sketches/',category,'/',image_name,sep="")) %>%
+      mutate(new_image_path = paste(dir_name,'/',this_category,'/',
+                                    round(target_label_prob,4),image_name,sep=""))
+    
+    file.copy(subset$image_path, subset$new_image_path)
+  }
+}
+
+### Make montages of these randomly sampled sketches for use in diagrams
+dir.create(paste0(dir_name,'/montages/'))
+for (this_category in categories){
+  image_read(dir(paste(dir_name, "/",this_category,sep=""), full.names = TRUE)) %>%
+  image_append(stack = FALSE) %>%
+    image_write(file.path(paste0(dir_name,"/montages/", this_category,".png")))
+}
+
+```
+
+
+```{r include=FALSE}
+### Diffeent divisions of category probabilities... not that useful with imbalanced sets, come back to?
+
+# d$summed_probs = d$a.bike.prob + d$a.bird.prob + d$a.boat.prob + d$a.bowl.prob + d$a.car.prob + d$a.chair.prob + d$a.couch.prob + d$a.cup.prob + d$a.dog.prob + d$a.fish.prob + d$a.house.prob  + d$a.person.prob + d$a.phone.prob + d$a.rabbit.prob + d$a.tree.prob + d$an.airplane.prob
+
+# d$animate_prob =  d$a.bird.prob + d$a.dog.prob + d$a.fish.prob + d$a.rabbit.prob 
+# d$small_prob = d$a.bowl.prob + d$a.cup.prob + d$a.phone.prob
+# d$furniture_prob = d$a.chair.prob + d$a.couch.prob
+# d$vehicle_prob = d$a.boat.prob + d$a.car.prob + d$a.bike.prob + d$a.car.prob + d$an.airplane.prob
+
+# animate_list = c('a bird','a dog','a fish','a rabbit')
+# d <- d %>%
+#   mutate(is_animate = (category %in% animate_list))?
+
+# ggplot(d, aes(age_numeric,log(target_label_prob), color=image_scores)) +
+#   geom_point(alpha=.5) +
+#   theme_few() + 
+#   geom_smooth()  +
+#   facet_wrap(~category) +
+#   labs(x='Age', y='Log probability', color="correctly classified?")
+  
+# ggplot(d, aes(age_numeric,log(animate_prob), color=image_scores)) +
+#   geom_point(alpha=.5) +
+#   theme_few() +
+#   geom_boxplot(aes(groups=age_numeric)) +
+#   facet_wrap(~category) +
+#   labs(x='Age', y='Log probability', color="correctly classified?")
+# # 
+# ggplot(d, aes(age_numeric,log(vehicle_prob))) +
+#   theme_few() + 
+#   geom_boxplot(aes(group=age_numeric)) +
+#   facet_wrap(~category) +
+#   labs(x='Age', y='Log probability', color="correctly classified?")
+# 
+# ggplot(d, aes(age_numeric,log(small_prob))) +
+#   theme_few() + 
+#   geom_boxplot(aes(group=age_numeric)) +
+#   facet_wrap(~category) +
+#   labs(x='Age', y='Log probability', color="correctly classified?")
+```
+
+
