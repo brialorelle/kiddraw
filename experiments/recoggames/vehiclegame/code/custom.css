@@ -1,0 +1,419 @@
+body {
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
+button {
+    font-family: "Schoolbell", cursive;
+    /*background: url(images/button-gradient.png);*/
+    border: 1px solid #999;
+    border-top: 1px solid #e0e0e0;
+    border-left: 1px solid #e0e0e0;
+    padding-left: 5px;
+    padding-right: 5px;
+    /*height: 50px;*/
+    min-width: 150px;
+}
+
+button:active {
+    border-left: 1px solid #c9c9c9;
+    border-top: 1px solid #c9c9c9;
+    background: none;
+    background-color: #c9c9cx9;
+}
+
+.keepGoingButton{
+    border-radius: 50%;
+    border-style: 2px;
+}
+
+.keepGoingButton:active{
+  background: #e5e5e5;
+  -webkit-box-shadow: inset 0px 0px 5px #c1c1c1;
+     -moz-box-shadow: inset 0px 0px 5px #c1c1c1;
+          box-shadow: inset 0px 0px 5px #c1c1c1;
+   outline: none;
+}
+
+button[disabled] {
+    background: url(zen-button.png);
+    border: 1px solid #999;
+    border-top: 1px solid #e0e0e0;
+    border-left: 1px solid #e0e0e0;
+    cursor: not-allowed;
+}
+
+.square{
+    padding-top:15px;
+    padding-bottom:15px;
+}
+.ageButton {
+    font-size: 4vw;
+    text-align:center;
+    font-family: Schoolbell,cursive;
+    font-style: italic;
+    margin: 10px;
+}
+
+.thanksButton {
+    font-size: 4vw;
+    text-align:center;
+    font-family: Arial;
+    margin: 10px;
+}
+
+.btn-warning{
+    background-color:#F7E293;
+}
+
+.progress-bar{
+    -webkit-transition: none !important;
+    transition: none !important;
+}
+
+.slideButton {
+    /*position: absolute;*/
+    margin: auto;
+    right:0;left:0;
+    bottom: 10%;
+    width:280px;
+    text-align: center;
+    /*margin-top:8vw;*/
+}
+
+.startButton{
+    width:15vw;
+    height:auto;
+    margin-top:2vw;
+}
+
+.imageButton:hover{
+    cursor:pointer;
+    /*transform: scale(1.1);*/
+}
+
+.buttonDescription{
+    font-family: Schoolbell,cursive;
+    font-size: 4vw;
+    text-align:center;
+}
+
+.responseButton{
+    background-image: 'photocues/rabbit.jpg';
+    box-shadow: 0 0 3px gray;
+    border-radius:50%;
+}
+
+.drawingButton{
+    font-family: Schoolbell,cursive;
+    font-size: 3vw;
+    text-align:center;
+    cursor:pointer;
+}
+
+.drawingButton>img{
+    width:20vw;
+    height:auto;
+    border-radius:50%;
+    border-width: 2px;
+    border-color: black;
+}
+
+.drawingButton_Small{
+    font-family: Schoolbell,cursive;
+    font-size: 3vw;
+    text-align:center;
+    cursor:pointer;
+}
+
+.drawingButton_Small>img{
+    width:10vw;
+    height:auto;
+}
+
+#consent {
+    text-align: left;
+    height: 420px;
+    width: 700px;
+    position: relative;
+    margin: auto;
+    float:top;
+    top: 20vh;
+    border: solid 5px #999;
+}
+
+.bufferSlides {
+    height: auto;
+    width: auto;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: auto ;
+    left:0; right:0; top:10%; bottom: 0;
+    font-size: 1em;
+    position: absolute;
+}
+
+#drawingIcon {
+    margin:auto;
+    display:block;
+}
+
+#consentText {
+    bottom: 15%;
+    font-size: 1.5vw;
+    padding: 4vw;
+    padding-bottom:3vw;
+}
+
+.welcomeHeader {
+    margin: auto;
+    margin-top: 2vh;
+    margin-bottom:3vh;
+    text-align: center;
+}
+
+#sketchpad {
+    border: solid 10px #999;
+    display:block;
+    margin:0 auto;
+}
+
+#stars {
+    width: 950%;
+    margin: auto;
+}
+
+.starContainer{
+
+}
+
+.smallStars {
+    width: 30%;
+    left:0;
+}
+
+.bigStars {
+    width: 40%;
+    right:0;
+}
+
+
+#kidConsent {
+    top: 20vh;
+    width: 95%;
+    left: 0;
+    right: 0;
+    margin: auto;
+    background: #ffffff;
+    border: solid 5px #999;
+    text-align: center;
+}
+
+#consentDraw {
+    position: absolute;
+    background: #ffffff;
+    left: 15%;
+    bottom: 10%;
+    width: 50px;
+    height: 50px;
+    border: solid 5px #999;
+}
+
+#ageDraw {
+    position: absolute;
+    right: 48%;
+    top: 5%;
+    width: 80px;
+    height: 80px;
+    background: #ffffff;
+    border: solid 5px #999;
+}
+
+#submit_div {
+    text-align:center;
+    /*top:5%;*/
+    left:0;
+    right:0;
+    margin-top:4vh;
+    /*position:absolute;*/
+}
+
+#cue {
+    font-size: 5vw;
+    text-align:center;
+    left: 0;
+    right: 0;
+    margin: auto;
+    font-family: Schoolbell,cursive;
+    margin-top:3vh;
+    margin-bottom:2vh;
+}
+
+#drawingCue{
+    font-size: 5vw;
+    text-align:center;
+    left: 0;
+    right: 0;
+    margin: auto;
+    margin-bottom:1vh;
+    margin-top:2vh;
+    font-family: Schoolbell,cursive;
+}
+
+#cueVideo {
+    width:60vw;
+    height:40vw;
+    left: 0;
+    right: 0;
+    top:0;
+    bottom:0;
+    margin:auto;
+    touch-action: none;
+}
+
+.videoDiv {
+    margin: auto;
+    top: 3vw;
+    right:0;
+    left:0;
+    top:0;
+    bottom:0;
+    touch-action: none;
+}
+
+#ready {
+    font-size: 1em;
+    position:absolute;
+    left:40%;
+    top: 25%;
+}
+
+#iam {
+    position:absolute;
+    left:28%;
+    top: 5%;
+}
+
+
+#checkConsent {
+    /*position: absolute;*/
+    background: #ffffff;
+    left: 25%;
+    bottom: 10%;
+    width: 50px;
+    height: 50px;
+    border: solid 5px #999;
+}
+
+
+.checkboxSurvey {
+    width: 50px;
+    height: 50px;
+    border: solid 5px #999;
+    /*transform: scale(1.5);*/
+}
+
+
+#yearsold {
+    position:absolute;
+    left:55%;
+    top: 5%;
+}
+
+#mainExp {
+    position:absolute;
+    height: 100%;
+    width: 100%;
+}
+
+
+
+
+#restartExp{
+    margin-top:10vw;
+    text-align:center;
+    font-size: 4vw;
+    font-family: Schoolbell,cursive;
+}
+
+
+#keepGoing {
+    font-size: 4vw;
+    text-align:center;
+    font-family: Schoolbell,cursive;
+    cursor:pointer
+}
+
+
+#startConsent {
+    width: 50%;
+    display: block;
+    margin: auto;
+    cursor:pointer;
+    margin-top:4vh;
+}
+
+.logo-text {
+    font-weight: bold;
+    font-style: italic;
+    font-size:3vw;
+    margin-top:1vh;
+
+}
+#stanfordLogo{
+    text-align:center;
+    width:20vw;
+    padding-top:3vw;
+}
+
+#parentEmail{
+    font-size:2vw;
+    white-space: normal;
+}
+
+#sendEmail{
+    font-size: 2vw;
+    white-space: normal;
+    width: 35vw;
+}
+
+#emailHelp{
+    font-size:1.5vw;
+}
+
+#emailSent{
+    font-size:1.5vw;
+}
+
+.startExp{
+    font-size: 4vw;
+    font-family: Schoolbell,cursive;
+    font-style: italic;
+}
+
+.vjs-nofull .vjs-fullscreen-control {
+    display:none;
+}
+
+.bounce {
+  -webkit-animation:bounce 1s infinite;
+}
+
+@-webkit-keyframes bounce {
+  0%       { bottom:5px; }
+  25%, 75% { bottom:15px; }
+  50%      { bottom:20px; }
+  100%     {bottom:0;}
+}
+
+
+#langOptions{
+    text-align:center;
+    margin-bottom:2vh;
+}
+
+.langButton{
+    margin:auto;
+    font-size:2vh;
+    font-family: Schoolbell,cursive;
+}

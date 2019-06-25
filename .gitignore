@@ -38,6 +38,7 @@ analysis/museumstation/preprocessing-dataset_nov19/z-backup/*
 
 analysis/recoggames/2_feature_analyses_sketches/2_run_classifications/classification-outputs-animalgame_C_0.1/*
 analysis/museumstation/cogsci-2019/4_run_classifications/classification-outputs-041919-balanced_C_0.1/*
+analysis/museumstation/june-2019/4_run_classifications/cdm_run_
 
 
 writing/CogSci-2019-Submission/figs/*
@@ -87,3 +88,5 @@ analysis/bingstation/descriptives_check.Rmd
 analysis/bingstation/descriptives_check.html
 analysis/bingstation/descriptives/March27_bing_usage.csv
 analysis/bingstation/descriptives/all_active_bing_kids_classrooms.csv
+
+analysis/recoggames/2_feature_analyses_sketches/2_run_classifications/classification-outputs-vehiclegame_C_0.1/*
