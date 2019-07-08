@@ -25,10 +25,12 @@ library(lmerTest)
 ```{r}
 animal_game <- read.csv("recognition_data/animalgame_v1_out_may8_final.csv") %>%
   as.tibble() %>%
+  mutate(exp = 'animalgame') %>%
   select(-X)
 
 vehicle_game <- read.csv("recognition_data/vehiclegame_v1_out_june14.csv") %>%
   as.tibble() %>%
+  mutate(exp = 'vehiclegame') %>%
   select(-X)
 
 recog_data <- animal_game %>%
@@ -48,15 +50,21 @@ d <- d %>%
 
 d$recognizer_age <- factor(d$recognizer_age, levels = c('age2','age3','age4','age5','age6','age7','age8','age9','age10','adult'))
 
+vehicles = c('airplane','train','boat','car')
 c_vehicle <- read.csv("compiled_classifications/classification-outputs-vehiclegame_C_0.1_460.csv") %>%
   as.tibble() %>%
   select(-X.1, -X) %>%
+  mutate(denom = (airplane_prob + train_prob + boat_prob + car_prob) - target_label_prob) %>%
+  mutate(log_odds = log(target_label_prob / denom)) %>%
   mutate(exp='vehiclegame')
   
   
 ## Import classifications
 c <- read.csv("compiled_classifications/classification-outputs-animalgame_C_0.1_560.csv") %>%
   as.tibble() %>%
+  select(-X.1, -X) %>%
+  mutate(denom = (dog_prob + fish_prob + rabbit_prob + bird_prob) - target_label_prob) %>%
+  mutate(log_odds = log(target_label_prob / denom)) %>%
   mutate(exp='animalgame') %>%
   full_join(c_vehicle) %>%
   mutate(sketch_path = paste0(target_label,'_','sketch_age',age,'_cdm_',session_id)) %>%
@@ -78,11 +86,6 @@ d <- d %>%
   filter(!sessionId %in% adults$sessionId) %>%
   filter(RT>100 & RT<10000) # super long or super short trial
 
-# ok_response_RT <- d %>%
-#   filter(RT>100 & RT<10000) # super long or super short trial
-# # calculate percent trials included
-# percent_trials_included = length(ok_response_RT$RT) / length(d$RT)
-
 ```
 
 ```{r}
@@ -98,7 +101,7 @@ ggplot(photo_correct, aes(x=recognizer_age, y=avg_photo_correct, col=recognizer_
   geom_hline(yintercept=threshold)
 
 bad_subs <- photo_correct %>%
-  filter(avg_photo_correct < threshold)
+  filter(avg_photo_correct < threshold) ## includes subjects who got 75% correct, excludes all those below
 ```
 
 ## Filter out subs who don't meet photo correct threshold
@@ -145,27 +148,7 @@ d %>%
   summarize(num_subs = length(unique(sessionId))) %>%
   kable()
 ```
-### Number of subs left in each age group
-```{r}
-## filter recognition data to just kids and wrangle variables
-kids_sketches_d <- d %>%
-  filter(producer_age != 'photo') %>% # don't look at photo trials
-  filter(recognizer_age != 'adult') %>%  # or adults
-  filter(recognizer_age != 'age2') %>%  # or 2-yr-olds
-  ## wrangle sketch paths so can be joined with classification data
-  mutate(sketch_path = as.factor(str_split_fixed(sketch_path,'/',2)[,2])) %>% 
-  mutate(sketch_path = as.factor(str_split_fixed(sketch_path,'.png',2)[,1])) %>% 
-  mutate(recognizer_age_numeric = as.numeric(str_split_fixed(recognizer_age,'age',2)[,2])) %>% 
-  mutate(recognizer_age_group = cut(recognizer_age_numeric, c(2.9, 5, 7, 9, 10.1), labels = c("3-4 yrs","5-6 yrs","7-8 yrs","9-10 yrs"))) %>%
-  mutate(recognizer_age_group_numeric = cut(recognizer_age_numeric, c(2.9, 5, 7, 9, 10.1), labels=c(3,5,7,9))) %>%
-  mutate(recognizer_age_group_numeric = as.numeric(recognizer_age_group_numeric))
 
-kids_sketches_d %>%
-  group_by(recognizer_age_group) %>%
-  summarize(num_subs = length(unique(sessionId))) %>%
-  kable()
-
-```
 
 ### Look at classifier confusions across age
 ```{r}
@@ -214,6 +197,29 @@ ggplot(confusions, aes(x=assigned_category, y=intended_category, fill=prop)) +
 ```
 
 
+### Number of subs left in each age group
+```{r}
+## filter recognition data to just kids and wrangle variables
+kids_sketches_d <- d %>%
+  filter(producer_age != 'photo') %>% # don't look at photo trials
+  filter(recognizer_age != 'adult') %>%  # or adults
+  filter(recognizer_age != 'age2') %>%  # or 2-yr-olds
+  ## wrangle sketch paths so can be joined with classification data
+  mutate(sketch_path = as.factor(str_split_fixed(sketch_path,'/',2)[,2])) %>% 
+  mutate(sketch_path = as.factor(str_split_fixed(sketch_path,'.png',2)[,1])) %>% 
+  mutate(recognizer_age_numeric = as.numeric(str_split_fixed(recognizer_age,'age',2)[,2])) %>% 
+  mutate(recognizer_age_group = cut(recognizer_age_numeric, c(2.9, 5, 7, 9, 10.1), labels = c("3-4 yrs","5-6 yrs","7-8 yrs","9-10 yrs"))) %>%
+  mutate(recognizer_age_group_numeric = cut(recognizer_age_numeric, c(2.9, 5, 7, 9, 10.1), labels=c(3,5,7,9))) %>%
+  mutate(recognizer_age_group_numeric = as.numeric(recognizer_age_group_numeric))
+
+kids_sketches_d %>%
+  group_by(recognizer_age_group) %>%
+  summarize(num_subs = length(unique(sessionId))) %>%
+  kable()
+
+```
+
+
 ## Examine recognition data by producer age, recognizer age, and interactions
 ### Compile averages to look at average correct
 ```{r plot-counts}
@@ -226,6 +232,18 @@ by_producer <- d %>%
 by_recognizer <- d %>%
   group_by(recognizer_age) %>%
   filter(producer_age != 'photo') %>%
+  multi_boot_standard(col = 'correct_or_not')
+
+by_recognizer_filtered <- kids_sketches_d %>%
+  group_by(recognizer_age, recognizer_age_numeric,exp) %>%
+  multi_boot_standard(col = 'correct_or_not')
+
+count_trials <- kids_sketches_d %>%
+  group_by(recognizer_age) %>%
+  summarize(count_trials = n())
+
+by_recognizer_age_group <- kids_sketches_d %>%
+  group_by(recognizer_age_group_numeric,recognizer_age_group) %>%
   multi_boot_standard(col = 'correct_or_not')
 
 by_recognizer_photo <- d %>%
@@ -251,8 +269,53 @@ ggplot(by_recognizer,aes(x=recognizer_age, y=mean, col = recognizer_age)) +
   ylab('Proportion drawings recognized') +
   ylim(.25,.8) +
   geom_smooth() 
+```
+
+```{r}
+## Maybe scale by number of participants in each age bin (or number of trials)
+by_recognizer_filtered$recognizer_age <- factor(by_recognizer_filtered$recognizer_age, levels = c('age2','age3','age4','age5','age6','age7','age8','age9','age10','adult'))
+
+
+by_recognizer_filtered <-  by_recognizer_filtered %>%
+  left_join(count_trials) %>%
+  mutate(scale = count_trials / 1000) %>%
+  group_by(exp)
+
+ggplot(by_recognizer_filtered,aes(x=recognizer_age_numeric, y=mean, col = recognizer_age_numeric, size=scale)) +
+  theme_few(base_size=18) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  geom_smooth(alpha=.2, color='grey') +
+  scale_color_viridis(discrete = "FALSE") + 
+  ylab('Proportion drawings recognized') +
+  scale_size_area(max_size=2) +
+  ylim(.25,.8) +
+  xlab('Recognizer Age') +
+  geom_hline(yintercept = .25, linetype="dashed") + 
+  theme(axis.ticks.x = element_blank(), legend.position='none', aspect.ratio = 1) +
+  facet_grid(~exp)
+  # scale_x_continuous(
+  #   breaks=c('3','4','5','6','7','8','9','10'),
+  #   labels=c('3 yrs','4 yrs','5 yrs','6 yrs','7 yrs','8 yrs','9 yrs','10 yrs')
+  #   ) 
+
+
+```
+
+```{r}
+
+
+ggplot(by_recognizer_age_group,aes(x=recognizer_age_group_numeric, y=mean, col = recognizer_age_group)) +
+  theme_few() +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  scale_color_viridis(discrete = "TRUE") +
+  ylab('Proportion drawings recognized') +
+  ylim(.25,1) +
+  # xlabe(recognizer_age_group)
+  facet_grid(~recognizer_age_group)
+  # geom_smooth()
   
 ```
+
 
 ### Look at use of "don't know" buton across age
 ```{r}
@@ -279,22 +342,22 @@ ggplot(by_recognizer_photo,aes(x=recognizer_age, y=mean, col = recognizer_age)) 
 ```
 ### Any correlation between photo-correct and overall correct?
 ```{r}
-cor_by_trial_type <- d %>%
-  mutate(photo_or_not = (producer_age == 'photo')) %>%
-  group_by(photo_or_not,sessionId) %>%
-  summarize(count_cor = sum(correct_or_not), count_items = n(), avg_correct = count_cor / count_items)
-
-only_one_type <- cor_by_trial_type %>%
-  group_by(sessionId) %>%
-  summarize(count_ids = n()) %>%
-  filter(count_ids == 1)
-
-cor_by_trial_type <- cor_by_trial_type %>%
-  filter(!sessionId %in% only_one_type$sessionId) 
-
-cor.test(cor_by_trial_type$avg_correct[cor_by_trial_type$photo_or_not==TRUE], cor_by_trial_type$avg_correct[cor_by_trial_type$photo_or_not==FALSE])
-
-qplot(cor_by_trial_type$avg_correct[cor_by_trial_type$photo_or_not==TRUE], cor_by_trial_type$avg_correct[cor_by_trial_type$photo_or_not==FALSE])
+# cor_by_trial_type <- d %>%
+#   mutate(photo_or_not = (producer_age == 'photo')) %>%
+#   group_by(photo_or_not,sessionId) %>%
+#   summarize(count_cor = sum(correct_or_not), count_items = n(), avg_correct = count_cor / count_items)
+# 
+# only_one_type <- cor_by_trial_type %>%
+#   group_by(sessionId) %>%
+#   summarize(count_ids = n()) %>%
+#   filter(count_ids == 1)
+# 
+# cor_by_trial_type <- cor_by_trial_type %>%
+#   filter(!sessionId %in% only_one_type$sessionId) 
+# 
+# cor.test(cor_by_trial_type$avg_correct[cor_by_trial_type$photo_or_not==TRUE], cor_by_trial_type$avg_correct[cor_by_trial_type$photo_or_not==FALSE])
+# 
+# qplot(cor_by_trial_type$avg_correct[cor_by_trial_type$photo_or_not==TRUE], cor_by_trial_type$avg_correct[cor_by_trial_type$photo_or_not==FALSE])
 
 ```
 
@@ -387,28 +450,20 @@ ggplot(both_plot,aes(x=recognizer_age, y=mean, col=producer_age)) +
 num_bins=10
 ## compute bins for distinctiveness
 sketch_by_distinctiveness <- c %>%
-  # filter(correct_or_not==1) %>%
   group_by(target_label) %>%
-  mutate(distinct_index = ntile(target_label_prob,num_bins)) %>%
-  select(sketch_path, distinct_index, target_label_prob)
-
-##
-sketch_by_distinctiveness_high_low <- c %>%
-  mutate(distinct_index_highvlow = ntile(target_label_prob,2)) %>%
-  select(sketch_path, distinct_index_highvlow)
+  mutate(distinct_index = ntile(log_odds,num_bins)) %>%
+  select(sketch_path, distinct_index, log_odds)
 
 ## join distinctiveness bins for each sketch in dataset
 all_joined <- kids_sketches_d %>%
-  left_join(sketch_by_distinctiveness) %>%
-  left_join(sketch_by_distinctiveness_high_low)
+  left_join(sketch_by_distinctiveness) 
 ```
 
 ## For correctly classified ONLY : compute distincitveness bins, join classifications & recognition data
 ```{r}
 sketch_by_distinctiveness_cor_only <- c %>%
   filter(correct_or_not==1) %>%
-  group_by(target_label) %>%
-  mutate(distinct_index = ntile(target_label_prob,num_bins)) %>%
+  mutate(distinct_index = ntile(log_odds,num_bins)) %>%
   select(sketch_path, distinct_index, target_label_prob)
 
 all_joined_classifier_cor_only <- kids_sketches_d %>%
@@ -417,7 +472,7 @@ all_joined_classifier_cor_only <- kids_sketches_d %>%
 
 ## How does distinctiveness bin vary with classifier probability /correctness?
 ```{r}
-ggplot(sketch_by_distinctiveness, aes(x=distinct_index, y=target_label_prob)) +
+ggplot(sketch_by_distinctiveness, aes(x=distinct_index, y=log_odds)) +
   geom_point(alpha=.5) +
   facet_wrap(~target_label) +
   theme_few()
@@ -466,10 +521,20 @@ distinct_by_age <- all_joined %>%
 
 ggplot(distinct_by_age, aes(x=distinct_index, y=mean, col=recognizer_age_numeric)) +
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
-  geom_smooth(alpha=.2, span=10) +
+  geom_smooth(alpha=.2, span=10, method='lm') +
   facet_grid(~recognizer_age_numeric) +
-  theme_few() + 
-  scale_color_viridis(discrete=FALSE)
+  theme_few(base_size=18) + 
+  theme(legend.position="none") +
+  geom_hline(yintercept=.25, linetype='dashed',color='grey') + 
+  xlab('Drawing distinctiveness') +
+  ylab('Proportion drawings recognized') + 
+  scale_color_viridis(discrete=FALSE) +
+  scale_x_continuous(
+    breaks=c(2,9),
+    # labels=c('Least \n distinctive','Most \n distinctive')
+    labels=c(' Least ',' Most ')
+        ) +
+  theme(axis.ticks.x=element_blank())
 ```
 
 
@@ -489,7 +554,8 @@ distinct_by_age <- all_joined %>%
   xlab('Distinctiveness Index') +
   ylab('Proportion recognized') +
   theme(legend.position='none') + 
-  scale_color_viridis(discrete=TRUE)) 
+  scale_color_viridis(discrete=TRUE)) +
+  
 
 # ggsave('DistinctByAge.svg',distinct_by_age_plot, width=11)
 ```
@@ -529,3 +595,8 @@ summary(model_glmer_age_cont)
 
 ```
 
+```{r}
+model_glmer <- glmer(correct_or_not ~ scale(distinct_index)*scale(recognizer_age_group_numeric) + (1|intended_category) + (1|sessionId),  data = all_joined_classifier_cor_only, family='binomial')
+summary(model_glmer)
+
+```
