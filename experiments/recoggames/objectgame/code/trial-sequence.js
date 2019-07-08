@@ -271,7 +271,9 @@ function restartExperiment() {
    var child_guessed = document.getElementById("survey_child").checked
    var other_guessed = document.getElementById("survey_else").checked
 
-   current_data = {
+   // only send if we actually saved any data
+   if (curTrial>-1){
+     current_data = {
    				parent_guessed: parent_guessed,
    				child_guessed: child_guessed,
    				other_guessed: other_guessed,
@@ -283,9 +285,10 @@ function restartExperiment() {
                 date: readable_date,
                 age: age};
 
-    // send data to server to write to database
-    socket.emit('current_data', current_data);
-    console.log('sending survey data')
+        // send data to server to write to database
+        socket.emit('current_data', current_data);
+        console.log('sending survey data')
+    }
     
     // send back to the landing page (not beginning of guessing game)
     window.location.href="https://stanford-cogsci.org:8881/landing_page.html"
