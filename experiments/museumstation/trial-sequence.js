@@ -1,16 +1,9 @@
 /* 
 
 Handles dynamic elements of museumdraw task
-Oct 26 2017
-
+Started Oct 26 2017
+Last updates July 2019
 */
-
-// To integrate:
-// HTML divs: Starting welcome page, age page (push age data), thank you page
-// JS: clear and save sketchpad data (and push to online database after each trial)
-// Convert onclick to also ontouch to work with ipad
-// CSS: Make sure sizing works well on an iPad
-// and much more...
 
 // 0. Load dependenciese
 paper.install(window);
@@ -18,24 +11,21 @@ socket = io.connect();
 
 // 1. Setup trial order and randomize it!
 firstTrial = {"category": "this square", "video": "copy_square.mp4", "image":"images/square.png"}
-lastTrial = {"category": "something you love", "video": "love.mp4"}
 trace1 = {"category":"square", "video": "trace_square.mp4", "image":"images/square.png"}
 trace2 = {"category":"shape", "video": "trace_shape.mp4","image":"images/shape.png"}
 intro = {"category":"intro", "video": "intro.mp4","image":"images/lab_logo_stanford.png"}
 
-// round 1 -- finished June 1, 2018
-
-var stimListTest = [{"category": "a bottle", "video": "bottle.mp4"},
-    {"category": "a cactus", "video": "cactus.mp4"},
-    {"category": "a camel", "video": "camel.mp4"},
-    {"category": "a hat", "video": "hat.mp4"},
-    {"category": "a lamp", "video": "lamp.mp4"},
-    {"category": "a tiger", "video": "tiger.mp4"},
-    {"category": "a watch", "video": "watch.mp4"},
-    {"category": "a whale", "video": "whale.mp4"} ]
+var stimListTest = [{"category": "an apple", "video": "apple.mp4"},
+    {"category": "a bed", "video": "bed.mp4"},
+    {"category": "a book", "video": "book.mp4"},
+    {"category": "a cow", "video": "cow.mp4"},
+    {"category": "an elephant", "video": "elephant.mp4"},
+    {"category": "a horse", "video": "horse.mp4"},
+    {"category": "an ice cream", "video": "icecream.mp4"},
+    {"category": "a snail", "video": "snail.mp4"},
+    {"category": "a TV", "video": "TV.mp4"} ]
 
 var stimListTest = shuffle(stimListTest)
-stimListTest.push(lastTrial)
 stimListTest.unshift(firstTrial)
 stimListTest.unshift(trace2)
 stimListTest.unshift(trace1)
@@ -43,19 +33,21 @@ stimListTest.unshift(intro)
 
 var curTrial=0 // global variable, trial counter
 var maxTrials = stimListTest.length; //
+
+
 var stimLang = {
     "this square": "this square",
     "square": "square",
     "shape": "shape",
-    "a bottle": "a bottle",
-    "a cactus": "a cactus",
-    "a camel": "a camel",
-    "a hat": "a hat",
-    "a lamp": "a lamp",
-    "a tiger": "a tiger",
-    "a watch": "a watch",
-    "a whale": "a whale",
-    "something you love": "something you love"}
+    "an apple": "an apple",
+    "a bed": "a bed",
+    "a book": "a book",
+    "a cow": "a cow",
+    "a elephant": "a elephant",
+    "a TV": "a TV",
+    "a horse": "a horse",
+    "an ice cream": "an ice cream",
+    "a snail": "a snail"}
 
 var cuesLang = {
     "trace": "Can you trace the ",
@@ -78,7 +70,7 @@ var strokeThresh = 3; // each stroke needs to be at least this many pixels long 
 
 // current mode and session info
 var mode = "CDM";
-var version ="cdm_run_v5";
+var version ="cdm_run_v6";
 var sessionId= version + Date.now().toString();
 var consentPage = '#consentCDM';
 var thanksPage = "#thanksPage";
