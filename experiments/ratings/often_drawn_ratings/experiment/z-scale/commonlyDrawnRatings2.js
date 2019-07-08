@@ -146,6 +146,12 @@ trials.push(childAgeTrial);
 // when the document loads
 $(document).ready(function() {
 
+    slider_changed = false // define this global variable
+    // keep a record of whether the slider moved
+    document.getElementById("quality").oninput = function() {
+          slider_changed = true 
+    };
+
     showSlide("instructions");
 });
 
@@ -177,27 +183,18 @@ var experiment = {
 // LOG RESPONSE
     log_response: function() {
 
-        var response_logged = false;
+      var slider = document.getElementById("quality");
+      var response = slider.value;
 
-        // Array of radio buttons
-        var radio = document.getElementsByName("judgment");
-    
-        // Loop through radio buttons
-        for (i = 0; i < radio.length; i++) {
-         if (radio[i].checked) {
-            experiment.data.rating.push(radio[i].value);
-            response_logged = true;         
-        }
-    }
-    
-        if (response_logged) {
-            nextButton_FamRatings.blur();
-            
-            //  uncheck radio buttons
-            for (i = 0; i < radio.length; i++) {
-                radio[i].checked = false
-            }
+        if (slider_changed == true) {
 
+            // save data
+            experiment.data.rating.push(response);
+
+            slider_changed = true; // reset back for next trials
+            slider.value = 50; // reset slider value
+
+            // and go on to next trial
             experiment.next();
 
         } else {

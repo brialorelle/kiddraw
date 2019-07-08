@@ -44,53 +44,50 @@
 
 <!-- Questionnaire slide - How often categories are drawn -->
 <div class="slide" id="commonlyDrawnRatings">
+  <br>
     <div align="center">
-      <h3 id='itemInstructions'>How often has your child drawn a teapot?</h3><br> 
+      <h4 id='itemInstructions'>How often has your child drawn a teapot?</h4><br> 
     </div>
 
-    <table align = "center"><tr>
-      <td align="center">
-        <tr>
-          <td><input id ="likert1" type="radio" name="judgment" value = "1">
-          <td></td>
-          <td><input id ="likert2" type="radio" name="judgment" value = "2">
-          <td></td>
-          <td><input id ="likert3" type="radio" name="judgment" value = "3">
-          <td></td>
-          <td><input id ="likert4" type="radio" name="judgment" value = "4">
-          <td></td>
-          <td><input id ="likert5" type="radio" name="judgment" value = "5">
-        </tr>
-        <tr>
-          <td><label for="likert1">Never</label></td>
-          <td></td>
-           <td><label for="likert2">Once or Twice</label></td>
-           <td></td>
-           <td><label for="likert3">Multiple Times</label></td>
-           <td></td>
-           <td><label for="likert4">Frequently</label></td>
-           <td></td>
-           <td><label for="likert5">Every time they draw</label></td>
+    <!-- Slider and labels -->
+    <div align="center">
+        <input type="range" min="0" max="100" value="50" class="slider" id="quality" style="width: 50%">
+    <div>
 
-        </tr>
-        <tr></tr>
-        <tr></tr>
-    </table>
-
-
-    <!-- Next button and "please make a response" message -->
-    <table align="center">
+    <table align = "center">
       <tr>
-        <td align="center">
-          <button type="button" id="nextButton_FamRatings" onClick="experiment.log_response()"> next</button>
-        </td> 
-        <tr><td align="center">
-          <div id="testMessage_att"> </div>
-        </td>
+        <td> <p id='slider_label_never'> Never</p> </td>
+
+            <td> </td>
+            <td> </td>
+
+            <td> </td>
+            <td> </td>
+
+            <td> </td>
+            <td> </td>
+
+            <td> </td>
+            <td> </td>
+
+            <td> </td>
+            <td> </td>
+
+        <td> <p id='slider_label_often'> Very often</p> </td>
       </tr>
     </table>
-</div>
 
+    <!-- Next button and "please make a response" message -->
+    <table align="center"><tr>
+      <td align="center">
+        <button type="button" id="nextButton_FamRatings" onClick="experiment.log_response()"> next</button>
+      </td> 
+      <tr><td align="center">
+        <div id="testMessage_att"> </div>
+      </td></tr>
+    </table>
+</div>
+</div>
 
 
 <!-- Children's age slide -->
@@ -191,6 +188,7 @@
     </p>
 
 
+  <div>
 
   <div align="center">
     <button type="button" id="debriefsubmit" onClick="experiment.submit_comments()">Submit</button>
@@ -204,4 +202,5 @@
 
 
 </body>
+
 </html>

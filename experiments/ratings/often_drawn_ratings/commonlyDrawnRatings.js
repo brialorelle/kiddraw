@@ -77,7 +77,7 @@ function shuffle_mult() {
 // ######################## Configuration settings ############################
 
 //set up item names
-itemNames = ['a bear',
+itemNames = ['a bear'
 'a sheep',
 'a camel',
 'a tiger',
@@ -102,7 +102,7 @@ itemNames = ['a bear',
 'a cup',
 'a key',
 'a phone',
-'a pair of scissors',
+'a scissors',
 'a bottle',
 'a hat',
 'a lamp',
@@ -127,13 +127,14 @@ var trials = [];
 
 for (i = 0; i < itemNames.length; i++) {
     trial = {
-        thisItemName: itemNames[i],
+        thisItemName: itemArray[i]
         slide: "commonlyDrawnRatings",
         trial_number: i+1,
     }
 
     trials.push(trial);
 }
+
 
  childAgeTrial = {
         thisItemName: "",
@@ -143,12 +144,17 @@ for (i = 0; i < itemNames.length; i++) {
 
 trials.push(childAgeTrial);
 
-// when the document loads
-$(document).ready(function() {
+// var slider = document.getElementById("quality");
+// var output = document.getElementById("demo");
+// output.innerHTML = slider.value; // Display the default slider value
 
-    showSlide("instructions");
-});
+// Update the current slider value (each time you drag the slider handle)
+// slider.oninput = function() {
+//     output.innerHTML = this.value;
+// }
 
+// Show the instructions slide -- this is what we want subjects to see first.
+showSlide("instructions");
 
 // ############################## The main event ##############################
 var experiment = {
@@ -213,27 +219,25 @@ var experiment = {
 
 		// Allow experiment to start if it's a turk worker OR if it's a test run
 		if (window.self == window.top | turk.workerId.length > 0) {
-		  $("#testMessage_att").html(''); //clear test message
-		  $("#testMessage_uptake").html(''); 
+		$("#testMessage_att").html(''); //clear test message
+		$("#testMessage_uptake").html(''); 
 
 
 		$("#progress").attr("style","width:" +
-			 String(100 * (1 - (trials.length)/numTrialsExperiment)) + "%")
-		
-        	// Get the current trial - <code>shift()</code> removes the first element
+			    String(100 * (1 - (trials.length)/numTrialsExperiment)) + "%")
+			// Get the current trial - <code>shift()</code> removes the first element
 			// select from our scales array and stop exp after we've exhausted all the domains
-		
-        	var trial_info = trials.shift();
-            console.log(trial_info)
+			var trial_info = trials.shift();
 
 			//If the current trial is undefined, call the end function.
+
 			if (typeof trial_info == "undefined") {
 				return experiment.debriefing();
 			}
 
 			// check which trial type you're in and display correct slide
 			if (trial_info.slide == "commonlyDrawnRatings") {
-                $("#itemInstructions").text("How often has your child drawn " + trial_info.thisItemName + '?');
+                document.getElementById("itemInstructions") = "How often has your child drawn" + trial_info.thisItemName;
                 showSlide("commonlyDrawnRatings"); //display slide
                 experiment.data.itemName.push(trial_info.thisItemName);
 	    	    }
@@ -260,5 +264,3 @@ var experiment = {
 		experiment.end();
 	}
 }
-
-
