@@ -43,7 +43,7 @@ var stimLang = {
     "a bed": "a bed",
     "a book": "a book",
     "a cow": "a cow",
-    "a elephant": "a elephant",
+    "an elephant": "an elephant",
     "a TV": "a TV",
     "a horse": "a horse",
     "an ice cream": "an ice cream",
