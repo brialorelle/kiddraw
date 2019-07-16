@@ -1,0 +1,419 @@
+---
+title: |
+  | Developmental changes in the ability to draw 
+  | distinctive features of object categories
+bibliography: kiddraw_2019.bib
+csl: apa6.csl
+document-params: "10pt, letterpaper"
+
+author-information: > 
+    \author{{\large \bf Bria Long} \\ Department of Psychology \\ Stanford University \\ 450 Serra Mall \\ Stanford, CA 94305 \\ \texttt{bria@stanford.edu}
+    \And {\large \bf Judith E. Fan} \\ Department of Psychology  \\ UC San Diego  \\  9500 Gilman Drive \\ La Jolla, CA 92093 \\ \texttt{jefan@ucsd.edu}
+    \And {\large \bf Zixian Chai} \\ Department of Psychology  \\  Stanford University \\  450 Serra Mall \\ Stanford, CA 94305 \\ \texttt{zchai14@stanford.edu}
+    \And {\large \bf Michael C. Frank} \\ Department of Psychology \\  Stanford University  \\  450 Serra Mall \\ Stanford, CA 94305 \\ \texttt{mcfrank@stanford.edu}}
+
+abstract: > 
+  How do children's visual concepts change across childhood, and how might
+  these changes be reflected in their drawings? Here we    
+  investigate developmental changes in children’s ability to emphasize the relevant  
+  visual distinctions between object categories in their drawings. We collected over 13K drawings 
+  from children aged 2-10 years via a free-standing drawing station in a children's museum. We
+  hypothesized that older children would produce more recognizable drawings, and that
+  this gain in recognizability would not be entirely explained by concurrent development
+  in visuomotor control. To measure recognizability, we applied a pretrained
+  deep convolutional neural network model to extract a high-level feature
+  representation of all drawings, and then trained a multi-way linear classifier on these features.
+  To measure visuomotor control, we developed an automated procedure to measure their ability to
+  accurately trace complex shapes. We found consistent gains in the recognizability of
+  drawings across ages that were not fully explained by children's ability to accurately
+  trace complex shapes. Furthermore, these gains were accompanied by
+  an increase in how distinct different object categories were in feature space.  
+  Overall, these results demonstrate that children's drawings include 
+  more distinctive visual features as they grow older.
+
+keywords: >
+    object representations; child development; visual production; deep neural networks
+    
+output: cogsci2016::cogsci_paper
+final-submission: \cogscifinalcopy
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.width=3, fig.height=3, fig.crop = F, 
+                      fig.pos = "tb", fig.path='figs/',
+                      echo=F, warning=F, cache=F, 
+                      message=F, sanitize = T)
+```
+
+```{r, libraries}
+library(knitr)
+library(tidyverse)
+library(assertthat)
+library(ggthemes)
+library(langcog)
+library(forcats)
+library(egg)
+library(gridExtra)
+library(reticulate)
+library(readr)
+library(ggplot2)
+library(reshape2)
+library(lme4)
+library(stringr)
+library(viridis)
+library(MuMIn)
+theme_set(theme_few())
+```
+
+```{r load-classifications}
+## Load classification data
+classification_data <- read.csv('../../data/cogsci_2019/classification-outputs/Classification_Outputs8694.csv') %>%
+  as.tibble() %>%
+  mutate(session_id = paste('cdm_',session_id,sep="")) %>%
+  mutate(age_numeric = age) %>%
+  mutate(age = paste('age',age,sep="")) %>%
+  mutate(age = as.factor(age)) %>%
+  mutate(category = target_label) %>% 
+  mutate(image_name = paste(category,'_sketch_', age,'_', session_id,'.png',sep="")) %>%
+  select(-X) 
+```
+
+```{r load-metadata}
+## Load metadata and merge with classificatinos
+practice_categories = c('shape','this circle','square','this square','something you love')
+extra_prompt = c('something you love')
+
+## Load in meta data from mongo-db database dumps
+meta_cdm_run_v4 <- read.csv('../../data/cogsci_2019/mongodb-output/MuseumStation_AllDescriptives_7200_images_cdm_run_v4.csv') %>%
+  as.tibble() 
+
+all_meta_data <- read.csv('../../data/cogsci_2019/mongodb-output/MuseumStation_AllDescriptives_20780_images_final_cdm_run_v3.csv') %>%
+  as.tibble() %>%
+  full_join(meta_cdm_run_v4) %>%
+  filter(!category %in% practice_categories) %>%
+  filter(!category %in% extra_prompt) %>%
+  mutate(category_long = category) %>%
+  mutate(category = str_split_fixed(category," ",2)[,2]) %>%
+  mutate(draw_duration = draw_duration_old) # use version of drawing duration from 1st to last stroke since same across dataset
+
+## join with classification data
+d <- classification_data %>%
+  left_join(all_meta_data) 
+```
+
+```{r load-tracing}
+## Load tracing data
+tracing <- read.csv('../../data/cogsci_2019/tracing_eval/museumstation_tracing_ord_pred2.csv') %>%
+  mutate(age_numeric = age) %>%
+  mutate(age = paste0("age",age_numeric)) %>%
+  mutate(age = as.factor(age))
+
+## Extract relevant statistics
+tracing_summary <- tracing %>%
+  group_by(session_id) %>%
+  summarize(avg_tracing_rating = sum(ord_max)/n()) # use instead of mean because sometimes that errors when we only have one tracing
+
+## Join into one data frame
+d <- d %>%
+  left_join(tracing_summary, by=c('session_id'))
+```
+
+
+
+```{r}
+## Join all tracing ids with classification data 
+tracing_ids <- tracing %>%
+  filter(session_id %in% d$session_id) # filter to only include sessions in classification
+
+### How many tracings/participants were evaluated overall?
+tracing_sessions_evaluated = length(unique(tracing_ids$session_id))
+num_tracings_evaluated = length(tracing_ids$session_id)
+
+### How may participants were in mturk study & classification dataset?
+tracing_ids_in_mturk <- tracing %>%
+  filter(has_human_rating == 1) %>%
+  filter(session_id %in% d$session_id) # filter to only include sessions in classification
+
+tracing_participants_mturk=length(unique(tracing_ids_in_mturk$session_id))
+tracings_mturk=length(tracing_ids_in_mturk$session_id)
+
+### How may participants were NOT in mturk study but in the classification dataset?
+tracing_ids_remaining <- tracing %>%
+  filter(has_human_rating== 0) %>%
+  filter(session_id %in% d$session_id) # filter to only include sessions in classification
+
+tracing_participants_not_mturk=length(unique(tracing_ids_remaining$session_id))
+tracings_not_mturk=length(tracing_ids_remaining$session_id)
+```
+
+Although we assumed that both shape and spatial error terms should contribute to our measure of tracing task performance, we did not know how much weight to assign to each component to best predict empirical judgments of tracing quality.
+In order to estimate these weights, we collected quality ratings from adult observers ($N$=70) for 1325 tracings (i.e., 50-80 tracings per shape per age), each of which was rated 1-5 times. Raters were instructed to evaluate “how well the tracing matches the target shape and is aligned to the position of the target shape” on a 5-point scale. 
+
+We fit an ordinal regression mixed-effects model to predict these 5-point ratings, which contained correlation distance, translation, rotation, scaling, and shape identity (square vs. star) as predictors, with random intercepts for rater. This model yielded parameter estimates that could then be used to score each tracing in the remainder of the dataset (N=`r tracings_not_mturk` tracings from `r tracing_participants_not_mturk` children). We averaged scores within session to yield a single tracing score for each participant (`r tracing_sessions_evaluated` children completed at least one tracing trial).
+
+
+```{r descriptives-across-age}
+### How do our covariates change with age? Compute means and CIs; Group by age/category
+
+## first summarize data  
+cor_by_age <- d %>%
+  group_by(age_numeric,category) %>%
+  summarize(avg_cor = mean(correct_or_not)) %>%
+  group_by(age_numeric) %>%
+  multi_boot_standard(col = "avg_cor")  
+
+draw_duration <- d %>%
+  group_by(age_numeric,category) %>%
+  summarize(avg_draw_duration = mean(draw_duration)) %>%
+  group_by(age_numeric) %>%
+  multi_boot_standard(col = "avg_draw_duration")
+
+num_strokes <- d %>%
+  group_by(age_numeric,category) %>%
+  summarize(avg_num_strokes = mean(num_strokes)) %>%
+  group_by(age_numeric) %>%
+  multi_boot_standard(col = "avg_num_strokes") 
+
+avg_intensity <- d %>%
+  group_by(age_numeric,category) %>%
+  summarize(avg_intensity = mean(mean_intensity)) %>%
+  group_by(age_numeric) %>%
+  multi_boot_standard(col = "avg_intensity")
+
+tracing_scores <- d %>%
+  distinct(session_id,age_numeric,avg_tracing_rating) %>%
+  filter(!is.na(avg_tracing_rating)) %>%
+  group_by(age_numeric) %>%
+  multi_boot_standard(col = "avg_tracing_rating")
+```
+
+```{r plot-descriptives-across-age}
+## Make compiled plot of descriptives
+base_size_chosen=10 # size of text in plots
+smooth_alpha=.2
+
+cor_by_age_plot_A = ggplot(cor_by_age, aes(age_numeric,mean, color=age_numeric)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  theme_few(base_size = base_size_chosen) + 
+  labs(x='Age', y='Classification accuracy') +
+  scale_color_viridis(option="D") + 
+  theme(legend.position = "none") + 
+  geom_smooth(col='grey',span=10, alpha=smooth_alpha) +
+  ylim(0,.75) + 
+  geom_hline(yintercept = 1/23, linetype="dashed", color="grey") +
+ ggtitle('A')
+
+p1=ggplot(draw_duration, aes(age_numeric,mean, color=age_numeric)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  theme_few(base_size = base_size_chosen) +
+  labs(x='Age', y='Drawing duration (s)') +
+  scale_color_viridis(option="D") +
+  theme(legend.position = "none") + 
+  ylim(0,15) + 
+  geom_smooth(col='grey', span = 10) +
+  ggtitle('B')
+
+p2=ggplot(avg_intensity, aes(age_numeric,mean, color=age_numeric)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  theme_few(base_size = base_size_chosen) +
+  labs(x='Age', y='Ink used (mean intensity)') +
+  scale_color_viridis(option="D") +
+  theme(legend.position = "none") + 
+  ylim(.02,.06) + 
+  geom_smooth(col='grey', span = 10,alpha=smooth_alpha)  +
+  ggtitle('C')
+
+p3=ggplot(num_strokes, aes(age_numeric,mean, color=age_numeric)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  theme_few(base_size = base_size_chosen) +
+  labs(x='Age', y='Number of strokes') +
+  scale_color_viridis(option="D") +
+  theme(legend.position = "none") +
+  ylim(0,20) + 
+  geom_smooth(col='grey', span = 10,alpha=smooth_alpha)  +
+  ggtitle('D')
+        
+p4=ggplot(tracing_scores, aes(age_numeric,mean, color=age_numeric)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  theme_few(base_size = base_size_chosen) +
+  labs(x='Age', y='Estimated tracing score') +
+  scale_color_viridis(option="D") +
+  theme(legend.position = "none") + 
+  ylim(1,5) + 
+  geom_smooth(col='grey', span = 10,alpha=smooth_alpha)  +
+  ggtitle('E')
+```
+
+```{r mainResults, include = T, fig.env = "figure*", fig.pos = "h", fig.width=7, fig.height=2, set.cap.width=T, num.cols.cap=2, fig.cap = " (A) Leave-one-out classification accuracy (grey dotted line indicates chance) (B) the amount of time spent drawing in seconds, (C) the amount of ink used (i.e., mean intensity of the drawings), (D) the number of strokes used, and (E) the average estimated tracing scores are plotted as a function of children’s age."}
+ggarrange(cor_by_age_plot_A,p1,p2,p3,p4, nrow = 1)
+# mainResults = ggarrange(cor_by_age_plot_A,p1,p2,p3,p4, nrow = 1)
+# ggsave('poster_figs/mainResults.pdf', mainResults, width=16, height=4, dpi=300)
+```
+
+
+  
+```{r inferential-stats-1, cache=FALSE}
+## INFERENTIAL STATS 1- Classification accuracy
+
+accuracy_all_covariates <- glmer(correct_or_not ~ scale(avg_tracing_rating)*scale(age_numeric) +
+                          scale(draw_duration) +
+                          scale(mean_intensity) +
+                          scale(num_strokes) +
+                        (1|session_id) +
+                        (1|category),
+      data = d, family="binomial")
+
+
+
+accuracy_all_covariates_no_int <- glmer(correct_or_not ~ scale(avg_tracing_rating)+scale(age_numeric) +
+                          scale(draw_duration) +
+                          scale(mean_intensity) +
+                          scale(num_strokes) +
+                        (1|session_id) +
+                        (1|category),
+      data = d, family="binomial")
+
+# xtable::xtable(summary(accuracy_all_covariates)$coef, digits=3, caption = "Model coefficients of a GLMM predicting the recognziability of each drawing")
+```
+
+```{r inferential-stats-2, cache=FALSE}
+accuracy_no_age <- glmer(correct_or_not ~ scale(avg_tracing_rating) + scale(draw_duration) +
+                          scale(mean_intensity) +
+                          scale(num_strokes) +
+                        (1|session_id) +
+                        (1|category),
+      data = d, family="binomial")
+
+accuracy_no_age_or_tracing <- glmer(correct_or_not ~ scale(draw_duration) +
+                          scale(mean_intensity) +
+                          scale(num_strokes) +
+                        (1|session_id) +
+                        (1|category),
+      data = d, family="binomial")
+
+accuracy_no_tracing <- glmer(correct_or_not ~ scale(age_numeric) +
+                          scale(draw_duration) +
+                          scale(mean_intensity) +
+                          scale(num_strokes) +
+                        (1|session_id) +
+                        (1|category),
+      data = d, family="binomial")
+
+
+###
+null = r.squaredGLMM(accuracy_no_age_or_tracing)
+no_age = r.squaredGLMM(accuracy_no_age)
+no_tracing = r.squaredGLMM(accuracy_no_tracing)
+all = r.squaredGLMM(accuracy_all_covariates)
+no_int = r.squaredGLMM(accuracy_all_covariates_no_int) # no_int = no interaction between tracing/age
+```
+
+```{r}
+## need to prescale these or else visualization package can't find appropriate labels
+d_scaled <- d %>%
+  mutate(age_numeric = scale(age_numeric)) %>%
+  mutate(draw_duration = scale(draw_duration)) %>%
+  mutate(mean_intensity = scale(mean_intensity)) %>%
+  mutate(num_strokes = scale(num_strokes)) %>%
+  mutate(avg_tracing_rating = scale(avg_tracing_rating)) %>%
+  filter(num_strokes < 10) %>%
+  mutate(target_label_prob = scale(target_label_prob))
+
+simple_glm <- glm(correct_or_not ~ avg_tracing_rating+age_numeric, data = d)
+visreg(simple_glm, 'age_numeric',points=list(col="#55555540",cex=.25),gg=TRUE, jitter=TRUE)
+
+full_glmer <- glmer(correct_or_not ~ avg_tracing_rating + age_numeric + num_strokes + mean_intensity + (1|category) + (1|session_id), data = d_scaled, family="binomial")
+visreg(simple_glmer, 'age_numeric',gg=TRUE, jitter=TRUE,points=list(col="#55555540",cex=.25))
+
+visreg(full_glmer, 'age_numeric',gg=TRUE, jitter=TRUE, points=list(col="#55555540",cex=.25),line=list(col="black")) +
+  theme_few(base_size = 18) +
+  # geom_smooth(method='lm', color='grey') +
+  xlab('Scaled Age') +
+  ylab('Log odds(Accuracy)') 
+
+# simple_glmer <- glmer(correct_or_not ~ avg_tracing_rating + age_numeric + 
+#                         (1|session_id),
+#       data = d, family="binomial")
+# visreg(simple_glmer, 'age_numeric',gg=TRUE, jitter=FALSE)
+
+
+# visreg(accuracy_all_covariates_prescaled)
+
+
+# http://pbreheny.github.io/visreg/index.html
+# https://journal.r-project.org/archive/2017/RJ-2017-046/RJ-2017-046.pdf
+
+
+# visreg(accuracy_all_covariates_prescaled, scale='response', rug=2, 'age_numeric',gg=TRUE, jitter=TRUE,line=list(col="black")) +
+#   theme_few(base_size = 18) +
+#   # geom_smooth(method='lm', color='grey') +
+#   xlab('Scaled Age') +
+#   ylab('Prob(Correctly classified)') 
+# 
+# visreg(probs_all_covariates_prescaled, 'age_numeric',gg=TRUE, jitter=TRUE, points=list(col="#55555540",cex=.25),line=list(col="black")) +
+#   theme_few(base_size = 18) +
+#   # geom_smooth(method='lm', color='grey') +
+#   xlab('Scaled Age') +
+#   ylab('Target label prob')
+#   
+```
+
+
+```{r}
+data(Milk, package="nlme")
+Milk_Binary <- Milk %>%
+  mutate(enough_protein = (protein>3.2))
+         
+fit <- glmer(enough_protein ~ Diet + Time + (1|Cow), Milk_Binary)
+visreg(fit, "Diet")
+
+```
+
+```{r class-accuracy-by-tracing} 
+## Compute target_label_prob averages within quantiles / age
+num_quantiles = 4
+
+# compute quantiles without knowing about age
+d <- d %>%
+  mutate(avg_tracing_rating_quantile = ntile(avg_tracing_rating,num_quantiles))
+
+# now compute averages
+avg_by_tracing <- d %>%
+  filter(!is.na(avg_tracing_rating_quantile)) %>%
+  group_by(avg_tracing_rating_quantile,age_numeric) %>%
+  multi_boot_standard(col = "correct_or_not")
+
+avg_by_tracing$avg_tracing_rating_quantile = as.factor(avg_by_tracing$avg_tracing_rating_quantile)
+levels(avg_by_tracing$avg_tracing_rating_quantile)=c("Tracing Quartile 1","Tracing Quartile 2","Tracing Quartile 3","Tracing Quartile 4")
+
+base_size_chosen=18
+avg_by_tracing_plot = ggplot(avg_by_tracing, aes(age_numeric,mean, color=age_numeric)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  theme_few(base_size = base_size_chosen) +
+  scale_color_viridis(option='D')+
+  labs(x='Age', y='Classification accuracy') +
+  theme(legend.position = "none") +
+  geom_smooth(col='grey', span = 10, alpha=.2)  +
+  geom_hline(yintercept = 1/23, linetype="dashed", color="grey") +
+  facet_grid(~avg_tracing_rating_quantile) 
+```
+
+```{r tracingResults, include = T, fig.env = "figure*", fig.pos = "h", fig.width=7, fig.height=2, set.cap.width=T, num.cols.cap=2, fig.cap = "Data are divided into four quantiles based on the distribution of tracing scores in the entire dataset; these divisions represent the data in each panel. In each panel, the average classification accuracy is plotted as a function of childrens age. Error bars represent 95\\% CIs bootstrapped within each age group and subset of tracing scores; grey dotted lines indicate chance."}
+ggarrange(avg_by_tracing_plot, nrow=1)
+```
+
+
+
+To examine the contributions of age and tracing ability to recognizability, we also fit reduced versions of the full model and examined the marginal $R^2$ [@nakagawa2013general]. The fixed effects in a null model without tracing or age (which mainly captures drawing effort) accounted for very little variance (marginal $R^2$ = `r round(null[1,1],3)`). Adding only children's age to the model increased $R^2$ (marginal $R^2$ = `r round(no_tracing[1,1],3)`) as did only adding tracing  (marginal $R^2$ = `r round(no_age[1,1],3)`). Adding both factors without their interaction (marginal $R^2$ = `r round(no_int[1,1],3)`) had a similar effect to adding both factors and their interaction (marginal $R^2$ = `r round(all[1,1],3)`). Attesting to the immense variability between individuals and categories, adding random effects (and many more parameters) accounted for a much larger amount of variance (conditional $R^2$ for full model = `r round(all[1,2],3)`). Finally, as we had many more younger participants in our dataset, we also repeated these analyses with a subset of the dataset that was balanced across both children's age and category ($N$=2691 drawings), and found the same pattern of results. 
+
+
+
+# References 
+```{r}
+# References will be generated automatically by Pandoc and included here.
+# The following code is some latex to format the bibliography. Do not remove it.
+```
+
+\setlength{\parindent}{-0.1in} 
+\setlength{\leftskip}{0.125in}
+\noindent
