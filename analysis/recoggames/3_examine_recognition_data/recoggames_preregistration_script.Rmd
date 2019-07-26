@@ -20,6 +20,7 @@ library(viridis)
 library(ggthemes)
 library(lme4)
 library(lmerTest)
+
 ```
 
 ## Load data
@@ -144,6 +145,13 @@ num_trials_per_kid <- d %>%
   group_by(sessionId) %>%
   summarize(max_trials = max(trial_num)) %>%
   summarize(average_trials = mean(max_trials))
+
+
+num_kids_per_exp <- d %>%
+  filter(!sessionId %in% adults$sessionId) %>% # exclude adults
+  group_by(exp,recognizer_age) %>%
+  summarize(num_subs = length(unique(sessionId)))
+
 ##
 ```
 
@@ -246,10 +254,10 @@ kids_sketches_d <- kids_sketches_d %>%
   mutate(sketch_path = as.factor(str_split_fixed(sketch_path,'.png',2)[,1])) 
 ```
 
-### Now also look at number of included subjects in each age group
+### Now also look at number of included subjects in each age group and experiment
 ```{r}
 kids_sketches_d %>%
-  group_by(recognizer_age_group) %>%
+  group_by(recognizer_age_group,exp) %>%
   summarize(num_subs = length(unique(sessionId))) %>%
   kable()
 ```
@@ -498,4 +506,5 @@ summary(model_glmer)
 model_glmer_age_cont <- glmer(correct_or_not ~ scale(distinct_index)*scale(recognizer_age_numeric) + (distinct_index|intended_category) + (1|sessionId),  data = all_joined, family='binomial')
 summary(model_glmer_age_cont)
 ```
+
 
