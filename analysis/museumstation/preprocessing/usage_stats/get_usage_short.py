@@ -6,7 +6,7 @@ import pymongo as pm
 import os
 
 # set input parameters
-iterationName = 'cdm_run_v5'
+iterationName = 'cdm_run_v6'
 num_hours = 200
 
 # set up  connections
