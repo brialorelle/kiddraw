@@ -15,14 +15,15 @@ trace1 = {"category":"square", "video": "trace_square.mp4", "image":"images/squa
 trace2 = {"category":"shape", "video": "trace_shape.mp4","image":"images/shape.png"}
 intro = {"category":"intro", "video": "intro.mp4","image":"images/lab_logo_stanford.png"}
 
-var stimListTest = [{"category": "a bee", "video": "bee.mp4"},
-    {"category": "a clock", "video": "clock.mp4"},
-    {"category": "a face", "video": "face.mp4"},
-    {"category": "a hand", "video": "hand.mp4"},
-    {"category": "a mushroom", "video": "mushroom.mp4"},
-    {"category": "an octopus", "video": "octopus.mp4"},
-    {"category": "a piano", "video": "piano.mp4"},
-    {"category": "a spider", "video": "spider.mp4"}]
+var stimListTest = [{"category": "an apple", "video": "apple.mp4"},
+    {"category": "a bed", "video": "bed.mp4"},
+    {"category": "a book", "video": "book.mp4"},
+    {"category": "a cow", "video": "cow.mp4"},
+    {"category": "an elephant", "video": "elephant.mp4"},
+    {"category": "a horse", "video": "horse.mp4"},
+    {"category": "an ice cream", "video": "icecream.mp4"},
+    {"category": "a snail", "video": "snail.mp4"},
+    {"category": "a TV", "video": "TV.mp4"} ]
 
 var stimListTest = shuffle(stimListTest)
 stimListTest.unshift(firstTrial)
@@ -38,14 +39,15 @@ var stimLang = {
     "this square": "this square",
     "square": "square",
     "shape": "shape",
-    "a bee": "a bee",
-    "a clock": "a clock",
-    "a face": "a face",
-    "a hand": "a hand",
-    "a mushroom": "a mushroom",
-    "an octopus": "an octopus",
-    "a piano": "a piano",
-    "a spider": "a spider"}
+    "an apple": "an apple",
+    "a bed": "a bed",
+    "a book": "a book",
+    "a cow": "a cow",
+    "an elephant": "an elephant",
+    "a TV": "a TV",
+    "a horse": "a horse",
+    "an ice cream": "an ice cream",
+    "a snail": "a snail"}
 
 var cuesLang = {
     "trace": "Can you trace the ",
@@ -68,7 +70,7 @@ var strokeThresh = 3; // each stroke needs to be at least this many pixels long 
 
 // current mode and session info
 var mode = "CDM";
-var version ="cdm_run_v7";
+var version ="cdm_run_v6";
 var sessionId= version + Date.now().toString();
 var consentPage = '#consentCDM';
 var thanksPage = "#thanksPage";
