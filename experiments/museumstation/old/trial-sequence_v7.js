@@ -14,23 +14,21 @@ firstTrial = {"category": "this square", "video": "copy_square.mp4", "image":"im
 trace1 = {"category":"square", "video": "trace_square.mp4", "image":"images/square.png"}
 trace2 = {"category":"shape", "video": "trace_shape.mp4","image":"images/shape.png"}
 intro = {"category":"intro", "video": "intro.mp4","image":"images/lab_logo_stanford.png"}
-lastTrial =  {"category": "museum", "video": "museum.mp4"}
 
-var stimListTest = [{"category": "a crab", "video": "crab.mp4"},
-    {"category": "a crocodile", "video": "crocodile.mp4"},
-    {"category": "a duck", "video": "duck.mp4"},
-    {"category": "a giraffe", "video": "giraffe.mp4"},
-    {"category": "a lion", "video": "lion.mp4"},
-    {"category": "a monkey", "video": "monkey.mp4"},
-    {"category": "a panda", "video": "panda.mp4"},
-    {"category": "a truck", "video": "truck.mp4"}]
+var stimListTest = [{"category": "a bee", "video": "bee.mp4"},
+    {"category": "a clock", "video": "clock.mp4"},
+    {"category": "a face", "video": "face.mp4"},
+    {"category": "a hand", "video": "hand.mp4"},
+    {"category": "a mushroom", "video": "mushroom.mp4"},
+    {"category": "an octopus", "video": "octopus.mp4"},
+    {"category": "a piano", "video": "piano.mp4"},
+    {"category": "a spider", "video": "spider.mp4"}]
 
 var stimListTest = shuffle(stimListTest)
 stimListTest.unshift(firstTrial)
 stimListTest.unshift(trace2)
 stimListTest.unshift(trace1)
 stimListTest.unshift(intro)
-stimListTest.push(lastTrial)
 
 var curTrial=0 // global variable, trial counter
 var maxTrials = stimListTest.length; //
@@ -40,14 +38,14 @@ var stimLang = {
     "this square": "this square",
     "square": "square",
     "shape": "shape",
-    "a crab": "a crab",
-    "a crocodile": "a crocodile",
-    "a duck": "a duck",
-    "a giraffe": "a giraffe",
-    "a lion": "a lion",
-    "a panda": "a panda",
-    "a truck": "a truck",
-    "museum": "the museum"}
+    "a bee": "a bee",
+    "a clock": "a clock",
+    "a face": "a face",
+    "a hand": "a hand",
+    "a mushroom": "a mushroom",
+    "an octopus": "an octopus",
+    "a piano": "a piano",
+    "a spider": "a spider"}
 
 var cuesLang = {
     "trace": "Can you trace the ",
@@ -70,7 +68,7 @@ var strokeThresh = 3; // each stroke needs to be at least this many pixels long 
 
 // current mode and session info
 var mode = "CDM";
-var version ="cdm_run_v8";
+var version ="cdm_run_v7";
 var sessionId= version + Date.now().toString();
 var consentPage = '#consentCDM';
 var thanksPage = "#thanksPage";
