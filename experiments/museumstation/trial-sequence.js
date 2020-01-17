@@ -45,6 +45,7 @@ var stimLang = {
     "a duck": "a duck",
     "a giraffe": "a giraffe",
     "a lion": "a lion",
+    "a monkey": "a monkey",
     "a panda": "a panda",
     "a truck": "a truck",
     "museum": "the museum"}
