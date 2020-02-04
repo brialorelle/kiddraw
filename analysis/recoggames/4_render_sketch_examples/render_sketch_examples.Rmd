@@ -24,6 +24,7 @@ library(magick) # for making montages
 library(langcog)
 library(viridis)
 library(egg)
+
 ```
 
 ## Read in and clean up datafiles
