@@ -100,3 +100,4 @@ analysis/museumstation/june-2019/1_get_sketches/cdm_run_v6/sketches_descriptives
 analysis/museumstation/june-2019/1_get_sketches/cdm_run_v6/sketches_descriptives/MuseumStation_AllDescriptives_500_images_cdm_run_v6_start_11400.csv
 analysis/museumstation/preprocessing/usage_stats/conn_cocolab
 analysis/bingstation/preprocess_bingstation.ipynb
+analysis/bingstation/preprocess_bingstation 2.ipynb
