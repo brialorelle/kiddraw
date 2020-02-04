@@ -9,14 +9,14 @@ The repository is divided into four main sections:
 Code for reproducing the experiments currently running to collect drawing and visual recognition behaviors from children:
 
 ### In use:
-####Museumstation: Currently unning at San Jose Children's Discovery Museum (CDM)
-####Recoggames: Several versions of visual recognition games, also running at CDM, desinged to assess visual recognition behaviors
-####Bingstation: Currently running at a preschool to assess longitudinal changes in children's drawings
-####Ratings: Code to run experiments to get ratings from adults about the content of children's drawings
+#### Museumstation: Currently unning at San Jose Children's Discovery Museum (CDM)
+#### Recoggames: Several versions of visual recognition games, also running at CDM, desinged to assess visual recognition behaviors
+#### Bingstation: Currently running at a preschool to assess longitudinal changes in children's drawings
+#### Ratings: Code to run experiments to get ratings from adults about the content of children's drawings
 
 ### Archive
-####Webstation: Code for collecting drawings from adults on online platforms 
-####Museumdraw: Initial drawing experiment run at CDM (supervised by an experimenter); data used in CogSci2018
+#### Webstation: Code for collecting drawings from adults on online platforms 
+#### Museumdraw: Initial drawing experiment run at CDM (supervised by an experimenter); data used in CogSci2018
 
 ## Analysis
 Most anlaysis code is in development; sub-directories are organized with respect to the experiments detailed above.
