@@ -1,0 +1,100 @@
+---
+title: "MuseumStation-UsageStatistics"
+author: "Bria Long"
+date: "5/4/2018"
+output: html_document
+---
+
+```{r setup, echo = FALSE}
+library(knitr)
+opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(assertthat)
+library(ggthemes)
+library(lme4)
+library(langcog)
+library(forcats)
+theme_set(theme_few())
+```
+
+## Load data and do basic preprocessing.
+```{r}
+## Read in data outputs from python - stroke numbers, intensity, bounding boc, etc.
+# get rid of drwaings without age - these were when we were testing the interface.
+# make new variable name with image name for joining with recognition data
+d_v3 <- read_csv("usage_data/May31th_usage.csv") %>%
+  select(-X1) %>%
+  filter(!is.na(age)) %>%
+  mutate(imNameShort = paste0(category, '_sketch', '_', age,'_', session_id, '.png')) %>%
+  mutate(age_numeric = as.numeric(substr(age,4,6))) 
+
+d_firstrun <- read_csv("usage_data/May14th_usage.csv") %>%
+  select(-X1) %>%
+  filter(!is.na(age)) %>%
+  mutate(imNameShort = paste0(category, '_sketch', '_', age,'_', session_id, '.png')) %>%
+  mutate(age_numeric = as.numeric(substr(age,4,6))) 
+
+d <- d_v3 %>%
+  full_join(d_firstrun) 
+
+```
+
+```{r}
+## Make a table wtih unique session ID, age, and index of last completed trials
+uniqueSubs <- d %>%
+  distinct(session_id, age_numeric,trial_num) %>%
+  group_by(session_id, age_numeric) %>%
+  mutate(max_trial = max(trial_num)) %>%
+  filter(trial_num == max_trial) %>%
+  select(-trial_num) 
+```
+
+There were 'r sum(uniqueSubs$max_trial>2)' children that made it past the practice trials
+
+
+```{r}
+## How many trials completed in each age group?
+startingTask <- uniqueSubs %>%
+  filter(max_trial>2) %>%  ## only get participants who make it past practice trials
+  group_by(age_numeric) %>%
+  summarize(avg_trials = mean(max_trial))
+
+kable(startingTask)
+```
+
+# what is the age distribution looking like?
+```{r}
+count_ages <- uniqueSubs %>%
+  filter(max_trial>2) 
+
+hist(count_ages$age_numeric)
+
+```
+```{r}
+imPerCatPerAge <- d %>%
+  filter(age!='adult') %>%
+  filter(!is.element(category,c("this circle","square","shape"))) %>%
+  mutate(category = as.factor(category)) %>%
+  mutate(age_group = cut(age_numeric, c(1.9, 6, 10.1), labels = c("younger","older"))) %>%
+  group_by(category,age_group) %>%
+  summarize(numDrawings = length(session_id)) 
+
+imPerCat <- d %>%
+  filter(age!='adult') %>%
+  filter(!is.element(category,c("this circle","square","shape"))) %>%
+  mutate(category = as.factor(category)) %>%
+  group_by(category) %>%
+  summarize(numDrawings = length(session_id)) 
+
+kable(imPerCatPerAge)
+
+d_filtered <- d %>%
+  filter(age!='adult') %>%
+  filter(!is.element(category,c("this circle","square","shape"))) 
+
+
+# %>%
+#   filter(is.element(category,c("this circle","square","shape"))
+  
+```
+
