@@ -1,28 +1,30 @@
-# kiddraw project
-### Drawings as a window into developmental changes in object representations
+# Drawings as a window into developmental changes in object representations
 
-Inspired by the availability of this large and public dataset containing drawings of various visual concepts (Google quickdraw-75: https://github.com/googlecreativelab/quickdraw-dataset), this project asks how the ability to express these visual concepts in drawings develops.
+How does the ability to draw different visual concepts develop? And what do children's drawings reveal about their knowledge
+about the objects and categories in the world around them?
 
-*To reproduce our CogSci 2018 submission:
+The repository is divided into four main sections:
 
-1. Experiment code in Experiments/museumdraw. Other directories are in development.
---Needs to be spun via node.js on a server
+## Experiments
+Code for reproducing the experiments currently running to collect drawing and visual recognition behaviors from children:
 
-2. Recognition rating code in experiments/ratings/recognition_ratings
---Recognizability ratings run on amazon mTurk
---Outputs preprocessed data for using in Rcode in writing/
+### In use:
+Museumstation: Currently unning at San Jose Children's Discovery Museum (CDM)
+Recoggames: Several versions of visual recognition games, also running at CDM, desinged to assess visual recognition behaviors
+Bingstation: Currently running at a preschool to assess longitudinal changes in children's drawings
+Ratings: Code to run experiments to get ratings from adults about the content of children's drawings
 
-3. Analysis/museumdraw/python:
-Many scripts require access to GPUs to extract features from VGG-19 efficiently.
+### Archive
+Webstation: Code for collecting drawings from adults on online platforms 
+Museumdraw: Initial drawing experiment run at CDM (supervised by an experimenter); data used in CogSci2018
 
---render_quickdraw.ipynb: ##Code to render .pngs from QuickDraw database
+## Analysis
+Most anlaysis code is in development; sub-directories are organized with respect to the experiments detailed above.
 
---extract_all: ##Bash script to extract all vgg-19 features. 
+## Writing
+Text and code for reproducing the cogsci-2018 and cogsci-2019 submissions on the development of children's drawings.
 
---preprocess_musemdraw_e1.ipynb.ipynb  ##Pulls drawings from server, renders pngs, computes low-level covariates (drawing time, number of strokes, mean intensity), saves out
+## Data
+Archival data for cogsci-2018 and cogsci-2019 papers. A repository containing the large-scale database of children's drawings collected at CDM
+will be published with the preprint of the paper resulting from this project and is currently not avaliable.
 
---analyze_features_museumdraw_cogsci_archive.ipynb ## Jupyter notebook that analyzes vgg-19 features from pool 1-5 and fc6/fc7. Creates layerwise and RDM figures for use in R code in kiddraw/writing. 
-
-4. Writing:
-
---Contains R scripts for rendering entire CogSci paper; analyzes recognizability ratings from scratch. Imports outputs from  analyze_features_museumdraw_e1.ipunb
