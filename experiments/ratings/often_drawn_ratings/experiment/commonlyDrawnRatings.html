@@ -23,7 +23,7 @@
   <br>
   <br>
   <p align="center"><b>PLEASE ONLY COMPLETE THIS HIT IF YOU HAVE A CHILD BETWEEN THE AGES OF 2-10 YEARS. </b><p></p> 
-   In this survey, you'll be asked to judge how often your child draws 40 different objects, animals, and things. </b></p>
+   In this survey, you'll be asked to judge how often your child draws 56 different objects, animals, and things. </b></p>
   <br>
   <button type="button" onclick="this.blur(); experiment.next();">Start</button>
 
@@ -70,7 +70,7 @@
            <td></td>
            <td><label for="likert4">Frequently</label></td>
            <td></td>
-           <td><label for="likert5">Every time they draw</label></td>
+           <td><label for="likert5">Nearly every time they draw</label></td>
 
         </tr>
         <tr></tr>
@@ -91,6 +91,54 @@
     </table>
 </div>
 
+
+<!-- Catch Trial slide - which task we're doing -->
+<div class="slide" id="catchTrialTask">
+    <div align="center">
+      <h3 id='itemInstructions'>What task are you doing right now?</h3><br> 
+    </div>
+
+    <table align = "center"><tr>
+      <td align="center">
+        <tr>
+          <td><input id ="likert1" type="radio" name="judgment" value = "1">
+          <td></td>
+          <td><input id ="likert2" type="radio" name="judgment" value = "2">
+          <td></td>
+          <td><input id ="likert3" type="radio" name="judgment" value = "3">
+          <td></td>
+          <td><input id ="likert4" type="radio" name="judgment" value = "4">
+          <td></td>
+          <td><input id ="likert5" type="radio" name="judgment" value = "5">
+        </tr>
+        <tr>
+          <td><label for="likert1">Judging how often my child says a word</label></td>
+          <td></td>
+           <td><label for="likert2">Judging how often my child has drawn a category</label></td>
+           <td></td>
+           <td><label for="likert3">Judging how often my child eats different foods</label></td>
+           <td></td>
+           <td><label for="likert4">Judging how often my child goes to different places</label></td>
+           <td></td>
+           <td><label for="likert5">Judging how often my child plays a certain game</label></td>
+        </tr>
+        <tr></tr>
+        <tr></tr>
+    </table>
+
+
+    <!-- Next button and "please make a response" message -->
+    <table align="center">
+      <tr>
+        <td align="center">
+          <button type="button" id="nextButton_FamRatings2" onClick="experiment.log_response()"> next</button>
+        </td> 
+        <tr><td align="center">
+          <div id="testMessage_att"> </div>
+        </td>
+      </tr>
+    </table>
+</div>
 
 
 <!-- Children's age slide -->
@@ -199,7 +247,7 @@
 
 <!-- The finish slide. -->
 <div class="slide" id="finished">
-  <p>You're finished - thanks for participating! Please copy and paste the following code to receive credit: <b>JP45TH8903</b></p>
+  <p>You're finished - thanks for participating! </p>
 </div>
 
 

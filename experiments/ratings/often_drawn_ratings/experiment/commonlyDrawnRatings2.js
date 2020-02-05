@@ -25,8 +25,7 @@ Array.prototype.random = function() {
   return this[random(this.length)];
 }
 
-// shuffle function - from stackoverflow?
-// shuffle ordering of argument array -- are we missing a parenthesis?
+// shuffle function 
 function shuffle (a) 
 { 
     var o = [];
@@ -83,40 +82,56 @@ itemNames = ['a bear',
 'a tiger',
 'a whale',
 'a cow',
-'a horse',
+'an elephant',
+'an octopus',
+'a frog',
+'a bee',
+'a spider',
+'a piano',
 'a chair',
 'a couch',
-'a person',
-'a house',
-'a tree',
 'a cactus',
-'a bird',
-'a cat',
-'a dog',
-'a fish',
-'a frog',
-'a rabbit',
-'a snail',
-'an octopus',
 'a bowl',
-'a cup',
 'a key',
 'a phone',
-'a pair of scissors',
+'a scissors',
 'a bottle',
 'a hat',
 'a lamp',
 'a watch',
 'an apple',
 'an ice cream',
-'a book',
+'a clock',
+'a mushroom',
 'a bike',
+'an airplane',
+'a bird',
+'a cat',
+'a rabbit',
+'a face',
+'a hand',
+'a horse',
+'a person',
+'a dog',
+'a fish',
+'a snail',
+'a bed',
+'a house',
+'a tree',
+'a cup',
+'a book',
+'a TV',
 'a boat',
 'a car',
 'a train',
-'an airplane',
-'a bed',
-'a television',]
+'a crab',
+'a crocodile',
+'a duck',
+'a giraffe',
+'a lion',
+'a monkey',
+'a panda',
+'a truck']
 
 itemNames=shuffle(itemNames);
 var numTrialsExperiment = itemNames.length;
@@ -131,17 +146,25 @@ for (i = 0; i < itemNames.length; i++) {
         slide: "commonlyDrawnRatings",
         trial_number: i+1,
     }
-
     trials.push(trial);
 }
 
- childAgeTrial = {
+
+catchTrialTask = {
         thisItemName: "",
-        slide: "children_qs",
+        slide: "catchTrialTask",
         trial_number: i+1,
     }
 
+childAgeTrial = {
+        thisItemName: "",
+        slide: "children_qs",
+        trial_number: i+2,
+    }
+
+trials.push(catchTrialTask);
 trials.push(childAgeTrial);
+
 
 // when the document loads
 $(document).ready(function() {
@@ -176,7 +199,6 @@ var experiment = {
 
 // LOG RESPONSE
     log_response: function() {
-
         var response_logged = false;
 
         // Array of radio buttons
@@ -239,6 +261,9 @@ var experiment = {
 	    	    }
             if (trial_info.slide == "children_qs") {
                 showSlide("children_qs"); 
+                }
+            if (trial_info.slide == "catchTrialTask") {
+                showSlide("catchTrialTask"); 
                 }
 		experiment.data.trial_type.push(trial_info.slide);
 		}
