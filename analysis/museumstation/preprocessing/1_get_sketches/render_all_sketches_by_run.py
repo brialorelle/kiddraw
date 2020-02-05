@@ -32,8 +32,8 @@ cdm_run_v4 = db['cdm_run_v4']
 cdm_run_v3 = db['cdm_run_v3']
 
 ###### ###### ###### TOGGLE HERE WHICH DATABSE
-this_collection = cdm_run_v8
-which_run = 'cdm_run_v8'
+this_collection = cdm_run_v3
+which_run = 'cdm_run_v3'
 ###### ###### ###### ######
 
 ###### Where are we rendering these sketches?
@@ -98,7 +98,6 @@ interferenceCount = 0;
 timeSave = []
 imsize = 224 ## img writing size, optimized for CNN
 countImage = 0
-alreadyWritten = 7200
 
 ## Get all sessions within this collection
 sessions_to_render =  this_collection.find({'$and': [{'dataType':'finalImage'}]}).distinct('sessionId')
@@ -238,10 +237,10 @@ for s in sessions_to_render:
                                 print('Weve written {} images at in {} minutes '.format(writeImageCount, time_spent))
 
                                 ## write out csv every 1000 images
-                                X_out = pd.DataFrame([session_id,trial_num,category,age,submit_time,submit_date,num_strokes,draw_duration_old,draw_duration_new,trial_duration, mean_intensity, bounding_box, filename])
-                                X_out = X_out.transpose()
-                                X_out.columns = ['session_id','trial_num','category','age','submit_time','submit_date','num_strokes','draw_duration_old','draw_duration_new','trial_duration','mean_intensity','bounding_box','filename']
-                                X_out.to_csv(os.path.join(output_dir,'MuseumStation_AllDescriptives_{}_images_{}_start_{}.csv'.format(writeImageCount, which_run,alreadyWritten)))
+                                # X_out = pd.DataFrame([session_id,trial_num,category,age,submit_time,submit_date,num_strokes,draw_duration_old,draw_duration_new,trial_duration, mean_intensity, bounding_box, filename])
+                                # X_out = X_out.transpose()
+                                # X_out.columns = ['session_id','trial_num','category','age','submit_time','submit_date','num_strokes','draw_duration_old','draw_duration_new','trial_duration','mean_intensity','bounding_box','filename']
+                                # X_out.to_csv(os.path.join(output_dir,'MuseumStation_AllDescriptives_{}_images_{}.csv'.format(writeImageCount, which_run)))
 
 ## and at the very end, do this as well
 X_out = pd.DataFrame([session_id,trial_num,category,age,submit_time,submit_date,num_strokes,draw_duration_old,draw_duration_new,trial_duration, mean_intensity, bounding_box, filename])
