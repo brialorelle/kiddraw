@@ -101,3 +101,6 @@ analysis/museumstation/june-2019/1_get_sketches/cdm_run_v6/sketches_descriptives
 analysis/museumstation/preprocessing/usage_stats/conn_cocolab
 analysis/bingstation/preprocess_bingstation.ipynb
 analysis/bingstation/preprocess_bingstation 2.ipynb
+
+analysis/recoggames/2_feature_analyses_sketches/2_run_classifications/classification_outputs/* 
+
