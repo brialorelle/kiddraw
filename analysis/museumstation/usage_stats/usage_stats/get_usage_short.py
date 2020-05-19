@@ -6,8 +6,8 @@ import pymongo as pm
 import os
 
 # set input parameters
-iterationName = 'cdm_run_v7'
-num_hours = 400
+iterationName = 'cdm_run_v8'
+num_hours = 40000
 
 # set up  connections
 auth = pd.read_csv('../../auth.txt', header = None) # this auth.txt file contains the password for the sketchloop user
