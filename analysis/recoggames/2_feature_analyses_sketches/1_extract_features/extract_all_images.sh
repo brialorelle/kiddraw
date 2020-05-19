@@ -15,3 +15,8 @@ for i in {0..6}
     done
 
 python extract_features.py --data='/data5/bria/kiddraw_datasets/rendered_111918/' --layer_ind=6 --cohort='kid' --ext="png" --spatial_avg=True --dataset='rendered_111918'
+
+
+python extract_features.py --data='/data5/bria/kiddraw_datasets/recoggames_datasets/biganimalgame/sketches' --layer_ind=6 --cohort='kid' --ext="png" --spatial_avg=True --dataset='biganimalgame'
+
+python extract_features.py --data='/data5/bria/kiddraw_datasets/recoggames_datasets/objectgame/sketches' --layer_ind=6 --cohort='kid' --ext="png" --spatial_avg=True --dataset='objectgame'

@@ -26,18 +26,31 @@ library(lmerTest)
 ## Load data
 ### Import recognition data from each run of recoggames: here, animalgame & vehiclegame
 ```{r}
-animal_game <- read.csv("recognition_data/animalgame_v1_out_may8_final.csv") %>%
+#
+animal_game <- read.csv("recognition_data/animalgame.csv") %>%
   as.tibble() %>%
   mutate(exp = 'animalgame') %>%
   select(-X)
-
-vehicle_game <- read.csv("recognition_data/vehiclegame_v1_out_june14.csv") %>%
+#
+vehicle_game <- read.csv("recognition_data/vehiclegame.csv") %>%
   as.tibble() %>%
   mutate(exp = 'vehiclegame') %>%
   select(-X)
+#
+biganimal_game <- read.csv("recognition_data/biganimalgame.csv") %>%
+  as.tibble() %>%
+  mutate(exp = 'biganimalgame') %>%
+  select(-X)
+
+object_game <- read.csv("recognition_data/objectgame.csv") %>%
+  as.tibble() %>%
+  mutate(exp = 'objectgame') %>%
+  select(-X)
 
 recog_data <- animal_game %>%
-  full_join(vehicle_game)
+  full_join(vehicle_game)%>%
+  full_join(biganimal_game) %>%
+  full_join(object_game)
 
 ## make copy for editing
 orig_d  <- recog_data
@@ -84,7 +97,7 @@ d <- d %>%
 ### Calculate performance on photo catch trials; visualize for each subject; compile list of off-task subjects
 ```{r}
 # threshold : 75% correct
-threshold=.75
+threshold=.9
 
 # compute avg correct photo trials for each subject
 photo_correct <- d %>%
@@ -116,7 +129,7 @@ photo_trials_by_sub <- d %>%
   summarize(avg_correct = mean(correct_or_not))
 
 # make sure this is true.
-assert_that(sum(photo_trials_by_sub$avg_correct<.75)==0)
+assert_that(sum(photo_trials_by_sub$avg_correct<threshold)==0)
 
 ```
 
@@ -141,21 +154,22 @@ d <- d %>%
 ### Calculate number of trials per kid (not adult) after these exclusions and report exclusions
 ```{r}
 num_trials_per_kid <- d %>%
-  filter(!sessionId %in% adults$sessionId) %>% # exclude adults
+  # filter(!sessionId %in% adults$sessionId) %>% # exclude adults (prereg code, error)
+  filter(recognizer_age != "adult") %>% # exclude adults
   group_by(sessionId) %>%
   summarize(max_trials = max(trial_num)) %>%
   summarize(average_trials = mean(max_trials))
 
-
 num_kids_per_exp <- d %>%
-  filter(!sessionId %in% adults$sessionId) %>% # exclude adults
+  filter(recognizer_age != "adult") %>% # exclude adults
   group_by(exp,recognizer_age) %>%
   summarize(num_subs = length(unique(sessionId)))
 
 ##
 ```
 
-First, we excluded children who started the game but did not complete more than 1 trial after the practice trials (N = `r length(unique(didnt_start$sessionId))` participants) and the `r length(unique(adults$sessionId))` who participated. We also excluded all trials with RTs slower than 10s or faster than 100ms, judging these to be off-task responses. Next, we excluded participants on the basis of their performance on practice and catch trials; given that these catch trials presented a very easy recognition task, we excluded participants who did not acheive at least 75\% accuracy on these trials (N= `r length(bad_subs$sessionId)`). The remaining `r length(unique(d$sessionId))` who met this criterion completed an average of `r round(mean(num_trials_per_kid$average_trials),2)` trials. 
+First, we excluded children who started the game but did not complete more than 1 trial after the practice trials (N = `r length(unique(didnt_start$sessionId))` participants) and the `r length(unique(adults$sessionId))` adults who participated. We also excluded all trials with RTs slower than 10s or faster than 100ms, judging these to be off-task responses. Next, we excluded participants on the basis of their performance on practice and catch trials; given that these catch trials presented a very easy recognition task, we excluded participants who did not acheive at least 75\% accuracy on these trials (N= `r length(bad_subs$sessionId)`). The remaining `r length(unique(d$sessionId))` who met this criterion completed an average of `r round(mean(num_trials_per_kid$average_trials),2)` trials. 
+On total, we analyzed `r length(d$correct_or_not)` trials where children recognized each others drawings.
 
 ### Exclusion rates in each age bin; see that we are mostly filtering out young kids not on task.
 ```{r}
@@ -378,7 +392,7 @@ We expect that the distintiveness of each drawing will be a major factor in how 
 
 ### Import classifications data (4-way classifications separetly for each run of recoggames)
 ```{r}
-c_vehicle <- read.csv("compiled_classifications/classification-outputs-vehiclegame_C_0.1_460.csv") %>%
+c_vehiclegame <- read.csv("compiled_classifications/classification-outputs-vehiclegame_C_0.1_460.csv") %>%
   as.tibble() %>%
   select(-X.1, -X) %>%
   mutate(denom = (airplane_prob + train_prob + boat_prob + car_prob) - target_label_prob) %>%
@@ -386,13 +400,32 @@ c_vehicle <- read.csv("compiled_classifications/classification-outputs-vehiclega
   mutate(exp='vehiclegame')
 
 # now read it and join with other classifications  
-c <- read.csv("compiled_classifications/classification-outputs-animalgame_C_0.1_560.csv") %>%
+c_animalgame <- read.csv("compiled_classifications/classification-outputs-animalgame_C_0.1_560.csv") %>%
   as.tibble() %>%
   select(-X.1, -X) %>%
   mutate(denom = (dog_prob + fish_prob + rabbit_prob + bird_prob) - target_label_prob) %>%
   mutate(log_odds = log(target_label_prob / denom)) %>%
-  mutate(exp='animalgame') %>% 
-  full_join(c_vehicle) %>%
+  mutate(exp='animalgame') 
+
+#
+c_biganimalgame <- read.csv("compiled_classifications/classification-outputs-biganimalgame_C_0.1_600.csv") %>%
+  as.tibble() %>%
+  select(-X.1, -X) %>%
+  mutate(denom = (bear_prob + sheep_prob + camel_prob + tiger_prob) - target_label_prob) %>%
+  mutate(log_odds = log(target_label_prob / denom)) %>%
+  mutate(exp='animalgame')
+
+
+# now read it and join with other classifications  
+c <- read.csv("compiled_classifications/classification-outputs-objectgame_C_0.1_450.csv") %>%
+  as.tibble() %>%
+  select(-X.1, -X) %>%
+  mutate(denom = (bottle_prob + lamp_prob + hat_prob + cup_prob) - target_label_prob) %>%
+  mutate(log_odds = log(target_label_prob / denom)) %>%
+  mutate(exp='objectgame') %>% 
+  full_join(c_vehiclegame) %>% 
+  full_join(c_animalgame) %>%
+  full_join(c_biganimalgame) %>%
   mutate(sketch_path = paste0(target_label,'_','sketch_age',age,'_cdm_',session_id)) %>%
   mutate(sketch_path = as.factor(sketch_path)) 
 ```
@@ -429,17 +462,22 @@ ggplot(all_joined, aes(x=distinct_index, y=log_odds)) +
 ```
 
 ### Plot distinctivenss by item effects
-```{r fig.width=8, fig.height=2}
-distinct_by_age <- all_joined %>%
+```{r fig.width=6, fig.height=6}
+distinct_by_item <- all_joined %>%
   group_by(intended_category, distinct_index) %>%
   multi_boot_standard(col='correct_or_not') %>%
   group_by(distinct_index)
 
-ggplot(distinct_by_age, aes(x=distinct_index, y=mean, col=intended_category)) +
+ggplot(distinct_by_item, aes(x=distinct_index, y=mean, col=intended_category)) +
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
   geom_smooth(alpha=.2, span=10, method='lm') +
-  facet_grid(~intended_category) +
-  theme_few() 
+  theme_few() +
+  scale_x_continuous(breaks=seq(1,10,2)) +
+  xlab('Distinctiveness Index') +
+  ylab('Proportion recognized') +
+  theme(legend.position='none') + 
+  facet_wrap(~intended_category) 
+  
 ```
 
 
@@ -473,14 +511,14 @@ ggplot(distinct_by_age, aes(x=distinct_index, y=mean, col=recognizer_age_numeric
 ### Plot distinctivenss by age group interaction
 ```{r}
 distinct_by_age <- all_joined %>%
-  group_by(recognizer_age_group, distinct_index) %>%
+  group_by(recognizer_age_group, distinct_index, exp) %>%
   multi_boot_standard(col='correct_or_not') %>%
   group_by(distinct_index)
 
 (distinct_by_age_plot <- ggplot(distinct_by_age, aes(x=distinct_index, y=mean, col=recognizer_age_group)) +
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
   geom_smooth(alpha=.2, span=4, method='lm') +
-  facet_grid(~recognizer_age_group) +
+  facet_grid(exp ~ recognizer_age_group) +
   theme_few(base_size = 22) + 
   scale_x_continuous(breaks=seq(1,10,2)) +
   xlab('Distinctiveness Index') +
@@ -503,8 +541,17 @@ summary(model_glmer)
 
 ## Inferential model #2: Recognizer age as a continous variable
 ```{r}
-model_glmer_age_cont <- glmer(correct_or_not ~ scale(distinct_index)*scale(recognizer_age_numeric) + (distinct_index|intended_category) + (1|sessionId),  data = all_joined, family='binomial')
+model_glmer_age_cont <- glmer(correct_or_not ~ scale(distinct_index)*scale(recognizer_age_numeric)*exp + (distinct_index|intended_category) + (1|sessionId),  data = all_joined, family='binomial')
 summary(model_glmer_age_cont)
+
+# model_glmer_age_cont <- glmer(correct_or_not ~ scale(distinct_index)*scale(recognizer_age_numeric)*exp + (1|intended_category) + (1|sessionId) + (distinct_index|exp),  data = all_joined, family='binomial')
+# summary(model_glmer_age_cont)
+```
+
+
+```{r}
+model_glmer_age_cont_ba_only <- glmer(correct_or_not ~ scale(distinct_index)*scale(recognizer_age_numeric) + (distinct_index|intended_category) + (1|sessionId),  data = all_joined %>% filter(exp=='biganimalgame'), family='binomial')
+summary(model_glmer_age_cont_ba_only)
 ```
 
 

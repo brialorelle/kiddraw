@@ -8,6 +8,8 @@ output: html_notebook
 ```{r}
 library(tidyverse)
 classification_dir = "classification-outputs-vehiclegame_C_0.1"
+# classification_dir = "classification-outputs-biganimalgame_C_0.1"
+# classification_dir =  "classification-outputs-objectgame_C_0.1"
 files <- dir(classification_dir) 
 indexes = array()
 count=0

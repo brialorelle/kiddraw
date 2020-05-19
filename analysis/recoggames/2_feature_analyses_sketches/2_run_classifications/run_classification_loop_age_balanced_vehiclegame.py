@@ -37,8 +37,8 @@ It will spawn several threads to get predictions from all splits and models.
 
 def load_features(cohort, layer_num):
     layers = ['P1','P2','P3','P4','P5','FC6','FC7']    
-    F = np.load('/data5/bria/kiddraw_datasets/{}/features/FEATURES_{}_{}_Spatial_True.npy'.format(DATASET,layers[layer_num],cohort))
-    M = pd.read_csv('/data5/bria/kiddraw_datasets/{}/features/METADATA_{}.csv'.format(DATASET, cohort)) 
+    F = np.load('/data5/bria/kiddraw_datasets/recoggames_datasets/{}/features/FEATURES_{}_{}_Spatial_True.npy'.format(DATASET,layers[layer_num],cohort))
+    M = pd.read_csv('/data5/bria/kiddraw_datasets/recoggames_datasets/{}/features/METADATA_{}.csv'.format(DATASET, cohort)) 
     # F = np.load('/Users/brialong/Documents/GitHub/kiddraw/analysis/museumstation/cogsci-2019/5_feature_space_analyses/features/{}/FEATURES_{}_{}_Spatial_True.npy'.format(DATASET,layers[layer_num],cohort))
     # M = pd.read_csv('/Users/brialong/Documents/GitHub/kiddraw/analysis/museumstation/cogsci-2019/5_feature_space_analyses/features/{}/METADATA_{}.csv'.format(DATASET, cohort)) 
     M = M[['label','age','session']]
@@ -105,14 +105,14 @@ def get_classifications(test_index):
     print 'finished and saving!'
     if not os.path.exists(out_path_specific):
         os.makedirs(out_path_specific)
-    out.to_csv(os.path.join(out_path_specific,'museumstation_balanced_subset_classification_ind_{}.csv'.format(test_index_numeric)))
+    out.to_csv(os.path.join(out_path_specific,'balanced_subset_classification_ind_{}.csv'.format(test_index_numeric)))
 
 ################################################################################################################################
 
 #### SPECIFY PARAMETERS
-DATASET = 'vehiclegame' ## no features yet
+DATASET = 'biganimalgame' ## no features yet
 LAYER_IND = 6
-OUT_PATH = 'classification-outputs-vehiclegame'
+OUT_PATH = 'classification-outputs-biganimalgame'
 REGULARIZE_PARAM = .1
 
 # start clock
