@@ -1,0 +1,9 @@
+## Drawing count (raw,  pre-filtering of any kind)
+(pilots before 6/1/2018)
+
+cdm_run_v3: 20780 (23 categories) - started 6/1/2018; interleaved 7/23/2018 (no survey data yet)
+cdm_run_v4: 25906 (8 categories) - started 9/4/2018 -- ++ started survey, smaller stroke data
+cdm_run_v5: 14447 (8 categories) - started 2/28/2019 (Started late and overlapped with holidays)
+cdm_run_v6: 15968 (9 categories) - started 7/8/2019
+cdm_run_v7: 11850 (8 categories) - started 10/17/2019
+cdm_run_v8: 3917  (8 categories) - started 1/17/2020, finished early for COVID
