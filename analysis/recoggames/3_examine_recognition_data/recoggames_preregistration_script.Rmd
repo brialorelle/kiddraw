@@ -97,7 +97,7 @@ d <- d %>%
 ### Calculate performance on photo catch trials; visualize for each subject; compile list of off-task subjects
 ```{r}
 # threshold : 75% correct
-threshold=.9
+threshold=.75
 
 # compute avg correct photo trials for each subject
 photo_correct <- d %>%
@@ -417,7 +417,7 @@ c_biganimalgame <- read.csv("compiled_classifications/classification-outputs-big
 
 
 # now read it and join with other classifications  
-c <- read.csv("compiled_classifications/classification-outputs-objectgame_C_0.1_450.csv") %>%
+c <- read.csv("compiled_classifications/classification-outputs-objectgame_C_0.1_500.csv") %>%
   as.tibble() %>%
   select(-X.1, -X) %>%
   mutate(denom = (bottle_prob + lamp_prob + hat_prob + cup_prob) - target_label_prob) %>%
