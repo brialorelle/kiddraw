@@ -1,4 +1,9 @@
+
+# auth files
 auth.txt
+auth.json
+
+# big folders
 stim_videos/
 node_modules/
 sketches/
@@ -7,27 +12,54 @@ z-multipleCanvasTry/
 papers/
 outputs/
 irb/
-z-extra/
-z-test/
+
+# any classification outputs
+classification-outputs_C_0.1/*
+analysis/cogsci-2019/4_run_classifications/classification-outputs_C_0.1/*
+analysis/cogsci-2019/4_run_classifications/classification-outputs-041919-balanced_C_0.1/*
+
+# old stuff
+z-extra/*
+z-test/*
+z-old/*
+z-backup/*
+experiments/ratings/recognition_ratings_cogsci2018/experiment/z-test/*
+analysis/cogsci-2019/2_filtering_nov19/z-backup/z-intermediate-saves/*
+analysis/cogsci-2019/2_filtering_nov19/z-backup/*
+analysis/museumstation/cogsci-2019/2_filtering_nov19/z-backup/
+
+# old plots
+analysis/cogsci-2019/5_feature_space_analyses/plots-dec5/*
+
+# ds_store
 *.DS_Store
 .DS_Store
 .DS_Store
+
 .RData
 .Rhistory
+
+# not using
+experiments/ratings/often_seen_ratings_external_save/*
+experiments/ratings/often_seen_ratings/*
+
 *.npy
 *.json
 *.ipynb_checkpoints/
 *.pyc
+
 gmail_creds.json
-auth.txt
-auth.json
+
+
 history.csv
 .Rproj.user
 writing/old/
+
 experiments/museumdraw/node_modules/.DS_Store
 experiments/museumdraw/.DS_Store
 analysis/museumdraw/python/plots/*
 analysis/museumdraw/python/features/*
+
 .idea
 *.png
 *.tex
@@ -42,46 +74,16 @@ analysis/museumstation/cogsci-2019/4_run_classifications/classification-outputs-
 analysis/museumstation/june-2019/4_run_classifications/cdm_run_
 
 
-writing/CogSci-2019-Submission/figs/*
+writing/cogsci-2019/z-old/*
+writing/cogsci-2019/figs/*
+writing/cogsci-2019//CogSci-2019-Submission-Trimmed_cache/*
 
-analysis/museumstation/feature_space_analyses/pythonTest.Rmd
-analysis/museumstation/preprocessing/run_classifications/classification-outputs_C_0.1/*
-analysis/museumstation/preprocessing/run_classifications/count_classification_outputs.nb.html
-analysis/museumstation/preprocessing/run_classifications/compiled_classifications/Classification_Outputs1985.csv
-analysis/museumstation/preprocessing/run_classifications/compiled_classifications/Classification_Outputs8498.csv
-writing/CogSci-2019-Submission/CogSci-2019-Submission-Trimmed_cache/*
-analysis/photodraw2/3_run_classsificatinos/classification-outputs_C_0.1/*
-analysis/photodraw2/3_run_classsificatinos/classification-outputs-030719_C_0.1/*
 
 analysis/museumstation/preprocessing/extract_features/z-old/*
 analysis/museumstation/preprocessing/run_classifications/z-old/*
 writing/CogSci-2019-Submission/CogSci-2019-Submission-Trimmed-Jan31.pdf
 
-analysis/photodraw2/1_get_sketches/descriptives_check.Rmd
-analysis/photodraw2/1_get_sketches/photodraw2_descriptives/MuseumStation_AllDescriptives_1507_images_final_CDM_photodraw_e2.csv
-analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_1000_images_CDM_photodraw_e2_start_0.csv
-analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_100_images_CDM_photodraw_e2_start_0.csv
-analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_1100_images_CDM_photodraw_e2_start_0.csv
-analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_1200_images_CDM_photodraw_e2_start_0.csv
-analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_1300_images_CDM_photodraw_e2_start_0.csv
-analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_1400_images_CDM_photodraw_e2_start_0.csv
-analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_1475_images_final_CDM_photodraw_e2.csv
-analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_1475_images_final_CDM_photodraw_e2_no_blanks.csv
-analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_1500_images_CDM_photodraw_e2_start_0.csv
-analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_200_images_CDM_photodraw_e2_start_0.csv
-analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_300_images_CDM_photodraw_e2_start_0.csv
-analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_400_images_CDM_photodraw_e2_start_0.csv
-analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_500_images_CDM_photodraw_e2_start_0.csv
-analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_600_images_CDM_photodraw_e2_start_0.csv
-analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_700_images_CDM_photodraw_e2_start_0.csv
-analysis/photodraw2/1_get_sketches/data_020519/photodraw2_descriptives/Photodraw2_AllDescriptives_1475_images_final_CDM_photodraw_e2.csv
-analysis/photodraw2/1_get_sketches/data_020519/photodraw2_descriptives/Photodraw2_AllDescriptives_1475_images_final_CDM_photodraw_e2_no_blanks.csv
-analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_1475_images_final_CDM_photodraw_e2.csv
-analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_1475_images_final_CDM_photodraw_e2_no_blanks.csv
-analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_800_images_CDM_photodraw_e2_start_0.csv
-analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_900_images_CDM_photodraw_e2_start_0.csv
-analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_1475_images_final_CDM_photodraw_e2.csv
-analysis/photodraw2/1_get_sketches/photodraw2_descriptives/Photodraw2_AllDescriptives_1475_images_final_CDM_photodraw_e2_no_blanks.csv
+
 
 writing/CogSci-2019-Submission/z-old/CogSci_RoughDraft.Rmd
 
@@ -103,5 +105,15 @@ analysis/museumstation/preprocessing/usage_stats/conn_cocolab
 analysis/bingstation/preprocess_bingstation.ipynb
 analysis/bingstation/preprocess_bingstation 2.ipynb
 
+
+/Users/brialong/Documents/GitHub/kiddraw/analysis/cogsci-2019/4_run_classifications/classification-outputs_C_0.1/museumstation_subset_classification_ind_3581.csv
+
 analysis/recoggames/2_feature_analyses_sketches/2_run_classifications/classification_outputs/* 
 
+experiments/museumdraw/.DS_Store
+experiments/museumdraw/.DS_Store
+experiments/museumdraw/.DS_Store
+nextsteps.txt
+old_gitignore.exclude
+experiments/museumdraw/.DS_Store
+experiments/museumdraw/.DS_Store
