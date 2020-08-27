@@ -1,0 +1,72 @@
+---
+title: "Analyze drawing frequency"
+author: "Bria Long"
+date: "8/27/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(here)
+library(ggthemes)
+```
+
+```{r}
+raw = read_csv(here('data','surveys','Drawing Experience Survey_August 27, 2020_13.41.csv'))
+```
+
+```{r}
+question_names <- raw %>%
+  select(contains('Q3_')) %>%
+  filter(row_number()==1) 
+
+question_ids = colnames(question_names)
+categories = str_split_fixed(question_names[1,],'-',2)[,2]
+categories = str_split_fixed(categories,' ',2)[,2]
+
+data.frame(categories, question_ids)
+new_colnames = c('childs_age', categories)
+
+d <- raw %>%
+  filter(DistributionChannel != 'preview') %>% # not preview
+  filter(Q8 == 1) %>% # positive consen
+  filter(!Q3_2 == 'NA') %>%## no NAs, i.e. complete
+  mutate(childs_age = Q16) %>%
+  select(childs_age, contains('Q3_'))
+
+colnames(d) <- new_colnames
+
+d_long <- gather(d, key='category', categories, -childs_age) %>%
+  rename(often_drawn_rating = categories)
+  
+```
+
+```{r}
+time_out <- raw %>%
+  select(`Duration (in seconds)`) %>%
+  rename(s = `Duration (in seconds)`) %>%
+  mutate(s = as.numeric(s)) %>%
+  filter(s>100) 
+
+ggplot(time_out, aes(y=s/60)) +
+  geom_boxplot()
+```
+
+```{r}
+avg_by_category_age <- d_long %>%
+  mutate(often_drawn_rating = as.numeric(often_drawn_rating), category = factor(category)) %>%
+  group_by(category, childs_age) %>%
+  summarize(avg_rating = mean(often_drawn_rating)) %>%
+  ungroup() %>%
+  mutate(category = fct_reorder(category, avg_rating, .desc =TRUE))
+```
+
+```{r}
+ggplot(avg_by_category_age, aes(x=category, y=avg_rating, col=childs_age)) + 
+  geom_jitter(height=.1, alpha=.5)  +
+  theme_few()  + 
+  theme(axis.text.x = element_text(angle = 90))   + 
+  labs(title = 'Ratings of how frequently children draw objects', subtitle = ('1 = Never, 2=Once or Twice, 3=A few times, 4=Frequently, 5=Nearly every time they draw'), y = 'Avg Frequency Drawn', x = 'Category') 
+  
+  
+```
