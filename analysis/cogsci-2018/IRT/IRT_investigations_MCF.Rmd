@@ -1,0 +1,87 @@
+---
+title: "IRT Kiddraw"
+author: "Mike"
+date: "10/18/2018"
+output: html_document
+---
+
+```{r setup}
+library(tidyverse)
+library(mirt)
+library(here)
+```
+
+```{r}
+## Load data and do basic preprocessing.
+
+## Read in data outputs from python - stroke numbers, intensity, bounding boc, etc.
+# get rid of drwaings without age - these were when we were testing the interface.
+# make new variable name with image name for joining with recognition data
+id <- read_csv("preprocessed_data/museumdraw_E1c_imageData.csv") %>%
+  filter(!is.na(age)) %>%
+  mutate(imNameShort = paste0(category, '_sketch', '_', age,'_', session_id, '.png'))
+
+## Read in data outputs from turk data - true/false recognition with 21AFC
+ir <- read_csv("preprocessed_data/museumdraw_E1c_recognitionData.csv")
+
+# add special column for when people selected "can't tell at all" during ratings; not separated out in current analyses
+ir$cantTell=(ir$rating=="cannott tell at all")
+```
+
+
+```{r}
+d <- left_join(ir,id) %>%
+  select(session_id, category, age, correct) %>%
+  group_by(session_id, category, age) %>%
+  summarise(correct = mean(correct))
+```
+
+Fit IRT models
+
+```{r}
+d_wide <- d %>%
+  mutate(correct = as.numeric(correct)) %>%
+  spread(category, correct) %>%
+  ungroup()
+  
+d_mat <- d_wide %>%
+  select(-session_id, -age) %>% 
+  data.frame %>%
+  data.matrix
+
+colnames(d_mat) <- sort(unique(d$category))
+rownames(d_mat) <- d_wide$session_id
+
+
+# Requires removal of some rows and cols
+d_mat <- d_mat[,!colnames(d_mat) %in% c("couch","foot","frog","phone","rabbit","shoe")]
+d_mat <- d_mat[rowMeans(!is.na(d_mat)) > 0, ]
+
+mod_4pl <- mirt(d_mat, 1, itemtype='4PL', verbose=TRUE, 
+                technical = list(removeEmptyRows=TRUE, 
+                                 NCYCLES = 2000))
+
+coefs_4pl <- as_data_frame(coef(mod_4pl, simplify = TRUE)$items) %>%
+  mutate(category = rownames(coef(mod_4pl, simplify = TRUE)$items))
+
+fscores_4pl <- data_frame(data_id = rownames(d_mat), 
+                          ability = fscores(mod_4pl, method = "MAP")[,1])
+```
+
+Plot some IRT parameters. 
+
+```{r}
+coefs_4pl %>%
+  mutate(category = fct_reorder(category, d)) %>%
+  gather(parameter, value, a1, d, g, u) %>%
+  mutate(parameter = factor(parameter,
+                            levels = c("a1","d","g","u"), 
+                            labels = c("slope","difficulty",
+                                       "lower bound","upper bound"))) %>%
+  ggplot(aes(category, value)) + 
+  facet_wrap(~parameter) + 
+  geom_point() + 
+  coord_flip()
+```
+
+

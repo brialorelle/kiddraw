@@ -1,0 +1,14 @@
+/data2/jefan/imagenet_kiddraw/dog/0176.jpg
+/data2/jefan/imagenet_kiddraw/dog/0286.jpg
+/data2/jefan/imagenet_kiddraw/shoe/0232.jpg
+/data2/jefan/imagenet_kiddraw/shoe/0231.jpg
+/data2/jefan/imagenet_kiddraw/shoe/0230.jpg
+/data2/jefan/imagenet_kiddraw/shoe/0229.jpg
+/data2/jefan/imagenet_kiddraw/shoe/0228.jpg
+/data2/jefan/imagenet_kiddraw/shoe/0227.jpg
+/data2/jefan/imagenet_kiddraw/shoe/0225.jpg
+/data2/jefan/imagenet_kiddraw/shoe/0224.jpg
+/data2/jefan/imagenet_kiddraw/shoe/0223.jpg
+/data2/jefan/imagenet_kiddraw/shoe/0231.jpg
+/data2/jefan/imagenet_kiddraw/shoe/0222.jpg
+/data2/jefan/imagenet_kiddraw/shoe/0221.jpg
