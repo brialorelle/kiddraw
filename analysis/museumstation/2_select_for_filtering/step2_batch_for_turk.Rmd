@@ -1,0 +1,95 @@
+---
+title: "Batch for mturk processing"
+author: "Bria Long"
+date: "9/1/2020"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readr)
+library(assertthat)
+library(knitr)
+library(here)
+library(lubridate)
+```
+
+
+## Select cdm run we are filtering and set paths accordingly
+```{r}
+run_names = c('cdm_run_v4','cdm_run_v5','cdm_run_v5','cdm_run_v6','cdm_run_v7')
+count_runs = 0 
+
+for (run_name in run_names){
+# input paths
+drawing_path = here::here('data/drawings',run_name)
+
+filtered_descriptives_path = fs::path(drawing_path,'filtered_dataset_descriptives')
+descriptive_files=dir(filtered_descriptives_path)
+
+these_metadata <- read_csv(fs::path(filtered_descriptives_path,descriptive_files[2]))
+
+count_runs = count_runs + 1
+if (count_runs == 1){
+  all_metadata <- these_metadata
+}
+else {
+  all_metadata <- all_metadata %>%
+    full_join(these_metadata)
+}
+
+}
+
+```
+
+```{r}
+all_metadata %>%
+  mutate(run = str_sub(session_id, start=1, end=10)) %>%
+  group_by(run) %>%
+  summarize(drawings_per_run = length(unique(filename)))
+```
+
+```{r}
+category_summary <- all_metadata %>%
+  group_by(category, age) %>%
+  summarize(num_drawings = length(unique(fileNameShortNew)))
+
+
+category_only_summary <- all_metadata %>%
+  group_by(category) %>%
+  summarize(num_drawings = length(unique(fileNameShortNew)))
+
+```
+
+
+```{r}
+ggplot(category_summary, aes(x=age, y=num_drawings)) +
+  geom_point() + 
+  facet_wrap(~category)
+```
+
+```{r}
+images_to_norm <- all_metadata %>%
+  mutate(run = str_sub(session_id, start=1, end=10)) %>%
+  filter(category %in% category_summary$category) %>%
+  group_by(run) %>%
+  summarize(drawings_per_run = length(unique(filename)))
+```
+
+
+
+```{r}
+# how many images do we need to norm, actually?
+total_images = sum(images_to_norm$drawings_per_run)
+
+images_per_hit = 23*8
+cost_per_hit = .8
+turk_fees = .33
+##
+cost_per_hit = .8*1.33*2
+##
+cost = (total_images / images_per_hit)*cost_per_hit
+```
+

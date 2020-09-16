@@ -1,0 +1,80 @@
+---
+title: "Df_check_filtering"
+author: "Bria Long"
+date: "9/3/2020"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+```
+
+## Set paths and output directories
+
+```{r}
+# create output paths
+which_run = 'cdm_run_v7'
+drawing_path = here::here('data/drawings',which_run)
+filtered_dataset_path =  fs::path(drawing_path,'filtered_dataset')
+
+##
+called_invalid_twice = fs::path(drawing_path, 'called_invalid_twice')
+called_invalid_once = fs::path(drawing_path, 'called_invalid_once')
+dir.create(called_invalid_twice)
+dir.create(called_invalid_once)
+
+```
+
+
+## Load csvs from python outputs of db_records and filtering records
+```{r}
+# db records -- logs if/who has seen a particular image during a filtering task
+db_records <-read_csv(paste0('filtering_outputs/','images_checked_', which_run,'.csv')) %>%
+  select(filename, games, numGames)
+
+# filtering logs -- has one record for each drawing that was marked invalid
+joined_filtering = read_csv(paste0('filtering_outputs/','marked_invalid_drawings_',which_run,'.csv')) %>%
+  as_tibble() %>%
+  rename(filename = '0', worker_id = 'X1') %>%
+  group_by(filename) %>%
+  dplyr::summarize(count_invalid = length(unique(worker_id))) %>%
+  left_join(db_records) 
+
+# what <- joined_filtering %>%
+#   filter(count_invalid > 3)
+
+# check_games = read_csv(paste0('filtering_outputs/','marked_invalid_drawings_',which_run,'.csv')) %>%
+#     as_tibble() %>%
+#   rename(filename = '0', worker_id = 'X1') %>%
+#   right_join(what, by=c('filename')) %>%
+#   arrange(filename)
+```
+
+
+
+
+## Create dfs for images that were marked invalid once or more than once
+
+```{r}
+filtered_once <- joined_filtering %>%
+  filter(numGames>1) %>%
+  filter(count_invalid==1)
+  
+filtered_twice<- joined_filtering %>%
+  filter(numGames>1) %>%
+  filter(count_invalid>1)
+```
+
+
+## Save images out to those directories
+```{r}
+file.copy(from = file.path(filtered_dataset_path, filtered_twice$filename), to = file.path(fs::path(called_invalid_twice, filtered_twice$filename)))
+
+file.copy(from = file.path(filtered_dataset_path, filtered_once$filename), to = file.path(fs::path(called_invalid_once, filtered_once$filename)))
+```
+
+
+```{r}
+## write out to .txt file
+write_delim(data.frame(filtered_twice$filename), path= paste0('filtering_outputs/invalid_drawings_from_prolific_', which_run, '.txt'), col_names=FALSE, append=FALSE)
+```

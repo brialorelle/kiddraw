@@ -1,0 +1,96 @@
+---
+title: "Df_check_filtering"
+author: "Bria Long"
+date: "9/3/2020"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+```
+
+## Set paths and output directories
+
+```{r}
+# create output paths
+which_run = 'cdm_run_v7'
+drawing_path = here::here('data/drawings',which_run)
+filtered_dataset_path =  fs::path(drawing_path,'filtered_dataset')
+cleaned_full_dataset_path = here::here('data/drawings','stringent_cleaned_dataset')
+
+##
+called_invalid_twice = fs::path(drawing_path, 'called_invalid_twice')
+called_invalid_once = fs::path(drawing_path, 'called_invalid_once')
+dir.create(called_invalid_twice)
+dir.create(called_invalid_once)
+
+```
+
+
+## Load csvs from python outputs of db_records and filtering records
+```{r}
+# db records -- logs if/who has seen a particular image during a filtering task
+db_records <-read_csv(paste0('filtering_outputs/','images_checked_', which_run,'.csv')) %>%
+  select(filename, games, numGames)
+
+# filtering logs -- has one record for each drawing that was marked invalid
+joined_filtering = read_csv(paste0('filtering_outputs/','marked_invalid_drawings_',which_run,'.csv')) %>%
+  as_tibble() %>%
+  rename(filename = '0', worker_id = 'X1') %>%
+  group_by(filename) %>%
+  dplyr::summarize(count_invalid = length(unique(worker_id))) %>%
+  left_join(db_records) 
+
+
+# what <- joined_filtering %>%
+#   filter(count_invalid > 3)
+
+# check_games = read_csv(paste0('filtering_outputs/','marked_invalid_drawings_',which_run,'.csv')) %>%
+#     as_tibble() %>%
+#   rename(filename = '0', worker_id = 'X1') %>%
+#   right_join(what, by=c('filename')) %>%
+#   arrange(filename)
+```
+
+
+
+
+## Create dfs for images that were marked invalid once or more than once
+
+```{r}
+filtered_once <- joined_filtering %>%
+  filter(numGames>1) %>%
+  filter(count_invalid==1)
+  
+filtered_twice<- joined_filtering %>%
+  filter(numGames>1) %>%
+  filter(count_invalid>1)
+
+filtered_at_all<- joined_filtering %>%
+  filter(numGames>1) %>%
+  filter(count_invalid>0)
+
+valid_images <- db_records %>%
+  filter(!filename %in% filtered_at_all$filename)
+```
+
+
+## Save images out to those directories
+```{r}
+# file.copy(from = file.path(filtered_dataset_path, filtered_twice$filename), to = file.path(fs::path(called_invalid_twice, filtered_twice$filename)))
+# 
+# file.copy(from = file.path(filtered_dataset_path, filtered_once$filename), to = file.path(fs::path(called_invalid_once, filtered_once$filename)))
+
+file.copy(from = file.path(filtered_dataset_path, valid_images$filename), to = file.path(fs::path(cleaned_full_dataset_path, valid_images$filename)))
+```
+
+
+
+```{r}
+# only do once -- copying cogsci drawings
+# which_run = 'cogsci_2019_filtered'
+# filtered_dataset_path = here::here('data/drawings',which_run)
+# cleaned_full_dataset_path = here::here('data/drawings','stringent_cleaned_dataset')
+# 
+# file.copy(from = fs::path(filtered_dataset_path,dir(filtered_dataset_path)), to = file.path(fs::path(cleaned_full_dataset_path)))
+```

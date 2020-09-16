@@ -1,0 +1,294 @@
+---
+title: "MuseumStation Preprocessing"
+author: "Bria Long"
+date: "9/1/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readr)
+library(assertthat)
+library(knitr)
+library(here)
+library(lubridate)
+```
+
+
+## Select cdm run we are filtering and set paths accordingly
+```{r}
+run_name = 'cdm_run_v7'
+
+# input paths
+drawing_path = here::here('data/drawings',run_name)
+full_set_drawing_path = here::here('data/drawings',run_name, 'sketches_full_dataset')
+descriptives_path =  here::here('data/drawings',run_name,'sketches_descriptives')
+
+# create output paths
+filtered_dataset_path =  fs::path(drawing_path,'filtered_dataset')
+dir.create(filtered_dataset_path)
+
+filtered_descriptives_path = fs::path(drawing_path,'filtered_dataset_descriptives')
+dir.create(filtered_descriptives_path)
+```
+
+## List all of the drawings in the rendered dataset 
+```{r}
+all_drawings = list.files(path=full_set_drawing_path, pattern = ".png$", recursive = TRUE)
+
+all_drawings = as.tibble(all_drawings)  %>%
+    rename(sketchName = value) %>%
+    mutate(fileNameShort = str_split_fixed(sketchName,"/",2)[,2]) 
+
+```
+
+## If cdm_run_v4, some of these have already been examined...
+So filter out drawings that were already filtered for the cogsci paper
+```{r}
+if (run_name == 'cdm_run_v4'){
+
+  subset_drawing_path = here::here('data/drawings','subset_cogsci_2019_dataset')
+  subset_drawings = list.files(path=subset_drawing_path, pattern = ".png$", recursive = TRUE)
+  subset_drawings = as.tibble(subset_drawings) %>%
+    rename(sketchName = value) %>%
+    mutate(fileNameShort = str_split_fixed(sketchName,"/",2)[,2]) 
+
+  all_drawings <- all_drawings %>%
+    filter(!fileNameShort %in% subset_drawings$fileNameShort) 
+}
+```
+
+## Load csvs with descriptives
+```{r}
+descriptives_file = list.files(path = descriptives_path, pattern = ".csv$")
+
+descriptives = read_csv(fs::path(descriptives_path, descriptives_file), col_names = TRUE) %>%
+  mutate(fileNameShort = sapply(str_split(filename, '/'),tail,1L)) %>%
+  mutate(draw_duration_new = as.numeric(draw_duration_new)) %>%
+  select(-X1)
+
+```
+
+## How many drawings do we have before exclusion (not counting practice trials)?
+```{r}
+#
+practice_categories = c('shape','this circle','square','this square','something you love')
+extra_prompt = c('something you love')
+
+# 
+raw_drawing_count <- descriptives %>%
+  full_join(descriptives) %>%
+  filter(!category %in% practice_categories) %>%
+  filter(!category %in% extra_prompt) 
+  
+age_by_category <- raw_drawing_count %>%
+  group_by(category, age) %>%
+  summarize(num_drawings = length(unique(filename))) %>%
+  kable()
+
+
+drawing_count_total = length(unique(raw_drawing_count$filename))
+```
+There are `r drawing_count_total` drawings total in `r run_name`
+
+## Load manual exclusions from previous filtering (incomplete)
+```{r}
+# only for cdm runs 3,4,5
+exclude_path = here::here('data','images_to_exclude')
+exclude_files = dir(exclude_path)
+count_file = 0
+for (e in exclude_files) {
+  count_file = count_file +1
+  these_exclusions = read_csv(file = fs::path(exclude_path,e), col_names = FALSE) %>%
+    as_tibble() 
+
+  if (count_file == 1){
+    all_exclusions = these_exclusions
+  }
+  else {
+    all_exclusions = all_exclusions %>%
+      full_join(these_exclusions)
+    
+  }
+    
+}
+all_exclusions <- all_exclusions %>%
+  rename(fileNameShort = X1) %>%
+  mutate(version = str_split_fixed(fileNameShort,'_',4)[,4]) %>%
+  mutate(version = substring(version,1,10)) %>%
+  filter(version %in% c('cdm_run_v3','cdm_run_v4','cdm_run_v5')) # some manually filtered drawings from pilot runs that shouldn't be included in counts
+
+
+# filter out manually excluded drawings
+descriptives_filtered_v1 <- descriptives %>%
+  filter(!fileNameShort %in% all_exclusions$fileNameShort)%>%
+  mutate(version = str_split_fixed(fileNameShort,'_',4)[,4]) %>%
+  mutate(version = substring(version,1,10))
+
+# output how many we filtered
+excluded_files <- descriptives %>%
+  filter(fileNameShort %in% all_exclusions$fileNameShort) 
+
+num_drawings_manually_excluded = length(excluded_files$fileNameShort)
+```
+There were `r num_drawings_manually_excluded` in `r run_name` that were manually excluded based on previous filtering by the authors for another purpose (recognition games or cogsci2019 filtering).
+
+
+
+## Filter those drawings and make nicer columns
+```{r}
+ 
+filtered_drawings <- all_drawings %>% 
+  filter(!(fileNameShort=="")) %>% 
+  left_join(descriptives_filtered_v1, by=c('fileNameShort')) %>%
+  filter(!is.na(trial_num)) %>% # only consider image paths with descriptives...
+  mutate(fullPath = paste(full_set_drawing_path, '/', sketchName,sep="")) %>%
+  select(-sketchName)
+```
+
+## Filtering pass 1:
+### Grab images with weird intensities and save them out for manual insepction; all are excluded.
+```{r}
+light_thres = quantile(filtered_drawings$mean_intensity,.01)
+dark_thres = quantile(filtered_drawings$mean_intensity,.99)
+
+dark_drawings <- filtered_drawings %>%
+  filter(mean_intensity > dark_thres) 
+  
+almost_blank <- filtered_drawings %>%
+  filter(mean_intensity < light_thres)
+```
+
+```{r}
+dir.create(fs::path(drawing_path,'sketches_subsets_inspection'))
+dark_sketches_dir = fs::path(drawing_path,'sketches_subsets_inspection/maybe_exclude_dark_sketches') 
+light_sketches_dir = fs::path(drawing_path,'sketches_subsets_inspection/maybe_exclude_light_sketches')
+
+# dir.create(dark_sketches_dir)
+# dir.create(light_sketches_dir)
+
+# file.copy(dark_drawings$fullPath, dark_sketches_dir)
+# file.copy(almost_blank$fullPath, light_sketches_dir)
+```
+
+
+### After manually going through drawings and making new csv file, exclude those drawings
+```{r}
+## loading drawings to exclude based on manual exclusions
+# drawings_to_exclude_2 = read_csv(file = 'images_to_exclude/images_to_exclude_scribbles_dark_light.txt', col_names = FALSE)
+# drawings_to_exclude_2 = as.tibble(drawings_to_exclude_2)
+# 
+# ## copy all drawings into one directory
+# descriptives_filtered_v3 <- descriptives_filtered_v2 %>%
+#   filter(!fileNameShort %in% drawings_to_exclude_2$X1) 
+
+# filtered_sketches_dir = 'filtered_sketches'
+# dir.create(filtered_sketches_dir)
+# file.copy(descriptives_full_filtered$fullPath, filtered_sketches_dir)
+```
+
+```{r}
+## loading drawings to exclude based on manual exclusions based on rest of dataset
+# drawings_to_exclude_3 = read_csv(file = 'images_to_exclude/images_to_exclude_manual.txt', col_names = FALSE)
+# drawings_to_exclude_3 = as.tibble(drawings_to_exclude_3)
+```
+### Exclude last round and clean up datasets
+```{r}
+## Clean up -- exclude practice categories, recode age as numeric, make filenames w/o spaces
+practice_categories = c('shape','this circle','square','this square','something you love')
+extra_prompt = c('something you love')
+
+# clean up dataset and filter out manual exclusions
+filtered_drawings_objects <- filtered_drawings %>%
+  filter(!fileNameShort %in% almost_blank$fileNameShort) %>% 
+  filter(!fileNameShort %in% dark_drawings$fileNameShort) %>% 
+  mutate(age_numeric = as.numeric(str_split_fixed(age,'age',2)[,2])) %>%
+  mutate(fileNameShortNew = str_split_fixed(fileNameShort," ",2)[,2]) %>%
+  mutate(draw_duration_new = as.numeric(is.na(draw_duration_new))) %>%
+  filter(!category %in% practice_categories) %>%
+  filter(!category %in% extra_prompt) 
+
+## now only get practice trials for people who made it into the full dataset
+obj_session_ids = unique(filtered_drawings_objects$session_id)
+practice_shapes_filtered <- filtered_drawings %>%
+  filter(!fileNameShort %in% almost_blank$fileNameShort) %>% 
+  filter(!fileNameShort %in% dark_drawings$fileNameShort) %>% 
+  mutate(age_numeric = as.numeric(str_split_fixed(age,'age',2)[,2])) %>%
+  mutate(fileNameShortNew = str_split_fixed(fileNameShort," ",2)[,2]) %>%
+  mutate(draw_duration_new = as.numeric(is.na(draw_duration_new))) %>%
+  filter(category %in% practice_categories) %>%
+  filter(!category %in% extra_prompt) %>%
+  filter(session_id %in% obj_session_ids) 
+
+all_drawings_filtered <- filtered_drawings_objects %>%
+  full_join(practice_shapes_filtered)
+```
+
+
+#### Hm, there are some drawings with lots of strokes -- lets look at them.
+```{r}
+# look at the crazy drawings
+high_strokes <- all_drawings_filtered %>%
+  filter(num_strokes > 50)
+
+dir.create(fs::path(drawing_path,'sketches_subsets_inspection/images_many_strokes'))
+file.copy(high_strokes$fullPath,fs::path(drawing_path,'sketches_subsets_inspection/images_many_strokes'))
+```
+
+
+
+
+## How many sketches are we left with in each age / category?
+```{r}
+category_by_age <- all_drawings_filtered %>%
+  group_by(category,age_numeric) %>%
+  summarize(countImages = n())
+
+ggplot(category_by_age,aes(age_numeric,countImages,color=age_numeric)) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  facet_wrap(~category)
+
+```
+
+
+### Save it out
+```{r}
+# all output csvs
+write.csv(all_drawings_filtered,fs::path(filtered_descriptives_path,paste0(run_name, '_filtered_', today(), '.csv'))) 
+
+# only objects
+write.csv(filtered_drawings_objects,fs::path(filtered_descriptives_path,paste0(run_name, 'objects_filtered_', today(), '.csv'))) 
+```
+
+### Render out new copies of filtered datasets
+```{r}
+
+
+file.copy(from = file.path(filtered_drawings_objects$fullPath), to=file.path(filtered_dataset_path, filtered_drawings_objects$fileNameShortNew))
+
+```
+
+
+
+```{r}
+# debugging code below -- 
+# was originally merging on 'X1' -- causing a few duplicates! weird. 
+
+# what <- read_csv(fs::path(filtered_descriptives_path, 'cdm_run_v5objects_filtered_2020-09-01.csv'))
+# duplicates <- filtered_drawings_objects %>%
+#   group_by(fileNameShort) %>%
+#   mutate(duplicate = n()) %>%
+#   filter(duplicate>1)
+# 
+# check_path = fs::path(drawing_path, 'sketches_subsets_inspection','duplicates')
+# dir.create(check_path)
+# 
+# file.copy(from = file.path(filtered_dataset_path,duplicates$fileNameShortNew),to=file.path(check_path, duplicates$fileNameShortNew))
+# 
+# one_image <- duplicates %>%
+#   filter(fileNameShort == duplicates$fileNameShort[1])
+
+
+```

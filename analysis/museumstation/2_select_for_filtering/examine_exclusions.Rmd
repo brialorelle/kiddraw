@@ -1,0 +1,140 @@
+---
+title: "examine_descriptives"
+author: "Bria Long"
+date: "9/1/2020"
+output: html_document
+---
+
+
+
+### Look at how many exclusions we made in diferent categories / ages
+```{r}
+all_exclusions <- drawings_to_exclude %>%
+  full_join(drawings_to_exclude_2) %>%
+  full_join(drawings_to_exclude_3) %>%
+  rename(sketchName = X1) %>%
+  mutate(category = str_split_fixed(sketchName,'_',4)[,1]) %>%
+  mutate(age = str_split_fixed(sketchName,'_',4)[,3]) %>%
+  mutate(age_numeric = str_split_fixed(age,'age',2)[,2]) %>%
+  filter(!category %in% practice_categories) %>%
+  filter(!category %in% extra_prompt) 
+
+exclusion_summary <- all_exclusions %>%
+  filter(!category %in% practice_categories) %>%
+  filter(!category %in% extra_prompt) %>%
+  group_by(age_numeric, category) %>%
+  summarise(numExclusions = n())
+
+ggplot(exclusion_summary,aes(age_numeric,numExclusions,color=age_numeric)) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  facet_wrap(~category)
+
+drawing_count_exclusions = length(unique(all_exclusions$sketchName))
+exclusion_percent= drawing_count_exclusions/ drawing_count_total
+```
+We had `r drawing_count_total` excluding practice trials, and we excluded `r drawing_count_exclusions` drawings, or `r exclusion_percent`% of drawings.
+
+### How do intensity, # of strokes, and drawing duration vary with age / category?
+```{r}
+ggplot(descriptives_full_filtered,aes(age_numeric,mean_intensity,color=category)) +
+  geom_boxplot(aes(group=age_numeric)) +
+  facet_wrap(~category) 
+```
+
+```{r}
+ggplot(descriptives_full_filtered,aes(age_numeric,mean_intensity,color=category)) +
+  geom_point(alpha=.2) 
+```
+
+```{r}
+ggplot(descriptives_full_filtered,aes(age_numeric,draw_duration_old,color=category)) +
+  geom_boxplot(aes(group=age_numeric)) +
+  facet_wrap(~category) 
+```
+
+```{r}
+ggplot(descriptives_full_filtered,aes(age_numeric,num_strokes,color=age_numeric)) +
+  geom_boxplot(aes(group=age_numeric)) +
+  facet_wrap(~category) 
+
+# now limit the y-axis so we can see without outliers 
+ggplot(descriptives_full_filtered,aes(age_numeric,num_strokes,color=age_numeric)) +
+  geom_boxplot(aes(group=age_numeric)) +
+  facet_wrap(~category) +
+  ylim(c(0, 100))
+```
+
+#### Hm, there are some drawings with lots of strokes -- lets look at them.
+```{r}
+# look at the crazy drawings
+high_strokes <- descriptives_full_filtered %>%
+  filter(num_strokes > 500)
+
+dir.create('sketches_subsets_inspection/images_many_strokes')
+file.copy(high_strokes$fullPath, 'sketches_subsets_inspection/images_many_strokes')
+
+# make a plot to look at aveages by age /category
+high_strokes_sum <- descriptives_full_filtered %>%
+  group_by(version,category,age_numeric) %>%
+  summarise(mean_strokes = mean(num_strokes))
+
+ggplot(high_strokes_sum,aes(age_numeric,mean_strokes,color=version)) +
+  geom_point()
+
+# output some summary stats
+high_strokes_by_version <- high_strokes_sum %>%
+  group_by(version) %>%
+  summarise(mean_strokes_v = mean(mean_strokes), sd_strokes_v = sd(mean_strokes))
+```
+
+#### Timing info
+```{r}
+## all drawings
+effort_sum <- descriptives_full_filtered %>%
+  group_by(category,age_numeric) %>%
+  summarise(mean_strokes = mean(num_strokes), mean_intensity = mean(mean_intensity), draw_duration = mean(draw_duration_old))
+
+## only cdm_run_v4, which has new timing info
+effort_sum_v4 <- descriptives_full_filtered %>%
+  filter(version==0) %>%
+  group_by(category,age_numeric) %>%
+  summarise(mean_strokes = mean(num_strokes), mean_intensity = mean(mean_intensity), draw_duration = mean(draw_duration_new))
+```
+
+```{r}
+
+# weird <- descriptives_full_filtered %>% filter(draw_duration_old >30)
+# dir.create('sketches_subsets_inspection/long_duration')
+# file.copy(weird$fullPath, 'sketches_subsets_inspection/long_duration')
+# 
+# long_trials <- descriptives_full_filtered %>% 
+#   filter(version==0) %>%
+#   filter(trial_duration>31) 
+# 
+# dir.create('sketches_subsets_inspection/long_trial_duration')
+# file.copy(long_trials$fullPath, 'sketches_subsets_inspection/long_trial_duration')
+
+```
+
+### Make some plots of these basic descriptives across age after averaging
+```{r}
+ggplot(effort_sum,aes(age_numeric,mean_intensity,color=category)) +
+  geom_point() +
+  facet_wrap(~category) +
+  geom_smooth(alpha=.1)
+```
+
+```{r}
+ggplot(effort_sum,aes(age_numeric,mean_strokes,color=category)) +
+  geom_point() +
+  facet_wrap(~category) +
+  geom_smooth(alpha=.1)
+```
+
+```{r}
+ggplot(effort_sum,aes(age_numeric,draw_duration,color=category)) +
+  geom_point() +
+  facet_wrap(~category) +
+  geom_smooth(alpha=.1)
+```
