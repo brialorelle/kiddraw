@@ -12,7 +12,7 @@ library(ggthemes)
 ```
 
 ```{r}
-raw = read_csv(here('data','surveys','drawing_experience','Drawing Experience Survey_August 27, 2020_17.21.csv'))
+raw = read_csv(here('data','surveys','drawing_experience','Drawing Experience Survey_August 28, 2020_13.58.csv'))
 ```
 
 ```{r}
@@ -51,6 +51,7 @@ time_out <- raw %>%
 ggplot(time_out, aes(y=s/60)) +
   geom_boxplot()
 ```
+
 ```{r}
 library(knitr)
 count_by_age <- d %>%
@@ -66,11 +67,29 @@ avg_by_category_age <- d_long %>%
   summarize(avg_rating = mean(often_drawn_rating)) %>%
   ungroup() %>%
   mutate(category = fct_reorder(category, avg_rating, .desc =TRUE))
+
+avg_by_category <- d_long %>%
+  mutate(often_drawn_rating = as.numeric(often_drawn_rating), childs_age = as.numeric(childs_age), category = factor(category)) %>%
+  group_by(category) %>%
+  summarize(avg_rating = mean(often_drawn_rating)) %>%
+  ungroup() %>%
+  mutate(category = fct_reorder(category, avg_rating, .desc =TRUE))
 ```
 
 ```{r}
 d_long <- d_long %>%
   mutate(often_drawn_rating = as.numeric(often_drawn_rating), childs_age = as.numeric(childs_age), category = factor(category))
+```
+
+
+```{r}
+ggplot(avg_by_category, aes(x=category, y=avg_rating, col=category)) + 
+  geom_point()  +
+  theme_few()  + 
+  theme(axis.text.x = element_text(angle = 90))   + 
+  labs(title = 'Ratings of how frequently children draw objects', subtitle = ('1 = Never, 2=Once or Twice, 3=A few times, 4=Frequently, 5=Nearly every time they draw'), y = 'Avg Frequency Drawn', x = 'Category') +
+  theme(legend.position = 'none') 
+
 ```
 
 ```{r}

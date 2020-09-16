@@ -118,3 +118,15 @@ old_gitignore.exclude
 experiments/museumdraw/.DS_Store
 experiments/museumdraw/.DS_Store
 analysis/museumstation/cogsci-2019/6_render_sketch_examples/old.Rmd
+data/z_gallerize_dataset/script.js
+data/z_gallerize_dataset/layout.css
+data/z_gallerize_dataset/index.html
+data/z_gallerize_dataset/images/thankyou.jpg
+data/z_gallerize_dataset/images/stop.jpg
+data/z_gallerize_dataset/images/play3.jpg
+data/z_gallerize_dataset/images/play.svg
+data/z_gallerize_dataset/images/play.jpg
+data/z_gallerize_dataset/images/play-button_318-42541.jpg
+data/z_gallerize_dataset/images/play past.jpg
+data/z_gallerize_dataset/images/goldstar.jpeg
+data/z_gallerize_dataset/images/cattest.jpg
