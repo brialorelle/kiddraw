@@ -63,8 +63,8 @@ def save_features(Features, Y, layer_num, cohort,spatial_avg,dataset):
     if not os.path.exists('./features'):
         os.makedirs('./features')
     layers = ['P1','P2','P3','P4','P5','FC6','FC7']
-    np.save('/data5/bria/stringent_cleaned_dataset_features/features/FEATURES_{}_{}_Spatial_{}.npy'.format(layers[int(layer_num)], cohort,spatial_avg), Features)
-    Y.to_csv('/data5/bria/stringent_cleaned_dataset_features/features/METADATA_{}.csv'.format(cohort))
+    np.save('/data5/bria/stringent_cleaned_dataset_features/FEATURES_{}_{}_Spatial_{}.npy'.format(layers[int(layer_num)], cohort,spatial_avg), Features)
+    Y.to_csv('/data5/bria/stringent_cleaned_dataset_features/METADATA_{}.csv'.format(cohort))
     return layers[int(layer_num)]
 
 def convert_age(Ages):
