@@ -77,7 +77,7 @@ def run_classifications(image_ind):
     cmd = 'python run_classification_sherlock.py'
     cmd += f' --image_ind={image_ind} '
     
-    msg = submit_job(cmd, job_name=f'{vid_name}', p='normal,hns', t=1.0, mem='2G')
+    msg = submit_job(cmd, job_name=f'classification_test_{image_ind}', p='normal,hns', t=1.0, mem='2G')
     print(msg)
 
 image_ind = 1
