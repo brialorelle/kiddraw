@@ -4,6 +4,7 @@ import argparse
 import os
 import ntpath
 import time
+from IPython import get_ipython
 
 from sbatch_utils import submit_job
 # from config import *
@@ -54,27 +55,9 @@ def submit_job(wrap_cmd, job_name='sbatch', mail_type=None,
 
 
 def run_classifications(image_ind):
-    """run_openpose: submit sbatch job to run Openpose on given video.
-
-    :param vid_path: path to video file.
-    :param op_output_dir: directory that will house Openpose output folders.
-    :param face: outputs face keypoints (in addition to pose keypoints) if True.
-    :param hand: outputs hand keypoints (in addition to pose keypoints) if True.
-    :param overwrite: if True, overwrites existing openpose output folders.
-    :param condense: if True, condenses openpose outputs into a single dataframe.
-    :param **kwargs: additional command-line arguments to pass to Openpose
-    (see https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/demo_overview.md
-    for complete documentation on command-line flags).
-
-    Example usage:
-    run_openpose('/path/to/myheadcamvid.mp4', '/path/to/output_dir',
-                 keypoint_scale=3, frame_rotate=180)
+    """ submits job to run LOO classifications, here on a single image index
     """
- 
-    # this could also be openpose_latest.sif, instead of openpose-latest.img.
-    # openpose_binary_path = os.path.join(SINGULARITY_CACHEDIR, 'openpose_latest.sif')
-    # cmd = f'singularity exec --nv {openpose_binary_path} bash -c \''
-    # cmd += 'cd /openpose-master && ./build/examples/openpose/openpose.bin '
+
     cmd = 'python run_classification_sherlock.py'
     cmd += f' --image_ind={image_ind} '
     
