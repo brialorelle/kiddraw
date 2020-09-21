@@ -1,4 +1,4 @@
-name: headcam
+name: kiddraw
 dependencies:
     - python=3.7
     - ujson
