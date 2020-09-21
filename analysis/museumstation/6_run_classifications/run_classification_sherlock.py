@@ -117,7 +117,7 @@ REGULARIZE_PARAM = .1
 start_time = time.time()
 
 if __name__ == "__main__":
-	print 'Now running ...'
+	print ('Now running ...')
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--image_ind', type=int, 
@@ -128,5 +128,5 @@ if __name__ == "__main__":
     args = parser.parse_args()      
     start_ind = args.start_ind
     
-    print 'getting classifications for index {}'.format(image_ind)
+    # print ('getting classifications for index {}'.format(image_ind))
     get_classifications(image_ind)

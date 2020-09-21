@@ -80,5 +80,22 @@ def run_classifications(image_ind):
     msg = submit_job(cmd, job_name=f'classification_test_{image_ind}', p='normal,hns', t=1.0, mem='2G')
     print(msg)
 
-image_ind = 1
-run_classifications(image_ind)
+def wait_for_space(max_jobs):
+    time.sleep(5) #Allow for squeue to refresh properly
+    if queue_size() >= max_jobs:
+        print('Waiting for space in queue...')
+    while queue_size() >= max_jobs:
+        time.sleep(600)
+
+def queue_size():
+    size = get_ipython().getoutput('squeue -u $USER')
+    return len(size) - 1
+
+
+## set batch parameters
+start_ind = 0 # first value of first batch
+end_ind = 2 # 
+
+for image_ind in range(start_ind,end_ind):
+    wait_for_space(15)
+    run_classifications(image_ind)
