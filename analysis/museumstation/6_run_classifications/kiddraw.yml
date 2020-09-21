@@ -1,0 +1,12 @@
+name: headcam
+dependencies:
+    - python=3.7
+    - ujson
+    - numpy
+    - pandas
+    - jupyterlab
+    - ipykernel
+    - requests
+    - pytest
+    - matplotlib
+    - opencv

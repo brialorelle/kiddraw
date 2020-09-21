@@ -4,7 +4,6 @@ import argparse
 import os
 import ntpath
 import time
-from IPython import get_ipython
 
 from sbatch_utils import submit_job
 # from config import *
