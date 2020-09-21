@@ -5,7 +5,7 @@ import os
 import ntpath
 
 from sbatch_utils import submit_job
-from config import *
+# from config import *
 import subprocess
 
 
