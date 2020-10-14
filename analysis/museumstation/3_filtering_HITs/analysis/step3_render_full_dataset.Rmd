@@ -1,5 +1,5 @@
 ---
-title: "Df_check_filtering"
+title: "Render valid/invalid drawings post filtering"
 author: "Bria Long"
 date: "9/3/2020"
 output: html_document
@@ -7,18 +7,24 @@ output: html_document
 
 ```{r}
 library(tidyverse)
+library(assertthat)
 ```
 
 ## Set paths and output directories
-
 ```{r}
 # create output paths
-which_run = 'cdm_run_v7'
+which_run = 'cdm_run_v7' # change -- v4, v5, v6, v7 are possible options
 drawing_path = here::here('data/drawings',which_run)
 filtered_dataset_path =  fs::path(drawing_path,'filtered_dataset')
-cleaned_full_dataset_path = here::here('data/drawings','stringent_cleaned_dataset')
+filtered_dataset_descriptives_path =  fs::path(drawing_path,'filtered_dataset_descriptives')
+filtered_dataset_descriptives_file = fs::dir_ls(filtered_dataset_descriptives_path)[2] # second file in this directory
+print(filtered_dataset_descriptives_file)
 
-##
+cleaned_full_dataset_path = here::here('data/drawings','stringent_cleaned_dataset')
+cleaned_full_meta_path = here::here('data/drawings', 'stringent_cleaned_dataset_meta')
+```
+## make dirs for rendering bad drawings
+```{r}
 called_invalid_twice = fs::path(drawing_path, 'called_invalid_twice')
 called_invalid_once = fs::path(drawing_path, 'called_invalid_once')
 dir.create(called_invalid_twice)
@@ -41,27 +47,15 @@ joined_filtering = read_csv(paste0('filtering_outputs/','marked_invalid_drawings
   dplyr::summarize(count_invalid = length(unique(worker_id))) %>%
   left_join(db_records) 
 
-
-# what <- joined_filtering %>%
-#   filter(count_invalid > 3)
-
-# check_games = read_csv(paste0('filtering_outputs/','marked_invalid_drawings_',which_run,'.csv')) %>%
-#     as_tibble() %>%
-#   rename(filename = '0', worker_id = 'X1') %>%
-#   right_join(what, by=c('filename')) %>%
-#   arrange(filename)
 ```
 
 
-
-
 ## Create dfs for images that were marked invalid once or more than once
-
 ```{r}
 filtered_once <- joined_filtering %>%
   filter(numGames>1) %>%
   filter(count_invalid==1)
-  
+
 filtered_twice<- joined_filtering %>%
   filter(numGames>1) %>%
   filter(count_invalid>1)
@@ -71,21 +65,41 @@ filtered_at_all<- joined_filtering %>%
   filter(count_invalid>0)
 
 valid_images <- db_records %>%
-  filter(!filename %in% filtered_at_all$filename)
+  filter(!filename %in% filtered_at_all$filename) %>%
+  distinct(filename)
+
+```
+For `r which_run`, we had prolific workers filter `r length(db_records$filename)`, and `r length(filtered_at_all$filename)` were marker invalid.
+
+
+## Save out metadata for each run
+```{r}
+meta <- read_csv(filtered_dataset_descriptives_file) %>%
+  select(-filename, -fileNameShort, -X1) %>%
+  rename(filename = fileNameShortNew) 
+
+meta_valid_images <- meta %>%
+  right_join(valid_images, by=c('filename')) %>%
+  distinct(filename, session_id, category, age, age_numeric, num_strokes, draw_duration_new, draw_duration_old, mean_intensity)
+
+assert_that(length(meta_valid_images$filename) == length(valid_images$filename))
+what <- meta_valid_images %>%
+  filter(!filename %in% valid_images$filename)
+
+write_csv(meta_valid_images, path = fs::path(cleaned_full_meta_path, paste0(which_run,'_cleaned.csv')))
 ```
 
 
-## Save images out to those directories
-```{r}
+## Save images out to those directories; commented since already done
+```{r eval=FALSE}
 # file.copy(from = file.path(filtered_dataset_path, filtered_twice$filename), to = file.path(fs::path(called_invalid_twice, filtered_twice$filename)))
 # 
 # file.copy(from = file.path(filtered_dataset_path, filtered_once$filename), to = file.path(fs::path(called_invalid_once, filtered_once$filename)))
 
-file.copy(from = file.path(filtered_dataset_path, valid_images$filename), to = file.path(fs::path(cleaned_full_dataset_path, valid_images$filename)))
+# file.copy(from = file.path(filtered_dataset_path, valid_images$filename), to = file.path(fs::path(cleaned_full_dataset_path, valid_images$filename)))
 ```
 
-
-
+# only do once -- copying cogsci drawings to new directory for better organization
 ```{r}
 # only do once -- copying cogsci drawings
 # which_run = 'cogsci_2019_filtered'

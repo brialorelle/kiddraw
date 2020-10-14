@@ -13,6 +13,9 @@ papers/
 outputs/
 irb/
 
+# paper figures -- pdfs/ai files
+writing/paper_figures/*
+
 # any classification outputs
 classification-outputs_C_0.1/*
 data/classification_outputs/*
