@@ -15,6 +15,7 @@ irb/
 
 # any classification outputs
 classification-outputs_C_0.1/*
+data/classification_outputs/*
 analysis/cogsci-2019/4_run_classifications/classification-outputs_C_0.1/*
 analysis/cogsci-2019/4_run_classifications/classification-outputs-041919-balanced_C_0.1/*
 
@@ -30,7 +31,7 @@ analysis/museumstation/cogsci-2019/2_filtering_nov19/z-backup/
 
 # old plots
 analysis/cogsci-2019/5_feature_space_analyses/plots-dec5/*
-
+analysis/museumstation/5_feature_space_analyses/plots/*
 # ds_store
 *.DS_Store
 .DS_Store
