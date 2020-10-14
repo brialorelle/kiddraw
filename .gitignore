@@ -135,3 +135,7 @@ data/z_gallerize_dataset/images/play past.jpg
 data/z_gallerize_dataset/images/goldstar.jpeg
 data/z_gallerize_dataset/images/cattest.jpg
 analysis/museumstation/6_run_classifications/_bash/run_classifications_shell
+data/compiled_classifications/batchtotal_149.csv
+data/compiled_classifications/batchtotal_18.csv
+data/compiled_classifications/batchtotal_230.csv
+data/compiled_classifications/C_0.1_T_0.1batchtotal_231.csv
