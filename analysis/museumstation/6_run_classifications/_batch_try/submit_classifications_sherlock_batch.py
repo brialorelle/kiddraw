@@ -4,7 +4,7 @@ import argparse
 import os
 import ntpath
 import time
-import numpy as np
+
 from sbatch_utils import submit_job
 # from config import *
 import subprocess
@@ -53,14 +53,16 @@ def submit_job(wrap_cmd, job_name='sbatch', mail_type=None,
     return p.communicate()
 
 
-def run_classifications(batch_ind):
+def run_classifications(start_ind,end_ind):
     """ submits job to run LOO classifications, here on a single image index
     """
 
-    cmd = 'python run_classification_sherlock.py'
-    cmd += f' --batch_ind={batch_ind} '
+    cmd = 'python run_classification_sherlock_batch.py'
+    cmd += f' --start_ind={start_ind} '
+    cmd += f' --start_ind={end_ind} '
+
     
-    msg = submit_job(cmd, job_name=f'ind_{batch_ind}', p='normal,hns', t=0.5, mem='2G')
+    msg = submit_job(cmd, job_name=f'classification_test_{image_ind}', p='normal,hns', t=.08, mem='2G')
     print(msg)
 
 def wait_for_space(max_jobs):
@@ -75,20 +77,23 @@ def queue_size():
     return len(size) - 1
 
 
-# ## set batch parameters
-# start_ind = 0 # first value of first batch
-# end_ind = 22272 # size of balanced dataset....
-
-# for image_ind in range(start_ind,end_ind):
-#     wait_for_space(15)
-#     run_classifications(image_ind)
-#     if np.mod(image_ind,100)==0:
-#         print('running job for image {}'.format(image_ind))
+## set batch parameters
+total_images = 22272
+max_jobs =  15
+images_per_batch = 1489  #total_images/max_jobs # size of batch
+end_ind = total_images - images_per_batch # first value of last batch
+start_inds = range(start_ind,end_ind,images_per_batch)
+end_inds   = range(start_ind + images_per_batch,end_ind + images_per_batch,images_per_batch)
 
 
-start_ind = 0 # f
-end_ind = 231 # 
-for batch_ind in range(start_ind,end_ind):
-    wait_for_space(15)
-    run_classifications(batch_ind)
-    print('running job for batch_ind {}'.format(batch_ind))
+##
+count_iter = 0
+while (count_iter < np.size(start_inds)):
+    
+    start_time = time.time()
+    this_start_ind = start_inds[count_iter]
+    this_end_ind = end_inds[count_iter]
+    #
+    wait_for_space(15) ## should be enough...
+    run_classifications(start_ind, end_ind)
+    count_iter = count_iter + 1

@@ -1,0 +1,61 @@
+---
+title: "Count and compile classifications"
+output: html_notebook
+---
+
+## Check we have values for all images
+```{r}
+library(here)
+library(tidyverse)
+```
+
+```{r}
+classification_dir = here::here('data/classification_outputs/C_0.1_T_0.1')
+files <- dir(classification_dir) 
+indexes = array()
+count=0
+for (f in files){
+  count=count+1
+  this_csv = read.csv(paste0(classification_dir,'/',f)) %>%
+    mutate(batch_str = str_split_fixed(f,'_',4)[,4]) %>%
+    mutate(batch = as.numeric(str_split_fixed(batch_str,'.csv',2)[,1]))
+  
+  if (count==1){
+    all_csvs = this_csv
+  }
+  else {
+  all_csvs <- all_csvs %>%
+    full_join(this_csv)
+  }
+}
+```
+
+
+# check no duplicates
+```{R}
+all_csvs_check <- all_csvs %>%
+  distinct(session_id, age, target_label)
+# chceck
+library(assertthat)
+assertthat::assert_that(length(unique(all_csvs$index)) == length(all_csvs$index))
+assertthat::assert_that(length(unique(all_csvs$index)) == length(all_csvs_check$target_label))
+```
+
+# check nothing is missing
+```{r}
+index_full_array = seq.int(0,max(all_csvs$index),1)
+index_full_array = as.tibble(index_full_array)
+
+indexes_missing <- index_full_array %>%
+  filter(!value %in% all_csvs$index)
+```
+
+
+
+```{r}
+dir.create(here::here('data','compiled_classifications'))
+num_batches = length(unique(all_csvs$batch))
+write.csv(all_csvs, here::here('data','compiled_classifications/',paste0('C_0.1_T_0.1','batchtotal_',as.character(num_batches),'.csv')))
+
+
+```

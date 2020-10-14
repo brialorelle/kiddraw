@@ -1,7 +1,6 @@
-name: kiddraw
+name: kiddraw_class
 dependencies:
     - python=3.7
-    - ujson
     - numpy
     - pandas
     - jupyterlab
@@ -9,4 +8,5 @@ dependencies:
     - requests
     - pytest
     - matplotlib
-    - opencv
+    - scikit-learn
+
