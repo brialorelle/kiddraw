@@ -1,0 +1,211 @@
+---
+title: "Preprocess visual experience survey data"
+author: "Bria Long"
+date: "8/27/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(here)
+library(ggthemes)
+library(knitr)
+library(assertthat)
+```
+# Load and preprocess data
+```{r}
+raw_data = read_csv(here('data','surveys','visual_experience','raw','Visual Experience Development Survey_October 2, 2020_15.16.csv'))
+```
+```{r}
+animacy_csv <- read_csv(here::here('data/drawings/category_metadata/animacy.csv')) %>%
+  as_tibble() %>%
+  mutate(animacy_size = case_when(animacy == '0' & size=='0' ~ 2,
+                                  animacy == '0' & size=='1' ~ 1,
+                                  animacy == '1' & size=='0' ~ 3,
+                                  animacy == '1' & size=='1' ~ 4))
+
+```
+## Loop through question nnames and preproces qualtrics data
+```{r}
+question_names <- raw_data %>%
+  select(contains('_Q')) %>%
+  filter(row_number()==1)  
+
+question_type <- question_names %>%
+  gather(key = question_id, value = question_text) %>%
+  mutate(question_type = case_when(str_detect(question_text,'How often has your child seen') ~ "how_often",
+                                   str_detect(question_text,'In what formats has your child seen')  ~ "different_formats", 
+                                   str_detect(question_text,'How many different')  ~ "how_many")) %>%
+  mutate(categories = str_split_fixed(question_text,'-',2)[,1]) %>%
+  mutate(category = str_split_fixed(categories,' ',2)[,2]) %>%
+  mutate(category = str_replace(category, 'pair of','')) %>%
+  mutate(category = str_replace(category, ' ',''))
+
+d <- raw_data %>%
+  filter(DistributionChannel != 'preview') %>% # not preview
+  filter(Finished == 'True') %>%
+  filter(Q8 == "Yes") %>% # positive consent
+  mutate(childs_age = Q16) %>%
+  select(childs_age, ResponseId,contains('_Q')) %>%
+  gather(key = question_id, value = response, -childs_age, -ResponseId) %>%
+  left_join(question_type, by = c("question_id")) 
+```
+
+```{r}
+assertthat::assert_that(sum(is.na(d$category))==0)
+```
+
+## Data structure for how often seen
+```{r}
+how_often_summary <- d %>%
+  filter(question_type == 'how_often') %>%
+  filter(!is.na(response)) %>%
+  mutate(how_often_numeric= case_when(response == 'Never' ~ 0, 
+                                      response == 'Once or twice' ~ 1, 
+                                      response == 'A few times' ~ 2, 
+                                      response == 'Every few months' ~ 3, 
+                                      response == 'Monthly' ~ 4, 
+                                      response == 'Weekly' ~ 5, 
+                                      response == 'Daily' ~ 6, 
+                                      response == 'Multiple times a day' ~ 7
+                                      )) %>%
+  group_by(category) %>%
+  dplyr::mutate(how_often_avg = mean(how_often_numeric)) %>%
+  ungroup() %>%
+  mutate(categories = fct_reorder(category, how_often_avg, .desc=TRUE))
+
+```
+
+
+```{r}
+how_many_summary <- d %>%
+  filter(question_type == 'how_many') %>%
+  filter(!is.na(response)) %>%
+  mutate(how_many_numeric= case_when(response == '0' ~ 0, 
+                                      response == '1' ~ 1, 
+                                      response == '2' ~ 2, 
+                                      response == '<5' ~ 3, 
+                                      response == '<10' ~ 7.5, 
+                                      response == '<25' ~ 17.5, 
+                                      response == '25 or more' ~ 40
+                                      )) %>%
+  group_by(category) %>%
+  dplyr::summarize(how_many_avg = mean(how_many_numeric)) 
+
+```
+
+## Data structure for counting formats
+```{r}
+formats <- d %>%
+  filter(question_type == 'different_formats') %>%
+  filter(!is.na(response)) %>%
+  mutate(seen_drawing = str_detect(response,'A drawing')) %>%
+  mutate(seen_toy = str_detect(response,'A toy')) %>%
+  mutate(seen_photo = str_detect(response,'A photo')) %>%
+  mutate(seen_video = str_detect(response,'A video')) %>%
+  mutate(seen_life = str_detect(response,'In real life')) 
+
+diff_formats_summary <- formats %>%
+  group_by(category) %>%
+  summarize(seen_toy_avg = mean(seen_toy), seen_drawing_avg = mean(seen_drawing), seen_photo_avg = mean(seen_photo), seen_video_avg = mean(seen_video), seen_real_life_avg = mean(seen_life)) %>%
+  ungroup() %>%
+  mutate(categories = fct_reorder(category, seen_real_life_avg, .desc=TRUE))
+  
+  
+format_count <- formats %>%
+  group_by(ResponseId, category) %>%
+  summarize(count_formats = sum(seen_drawing + seen_toy + seen_photo + seen_video + seen_life)) %>%
+  group_by(category) %>%
+  summarize(avg_num_formats = mean(count_formats))
+
+
+```
+
+# all together
+```{r}
+experience_raw <- how_often_summary %>%
+  left_join(format_count) %>% 
+  left_join(how_many_summary) %>%
+  left_join(animacy_csv, by = ('category')) %>%
+  filter(!is.na(animacy)) %>%
+  mutate(animacy = as.factor(animacy)) %>%
+  mutate(category = fct_reorder(category, how_often_avg, .desc=TRUE)) 
+  
+experience_summary <- experience_raw %>%
+  distinct(category,animacy, avg_num_formats, how_often_avg, how_many_avg) %>%
+  mutate(category = fct_reorder(category, how_often_avg, .desc=TRUE)) 
+
+ggplot(experience_summary, aes(x=category, y=how_often_avg, col=animacy, size=avg_num_formats)) + 
+  geom_jitter(height=.1, alpha=.2) +
+  theme_few() + 
+  theme(axis.text.x = element_text(angle = 90)) +
+  ylab('How often seen') +
+  xlab('') +
+  scale_size_continuous(name = 'How many formats') 
+
+```
+
+```{r}
+
+ggplot(experience_raw, aes(x=category, y=how_often_numeric, col=animacy, size=avg_num_formats)) + 
+  geom_jitter(height=.1, alpha=.2) +
+  theme_few() + 
+  theme(axis.text.x = element_text(angle = 90)) +
+  ylab('How often seen') +
+  xlab('') +
+  scale_size_continuous(name = 'How many formats')
+```
+
+
+```{r}
+
+categories_to_show = c('bike','couch','cup','key','rabbit','fish', 'cactus', 'whale')
+ggplot(experience_summary %>% filter(category %in% categories_to_show), aes(x=category, y=how_often_avg, col=how_many_avg, size=avg_num_formats)) + 
+  geom_point(height=.1, alpha=.8) +
+  theme_few() + 
+  theme(axis.text.x = element_text(angle = 90)) +
+  ylim(0,7) +
+  ylab('How often seen') +
+  scale_color_continuous(name = 'How many exemplars') + 
+  xlab('') +
+  scale_size_continuous(name = 'How many formats', range = range(1,5), breaks = seq(1,5,1)) 
+```
+
+
+```{r}
+
+library(directlabels)
+
+formats_compiled <- diff_formats_summary  %>%
+  group_by(category) %>%
+  mutate(toy_or_drawing = sum(seen_toy_avg + seen_drawing_avg)/2, video_or_photo = sum(seen_photo_avg +  seen_video_avg + seen_real_life_avg)/3) %>%
+  left_join(animacy_csv) %>%
+  filter(!is.na(animacy)) %>%
+  mutate(animacy = factor(animacy, levels=c(0,1), labels = c('Inanimate','Animate'))) %>%
+  mutate(diff = toy_or_drawing - video_or_photo) %>%
+  arrange((diff))
+```
+
+```{r}
+ggplot(formats_compiled, aes(x=video_or_photo, y=toy_or_drawing, col=animacy)) +
+  geom_jitter(height=.03, width=.03, alpha=.8, size=2) +
+  theme_few(base_size=14) + 
+  ylim(0,1) +
+  xlim(0,1) + 
+  theme(axis.text.x = element_text(angle = 90)) +
+  ylab('Proportion seen as toy/drawing') +
+  xlab('Proportion seen as photo/video/real-life')  +
+  geom_abline(intercept=0, slope=1, color='grey', linetype='dashed') +
+  theme(aspect.ratio = 1)
+
+```
+
+
+## Save it out
+```{r}
+dir.create(here::here('data/surveys/visual_experience/preprocessed'))
+write_csv(d_long, here::here('data/surveys/visual_experience/preprocessed/Visual_frequency_survey.csv'))
+```
+
+
+```

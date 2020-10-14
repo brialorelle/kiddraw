@@ -1,5 +1,5 @@
 ---
-title: "Analyze drawing frequency"
+title: "Preprocess drawing frequency survey data"
 author: "Bria Long"
 date: "8/27/2020"
 output: html_document
@@ -9,12 +9,15 @@ output: html_document
 library(tidyverse)
 library(here)
 library(ggthemes)
-```
+library(knitr)
 
+```
+# Load and preprocess data
 ```{r}
-raw = read_csv(here('data','surveys','drawing_experience','Drawing Experience Survey_August 28, 2020_13.58.csv'))
+raw = read_csv(here('data','surveys','drawing_experience','raw','Drawing Experience Survey_August 28, 2020_13.58.csv'))
 ```
 
+## Loop through question nnames and preproces qualtrics data
 ```{r}
 question_names <- raw %>%
   select(contains('Q3_')) %>%
@@ -24,42 +27,57 @@ question_ids = colnames(question_names)
 categories = str_split_fixed(question_names[1,],'-',2)[,2]
 categories = str_split_fixed(categories,' ',2)[,2]
 
-data.frame(categories, question_ids)
-new_colnames = c('childs_age', categories)
+# data.frame(categories, question_ids)
+new_colnames = c('childs_age', 'subject_id', categories)
 
 d <- raw %>%
   filter(DistributionChannel != 'preview') %>% # not preview
   filter(Q8 == 1) %>% # positive consen
   filter(!Q3_2 == 'NA') %>%## no NAs, i.e. complete
   mutate(childs_age = Q16) %>%
-  select(childs_age, contains('Q3_'))
+  select(childs_age, ResponseId,contains('Q3_'))
 
 colnames(d) <- new_colnames
 
-d_long <- gather(d, key='category', categories, -childs_age) %>%
+d_long <- gather(d, key='category', categories, -childs_age, -subject_id) %>%
   rename(often_drawn_rating = categories)
   
 ```
-
+## to check duration of experiment
 ```{r}
-time_out <- raw %>%
-  select(`Duration (in seconds)`) %>%
-  rename(s = `Duration (in seconds)`) %>%
-  mutate(s = as.numeric(s)) %>%
-  filter(s>100) 
-
-ggplot(time_out, aes(y=s/60)) +
-  geom_boxplot()
+# time_out <- raw %>%
+#   select(`Duration (in seconds)`) %>%
+#   rename(s = `Duration (in seconds)`) %>%
+#   mutate(s = as.numeric(s)) %>%
+#   filter(s>100) 
+# 
+# ggplot(time_out, aes(y=s/60)) +
+#   geom_boxplot()
 ```
 
+## Check # of participants by child's age
 ```{r}
-library(knitr)
-count_by_age <- d %>%
+count_by_age <- d_long %>%
   group_by(childs_age) %>%
   dplyr::summarize(num_surveys = n())
 
 ```
 
+## Preprocess data; make numeric
+```{r}
+d_long <- d_long %>%
+  mutate(often_drawn_rating = as.numeric(often_drawn_rating), childs_age = as.numeric(childs_age), category = factor(category))
+```
+
+## Save it out
+```{r}
+dir.create(here::here('data/surveys/drawing_experience/preprocessed'))
+write_csv(d_long, here::here('data/surveys/drawing_experience/preprocessed/Category_frequency_survey.csv'))
+```
+
+
+# Basic descriptives
+## Compute averages by category/age and visualize
 ```{r}
 avg_by_category_age <- d_long %>%
   mutate(often_drawn_rating = as.numeric(often_drawn_rating), childs_age = as.numeric(childs_age), category = factor(category)) %>%
@@ -75,12 +93,6 @@ avg_by_category <- d_long %>%
   ungroup() %>%
   mutate(category = fct_reorder(category, avg_rating, .desc =TRUE))
 ```
-
-```{r}
-d_long <- d_long %>%
-  mutate(often_drawn_rating = as.numeric(often_drawn_rating), childs_age = as.numeric(childs_age), category = factor(category))
-```
-
 
 ```{r}
 ggplot(avg_by_category, aes(x=category, y=avg_rating, col=category)) + 
