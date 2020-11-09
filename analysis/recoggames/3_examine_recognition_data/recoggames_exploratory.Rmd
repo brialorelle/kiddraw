@@ -552,6 +552,18 @@ distinct_by_age_group <- all_joined %>%
 
 # Inferential statistics
 ### Examine how distinctivenss vs age group interact in glmer 
+
+# Inferential statistics
+### Examine how distinctivenss vs age group interact in glmer 
+```{r}
+model_glmer <- glmer(correct_or_not ~ scale(log_odds)*scale(recognizer_age_numeric) + (scale(log_odds)|intended_category) + (1|sessionId),  data = all_joined, family='binomial')
+out = summary(model_glmer)
+
+round(out$coefficients,3)
+xtable::xtable(summary(out)$coef, digits=3, caption = "Model coefficients of a GLMM predicting visual recognition performance as a function of recognizer age and visual 'distinctiveness' (i.e. log-odds probability of selecting the correct label in logistic regression based on visual features, see Methods).")
+
+```
+
 ```{r}
 model_glmer <- glmer(correct_or_not ~ scale(distinct_index)*scale(recognizer_age_group_numeric) + (distinct_index|intended_category) + (1|sessionId),  data = all_joined, family='binomial')
 summary(model_glmer)
