@@ -17,7 +17,7 @@ library(lubridate)
 ```
 
 
-## Select cdm run we are filtering and set paths accordingly
+## Join all metadata
 ```{r}
 run_names = c('cdm_run_v4','cdm_run_v5','cdm_run_v5','cdm_run_v6','cdm_run_v7')
 count_runs = 0 
@@ -44,6 +44,7 @@ else {
 
 ```
 
+## Look at drawings per run we have to filter
 ```{r}
 all_metadata %>%
   mutate(run = str_sub(session_id, start=1, end=10)) %>%
@@ -51,18 +52,17 @@ all_metadata %>%
   summarize(drawings_per_run = length(unique(filename)))
 ```
 
+## Drawings per category
 ```{r}
 category_summary <- all_metadata %>%
   group_by(category, age) %>%
   summarize(num_drawings = length(unique(fileNameShortNew)))
-
 
 category_only_summary <- all_metadata %>%
   group_by(category) %>%
   summarize(num_drawings = length(unique(fileNameShortNew)))
 
 ```
-
 
 ```{r}
 ggplot(category_summary, aes(x=age, y=num_drawings)) +
@@ -78,8 +78,7 @@ images_to_norm <- all_metadata %>%
   summarize(drawings_per_run = length(unique(filename)))
 ```
 
-
-
+# How many images we actually need to norma, and estimated cost
 ```{r}
 # how many images do we need to norm, actually?
 total_images = sum(images_to_norm$drawings_per_run)
