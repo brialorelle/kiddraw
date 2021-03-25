@@ -142,3 +142,6 @@ data/compiled_classifications/batchtotal_149.csv
 data/compiled_classifications/batchtotal_18.csv
 data/compiled_classifications/batchtotal_230.csv
 data/compiled_classifications/C_0.1_T_0.1batchtotal_231.csv
+analysis/museumstation/1_get_sketches/render_database_csvs_third.sh
+analysis/museumstation/1_get_sketches/render_database_csvs_second.sh
+analysis/museumstation/1_get_sketches/render_sketch_data.ipynb
