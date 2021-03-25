@@ -248,6 +248,28 @@ base_size_chosen=12
 ggplot(by_recognizer_age,aes(x=recognizer_age_numeric, y=mean, col = recognizer_age_numeric)) +
   theme_few(base_size = base_size_chosen) +
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  geom_jitter(data = by_each_recognizer, aes(x=recognizer_age_numeric, y=avg_correct, size=num_trials), alpha=.05, width=.1, height=.01) +
+  scale_color_viridis(discrete = "FALSE") + 
+  scale_size_area(max_size = 5) + 
+  ylab('Proportion drawings recognized') +
+  ylim(0, 1) +
+  geom_hline(yintercept = .25, linetype = 'dashed', color='grey')  +
+  geom_smooth(color = 'grey', span=10) +
+  xlab('Age of child recognizing (yrs)') +
+  theme(legend.position='none', aspect.ratio = 1) + 
+  # labs(title='Drawing recognition by age') +
+  scale_x_continuous(breaks = seq(3,10,1)) 
+
+ggsave('figures/drawing_recognition_by_age_v2.pdf',width=3, height=3, units='in')
+
+
+```
+
+```{r}
+base_size_chosen=12
+ggplot(by_recognizer_age,aes(x=recognizer_age_numeric, y=mean, col = recognizer_age_numeric)) +
+  theme_few(base_size = base_size_chosen) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
   geom_jitter(data = by_each_recognizer, aes(x=recognizer_age_numeric, y=avg_correct, size=num_trials), alpha=.1, width=.1, height=.01) +
   scale_color_viridis(discrete = "FALSE") + 
   ylab('Proportion drawings recognized') +
@@ -260,6 +282,8 @@ ggplot(by_recognizer_age,aes(x=recognizer_age_numeric, y=mean, col = recognizer_
   scale_x_continuous(breaks = seq(3,10,1)) 
 
 ggsave('figures/drawing_recognition_by_age.pdf',width=3, height=4.8, units='in')
+
+
 ```
 
 
@@ -392,6 +416,51 @@ ggplot(both_category,aes(x=producer_age, y=mean, col=producer_age)) +
 
 ```
 
+```{r}
+both_category <- d %>%
+  group_by(recognizer_age_numeric,intended_category) %>%
+  multi_boot_standard(col = 'correct_or_not') 
+
+ggplot(both_category,aes(x=recognizer_age_numeric, y=mean, col=recognizer_age_numeric)) +
+  theme_few() + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  ylab('Proporton recognized') +
+  xlab('Age of child recognizing (in years)') + 
+  ylim(0, 1) +
+  geom_hline(yintercept=.25, linetype='dashed',color='grey') +
+  geom_smooth(color='grey',alpha=.2, span=10) + 
+  theme(aspect.ratio = 1, legend.position='none') +
+  facet_wrap(~intended_category) +
+  scale_color_viridis(discrete=FALSE) 
+
+
+```
+
+```{r}
+recog_by_producer <- d %>%
+  filter(producer_age!='photo') %>%
+  group_by(recognizer_age_numeric,producer_age) %>%
+  multi_boot_standard(col = 'correct_or_not') 
+
+
+ggplot(recog_by_producer,aes(x=recognizer_age_numeric, y=mean, col=producer_age)) +
+  theme_few(base_size=12) + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  ylab('Proportion recognized') +
+  xlab('Age of child recognizing (in years)') + 
+  ylim(0, 1) +
+  geom_smooth(alpha=.2) + 
+  geom_hline(yintercept=.25, linetype='dashed',color='grey') +
+  geom_smooth(color='grey',alpha=.2, span=10) + 
+  theme(aspect.ratio = 1, legend.position='none') +
+  scale_color_viridis(discrete=TRUE) 
+
+ggsave('figures/drawing_recognition_by_producer_age.pdf',width=3, height=3, units='in')
+
+
+```
+
+
 ## Compute and plot recognition by sketch distinctiveness
 We expect that the distintiveness of each drawing will be a major factor in how well it is recognized, and, further, that older children will be more sensitive to the presence of these distinctive features.
 
@@ -520,10 +589,10 @@ distinct_by_age <- all_joined %>%
   mutate(recognizer_age_name = paste0(as.character(recognizer_age_numeric), '-year-olds'))
 
  ggplot(distinct_by_age, aes(x=distinct_index, y=mean, col=as.factor(recognizer_age_numeric))) +
-  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), alpha=.8) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), alpha=.8, size=.2) +
   geom_smooth(alpha=.2, span=4, method='lm', size=.25) +
   facet_wrap(~recognizer_age_numeric, nrow=2) +
-  theme_few(base_size = 12) + 
+  theme_few(base_size = 10) + 
   xlab('Classifier evidence') +
   ylab('Proportion drawings recognized') +
   theme(legend.position='none') + 
@@ -532,12 +601,12 @@ distinct_by_age <- all_joined %>%
     breaks=c(2,9),
     labels=c(' Low ',' High ')
         ) +
-  theme(axis.ticks.x=element_blank()) +
+  theme(axis.ticks.x=element_blank(), aspect.ratio=1) +
   geom_hline(yintercept=.25, linetype='dashed',color='grey') +
   ylim(0,1)
   
 
-ggsave('figures/DistinctByAge.pdf', width=5,  units='in')
+ggsave('figures/DistinctByAge.pdf', height=3,  units='in')
 ```
 
 ```{r}

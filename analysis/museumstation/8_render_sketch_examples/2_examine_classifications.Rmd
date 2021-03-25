@@ -1,4 +1,4 @@
----
+? im---
 title: "Examine LOO classification outputs (data subset)"
 author: "Bria Long"
 date: "started 11/20/2018"
@@ -31,9 +31,9 @@ library(egg)
 
 ```{r}
 ## Load classification data
-num_batches=231
+num_batches=232
 reg_string = 'C_0.1_T_0.1'
-classification_data <- read.csv(here::here('data','compiled_classifications/',paste0(reg_string, 'batchtotal_',as.character(num_batches),'.csv'))) %>%
+classification_data <- read.csv(here::here('data','compiled_classifications',paste0(reg_string, 'batchtotal_',as.character(num_batches),'.csv'))) %>%
   mutate(session_id = paste('cdm_',session_id,sep="")) %>%
   mutate(age_numeric = age) %>%
   mutate(age = paste('age',age,sep="")) %>%
@@ -49,6 +49,7 @@ classification_data <- read.csv(here::here('data','compiled_classifications/',pa
 ## preprocess
  d <- classification_data %>%
   mutate(correct_or_not = as.logical(correct_or_not)) %>%
+  mutate(category = as.factor(category)) %>%
   gather(key = 'class', value = 'prob', contains('prob')) %>%
   mutate(class = str_split_fixed(class, '_prob',2)[,1]) %>%
   group_by(image_name, age, category, session_id, correct_or_not) %>%
@@ -61,18 +62,27 @@ classification_data <- read.csv(here::here('data','compiled_classifications/',pa
 
 ##Render out subsets of classifications by classification scores
 #### Set parameters
+
 ```{r}
 ### Set parameters first
-categories = c('rabbit')
 categories = levels(d$category)
 ##
 # upper_thresholds=c(1,.85,.65,.45,.25,.05)
 # lower_thresholds=c(.95,.80,.60,.40,.20,0)
 # all_thresholds=c(1,.95,.85,.80,.65,.60,.45,.40,.25,.20,.05,0)
+# 
+# upper_thresholds=c(1,.90,.80,.70,.60,.50,.40)
+# lower_thresholds=c(.95,.85,.75,.65,.55,.45,.35)
+# all_thresholds=c(1,.95,.90,.85,.80,.75,.70,.65,.60,.55,.50,.45,.40,.35)
 
-upper_thresholds=c(1,.90,.80,.70,.60,.50,.40)
-lower_thresholds=c(.95,.85,.75,.65,.55,.45,.35)
-all_thresholds=c(1,.95,.90,.85,.80,.75,.70,.65,.60,.55,.50,.45,.40,.35)
+# upper_thresholds=c(1,.90,.80,.70,.60,.50,.40)
+# lower_thresholds=c(.95,.85,.75,.65,.55,.45,.35)
+# all_thresholds=c(1,.95,.90,.85,.80,.75,.70,.65,.60,.55,.50,.45,.40,.35)
+
+
+upper_thresholds = c('1','0.8','0.6','0.4','0.2')
+lower_thresholds = c('0.9','0.7','0.5','0.3','0.1')
+all_thresholds=c(1,.9,.8,.7,.6,.5,.4,.3,.2,.1)
 
 
 all_thresholds_str=as.character(all_thresholds)
@@ -81,27 +91,60 @@ thres_by_category <- d %>%
   # filter(correct_or_not==1) %>%
   group_by(category) %>%
   do(setNames(data.frame(t(quantile(.$target_label_prob, all_thresholds, na.rm=TRUE))),all_thresholds_str)) %>%
-  gather(Percentile, Threshold, '1':'0.35')
+  gather(Percentile, Threshold, '1':'0.1')
 
+```
+
+```{r}
 ##
-age_thres = 0
-dir_name = 'distinctiveness_by_category_correct_and_incorrect_35_start_sample2_take2'
-dir.create(dir_name)
+# age_thres = 0
+# dir_name = 'distinctiveness_by_category_correct_and_incorrect_25_start_sample2_take2'
+# dir.create(dir_name)
+
+```
+
+```{r}
+# ### Set parameters first
+# categories = c('rabbit')
+# categories = levels(d$category)
+# ##
+# # upper_thresholds=c(1,.85,.65,.45,.25,.05)
+# # lower_thresholds=c(.95,.80,.60,.40,.20,0)
+# # all_thresholds=c(1,.95,.85,.80,.65,.60,.45,.40,.25,.20,.05,0)
+# 
+# upper_thresholds=c(1,.90,.80,.70,.60,.50,.40)
+# lower_thresholds=c(.95,.85,.75,.65,.55,.45,.35)
+# all_thresholds=c(1,.95,.90,.85,.80,.75,.70,.65,.60,.55,.50,.45,.40,.35)
+# 
+# 
+# all_thresholds_str=as.character(all_thresholds)
+# 
+# thres_by_category <- d %>%
+#   # filter(correct_or_not==1) %>%
+#   group_by(category) %>%
+#   do(setNames(data.frame(t(quantile(.$target_label_prob, all_thresholds, na.rm=TRUE))),all_thresholds_str)) %>%
+#   gather(Percentile, Threshold, '1':'0.35')
+# 
+# ##
+# age_thres = 0
+# dir_name = 'distinctiveness_by_category_correct_and_incorrect_35_start_sample2_take2'
+# dir.create(dir_name)
 ```
 
 ### Render out random sample with these parameters
 ```{r eval=FALSE}
 ##
 categories = levels(d$category)
-dir_name = 'distinctiveness_each_category'
+dir_name = 'distinctiveness_each_category_5each_ordered'
 dir.create(dir_name)
-upper_thresholds = 1 
+
 for (this_category in categories){
   dir.create(file.path(paste(dir_name,'/',this_category, sep="")))
   thres_count=0
   
   for (upper in upper_thresholds) {
     thres_count = thres_count + 1
+    
     this_upper = thres_by_category$Threshold[thres_by_category$category == this_category & thres_by_category$Percentile==as.character(upper_thresholds[thres_count])]
     this_lower = thres_by_category$Threshold[thres_by_category$category == this_category & thres_by_category$Percentile==as.character(lower_thresholds[thres_count])]
 
@@ -115,7 +158,7 @@ for (this_category in categories){
       sample_n(1) %>%
       mutate(image_path = here::here('data','drawings','stringent_cleaned_dataset',image_name)) %>%
       mutate(new_image_path = paste(dir_name,'/',this_category,'/',
-                                    round(target_label_prob,4),image_name,sep=""))
+                                    thres_count,image_name,sep=""))
     
     if (length(s$image_path)>0){
       file.copy(s$image_path, s$new_image_path)
@@ -128,7 +171,7 @@ for (this_category in categories){
 dir.create(paste0(dir_name,'/montages/'))
 for (this_category in categories){
   image_read(dir(paste(dir_name, "/",this_category,sep=""), full.names = TRUE)) %>%
-    image_append(stack = FALSE) %>%
+    image_append(stack = TRUE) %>%
     image_write(file.path(paste0(dir_name,"/montages/", this_category,".png")))
 }
 
@@ -231,6 +274,7 @@ for (this_category in categories){
 dir.create(paste0(dir_name,'/montages/'))
 for (this_age in ages){
 for (this_category in categories){
+  
   image_read(dir(paste(dir_name, "/",this_category,'/',this_age,sep=""), full.names = TRUE)) %>%
     image_append(stack = FALSE) %>%
     image_write(file.path(paste0(dir_name,"/montages/", this_category, this_age,".png")))
@@ -239,6 +283,47 @@ for (this_category in categories){
 
 ```
 #### Correct only
+```{r eval=FALSE}
+##
+age_thres = 4
+dir_name = 'subset_classification_examples_ages4_10_correct_only'
+dir.create(dir_name)
+
+##
+for (this_category in categories){
+  dir.create(file.path(paste(dir_name,'/',this_category,sep="")))
+  thres_count=0
+  
+  for (upper in upper_thresholds) {
+    thres_count = thres_count + 1
+    lower = lower_thresholds[thres_count]
+    subset <- d %>%
+      filter(age_numeric > age_thres) %>%
+      filter(image_scores==1 ) %>%
+      group_by(category) %>%
+      mutate(upper_thres = quantile(target_label_prob, upper, na.rm = TRUE)) %>%
+      mutate(lower_thres = quantile(target_label_prob, lower, na.rm = TRUE)) %>%
+      filter(category == this_category) %>%
+      filter(target_label_prob > lower_thres & target_label_prob < upper_thres) %>%
+      sample_n(2) %>%
+      mutate(image_path = paste('srcd-features/museumstation_sketches/',category,'/',image_name,sep="")) %>%
+      mutate(new_image_path = paste(dir_name,'/',this_category,'/',
+                                    round(target_label_prob,4),image_name,sep=""))
+    
+    file.copy(subset$image_path, subset$new_image_path)
+  }
+}
+
+### Make montages of these randomly sampled sketches for use in diagrams
+dir.create(paste0(dir_name,'/montages/'))
+for (this_category in categories){
+  image_read(dir(paste(dir_name, "/",this_category,sep=""), full.names = TRUE)) %>%
+  image_append(stack = FALSE) %>%
+    image_write(file.path(paste0(dir_name,"/montages/", this_category,".png")))
+}
+
+```
+
 ```{r eval=FALSE}
 ##
 age_thres = 4
