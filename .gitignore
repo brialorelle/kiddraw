@@ -13,6 +13,9 @@ papers/
 outputs/
 irb/
 
+# big files with svgs rendered
+analysis/museumstation/1_get_sketches/full_dataset_info
+
 # paper figures -- pdfs/ai files
 writing/paper_figures/*
 
