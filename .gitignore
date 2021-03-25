@@ -19,6 +19,9 @@ analysis/museumstation/1_get_sketches/full_dataset_info
 # paper figures -- pdfs/ai files
 writing/paper_figures/*
 
+# paper docs
+writing/_submission_docs
+
 # any classification outputs
 classification-outputs_C_0.1/*
 data/classification_outputs/*
@@ -145,3 +148,4 @@ data/compiled_classifications/C_0.1_T_0.1batchtotal_231.csv
 analysis/museumstation/1_get_sketches/render_database_csvs_third.sh
 analysis/museumstation/1_get_sketches/render_database_csvs_second.sh
 analysis/museumstation/1_get_sketches/render_sketch_data.ipynb
+analysis/museumstation/1_get_sketches/valid_sessions.csv

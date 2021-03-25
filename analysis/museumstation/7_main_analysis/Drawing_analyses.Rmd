@@ -361,27 +361,83 @@ merged <- cor_by_age_by_intensity %>%
   full_join(cor_by_age_by_time) %>%
   full_join(cor_by_age_by_tracing) %>%
   # filter(age_numeric > 2) %>%
-  mutate(bin_name = as.factor(bin))
-  # mutate(bin_name = case_when(bin == 1 ~ "Low", 
+  mutate(bin_name = as.numeric(bin))
+  # mutate(bin_name = case_when(bin == 1 ~ "Low",
   #                             bin == 2 ~ "Medium",
   #                             bin == 3 ~ "High"))
 
-base_size_chosen=9
-ggplot(merged, aes(age_numeric,mean, color=bin_name, group=bin_name, col=bin_name)) +
-  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), alpha=.6, size=.25) +
-  theme_few(base_size = 9) +
-  labs(x='Age', y='Classification accuracy') +
-  scale_color_viridis(option="C", begin=.2, end=.8, discrete=TRUE, name = 'Effort') +
+
+ggplot(merged, aes(age_numeric,mean*100, color=bin_name, group=bin_name, col=bin_name)) +
+  geom_pointrange(aes(ymin = ci_lower*100, ymax = ci_upper*100), alpha=.6, size=.25) +
+  theme_few(base_size = 10) +
+  labs(x='Age of child drawing (yrs)', y='Category classification \n accuracy') +
+  # scale_color_viridis(option="C", begin=.2, end=.8, discrete=TRUE, name = 'Effort') +
   scale_x_continuous(breaks=seq(2,10,1)) +
   geom_smooth(span=10, alpha=smooth_alpha, size=.4) +
-  ylim(0,.75) +
+  ylim(0,100) +
   geom_hline(yintercept = 1/48, linetype="dashed", color="grey") +
-  theme(legend.position ='right',aspect.ratio = 1) + 
+  theme(legend.position ='none',aspect.ratio = 1) +
+  scale_fill_discrete(labels=c('Low','Medium','High')) + 
   # theme(aspect.ratio = 1, legend.position = c(.08, .75),legend.text = element_text(size=6),legend.title = element_text(size=8),legend.background =   element_rect(fill=alpha('white', 0))) +
   facet_grid(~covariate)
   
 
-ggsave('figures/visuomotor_control.pdf', height=3, units='in')
+ggsave('figures/visuomotor_control_wide.pdf', units='in')
+
+```
+
+```{r}
+
+cor_by_age_by_tracing_only <- d %>%
+  ungroup() %>%
+  filter(!is.na(avg_tracing_rating)) %>%
+  mutate(bin = ntile(avg_tracing_rating, 3)) %>%
+  group_by(bin, age_numeric,category) %>%
+  summarize(avg_cor = mean(correct_or_not)) %>%
+  group_by(age_numeric,bin) %>%
+  multi_boot_standard(col = "avg_cor")  
+
+
+
+ggplot(cor_by_age_by_tracing_only, aes(age_numeric,mean*100, color=bin, group=bin, col=bin)) +
+  geom_pointrange(aes(ymin = ci_lower*100, ymax = ci_upper*100), alpha=.6, size=.25) +
+  theme_few(base_size = 14) +
+  labs(x='Age of child drawing (yrs)', y='Category classification \n accuracy') +
+  scale_x_continuous(breaks=seq(2,10,1)) +
+  geom_smooth(span=10, alpha=smooth_alpha, size=.4) +
+  ylim(0,80) +
+  geom_hline(yintercept = 1/48, linetype="dashed", color="grey") +
+  theme(legend.position ='none',aspect.ratio = 1) 
+  # scale_fill_discrete(labels=c('Low','Medium','High')) + 
+  # theme(aspect.ratio = 1, legend.position = c(.08, .75),legend.text = element_text(size=6),legend.title = element_text(size=8),legend.background =   element_rect(fill=alpha('white', 0))) 
+
+
+
+```
+
+
+```{r}
+tracing_scores_raw <- d %>%
+  distinct(session_id,age_numeric,avg_tracing_rating) %>%
+  filter(!is.na(avg_tracing_rating))
+
+tracing_scores <- d %>%
+  distinct(session_id,age_numeric,avg_tracing_rating) %>%
+  filter(!is.na(avg_tracing_rating)) %>%
+  group_by(age_numeric) %>%
+  multi_boot_standard(col = "avg_tracing_rating")
+
+      
+ggplot(tracing_scores, aes(age_numeric,mean, color=age_numeric)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  geom_jitter(height=.1, width=.4, data=tracing_scores_raw, aes(y=avg_tracing_rating, x=age_numeric), alpha=.02) +
+  theme_few(base_size = 14) +
+  labs(x='Age', y='Estimated tracing score') +
+  scale_color_viridis(option="D") +
+  scale_x_continuous(breaks=seq(2,10,1)) +
+  theme(legend.position = "none") +
+  ylim(0,4) +
+  geom_smooth(col='grey', span = 10,alpha=smooth_alpha) 
 
 ```
 
@@ -405,13 +461,14 @@ base_size_chosen=10
 
 
 ```{r}
-base_size_chosen=8
-ggplot(cor_by_age, aes(age_numeric,mean, col=age_numeric)) +  
-  geom_jitter(data=cor_by_category, width=.1, height=0, alpha=.3) +
-  geom_pointrange(aes(y=mean, ymin = ci_lower, ymax = ci_upper)) +
+base_size_chosen=10
+smooth_alpha=.01
+ggplot(cor_by_age, aes(age_numeric,mean*100, col=age_numeric)) +  
+  geom_jitter(data=cor_by_category, width=.1, height=0, alpha=.2) +
+  geom_pointrange(aes(y=mean*100, ymin = ci_lower*100, ymax = ci_upper*100)) +
   geom_smooth(alpha=smooth_alpha, color='grey', span=10) +
   theme_few(base_size = base_size_chosen) + 
-  labs(x='Age', y='Classification accuracy') +
+  labs(x='Age of child drawing (yrs)', y='Drawing classification accuracy') +
   scale_x_continuous(breaks = seq(2,10,1)) + 
   theme(legend.position = "none", aspect.ratio = 1) +
   scale_color_viridis(option="D", breaks=seq(2,10,1)) +
@@ -537,7 +594,7 @@ lo_correct_category_by_age <- d %>%
   # filter(age_numeric > 2) %>%
   filter(correct_or_not==1) %>%
   mutate(category = str_replace(category,'ice.cream','ice cream')) %>%  # ice.cream -> ice_cream
-  mutate(age = cut(age_numeric, c(1.9, 5, 7,10.1), labels = c("2-4","5-6","7-10"))) %>%
+  mutate(age = cut(age_numeric, c(1.9, 5, 8,10.1), labels = c("2-4","5-7","8-10"))) %>%
   group_by(session_id, age,category) %>%
   summarize(avg_cor = mean(log_odds), num_drawings = n()) %>%
   group_by(age, category) %>%
@@ -547,52 +604,55 @@ lo_correct_category_by_age <- d %>%
 ```
 
 ```{r}
-base_size_chosen=6
+num_classes=48
+chance = log(1/num_classes) - log ((num_classes - 1)/num_classes)
+
+base_size_chosen=10
 ggplot(lo_correct_category_by_age, aes(x = category, y = mean, col = age)) +
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), alpha=.8, size=.2) +
   coord_flip() +
   theme_few(base_size = base_size_chosen) + 
   labs(y = "Classifier evidence (log odds)", x = "") +
   scale_color_viridis(discrete=TRUE, begin=0, end=.8, name = "Age group") +
-  theme(legend.position = c(.8,.25),legend.text = element_text(size=8), legend.background =  element_rect(fill=alpha('white', 0)))
+  theme(legend.position = c(.8,.25), axis.text.y = element_text(size=5), legend.text = element_text(size=8), legend.background =  element_rect(fill=alpha('white', 0)), aspect.ratio=1) 
 
-ggsave("figures/log_odds_by_category.pdf", width = 3, height = 3, units = 'in')
+ggsave("figures/log_odds_by_category.pdf", units = 'in', height= 3)
 
 
 ```
 
 
 ```{r}
-
-
 lo_correct_category_by_age_small <- lo_correct_category_by_age %>%
   group_by(category) %>%
   mutate(category_avg = mean(mean)) %>%
   filter(category_avg > -1)
   
 
-base_size_chosen=6
 ggplot(lo_correct_category_by_age_small, aes(x = category, y = mean, col = age)) +
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), alpha=.8, size=.2) +
   coord_flip() +
-  theme_few(base_size = base_size_chosen) + 
+  theme_few(base_size = 12) + 
   labs(y = "Classifier evidence (log odds)", x = "") +
   scale_color_viridis(discrete=TRUE, begin=0, end=.8, name = "Age group") +
-  theme(legend.position = c(.8,.25),legend.text = element_text(size=8), legend.background =  element_rect(fill=alpha('white', 0)))
+  theme(legend.position = 'none') 
+  # theme(legend.position = c(.8,.25),legend.text = element_text(size=8), legend.background =  element_rect(fill=alpha('white', 0)))
 
 ggsave("figures/log_odds_by_category_small.pdf", width = 3, height = 3, units = 'in')
 
 ```
 
 ```{r}
-log_odds_by_age_cor_only <- correct_subset %>%
+log_odds_by_age_cor_only <- d %>%
+  filter(correct_or_not==1) %>%
   group_by(age_numeric,category) %>%
   summarize(avg_log_odds = mean(log_odds)) %>%
   group_by(age_numeric) %>%
   multi_boot_standard(col = "avg_log_odds") 
 
 
-log_odds_by_age_cor_only_by_category <- correct_subset %>%
+log_odds_by_age_cor_only_by_category <- d %>%
+  filter(correct_or_not==1) %>%
   group_by(age_numeric,category) %>%
   summarize(mean = mean(log_odds)) 
 
@@ -675,18 +735,67 @@ levels(confusions_by_age$drawn_category)
 
 ```
 
+
+```{r}
+sanity <- confusions_by_class %>%
+  group_by(drawn_category) %>%
+  summarise(sum_prob = sum(mean_prob))
+```
+
+
+```{r}
+confusions_count_by_class <- classification_data_long %>%
+  mutate(drawn_category = category) %>%
+  left_join(animacy_csv) %>%
+  ungroup() %>%
+  group_by(image_name) %>%
+  filter(correct_or_not==0) %>%
+  filter(prob == max(prob)) %>%
+  group_by(drawn_category) %>%
+  mutate(count_category = n()) %>%
+  ungroup() %>%
+  group_by(drawn_category, class) %>%
+  summarise(confusions = n(), count_category = count_category[1], animacy_size = animacy_size[1])  %>%
+  mutate(prop_confusions = confusions / count_category)  %>%
+  ungroup() %>%
+  mutate(drawn_category = fct_reorder(drawn_category, animacy_size)) %>%
+  mutate(class = factor(class, levels = levels(drawn_category)))
+  
+  
+
+
+```
+
 ## Plot 3: Plot confusions by class across all ages
 ```{r}
-ggplot(data = confusions_by_class, aes(x=class, y=drawn_category,fill=mean_prob)) + 
+ggplot(data = confusions_count_by_class, aes(x=class, y=drawn_category,fill=prop_confusions)) + 
   geom_tile() + 
-  theme_few(base_size = 10) +
-  theme(legend.position = 'none', axis.text.x = element_text(angle = 90,  
+  theme_few(base_size = 12) +
+  theme(legend.position = 'left', axis.text.x = element_text(angle = 90,  
   size = 6, vjust=.5, hjust = 1), axis.text.y = element_text(angle = 0,
   size = 6, hjust = 1)) + 
   coord_fixed() + 
-  scale_fill_viridis(option="A", limits=c(0,quantile(confusions_by_age$mean_prob,.995)), name = 'Classifier probability')  +
+  scale_fill_viridis(option="A", name = 'Proportion classified')  +
   ylab('Drawn as') +
-  xlab('Confused as') 
+  xlab('Confused with') 
+  # facet_wrap(~age_group, nrow=1)
+
+ggsave('figures/classifier_confusions_count.pdf', width = 4, height = 5, units = 'in')
+
+
+```
+
+```{r}
+ggplot(data = confusions_by_class, aes(x=class, y=drawn_category,fill=mean_prob)) + 
+  geom_tile() + 
+  theme_few(base_size = 12) +
+  theme(legend.position = 'left', axis.text.x = element_text(angle = 90,  
+  size = 6, vjust=.5, hjust = 1), axis.text.y = element_text(angle = 0,
+  size = 6, hjust = 1)) + 
+  coord_fixed() + 
+  scale_fill_viridis(option="A", limits=c(0,quantile(confusions_by_age$mean_prob,.998)), name = 'Classifier probability')  +
+  ylab('Drawn as') +
+  xlab('Confused with') 
   # facet_wrap(~age_group, nrow=1)
 
 ggsave('figures/classifier_confusions.pdf', width = 4, height = 5, units = 'in')
@@ -696,6 +805,9 @@ ggsave('figures/classifier_confusions.pdf', width = 4, height = 5, units = 'in')
 
 
 
+```{r}
+
+```
 ### Calculate whether animacy/size were correct
 ```{r}
 
@@ -754,20 +866,35 @@ anim_cor_by_age <- anim_cor_by_category_by_age %>%
 
 ```
 
+
+
+```{r}
+base_rate = .5
+
+diffs=array()
+for (c in 1:48){
+  rands = sample(0:1,100, replace=TRUE)
+  diff = mean(rands) - base_rate
+  diffs[c]=diff
+}
+
+
+```
+
 ## Plot 4: Plot animacy correct by age
 ```{r}
 ggplot(anim_cor_by_age, aes(x=age_numeric,y=mean, color=age_numeric)) +
-  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), alpha=.8) + 
-  geom_point(data=anim_cor_by_category_by_age, aes(x=age_numeric, y=avg_animacy_correct), alpha=.1) +
-  theme_few(base_size = 12) + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), alpha=.8, size=.2) + 
+  geom_point(data=anim_cor_by_category_by_age, aes(x=age_numeric, y=avg_animacy_correct), alpha=.1, size=.5) +
+  theme_few(base_size = 8) + 
   labs(x='Age', y='Prop. animacy correct') +
   theme(legend.position = "none") +
-  geom_smooth(span=10, alpha=smooth_alpha, color='grey') +
+  # geom_smooth(span=10, alpha=smooth_alpha, color='grey') +
   scale_color_viridis(option="D", discrete=FALSE) +
   geom_hline(yintercept =  0 , linetype="dashed", color="grey") 
 
 
-ggsave('figures/animacy_classification.pdf', width = 3, height = 3, units = 'in')
+ggsave('figures/animacy_classification.pdf', width = 1.5, height = 1.5, units = 'in')
 
 
 ```
@@ -802,17 +929,17 @@ size_cor_by_age <- size_cor_by_category_by_age %>%
 ## Plot 4: Plot animacy correct by age
 
 ggplot(size_cor_by_age, aes(x=age_numeric,y=mean, color=age_numeric)) +
-  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), alpha=.8) + 
-  geom_point(data=size_cor_by_category_by_age, aes(x=age_numeric, y=avg_size_correct), alpha=.1) +
-  theme_few(base_size = 12) + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), alpha=.8, size=.2) + 
+  geom_point(data=size_cor_by_category_by_age, aes(x=age_numeric, y=avg_size_correct), alpha=.1, size=.5) +
+  theme_few(base_size = 8) + 
   labs(x='Age', y='Prop. object size correct') +
   theme(legend.position = "none") +
-  geom_smooth(span=10, alpha=smooth_alpha, color='grey') +
+  # geom_smooth(span=10, alpha=smooth_alpha, color='grey') +
   scale_color_viridis(option="D", discrete=FALSE) +
   geom_hline(yintercept =  0 , linetype="dashed", color="grey") 
 
 
-ggsave('figures/size_classification.pdf', width = 3, height = 3, units = 'in')
+ggsave('figures/size_classification.pdf', width = 1.5, height = 1.5, units = 'in')
 
 
 ```
@@ -833,7 +960,7 @@ summary(accuracy_age_only)
 accuracy_with_drawing_freq <- glmer(correct_or_not ~ scale(age_numeric) +
                           scale(drawing_frequency) + (1|session_id) + 
                         (age_numeric|category),
-      data = d)
+      data = d,  family="binomial")
 
 accuracy_with_drawing_freq = summary(accuracy_with_drawing_freq)
 
@@ -916,10 +1043,9 @@ no_int = r.squaredGLMM(accuracy_all_covariates_no_int) # no_int = no interaction
 
 
 ```{R}
-all_covariates_accuracy <- glmer(correct_or_not ~ scale(age_numeric)+ scale(avg_tracing_rating) + scale(draw_duration) +
+all_covariates_accuracy <- glmer(correct_or_not ~ scale(age_numeric)* scale(drawing_frequency)+ scale(avg_tracing_rating) + scale(draw_duration) +
                           scale(mean_intensity) +
                           scale(num_strokes) +
-                          scale(drawing_frequency) + 
                         (1|session_id) +
                         (1|category),
       data = d, family="binomial")
@@ -936,8 +1062,15 @@ all_covariates_log_odds <- lmer(log_odds ~ scale(age_numeric)+ scale(avg_tracing
 xtable::xtable(summary(all_covariates_accuracy)$coef, digits=3, caption = "Model coefficients of a GLMM predicting whetjery of selecting the correct label) assigned to correctly classified drawings")
 
 
+out_log_odds = round(summary(all_covariates_log_odds)$coef,3)
+age_effect = 
+
 ```
 
-To examine the contributions of age and tracing ability to recognizability, we also fit reduced versions of the full model and examined the marginal $R^2$ [@nakagawa2013general]. The fixed effects in a null model without tracing or age (which mainly captures drawing effort) accounted for very little variance (marginal $R^2$ = `r round(null[1,1],3)`). Adding only children's age to the model increased $R^2$ (marginal $R^2$ = `r round(no_tracing[1,1],3)`) as did only adding tracing  (marginal $R^2$ = `r round(no_age[1,1],3)`). Adding both factors without their interaction (marginal $R^2$ = `r round(no_int[1,1],3)`) had a similar effect to adding both factors and their interaction (marginal $R^2$ = `r round(all[1,1],3)`). Attesting to the immense variability between individuals and categories, adding random intercepts for individuals and categories (and many more parameters) accounted for a much larger amount of variance (conditional $R^2$ for full model = `r round(all[1,2],3)`). 
+
+all
+
+
+<!-- To examine the contributions of age and tracing ability to recognizability, we also fit reduced versions of the full model and examined the marginal $R^2$ [@nakagawa2013general]. The fixed effects in a null model without tracing or age (which mainly captures drawing effort) accounted for very little variance (marginal $R^2$ = `r round(null[1,1],3)`). Adding only children's age to the model increased $R^2$ (marginal $R^2$ = `r round(no_tracing[1,1],3)`) as did only adding tracing  (marginal $R^2$ = `r round(no_age[1,1],3)`). Adding both factors without their interaction (marginal $R^2$ = `r round(no_int[1,1],3)`) had a similar effect to adding both factors and their interaction (marginal $R^2$ = `r round(all[1,1],3)`). Attesting to the immense variability between individuals and categories, adding random intercepts for individuals and categories (and many more parameters) accounted for a much larger amount of variance (conditional $R^2$ for full model = `r round(all[1,2],3)`).  -->
 
 
