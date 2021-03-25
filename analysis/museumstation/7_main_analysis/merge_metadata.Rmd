@@ -54,7 +54,6 @@ total_percent_excluded = total_excluded/total_number
 ```
 Raw drawing data ($N$ = 15594 drawings) were then screened for task compliance using a combination of manual and automated procedures (i.e., excluding blank drawings, pure scribbles, and drawings containing words), resulting in the exclusion of 15.3% of all drawings ($N$ = 13205 drawings after exclusions).
 
-clf.
 
 ```{r}
 all_meta <- all_meta %>%
