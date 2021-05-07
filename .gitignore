@@ -13,6 +13,9 @@ papers/
 outputs/
 irb/
 
+# ignore all writing files for now given
+writing/*
+
 # big files with svgs rendered
 analysis/museumstation/1_get_sketches/full_dataset_info
 
