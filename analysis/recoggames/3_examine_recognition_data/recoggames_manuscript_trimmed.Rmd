@@ -1,6 +1,6 @@
 ---
 title: "Drawing-Recognition-Manuscript"
-author: "Bria Long"
+author: ""
 date: "5/8/2019, updated 10/2020"
 output: 
   html_document:

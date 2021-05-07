@@ -1,6 +1,6 @@
 ---
 title: "Render valid/invalid drawings post filtering"
-author: "Bria Long"
+author: ""
 date: "9/3/2020"
 output: html_document
 ---

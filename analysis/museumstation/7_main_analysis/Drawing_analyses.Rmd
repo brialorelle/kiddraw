@@ -1,6 +1,6 @@
 ---
 title: "Drawing_analyses"
-author: "Bria Long"
+author: ""
 date: "9/23/2020"
 output: html_document
 ---

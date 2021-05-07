@@ -1,6 +1,6 @@
 ---
 title: "Batch for mturk processing"
-author: "Bria Long"
+author: ""
 date: "9/1/2020"
 output: html_document
 ---

@@ -1,6 +1,6 @@
 ---
 title: "SmallObj Game Sketch Selection"
-author: "Bria Long"
+author: ""
 date: "4/18/2019"
 output: html_document
 ---

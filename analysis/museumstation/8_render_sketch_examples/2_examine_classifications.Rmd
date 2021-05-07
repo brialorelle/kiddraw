@@ -1,6 +1,6 @@
-? im---
+---
 title: "Examine LOO classification outputs (data subset)"
-author: "Bria Long"
+author: ""
 date: "started 11/20/2018"
 output: 
   html_document:

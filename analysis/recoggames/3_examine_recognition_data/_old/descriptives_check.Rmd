@@ -1,6 +1,6 @@
 ---
 title: "AnimalGame-Descriptives-Check"
-author: "Bria Long"
+author: ""
 date: "2/5/2019"
 output: html_document
 ---

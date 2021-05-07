@@ -1,6 +1,6 @@
 ---
 title: "examine_descriptives"
-author: "Bria Long"
+author: ""
 date: "9/1/2020"
 output: html_document
 ---

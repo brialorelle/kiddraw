@@ -1,6 +1,6 @@
 ---
 title: "BiganimalGame Sketch Selection"
-author: "Bria Long"
+author: ""
 date: "8/1/2019"
 output: html_document
 ---
