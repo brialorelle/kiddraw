@@ -10,7 +10,12 @@ library(tidyverse)
 ```
 
 ```{r}
-classification_dir = here::here('data/classification_outputs/C_0.1_T_0.1')
+Layer = 'FC7'
+classification_dir = here::here('data/classification_outputs/Layer6_redo')
+
+```
+
+```{r}
 files <- dir(classification_dir) 
 indexes = array()
 count=0
@@ -25,7 +30,21 @@ for (f in files){
   }
   else {
   all_csvs <- all_csvs %>%
-    full_join(this_csv)
+    full_join(this_csv, by = c("X", "index", "age", "target_label",
+"session_id", "correct_or_not", "TV_prob",
+"airplane_prob", "apple_prob", "bear_prob", "bed_prob",
+"bee_prob", "bike_prob", "bird_prob", "boat_prob",
+"book_prob", "bottle_prob", "bowl_prob", "cactus_prob",
+"camel_prob", "car_prob", "cat_prob", "chair_prob",
+"clock_prob", "couch_prob", "cow_prob", "cup_prob",
+"dog_prob", "elephant_prob", "face_prob", "fish_prob",
+"frog_prob", "hand_prob", "hat_prob", "horse_prob",
+"house_prob", "ice.cream_prob", "key_prob", "lamp_prob",
+"mushroom_prob", "octopus_prob", "person_prob",
+"phone_prob", "piano_prob", "rabbit_prob",
+"scissors_prob", "sheep_prob", "snail_prob",
+"spider_prob", "tiger_prob", "train_prob", "tree_prob",
+"watch_prob", "whale_prob", "batch_str", "batch") )
   }
 }
 ```
@@ -55,7 +74,7 @@ indexes_missing <- index_full_array %>%
 ```{r}
 dir.create(here::here('data','compiled_classifications'))
 num_batches = length(unique(all_csvs$batch))
-write.csv(all_csvs, here::here('data','compiled_classifications/',paste0('C_0.1_T_0.1','batchtotal_',as.character(num_batches),'.csv')))
+write.csv(all_csvs, here::here('data','compiled_classifications/',paste0(Layer,'batchtotal_',as.character(num_batches),'.csv')))
 
 
 ```

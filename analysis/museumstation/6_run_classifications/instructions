@@ -1,0 +1,6 @@
+
+## step1. Run "bash setup.sh" which will create python environment and kernel
+## step2. modify layers / datasets used in run_sherlock_classifications
+## step3. call "ipython submit_classifications_sherlock.py" to call interactive python session which can look at queue
+## step4. monitor jobs using "squeue -u bria"
+## step5. make sure outputs are saving corecctly

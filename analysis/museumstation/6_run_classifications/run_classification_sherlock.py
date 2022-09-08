@@ -145,14 +145,14 @@ def get_classifications(test_index):
     if not os.path.exists(out_path_specific):
         os.makedirs(out_path_specific)
     print('saving classification')
-    out.to_csv(os.path.join(out_path_specific,'museumstation_classification_ind_{}.csv'.format(test_index_numeric)))
+    out.to_csv(os.path.join(out_path_specific,'museumstation_classification_ind_{}_layer_{}.csv'.format(test_index_numeric,LAYER_IND)))
 
 ################################################################################################################################
 
 #### SPECIFY PARAMETERS
 DATASET = '37K_fullset_leave96Out' ## 
-LAYER_IND = 6
-OUT_PATH = '/home/groups/mcfrank/kiddraw/classification-outputs/' + DATASET +'/'
+LAYER_IND = 1
+OUT_PATH = '/home/groups/mcfrank/kiddraw/classification-outputs/' + DATASET +'/Layer' + str(LAYER_IND)
 REGULARIZE_PARAM = 1 # default = 1, had used .1 but 1 is much faster
 TOLERANCE = .10
 
