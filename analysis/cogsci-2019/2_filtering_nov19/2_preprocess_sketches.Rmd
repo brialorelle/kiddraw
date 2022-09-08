@@ -49,6 +49,11 @@ drawing_count_total = length(unique(raw_drawing_count$filename))
 ```
 
 
+
+```{r}
+save(raw_drawing_count, file = here::here('data/manual_filtering_subset/manual_exclusions_raw_drawing.csv'))
+
+```
 ## Load manual exclusions from previous filtering (incomplete)
 ```{r}
 ## loading drawings to exclude based on manual exclusions

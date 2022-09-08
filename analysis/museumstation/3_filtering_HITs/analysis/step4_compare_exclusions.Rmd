@@ -1,0 +1,154 @@
+---
+title: "MuseumStation Preprocessing"
+author: ""
+date: "9/1/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readr)
+library(assertthat)
+library(knitr)
+library(here)
+library(lubridate)
+```
+
+
+## Load csvs from python outputs of db_records and filtering records
+```{r}
+# which_run = 'cdm_run_v4'
+these_runs = c('cdm_run_v4','cdm_run_v5','cdm_run_v6','cdm_run_v7')
+
+for (which_run in these_runs) {
+# db records -- logs if/who has seen a particular image during a filtering task
+
+  db_records <-read_csv(paste0('filtering_outputs/','images_checked_', which_run,'.csv')) %>%
+  select(filename, games, numGames) %>%
+  mutate(age_temp = str_split_fixed(filename, 'age',3)[,2])%>%
+  mutate(age_numeric = as.numeric(str_split_fixed(age_temp,'_',2)[,1])) %>%
+  select(-age_temp) %>%
+  mutate(which_run = which_run)
+
+# filtering logs -- has one record for each drawing that was marked invalid
+joined_filtering = read_csv(paste0('filtering_outputs/','marked_invalid_drawings_',which_run,'.csv')) %>%
+  as_tibble() %>%
+  rename(filename = '0', worker_id = '...1') %>%
+  group_by(filename) %>%
+  dplyr::summarize(count_invalid = length(unique(worker_id))) %>%
+  left_join(db_records)  %>%
+  mutate(which_run = which_run)
+
+if (which_run=='cdm_run_v4'){
+  all_db_records = db_records
+  all_joined_filtering = joined_filtering
+}
+else {
+all_db_records = all_db_records %>%
+  full_join(db_records)
+
+all_joined_filtering = all_joined_filtering %>%
+  full_join(joined_filtering)
+}
+}
+
+```
+
+
+## Compute percent filtered by age
+```{r}
+
+filtered_at_all<- all_joined_filtering %>%
+  filter(numGames>1) %>%
+  filter(count_invalid>0)
+
+
+num_filtered_by_age <- filtered_at_all %>%
+ group_by(age_numeric) %>%
+ summarize(num_filtered = n())
+
+prolific_pc_filtered_by_age <- all_db_records %>%
+ group_by(age_numeric) %>%
+ summarize(num_seen = n()) %>%
+ left_join(num_filtered_by_age) %>%
+ mutate(pc_filtered = num_filtered / num_seen)
+  
+```
+
+# Load manual exclusions
+## Load manual exclusions from previous filtering (incomplete)
+```{r}
+# only for cdm runs 3,4,5
+exclude_path = here::here('data','manual_filtering_subset', 'exclude_txt_files')
+exclude_files = dir(exclude_path)
+count_file = 0
+for (e in exclude_files) {
+  count_file = count_file +1
+  these_exclusions = read_csv(file = fs::path(exclude_path,e), col_names = FALSE) %>%
+    as_tibble() 
+
+  if (count_file == 1){
+    all_exclusions = these_exclusions
+  }
+  else {
+    all_exclusions = all_exclusions %>%
+      full_join(these_exclusions)
+    
+  }
+    
+}
+```
+
+```{r}
+load(file = here::here('data/manual_filtering_subset/manual_exclusions_raw_drawing.csv')) 
+
+
+count_excluded_by_age <- all_exclusions %>%  
+  rename(fileNameShort = 'X1') %>%
+  filter(fileNameShort %in% raw_drawing_count$fileNameShort) %>%
+  mutate(age_temp = str_split_fixed(fileNameShort, 'age',3)[,2])%>%
+  mutate(age_numeric = as.numeric(str_split_fixed(age_temp,'_',2)[,1])) %>%
+  filter(!is.na(age_numeric)) %>%
+  group_by(age_numeric) %>%
+  summarize(num_filtered = length(unique(fileNameShort)))
+
+```
+
+## Load raw drawing data from cogsci2019 subset
+```{r}
+
+raw_drawing_count_by_age <- raw_drawing_count %>%
+  select(fileNameShort, age, category) %>%
+  mutate(age_numeric = as.numeric(str_split_fixed(age, 'age',2)[,2])) %>%
+  group_by(age_numeric) %>%
+  summarize(num_seen = length(unique(fileNameShort)))
+
+manual_pc_filtered_by_age <- raw_drawing_count_by_age %>%
+  left_join(count_excluded_by_age) %>%
+  mutate(pc_filtered = (num_filtered / num_seen)) %>%
+  mutate(mode = 'manual')
+
+```
+
+# percent of manual exclusions
+```{r}
+percent_manual = sum(manual_pc_filtered_by_age$num_filtered) / sum(manual_pc_filtered_by_age$num_seen)
+```
+
+# Compare differen methods of filtering 
+```{r}
+compare_exclusions <- prolific_pc_filtered_by_age %>%
+  mutate(mode = 'behavioral exp') %>%
+  full_join(manual_pc_filtered_by_age)
+```
+
+```{r}
+ggplot(compare_exclusions, aes(x=age_numeric, y=pc_filtered, color=mode))+
+  geom_point(aes(size=num_seen)) +
+  scale_size_area(name = 'Number of drawings examined') +
+  theme_few() +
+  geom_smooth(alpha=.2) +
+  ylab('Percent filtered') +
+  xlab('Drawing age')
+```

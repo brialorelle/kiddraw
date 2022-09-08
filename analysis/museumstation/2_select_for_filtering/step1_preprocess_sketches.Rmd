@@ -117,14 +117,19 @@ all_exclusions <- all_exclusions %>%
   rename(fileNameShort = X1) %>%
   mutate(version = str_split_fixed(fileNameShort,'_',4)[,4]) %>%
   mutate(version = substring(version,1,10)) %>%
-  filter(version %in% c('cdm_run_v3','cdm_run_v4','cdm_run_v5')) # some manually filtered drawings from pilot runs that shouldn't be included in counts
+  filter(version %in% c('cdm_run_v3','cdm_run_v4','cdm_run_v5')) %>% # some manually filtered drawings from pilot runs that shouldn't be included in counts
+  
+all_exclusions <- all_exclusions %>%  
+  mutate(age_temp = str_split_fixed(fileNameShort, 'age',3)[,2])%>%
+  mutate(age_numeric = as.numeric(str_split_fixed(age_temp,'_',2)[,1]))
 
 
 # filter out manually excluded drawings
 descriptives_filtered_v1 <- descriptives %>%
   filter(!fileNameShort %in% all_exclusions$fileNameShort)%>%
   mutate(version = str_split_fixed(fileNameShort,'_',4)[,4]) %>%
-  mutate(version = substring(version,1,10))
+  mutate(version = substring(version,1,10)) %>%
+  mutate(age_temp = str_split_fixed(fileNameShort, 'age',3)[,2])
 
 # output how many we filtered
 excluded_files <- descriptives %>%
@@ -134,6 +139,12 @@ num_drawings_manually_excluded = length(excluded_files$fileNameShort)
 ```
 There were `r num_drawings_manually_excluded` in `r run_name` that were manually excluded based on previous filtering by the authors for another purpose (recognition games or cogsci2019 filtering).
 
+
+```{r}
+all_exclusions_by_age <- all_exclusions %>%
+  group_by(age_numeric) %>%
+  summarize(count_drawings_excluded = n())
+```
 
 
 ## Filter those drawings and make nicer columns
