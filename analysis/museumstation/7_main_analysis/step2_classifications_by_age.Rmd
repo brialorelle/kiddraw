@@ -1,0 +1,289 @@
+---
+title: "step2_classifications_by_age"
+author: "Bria Long"
+date: '2022-07-14'
+output: html_document
+---
+
+
+# Libraries
+```{r setup, include=FALSE}
+library(tidyverse)
+library(here)
+library(assertthat)
+library(ggthemes)
+library(egg)
+library(viridis)
+library(lme4)
+library(lmerTest)
+library(MuMIn)
+library(langcog)
+```
+
+```{r}
+load(file=here::here('data/preprocessed_data/merged_vgg_class_and_meta.RData'))
+```
+
+
+```{R}
+load(file=here::here('data/preprocessed_data/merged_clip_class_and_meta.RData'))
+```
+
+## Figure 2A: Classification by age
+
+```{r descriptives-across-age}
+## first summarize data  
+cor_by_age <- d %>%
+  group_by(age_numeric,category) %>%
+  summarize(avg_cor = mean(correct_or_not)) %>%
+  group_by(age_numeric) %>%
+  multi_boot_standard(col = "avg_cor")  
+
+cor_by_category <- d %>%
+  group_by(age_numeric,category) %>%
+  dplyr::summarize(mean = mean(correct_or_not), num_drawings = n()) %>%
+  group_by(age_numeric)
+```
+
+
+```{r descriptives-across-age}
+## first summarize data  
+clip_cor_by_age <- d_clip %>%
+  group_by(age_numeric,category) %>%
+  summarize(avg_cor = mean(correct_or_not)) %>%
+  group_by(age_numeric) %>%
+  multi_boot_standard(col = "avg_cor")  
+
+clip_cor_by_category <- d_clip %>%
+  group_by(age_numeric,category) %>%
+  dplyr::summarize(mean = mean(correct_or_not), num_drawings = n()) %>%
+  group_by(age_numeric)
+```
+
+
+```{r}
+base_size_chosen=10
+smooth_alpha=.01
+ggplot(cor_by_age, aes(age_numeric,mean*100, col=age_numeric)) +  
+  geom_jitter(data=cor_by_category, width=.1, height=0, alpha=.2) +
+  geom_pointrange(aes(y=mean*100, ymin = ci_lower*100, ymax = ci_upper*100)) +
+  geom_smooth(alpha=smooth_alpha, color='grey', span=5) +
+  theme_few(base_size = base_size_chosen) + 
+  geom_line(data = cor_by_category, aes(group=category), alpha=.2) +
+  labs(x='Age of child drawing (yrs)', y='Drawing classification accuracy') +
+  scale_x_continuous(breaks = seq(2,10,1)) + 
+  theme(legend.position = "none", aspect.ratio = 1) +
+  scale_color_viridis(option="D", breaks=seq(3,10,1)) +
+  geom_hline(yintercept = 1/48, linetype="dashed", color="grey") 
+
+# ggsave('figures/cor_by_category.pdf', width=3, height=3, units='in')
+```
+
+## Appendix: CLIP classifications by age
+```{r}
+base_size_chosen=10
+smooth_alpha=.01
+ggplot(clip_cor_by_age, aes(age_numeric,mean*100, col=age_numeric)) +  
+  geom_jitter(data=clip_cor_by_category, width=.1, height=0, alpha=.2) +
+  geom_pointrange(aes(y=mean*100, ymin = ci_lower*100, ymax = ci_upper*100)) +
+  geom_smooth(alpha=smooth_alpha, color='grey', span=2) +
+  theme_few(base_size = base_size_chosen) + 
+  geom_line(data = clip_cor_by_category, aes(group=category), alpha=.2) +
+  labs(x='Age of child drawing (yrs)', y='CLIP drawing classification accuracy') +
+  scale_x_continuous(breaks = seq(2,10,1)) + 
+  theme(legend.position = "none", aspect.ratio = 1) +
+  scale_color_viridis(option="D", breaks=seq(2,10,1)) +
+  geom_hline(yintercept = 1/48, linetype="dashed", color="grey") 
+
+ggsave('figures/clip_cor_by_category.pdf', width=3, height=3, units='in')
+```
+
+## Appendix: Classification by each VGG Layer
+```{r}
+load(file=here::here('data/compiled_classifications/vgg_outputs.RData'))
+
+```
+
+```{r}
+cor_by_age_by_all_layers <- all_layer_class %>%
+  group_by(layer, age_numeric, category) %>%
+  summarize(avg_correct = mean(as.logical(correct_or_not))) %>%
+  group_by(layer, age_numeric) %>%
+  multi_boot_standard(col = 'avg_correct') 
+
+cor_by_age_by_all_layers$layer_ordered = fct_relevel(cor_by_age_by_all_layers$layer, levels = c('P1','P2','P3','P4','P5','FC6','FC7'))
+```
+
+```{r}
+ggplot(cor_by_age_by_all_layers, aes(age_numeric,mean*100, color=layer_ordered, group=layer_ordered)) +  
+  # geom_jitter(data=cor_by_category, width=.1, height=0, alpha=.2) +
+  geom_pointrange(aes(y=mean*100, ymin = ci_lower*100, ymax = ci_upper*100)) +
+  geom_smooth(alpha=.2, span=1) +
+  theme_few(base_size = 12) + 
+  labs(x='Age of child drawing (yrs)', y='Drawing classification accuracy') +
+  scale_x_continuous(breaks = seq(2,10,1)) + 
+  theme(legend.position = "right", aspect.ratio = 1) +
+  scale_color_viridis(option="A", discrete=TRUE, begin=.2, end=.8, name = "Model Layer") +
+  geom_hline(yintercept = 1/48, linetype="dashed", color="grey") 
+
+ggsave('figures/cor_by_vgg_layer.pdf', width=5, height=3, units='in')
+```
+
+
+```{r}
+lo_correct_category_by_age <- d %>%
+  filter(correct_or_not==1) %>%
+  mutate(category = str_replace(category,'ice.cream','ice cream')) %>%  # ice.cream -> ice_cream
+  mutate(age = cut(age_numeric, c(1.9, 5, 8,10.1), labels = c("2-4","5-7","8-10"))) %>%
+  group_by(session_id, age,category) %>%
+  summarize(avg_cor = mean(log_odds), num_drawings = n()) %>%
+  group_by(age, category) %>%
+  multi_boot_standard(col = 'avg_cor') %>%
+  ungroup () %>%
+  mutate(category = fct_reorder(category, mean)) 
+```
+
+
+## VGG category effects
+```{r}
+lo_correct_category_by_each_age <- d %>%
+  filter(correct_or_not==1) %>%
+  mutate(category = str_replace(category,'ice.cream','ice cream')) %>%  # ice.cream -> ice_cream
+  group_by(session_id, age_numeric,category) %>%
+  summarize(avg_cor = mean(log_odds), num_drawings = n()) %>%
+  group_by(age_numeric, category) %>%
+  multi_boot_standard(col = 'avg_cor') %>%
+  ungroup () %>%
+  mutate(category = fct_reorder(category, -mean)) 
+
+lo_all_drawings_by_each_age <- d %>%
+  mutate(category = str_replace(category,'ice.cream','ice cream')) %>%  # ice.cream -> ice_cream
+  group_by(session_id, age_numeric,category) %>%
+  summarize(avg_cor = mean(log_odds), num_drawings = n()) %>%
+  group_by(age_numeric, category) %>%
+  multi_boot_standard(col = 'avg_cor') %>%
+  ungroup () %>%
+  mutate(category = fct_reorder(category, -mean)) 
+```
+
+## Figure 2B: Changes in log-odds by age 
+```{r}
+num_classes=48
+chance = log(1/num_classes) - log ((num_classes - 1)/num_classes)
+base_size_chosen=10
+ggplot(lo_all_drawings_by_each_age, aes(x = category, y = mean, col = age_numeric)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), alpha=.6, size=.2) +
+  # coord_flip() +
+  theme_few(base_size = base_size_chosen) + 
+  labs(y = "Classifier evidence (log odds)", x = "") +
+  scale_color_viridis(discrete=FALSE) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  geom_hline(yintercept=chance, color='grey', linetype = 'dashed') + 
+  theme(legend.position = 'none')
+
+ggsave("figures_out/log_odds_by_category_all_drawings.pdf", units = 'in', height= 3, width=5, useDingbats=FALSE)
+
+```
+
+```{r}
+num_classes=48
+chance = log(1/num_classes) - log ((num_classes - 1)/num_classes)
+base_size_chosen=10
+ggplot(lo_correct_category_by_age, aes(x = category, y = mean, col = age)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), alpha=.8, size=.2) +
+  coord_flip() +
+  theme_few(base_size = base_size_chosen) + 
+  labs(y = "Classifier evidence (log odds)", x = "") +
+  scale_color_viridis(discrete=TRUE, begin=0, end=.8, name = "Age group") +
+  theme(legend.position = c(.8,.25), axis.text.y = element_text(size=5), legend.text = element_text(size=8), legend.background =  element_rect(fill=alpha('white', 0)), aspect.ratio=1) 
+
+ggsave("figures/log_odds_by_category.pdf", units = 'in', height= 3)
+
+```
+
+```{r}
+clip_lo_correct_category_by_each_age <- d_clip %>%
+  filter(correct_or_not==1) %>%
+  group_by(session_id, age_numeric,category) %>%
+  summarize(avg_cor = mean(log_odds), num_drawings = n()) %>%
+  group_by(age_numeric, category) %>%
+  multi_boot_standard(col = 'avg_cor') %>%
+  ungroup () %>%
+  mutate(category = fct_reorder(category, -mean)) 
+```
+
+## Appendix: CLIP log odds by category by age
+```{r}
+base_size_chosen=14
+ggplot(lo_correct_category_by_each_age, aes(x = category, y = mean, col = age_numeric)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), alpha=.6, size=.4, position=position_dodge(width=.2)) +
+  # coord_flip() +
+  theme_few(base_size = base_size_chosen) + 
+  labs(y = "Classifier evidence (log odds)", x = "") +
+  scale_color_viridis() +
+  theme(legend.position = c(.8,.25), axis.text.y = element_text(size=9), legend.text = element_text(size=8), legend.background =  element_rect(fill=alpha('white', 0)), aspect.ratio=.75) 
+
+ggsave("figures/log_odds_by_category.pdf", units = 'in', height= 3, width=7)
+```
+
+
+```{r}
+base_size_chosen=10
+ggplot(clip_lo_correct_category_by_each_age, aes(x = category, y = mean, col = age_numeric)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), alpha=.6, size=.4, position=position_dodge(width=.2)) +
+  # coord_flip() +
+  theme_few(base_size = base_size_chosen) + 
+  labs(y = "Classifier evidence (log odds)", x = "") +
+  scale_color_viridis() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  theme(legend.position = 'none')
+  # theme(legend.position = c(.8,.25), axis.text.y = element_text(size=9), legend.text = element_text(size=8), legend.background =  element_rect(fill=alpha('white', 0)), aspect.ratio=.75) 
+
+ggsave("figures/clip_log_odds_by_category.pdf", units = 'in', height= 3)
+```
+
+
+
+## Appendix: Controlled experiment, human classifications
+
+```{r}
+### Load human classification data
+
+humans <- read.csv(here::here('data/devphotodraw_recognition_ratings/compiled_human_recognition.csv')) 
+  
+devphotodraw_recog <- humans %>%
+  mutate(condition = str_split_fixed(image_name_short,'_',2)[,1]) %>%
+  filter(condition == 'S') %>%
+  mutate(age = replace(age,age==10, 9)) %>%
+  group_by(unique_ids, category, age, image_name_short) %>% # group by each drawing of each category
+  summarize(prop_correct_indiv = mean(correct_or_not))  %>%
+  group_by(category, age) %>%
+  summarize(prop_correct =  mean(prop_correct_indiv))
+```
+
+```{r}
+devphotodraw_recog_by_age <- humans %>%
+  mutate(condition = str_split_fixed(image_name_short,'_',2)[,1]) %>% 
+  filter(condition == 'S') %>% # semantic cue
+  filter(site == 'CDM') %>% #  CDM site (children's discovery museum)
+  group_by(unique_ids, category, age, image_name_short) %>% # group by each drawing of each category
+  summarize(prop_correct_indiv = mean(correct_or_not))  %>%
+  group_by(age) %>%
+  multi_boot_standard(col = 'prop_correct_indiv')
+```
+
+```{r}
+ggplot(data=devphotodraw_recog, aes(x=age, y=prop_correct, color=age)) +
+  geom_point(alpha=.3) +
+  geom_line(aes(group=category), alpha=.05) +
+  geom_pointrange(data = devphotodraw_recog_by_age, aes(ymin = ci_lower, ymax = ci_upper, y=mean, x=age))  +
+  scale_color_viridis_c() +
+  ylim(0,1) +
+  # geom_smooth(span=5, color='grey') +
+  theme_few() + 
+  xlab('Producer age (years)') +
+  ylab('Proportion recognized') +
+  theme(legend.position='none')
+
+ggsave('figures/devphotodraw_subset.pdf', units='in', width=4, height=3)
+```

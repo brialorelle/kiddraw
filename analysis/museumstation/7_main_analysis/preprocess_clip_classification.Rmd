@@ -1,0 +1,80 @@
+---
+title: "clip_classifications"
+author: "Bria Long"
+date: '2022-05-13'
+output: html_document
+---
+
+`# Libraries and data
+```{r setup, include=FALSE}
+library(tidyverse)
+library(here)
+library(assertthat)
+library(ggthemes)
+library(egg)
+library(viridis)
+library(lme4)
+library(lmerTest)
+library(MuMIn)
+library(langcog)
+library(magick)
+```
+
+## Load metadata
+```{r}
+all_meta <- read_csv(file = here::here('data/drawings/stringent_cleaned_dataset_meta/all_object_metadata_cleaned.csv')) %>%
+  as_tibble() %>%
+  mutate(category = str_split_fixed(category,' ',2)[,2]) %>%
+  mutate(category = str_replace(category,' ','.'))  # ice cream
+```
+
+
+```{r}
+clip_features <- read_csv(file = here::here('data/clip_outputs/fullset/CLIP_FEATURES_museumstation.csv')) %>%
+  as_tibble()  %>%
+  select(-'...1')
+
+clip_features <- tibble::rowid_to_column(clip_features, "index")
+```
+
+```{r}
+clip_meta <- read_csv(file = here::here('data/clip_outputs/fullset/CLIP_METADATA_kid.csv')) %>%
+  as_tibble() %>%
+  rename(category = label, session_id = session, index = '...1')  %>%
+  mutate(index = index + 1)
+
+# clip_meta <- read_csv('data/clip_outputs/animalgame/CLIP_METADATA_test_kid.csv') %>%
+#   as_tibble() %>%
+#   rename(category = label, session_id = session, index = '...1')  %>%
+#   mutate(index = index + 1)
+
+```
+
+```{r}
+all_clip = clip_features %>%
+  right_join(clip_meta) 
+```
+
+```{r}
+clip_long <- all_clip %>%
+  select(-index) %>%
+  rename(kid_age = age) %>%
+  pivot_longer(cols = bear:octopus, names_to  = "guessed_category", values_to ="prob")
+```
+
+```{r}
+save(file=here::here('data/clip_outputs/fullset/clip_long.RData'), clip_long)
+```
+
+```{r}
+clip_by_image <- clip_long %>%
+  group_by(kid_age, session_id, category) %>%
+  summarize(max_prob = max(prob), clip_category = guessed_category[prob == max_prob]) %>%
+  mutate(correct_or_not = (category == clip_category))
+```
+
+```{r}
+save(file=here::here('data/clip_outputs/fullset/clip_by_image.RData'), clip_by_image)
+```
+
+
