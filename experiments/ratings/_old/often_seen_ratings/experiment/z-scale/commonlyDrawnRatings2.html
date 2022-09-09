@@ -1,0 +1,206 @@
+
+<!-- ## Code -->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CHILD DEVELOPMENT SURVEY</title>
+  <script src="jquery-1.11.2.min.js"></script>
+  <script src="mmturkey-0.6.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="uptake_style.css" />
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+  <script src="commonlyDrawnRatings2.js"></script>
+</head>
+
+
+<body>
+ <!-- The instructions slide. -->
+<div class="slide" id="instructions">
+  <br>
+  <img src="images/stanford.png" alt="Stanford University">
+  <p id='logo-text'>Stanford Language and Cognition Lab</p>
+  <br>
+  <br>
+  <p align="center"><b>PLEASE ONLY COMPLETE THIS HIT IF YOU HAVE A CHILD BETWEEN THE AGES OF 2-10 YEARS. </b><p></p> 
+   In this survey, you'll be asked to judge how often your child draws 40 different objects, animals, and things. </b></p>
+  <br>
+  <button type="button" onclick="this.blur(); experiment.next();">Start</button>
+
+  <p class="block-text">
+    <br> <b> Note: you won't be able to preview this HIT before accepting it because it's so short. </b></p>
+
+  <p class="block-text" id="legal">By answering the following questions, you are participating in a study being performed by cognitive scientists in the Stanford Department of Psychology. If you have questions about this research, please contact us at <a href="mailto://languagecoglab@gmail.com.">languagecoglab@gmail.com</a>.
+    You must be at least 18 years old to participate. Your participation in this research is voluntary. You may decline to answer any or all of the following questions. You may decline further participation, at any time, without adverse consequences.
+    Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you. Note however that we have recently been made aware that your public Amazon.com profile can be accessed via your
+    worker ID if you do not choose to opt out. If you would like to opt out of this feature, you may follow instructions available <a href="https://www.amazon.com/gp/help/customer/display.html?nodeId=16465241">here</a>.</p>
+</div>
+
+<!-- Progress Bar -->
+<div class="progress">
+  <div id="progress" class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+  </div>
+</div>
+
+<!-- Questionnaire slide - How often categories are drawn -->
+<div class="slide" id="commonlyDrawnRatings">
+  <br>
+    <div align="center">
+      <h4 id='itemInstructions'>How often has your child drawn a teapot?</h4><br> 
+    </div>
+
+    <!-- Slider and labels -->
+    <div align="center">
+        <input type="range" min="0" max="100" value="50" class="slider" id="quality" style="width: 50%">
+    <div>
+
+    <table align = "center">
+      <tr>
+        <td> <p id='slider_label_never'> Never</p> </td>
+
+            <td> </td>
+            <td> </td>
+
+            <td> </td>
+            <td> </td>
+
+            <td> </td>
+            <td> </td>
+
+            <td> </td>
+            <td> </td>
+
+            <td> </td>
+            <td> </td>
+
+        <td> <p id='slider_label_often'> Very often</p> </td>
+      </tr>
+    </table>
+
+    <!-- Next button and "please make a response" message -->
+    <table align="center"><tr>
+      <td align="center">
+        <button type="button" id="nextButton_FamRatings" onClick="experiment.log_response()"> next</button>
+      </td> 
+      <tr><td align="center">
+        <div id="testMessage_att"> </div>
+      </td></tr>
+    </table>
+</div>
+</div>
+
+
+<!-- Children's age slide -->
+<div class="slide" id="children_qs" align="center">
+  <br>
+    <p class="block-text">We want to make sure we have accurate data. Please answer the following question truthfully--you will receive credit regardless of your answer!</p>
+
+        <p><b>How old is the child you answered on behalf of? (Note that you will receive credit regardless of your answer)</b></p>
+           <p>Please write your answer in years and months (e.g., 4 years, 3 months)</p>
+           <p>
+              <input type="text" id="childsAge" form="demographics" name="childsAge" style="width:20%" value="">
+             </textarea>
+          </p> 
+
+      <p><b>Do you have any comments about this survey?</b></p>
+      <p>
+        <input type="text" id="comments" name="comments" style="width:40%" value="">
+        </textarea>
+      </p> 
+
+    <table align="center">
+      <tr>
+        <td align="center">
+          <button type="button" onClick="this.blur(); experiment.next()"> Continue</button>
+        </td>
+        <tr>
+          <td align="center">
+
+          </td>
+        </tr>
+
+    </table>
+</div>
+
+<!-- The debriefing slide. -->
+<div class="slide" id="debriefing">
+  <form id="demographics" onsubmit="experiment.submitcomments()">
+
+    <table width="100%">
+      <col style="width:30%">
+        <col style="width:70%">
+          <tr>
+            <td><img src="images/ladder.png"></td>
+            <td>
+              <p><b>Think of this ladder as representing where people stand in the United states.</b></p>
+              <p>At the top of the ladder are the people who are the best off - those who have the most money, the most education, and the most respected jobs. At the bottom are the people who are the worst off - who have the least money, least education,
+                and the least respected jobs or no job. The higher up you are on this ladder, the closer you are to the people at the very top; the lower you are, the closer you are to the people at the very bottom.
+              </p>
+              <p><b>Where would you place yourself on this ladder?</b></p>
+              <p>
+                <select name="ladder" id="ladder" form="demographics">
+                  <option value="">Choose a rung</option>
+                  <option value="10">10 - Top</option>
+                  <option value="9">9</option>
+                  <option value="8">8</option>
+                  <option value="7">7</option>
+                  <option value="6">6</option>
+                  <option value="5">5</option>
+                  <option value="4">4</option>
+                  <option value="3">3</option>
+                  <option value="2">2</option>
+                  <option value="1">1 - Bottom</option>
+                </select>
+              </p>
+            </td>
+          </tr>
+    </table>
+    <br>
+
+    <p><b>What is your age?</b></p>
+    <p>
+      <select name="age" id="age" form="demographics">
+        <option value="">Choose an age</option>
+        <option value="0-19">&nbsp;0-19</option>
+        <option value="20-29">20-29</option>
+        <option value="30-39">30-39</option>
+        <option value="40-49">40-49</option>
+        <option value="50-59">50-59</option>
+        <option value="60-69">60-69</option>
+        <option value="70-79">70-79</option>
+        <option value="80-89">80-89</option>
+        <option value="&gt;90">90+</option>
+      </select>
+    </p>
+
+
+    <p><b>What is your highest level of education completed?</b></p>
+    <p>
+      <select name="education" id="education" form="demographics">
+        <option value="">Choose a level</option>
+        <option value="gradeSchool">Grade school</option>
+        <option value="highSchool">High school</option>
+        <option value="someCollege">Some college</option>
+        <option value="4year">4-year college</option>
+        <option value="someGrad">Some graduate school</option>
+        <option value="Grad">Graduate degree</option>
+      </select>
+    </p>
+
+
+  <div>
+
+  <div align="center">
+    <button type="button" id="debriefsubmit" onClick="experiment.submit_comments()">Submit</button>
+  </div>
+</div>
+
+<!-- The finish slide. -->
+<div class="slide" id="finished">
+  <p>You're finished - thanks for participating! Please copy and paste the following code to receive credit: <b>JP45TH8903</b></p>
+</div>
+
+
+</body>
+
+</html>
