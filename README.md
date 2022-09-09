@@ -20,5 +20,11 @@ Recoggames: Main analyses conducted on children's visual recognition behaviors a
 cogsci-2018/cogci-2019: Main analyses associated with the two Cognitive Science Society proceedings from initial analyses <br/>
 ratings: Basic preprocessing for getting parental ratings of drawing experience wtih different categories.
 
+Part annotations experiment and preprocessing code:
+https://github.com/cogtoolslab/kiddraw_annotations_public2022
+
+Tracing experiment and preprocessing code:
+https://github.com/cogtoolslab/visuomotor_model_in_drawing
+
 ## Data
 A repository containing the large-scale database of children's drawings collected at CDM will be published with the paper resulting from this project.
