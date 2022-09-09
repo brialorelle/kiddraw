@@ -310,6 +310,7 @@ c_biganimalgame <- read.csv("compiled_classifications/classification-outputs-big
   mutate(log_odds = log(target_label_prob / denom)) %>%
   mutate(exp='animalgame')
 
+
 # now read it and join with other classifications  
 c <- read.csv("compiled_classifications/classification-outputs-objectgame_C_0.1_500.csv") %>%
   as.tibble() %>%
@@ -323,13 +324,6 @@ c <- read.csv("compiled_classifications/classification-outputs-objectgame_C_0.1_
   mutate(sketch_path = paste0(target_label,'_','sketch_age',age,'_cdm_',session_id)) %>%
   mutate(sketch_path = as.factor(sketch_path))  %>%
   rename(model_correct_or_not = correct_or_not)
-```
-
-
-## Preprocessed recognition data
-```{R}
-load(file = here::here('data/recognition_data/recognition_data_preprocessed_without_vgg.RData'))
-
 ```
 
 
@@ -380,77 +374,6 @@ ggsave('figures/DistinctByAge.pdf', height=3,  units='in')
 ```
 
 
-
-
-# Supplemental
-
-## Producer age x recognizer age
-```{r}
-v %>%
-  group_by(sessionId, recognizer_age_numeric, producer_age_numeric) %>%
-  summarize(avg_correct = mean(correct_or_not)) %>%
-  group_by(recognizer_age_numeric, producer_age_numeric) %>%
-  multi_boot_standard(col='avg_correct') 
-
-```
-
-```{R}
- ggplot(crossed_design, aes(x=recognizer_age_numeric, y=mean, col=as.factor(producer_age_numeric))) +
-  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), alpha=.8, size=.2) +
-  geom_smooth(alpha=.1,  span=4, size=.25) +
-  # facet_wrap(~category, nrow= d2) +
-  theme_few(base_size = 10) + 
-  xlab('Producer age') +
-  ylab('Proportion drawings recognized') +
-  theme(legend.position='right') + 
-  scale_color_viridis(discrete=TRUE, name = 'Producer Age') +
-  # scale_x_continuous(breaks=c(2,10)) +
-  xlab ('Recognizer Age') +
-  theme(aspect.ratio=1) +
-  geom_hline(yintercept=.25, linetype='dashed',color='grey') +
-  ylim(0,1)
-
-ggsave('figures/producer_by_recognizer_age.pdf',units='in', width=4, height=3)
-
-```
-### Look at item effects
-```{r}
-both_category <- d %>%
-  filter(producer_age != 'photo') %>%
-  
-  group_by(recognizer_age_numeric, producer_age) %>%
-  multi_boot_standard(col = 'correct_or_not')  %>%
-  mutate(category = factor(intended_category, levels = c("bird", "fish", "rabbit","dog" ,"sheep","tiger" ,"camel" , "bear", "cup","lamp", "hat","bottle", "car", "boat","airplane","train")))
-
-
-data_per_bin <- d %>%
-  filter(producer_age != 'photo') %>%
-  group_by(recognizer_age_numeric,intended_category) %>%
-  summarize(num_trials = n())
-
-both_category <- both_category %>%
-  left_join(data_per_bin)
-```
-
-```{r}
-ggplot(both_category,aes(x=recognizer_age_numeric, y=mean, col=recognizer_age_numeric, size=scale(num_trials))) +
-  theme_few() + 
-  geom_smooth(span=20, color='grey', alpha=.2) +
-  geom_point() +
-  # geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
-  ylab('Proportion recognized') +
-  xlab('Recognizer age') +
-  # theme(aspect.ratio = 1) +
-  facet_wrap(~category, nrow=2) +
-  geom_hline(yintercept=.25, color='grey', linetype='dashed', aes(weight = num_trials)) +
-  scale_color_viridis(discrete=FALSE, name='Recognizer Age')  +
-  theme(legend.position='none')
-
-ggsave('figures/recognition_by_category.pdf', units='in', width=7.5)
-```
-
-
-
 # Inferential statistics
 ### Examine how distinctivenss vs age group interact in glmer 
 ```{r}
@@ -464,79 +387,7 @@ xtable::xtable(summary(out)$coef, digits=3, caption = "Model coefficients of a G
 
 ```
 
-
-```{R}
-all_joined <- all_joined %>%
-  mutate(producer_age_numeric = as.numeric(str_split_fixed(producer_age,'age',2)[,2]))
-
-model_glmer <- glmer(correct_or_not ~ scale(producer_age_numeric)*scale(recognizer_age_numeric) + scale(log_odds) + (scale(producer_age_numeric)|intended_category) + (1|sessionId),  data = all_joined, family='binomial')
-out = summary(model_glmer)
-
-```
-
-# Supplemental
-## Individaul item check
-```{r}
-item_check <- all_joined %>%
-  filter(sketch_path == 'fish_sketch_age5_cdm_run_v31533075886243')
-
-ggplot(data=item_check, aes(x=recognizer_age_numeric, y=as.numeric(correct_or_not))) +
-  geom_jitter()  +
-  geom_smooth(span=5)
-```
-
-
-```{r}
-# aoa_items <-all_joined %>%
-#   group_by(producer_age_numeric, sketch_path, intended_category) %>%
-#   filter(correct_or_not==1) %>%
-#   summarize(avg_age_correct = median(recognizer_age_numeric), observations = n()) %>%
-#   group_by(producer_age_numeric, intended_category) %>%
-#   summarize(avg_age_correct = median(avg_age_correct))
-
-```
-
-```{r}
-# ggplot(aoa_items, aes(x=avg_age_correct, y=producer_age_numeric, col=intended_category)) +
-#   geom_jitter(width=.1, height=.1, alpha=.2) +
-#   geom_smooth(aes(group=avg_age_correct )) +
-#   theme_few() +
-#   ylim(2,10) +
-#   xlim(2,10) +
-#   geom_abline(slope=1, xintercept=0, linetype = 'dashed', color='grey') +
-#   theme(legend.position ='none', aspect.ratio=1)
-```
-
-```{R}
-# ggplot(aoa_items, aes(x=avg_age_correct, y=producer_age_numeric, col=intended_category, size=observations)) +
-#   geom_jitter(width=.1, height=.1, alpha=.2) +
-#   geom_smooth(aes(group=avg_age_correct)) +
-#   theme_few() +
-#   ylim(2,10) +
-#   xlim(2,10) +
-#   geom_abline(slope=1, xintercept=0, linetype = 'dashed', color='grey') +
-#   facet_wrap(~intended_category, nrow=2) +
-#   theme(legend.position ='none', aspect.ratio=1)
-  
-```
-
-## Supplemental: Visualize model fits by age
-```{r}
-set.seed(123) # for reproducibility
-
-all_joined <-all_joined %>%
-  filter(!producer_age %in% c('photo')) %>%
-  mutate(producer_age_numeric = as.numeric(str_split_fixed(producer_age,'age',2)[,2])) 
-
-model_glmer <- glmer(correct_or_not ~log_odds +  scale(producer_age_numeric)*scale(recognizer_age_numeric) + (scale(producer_age_numeric)|intended_category) + (recognizer_age_numeric|sessionId),  data = all_joined, family='binomial')
-out = summary(model_glmer)
-
-round(out$coefficients,3)
-xtable::xtable(summary(out)$coef, digits=3, caption = "Model coefficients of a GLMM predicting visual recognition performance as a function of recognizer age and visual 'distinctiveness' (i.e. log-odds probability of selecting the correct label in logistic regression based on visual features, see Methods).")
-
-```
-
-
+# Supplemental: Visualize model fits by age
 ```{r}
 predicted_vals = predict(model_glmer, all_joined, type='response')
 all_joined_with_predictions <- all_joined
@@ -568,3 +419,4 @@ distinct_by_age_model_fits <- all_joined_with_predictions %>%
 
 ```
 
+\
