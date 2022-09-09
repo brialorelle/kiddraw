@@ -13,7 +13,7 @@ papers/
 outputs/
 irb/
 
-# ignore all writing files for now given
+# ignore all writing files for now given 
 writing/*
 
 # big files with svgs rendered
@@ -152,3 +152,11 @@ analysis/museumstation/1_get_sketches/render_database_csvs_third.sh
 analysis/museumstation/1_get_sketches/render_database_csvs_second.sh
 analysis/museumstation/1_get_sketches/render_sketch_data.ipynb
 analysis/museumstation/1_get_sketches/valid_sessions.csv
+analysis/museumstation/6_run_classifications/_test/test.py
+analysis/museumstation/6_run_classifications/_test/test2.py
+analysis/museumstation/6_run_classifications/_test/z-test.Rmd
+analysis/museumstation/6_run_classifications/count_classification_outputs.nb.html
+data/compiled_classifications/FC7batchtotal_231.csv
+data/compiled_classifications/FC7batchtotal_215.csv
+data/clip_outputs/animalgame/clip_features.csv
+data/clip_outputs/animalgame/CLIP_METADATA_test_kid.csv
