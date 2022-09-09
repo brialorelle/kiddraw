@@ -1,0 +1,340 @@
+---
+title: "Production_vs_recognition"
+author: "Bria Long"
+date: "6/20/2022"
+output: html_document
+---
+
+# Libraries and data
+```{r setup, include=FALSE}
+library(tidyverse)
+library(here)
+library(assertthat)
+library(ggthemes)
+library(egg)
+library(viridis)
+library(lme4)
+library(lmerTest)
+library(MuMIn)
+library(langcog)
+```
+
+## Load metadata
+```{r}
+all_meta <- read_csv(file = here::here('data/drawings/stringent_cleaned_dataset_meta/all_object_metadata_cleaned.csv')) %>%
+  as_tibble() %>%
+  mutate(category = str_split_fixed(category,' ',2)[,2]) %>%
+  mutate(category = str_replace(category,' ','.'))  # ice cream
+```
+
+
+### Load vgg classification data
+```{r}
+load(file=here::here('data/compiled_classifications/vgg_outputs.RData'))
+```
+
+## Load clip classification data
+```{r}
+save(file=here::here('data/clip_outputs/fullset/clip_by_image.RData'), clip_by_image)
+```
+
+```{r}
+# num_batches=232
+# reg_string = 'C_0.1_T_0.1'
+# classification_data <- read.csv(here::here('data','compiled_classifications/',paste0(reg_string, 'batchtotal_',as.character(num_batches),'.csv'))) %>%
+#   mutate(session_id = paste('cdm_',session_id,sep="")) %>%
+#   mutate(age_numeric = age) %>%
+#   mutate(age = paste('age',age,sep="")) %>%
+#   mutate(age = as.factor(age)) %>%
+#   mutate(category = target_label) %>%
+#   mutate(image_name = paste(target_label,'_sketch_', age,'_', session_id,'.png',sep="")) %>%
+#   select(-X)  %>%
+#   mutate(category = str_replace(category,' ','.'))  # ice cream = ice.cream
+```
+
+## Join meta data, drawing frequnecy, and classification data
+```{r}
+# d <- classification_data %>%
+#   mutate(correct_or_not = as.logical(correct_or_not)) %>%
+#   gather(key = 'class', value = 'prob', contains('prob')) %>%
+#   mutate(class = str_split_fixed(class, '_prob',2)[,1]) %>%
+#   group_by(image_name, age, category, correct_or_not, session_id, age_numeric) %>%
+#   summarize(denom = sum(prob), target_label_prob = prob[class==category], log_odds = log(target_label_prob / (denom - target_label_prob))) %>%
+#   rename(filename = image_name) %>%
+#   left_join(all_meta, by=c("filename", "category", "age_numeric","session_id")) %>%
+#   mutate(draw_duration = draw_duration_old) %>% # using end of last stroke - end of first stroke (is 0 for one stroke drawings)
+#   mutate(run = substr(session_id,0,10))
+#   # left_join(freq_by_category)
+
+```
+
+
+
+### Asserts to check all the joins
+```{r}
+# weird things were happening with category matching, check
+# assert_that(length(unique(d$filename)) == length(unique(classification_data$image_name)))
+# 
+# # every drawing should have all of these, regardless
+# assert_that(sum(is.na(d$age_numeric))==0)
+# assert_that(sum(is.na(d$category))==0)
+# assert_that(sum(is.na(d$correct_or_not))==0)
+# 
+# missing_meta <- d %>%
+#   filter(is.na(num_strokes))
+# 
+# assert_that(length(missing_meta$filename)==0)
+```
+
+## Load recognition dadta
+```{r}
+load(here::here('data/recognition_data/all_recognition_data_preprocessed.RData'))
+```
+
+### Computer recogniiton x age x category 
+```{r}
+recognizer_by_age_by_category <- all_joined %>%
+  group_by(intended_category, recognizer_age_numeric) %>%
+  summarize(avg_recognized = mean(correct_or_not), count = length(unique(sketch_path)))
+```
+
+### Compute averaged recognition x category/age by model
+### get vgg x producer age
+```{r}
+producer_age_by_category <- d %>%
+  mutate(sketch_path = as.factor(str_split_fixed(filename,'.png',2)[,1])) %>%
+  filter(!sketch_path %in% unique(all_joined$sketch_path)) %>%
+  filter(category %in% unique(recognizer_by_age_by_category$intended_category)) %>%
+  group_by(category, age_numeric) %>%
+  summarize(avg_recognized = mean(correct_or_not), count = length(unique(sketch_path))) %>%
+  mutate(mode = 'dnn_recognition')
+```
+
+### get clip x producer age
+```{r}
+clip_producer_age_by_category <- clip_by_image %>%
+  mutate(sketch_path = paste0(category, '_sketch_','age', kid_age, '_cdm_', session_id)) %>%
+ filter(!sketch_path %in% unique(all_joined$sketch_path)) %>%
+  filter(category %in% unique(recognizer_by_age_by_category$intended_category)) %>%
+  group_by(category, kid_age) %>%
+  summarize(avg_recognized = mean(correct_or_not), count = length(unique(sketch_path)))  %>%
+  mutate(mode = 'clip_recognition')
+```
+
+### vgg averaged recognition x category by kids
+```{r}
+both <- recognizer_by_age_by_category %>%
+  rename(category = intended_category, age_numeric = recognizer_age_numeric) %>%
+  mutate(mode = 'kid_recognition') %>%
+  full_join(producer_age_by_category) %>%
+  filter(!is.na(avg_recognized)) %>%
+  pivot_wider(values_from = c(count, avg_recognized), names_from = c('mode')) %>%
+  mutate(category = fct_drop(category)) %>%
+  rename(kid = avg_recognized_kid_recognition, model = avg_recognized_dnn_recognition ) %>%
+  filter(!is.na(kid))
+```
+
+### merge with clip
+```{r}
+both_clip <- recognizer_by_age_by_category %>%
+  rename(category = intended_category, age_numeric = recognizer_age_numeric) %>%
+  mutate(mode = 'kid_recognition') %>%
+  full_join(clip_producer_age_by_category %>% rename(age_numeric = kid_age)) %>%
+  filter(!is.na(avg_recognized)) %>%
+  pivot_wider(values_from = c(count, avg_recognized), names_from = c('mode')) %>%
+  mutate(category = fct_drop(category)) %>%
+  rename(kid = avg_recognized_kid_recognition, model = avg_recognized_clip_recognition ) %>%
+  filter(!is.na(kid))
+
+```
+
+
+
+
+
+
+## Plot it
+## VGG vs. kid recognition
+```{r}
+ggplot(both, aes(x=kid, y=model, col=category)) +
+  geom_point(alpha=.8, aes(size=count_dnn_recognition))  +
+  # scale_color_viridis_c() +
+  theme_few() +
+  theme(aspect.ratio=1, legend.position = 'none')  +
+  ylab('Production (VGG recognition)') +
+  xlab('Recognition (Kid recognition)')  +
+  scale_y_continuous(breaks=c(0,.2,.4,.6,.8, 1), limits=c(0,1)) +
+  scale_x_continuous(breaks=c(0,.2,.4,.6,.8, 1), limits=c(0,1))   +
+  geom_smooth(method='lm',alpha=.1, aes(weight=count_dnn_recognition, group=age_numeric), color='grey') +
+  ggrepel::geom_label_repel(aes(label = category), max.overlaps = 20, label.padding = .1, box.padding = .1, label.size = .5, alpha=.3) +
+  facet_wrap(~age_numeric, nrow=2)
+  
+```
+
+# Clip vs. kid recognition (wow, way better)
+
+```{r}
+ggplot(both_clip, aes(x=kid, y=model, col=category)) +
+  geom_point(alpha=.8, aes(size=count_clip_recognition))  +
+  # scale_color_viridis_c() +
+  theme_few() +
+  theme(aspect.ratio=1, legend.position = 'none')  +
+  ylab('Production (Clip recognition)') +
+  xlab('Recognition (Kid recognition)')  +
+  scale_y_continuous(breaks=c(0,.2,.4,.6,.8, 1), limits=c(0,1)) +
+  scale_x_continuous(breaks=c(0,.2,.4,.6,.8, 1), limits=c(0,1))   +
+  geom_smooth(method='lm',alpha=.1, aes(weight=count_clip_recognition, group=age_numeric), color='grey') +
+  ggrepel::geom_label_repel(aes(label = category), max.overlaps = 20, label.padding = .1, box.padding = .1, label.size = .5, alpha=.3) +
+  facet_wrap(~age_numeric, nrow=2)
+  
+```
+```{r}
+ggplot(both_clip, aes(x=kid, y=model, col=age_numeric)) +
+  geom_point(alpha=.8, aes(size=count_clip_recognition))  +
+  scale_color_viridis_c() +
+  theme_few() +
+  theme(aspect.ratio=1, legend.position = 'none')  +
+  ylab('Production (CLIP recognition)') +
+  xlab('Recognition (Kid recognition)')  +
+  scale_y_continuous(breaks=c(0,.2,.4,.6,.8, 1), limits=c(0,1)) +
+  scale_x_continuous(breaks=c(0,.2,.4,.6,.8, 1), limits=c(0,1))   +
+  geom_smooth(method='lm',alpha=.1, aes(weight=count_clip_recognition, group=age_numeric)) 
+```
+
+```{r}
+# corelate all values
+cor.test(both_clip$model, both_clip$kid)
+```
+
+```{r}
+no_age_clip <- both_clip %>%
+  group_by(category) %>%
+  summarize(avg_model = mean(model), avg_kid = mean(kid))
+
+```
+
+## shuffled try, but hard with only 12 categories...
+```{r}
+for (iter in 1:100){
+  this_iter = both_clip  %>%
+    group_by(age_numeric) %>%
+    mutate(model_shuffle = model[sample.int(length(model))]) %>%
+    summarize(shuffled_r = cor.test(model_shuffle, kid)$estimate) %>%
+    mutate(iter = iter)
+  
+  if (iter==1){
+    all_iters <- this_iter}
+  else {
+  all_iters <- all_iters %>%
+      full_join(this_iter)
+  }
+  
+  }
+
+```
+
+```{r}
+quantiles <- all_iters %>%
+ group_by(age_numeric) %>%
+ summarize(cutoff = quantile(shuffled_r, .95))
+```
+
+
+
+
+# Recoggames vs. dataset subset -- only 6 categories, scrapping
+
+## Get drawing recognition x category from devphotodraw dataset. 
+### Load human classification data
+```{r}
+humans <- read.csv(here::here('data/devphotodraw_recognition_ratings/compiled_human_recognition.csv')) 
+  
+devphotodraw_recog <- humans %>%
+  group_by(unique_ids, category, age, image_name_short) %>% # group by each drawing of each category
+  summarize(prop_correct_indiv = mean(correct_or_not))  %>%
+  group_by(category, age) %>%
+  summarize(prop_correct =  mean(prop_correct_indiv))
+```
+
+### age x category x dataset
+```{R}
+devphotodraw_vs_recoggames <- devphotodraw_recog %>%
+  left_join(recognizer_by_age_by_category, by=c('category' = 'intended_category', 'age' = 'recognizer_age_numeric')) %>%
+  rename(recognition = avg_recognized, production = prop_correct) %>%
+  filter(!is.na(recognition))
+```
+
+```{r}
+ggplot(devphotodraw_vs_recoggames, aes(x=production, y=recognition, color=category)) +
+  geom_point() +
+  theme_few() +
+  # scale_color_viridis_c() +
+  # geom_smooth(method='lm', color='grey') +
+  ylab('Avg category recognition (recoggames)') +
+  xlab('Avg category production by age of producer (humans, devphotodraw)') +
+  facet_wrap(~age, nrow=2)
+
+```
+
+
+```{r}
+devphotodraw_vs_recoggames_by_category <- devphotodraw_vs_recoggames %>%
+  group_by(category) %>%
+  summarize(production = mean(production), recognition = mean(recognition))
+```
+
+
+
+```{r}
+# both_clip_long <- both_clip %>%
+#   pivot_longer(cols = c(kid,model), names_to='mode',values_to="prop_correct")
+
+```
+
+```{r}
+# ggplot(both_clip_long, aes(x=age_numeric, y=prop_correct, col=mode)) +
+#   geom_point(alpha=.8)  +
+#   # scale_color_viridis_c() +
+#   theme_few() +
+#   theme(aspect.ratio=1, legend.position = 'none')  +
+#   # ylab('Production (Clip recognition)') +
+#   # xlab('Recognition (Kid recognition)')  +
+#   scale_y_continuous(breaks=c(0,.2,.4,.6,.8, 1), limits=c(0,1)) +
+#   # scale_x_continuous(breaks=c(0,.2,.4,.6,.8, 1), limits=c(0,1))  +
+#   # geom_smooth(method='lm',alpha=.1, color='grey') +
+#   # ggrepel::geom_label_repel(aes(label = category), max.overlaps = 20, label.padding = .1, box.padding = .1, label.size = .5, alpha=.3) +
+#   facet_wrap(~category)
+  
+```
+
+
+
+```{r}
+# permuted <- mtcars %>%
+#   mutate(am = factor(am)) %>% # factor am
+#   modelr::permute(n, am) %>% # permute the am column `n` times
+#   mutate(models = map(perm, ~ cor(wt ~ am, data=.)))
+```
+
+
+```{r}
+# for (iter in c(1:100)){
+#   perm =  cor.test(both$kid, both$model[sample(length(both$kid))])
+#   if (iter==1){
+#     vals = perm$estimate
+#   }
+#   vals = append(vals, perm$estimate)
+# }
+```
+
+```{r}
+# both_shuffled <- both %>%
+#   select(category, kid, model) %>%
+#   modelr::permute(100, category, kid) %>%
+#   mutate(models = map(perm, ~ cor(kid ~ model, data = .)))
+#   # mutate(tidy = map(models, broom::glance)) %>% #
+#   # unnest(tidy) # unnest the tidy column
+
+```
+
+

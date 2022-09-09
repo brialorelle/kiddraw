@@ -1,0 +1,601 @@
+---
+title: "Drawing_analyses"
+author: "Bria Long"
+date: "9/23/2020"
+output: html_document
+---
+
+# Libraries and data
+```{r setup, include=FALSE}
+library(tidyverse)
+library(here)
+library(assertthat)
+library(ggthemes)
+library(egg)
+library(viridis)
+library(lme4)
+library(lmerTest)
+library(MuMIn)
+library(langcog)
+```
+
+## Load metadata
+```{r}
+all_meta <- read_csv(file = here::here('data/drawings/stringent_cleaned_dataset_meta/all_object_metadata_cleaned.csv')) %>%
+  as_tibble() %>%
+  mutate(category = str_split_fixed(category,' ',2)[,2]) %>%
+  mutate(category = str_replace(category,' ','.'))  # ice cream
+```
+
+### Basic descriptives of filtered set
+```{r}
+num_subs = length(unique(all_meta$session_id))
+```
+
+The final, filtered dataset of N=`r length(unique(all_meta$filename))`  drawings from `r length(unique(all_meta$category))` categories from `r num_subs` children who were on average `r mean(all_meta$age_numeric)`years of age (range 3-10 years). 
+
+### Load frequency ratings
+```{r}
+frequency = read_csv(file = here::here('data/surveys/drawing_experience/preprocessed/Category_frequency_survey.csv')) 
+```
+
+To assess this, `r length(unique(frequency$subject_id))` parents of children aged 3-10 years filled out a survey asking about the frequency with with their children drew the categories in the dataset.
+
+```{r}
+count_by_age <- frequency %>%
+  group_by(childs_age) %>%
+  dplyr::summarize(num_surveys = length(unique(subject_id)))
+```
+
+```{r}
+freq_by_category <- frequency %>%
+  # filter(childs_age > 2) %>%
+  mutate(category = str_split_fixed(category,' ',2)[,2]) %>%
+  mutate(category = str_replace(category,' ','.')) %>%
+  filter(category %in% all_meta$category) %>%
+  group_by(category) %>%
+  summarize(drawing_frequency = mean(often_drawn_rating)) %>%
+  mutate(above_median_freq = drawing_frequency > median(drawing_frequency)) 
+
+write_csv(freq_by_category, here::here('data/surveys/drawing_experience/preprocessed/freq_by_category.csv'))
+
+
+```
+
+### Load tracing data
+```{r}
+all_tracings <- read_csv(here('data/tracing/rated_all_museumstation_filtered.csv'))%>%
+  select(-...1, -X)
+
+## Make averages for joining
+by_subject_tracing_avg <- all_tracings %>%
+  distinct(session_id, category, age, rating) %>% 
+  group_by(session_id) %>%
+  summarize(avg_tracing_rating = mean(rating))
+```
+
+### Load animacy/size (hardcoding)
+```{r}
+animacy_csv <- read_csv(here::here('data/drawings/category_metadata/animacy.csv')) %>%
+  as_tibble() %>%
+  mutate(animacy_size = case_when(animacy == '0' & size=='0' ~ 2,
+                                  animacy == '0' & size=='1' ~ 1,
+                                  animacy == '1' & size=='0' ~ 3,
+                                  animacy == '1' & size=='1' ~ 4))
+
+```
+
+
+### Load classification data
+```{r}
+num_batches=232
+# reg_string = 'C_0.1_T_0.1'
+reg_string = 'P1'
+
+layers = c('P1','P2','P3','P4','P5','FC6','FC7')
+for (this_layer in layers){
+  
+temp_class_data <- read.csv(here::here('data','compiled_classifications',paste0(this_layer,'batchtotal_', as.character(num_batches),'.csv'))) %>%
+  mutate(session_id = paste('cdm_',session_id,sep="")) %>%
+  mutate(age_numeric = age) %>%
+  mutate(age = paste('age',age,sep="")) %>%
+  mutate(age = as.factor(age)) %>%
+  mutate(category = target_label) %>%
+  mutate(image_name = paste(target_label,'_sketch_', age,'_', session_id,'.png',sep="")) %>%
+  select(-X)  %>%
+  mutate(category = str_replace(category,' ','.')) %>% # ice cream = ice.cream 
+  mutate(layer = this_layer) %>%
+  select(image_name, layer, correct_or_not, age_numeric, category, session_id)
+
+  if (this_layer=='P1'){
+    all_layer_class = temp_class_data
+  }
+  else {
+  all_layer_class <- all_layer_class %>%
+    full_join(temp_class_data, by=c('image_name','correct_or_not','layer','category','age_numeric','session_id'))
+  }
+
+}
+```
+
+
+
+### Appendix: Check how classification varies by each layer
+Save vgg layers outputs for extra analyses
+```{r}
+save(all_layer_class, file=here::here('data/compiled_classifications/vgg_outputs.RData'))
+```
+
+```{r}
+cor_by_age_by_all_layers <- all_layer_class %>%
+  group_by(layer, age_numeric, category) %>%
+  summarize(avg_correct = mean(as.logical(correct_or_not))) %>%
+  group_by(layer, age_numeric) %>%
+  multi_boot_standard(col = 'avg_correct') 
+
+cor_by_age_by_all_layers$layer_ordered = fct_relevel(cor_by_age_by_all_layers$layer, levels = c('P1','P2','P3','P4','P5','FC6','FC7'))
+
+ggplot(cor_by_age_by_all_layers, aes(age_numeric,mean*100, color=layer_ordered, group=layer_ordered)) +  
+  # geom_jitter(data=cor_by_category, width=.1, height=0, alpha=.2) +
+  geom_pointrange(aes(y=mean*100, ymin = ci_lower*100, ymax = ci_upper*100)) +
+  geom_smooth(alpha=.2, span=1) +
+  theme_few(base_size = 12) + 
+  labs(x='Age of child drawing (yrs)', y='Drawing classification accuracy') +
+  scale_x_continuous(breaks = seq(2,10,1)) + 
+  theme(legend.position = "right", aspect.ratio = 1) +
+  scale_color_viridis(option="A", discrete=TRUE, begin=.2, end=.8) +
+  geom_hline(yintercept = 1/48, linetype="dashed", color="grey") 
+
+  
+```
+
+
+```{R}
+classification_data_fc7 <- read.csv(here::here('data','compiled_classifications/',paste0('C_0.1_T_0.1', 'batchtotal_',as.character(num_batches),'.csv'))) %>%
+  mutate(session_id = paste('cdm_',session_id,sep="")) %>%
+  mutate(age_numeric = age) %>%
+  mutate(age = paste('age',age,sep="")) %>%
+  mutate(age = as.factor(age)) %>%
+  mutate(category = target_label) %>%
+  mutate(image_name = paste(target_label,'_sketch_', age,'_', session_id,'.png',sep="")) %>%
+  select(-X)  %>%
+  mutate(category = str_replace(category,' ','.'))  # ice cream = ice.cream
+
+```
+
+```{r}
+classification_data_p4 <- read.csv(here::here('data','compiled_classifications/',paste0('P4','batchtotal_',as.character(num_batches),'.csv'))) %>%
+  mutate(session_id = paste('cdm_',session_id,sep="")) %>%
+  mutate(age_numeric = age) %>%
+  mutate(age = paste('age',age,sep="")) %>%
+  mutate(age = as.factor(age)) %>%
+  mutate(category = target_label) %>%
+  mutate(image_name = paste(target_label,'_sketch_', age,'_', session_id,'.png',sep="")) %>%
+  select(-X)  %>%
+  mutate(category = str_replace(category,' ','.'))  # ice cream = ice.cream
+
+
+
+```
+
+
+### Load part emphasis
+```{r}
+# all annotations before filtering
+load(file = here::here('data/part_annotations_processed/merged_annotations.RData'))
+```
+
+```{r}
+# preprocesssed emphasis data
+load(file = here::here('data/part_annotations_processed/part_emphasis.RData'))
+```
+
+```{r}
+# example drawing in presentation, or any other we want to examine
+# example <- part_emphasis_all %>% filter(filename == 'bird_sketch_age8_cdm_run_v31530484377182.png')
+# 
+# what_annotations <- d_agree_labels %>% filter(filename == 'bird_sketch_age8_cdm_run_v31530484377182.png')
+```
+
+## Join meta data, drawing frequnecy, and classification data
+```{r}
+d <- classification_data_fc6 %>% #
+  gather(key = 'class', value = 'prob', contains('prob')) %>%
+  mutate(class = str_split_fixed(class, '_prob',2)[,1]) %>%
+  group_by(image_name, age, category, correct_or_not, session_id, age_numeric) %>%
+  summarize(denom = sum(prob), target_label_prob = prob[class==category], log_odds = log(target_label_prob / (denom - target_label_prob))) %>%
+  rename(filename = image_name) %>%
+  left_join(all_meta, by=c("filename", "category", "age_numeric","session_id")) %>%
+  mutate(draw_duration = draw_duration_old) %>% # using end of last stroke - end of first stroke (is 0 for one stroke drawings)
+  mutate(run = substr(session_id,0,10)) %>% 
+  left_join(freq_by_category) %>%
+  mutate(correct_or_not = as.numeric(as.logical(correct_or_not)))
+
+```
+
+
+
+## Join tracing ratings
+```{r}
+d <- d %>%
+  left_join(by_subject_tracing_avg)
+```
+
+
+### Asserts to check all the joins
+```{r}
+# weird things were happening with category matching, check
+assert_that(length(unique(d$filename)) == length(unique(classification_data_p4$image_name)))
+
+# every drawing should have all of these, regardless
+assert_that(sum(is.na(d$age_numeric))==0)
+assert_that(sum(is.na(d$category))==0)
+assert_that(sum(is.na(d$correct_or_not))==0)
+
+missing_meta <- d %>%
+  filter(is.na(num_strokes))
+
+assert_that(length(missing_meta$filename)==0)
+```
+
+
+
+# Main Figures
+## Figure 2A: Classification by age
+```{r descriptives-across-age}
+## first summarize data  
+cor_by_age <- d %>%
+  group_by(age_numeric,category) %>%
+  summarize(avg_cor = mean(correct_or_not)) %>%
+  group_by(age_numeric) %>%
+  multi_boot_standard(col = "avg_cor")  
+
+cor_by_category <- d %>%
+  group_by(age_numeric,category) %>%
+  dplyr::summarize(mean = mean(correct_or_not), num_drawings = n()) %>%
+  group_by(age_numeric)
+```
+
+
+```{r}
+base_size_chosen=10
+smooth_alpha=.01
+ggplot(cor_by_age, aes(age_numeric,mean*100, col=age_numeric)) +  
+  geom_jitter(data=cor_by_category, width=.1, height=0, alpha=.2) +
+  geom_pointrange(aes(y=mean*100, ymin = ci_lower*100, ymax = ci_upper*100)) +
+  geom_smooth(alpha=smooth_alpha, color='grey', span=10) +
+  theme_few(base_size = base_size_chosen) + 
+  labs(x='Age of child drawing (yrs)', y='Drawing classification accuracy') +
+  scale_x_continuous(breaks = seq(2,10,1)) + 
+  theme(legend.position = "none", aspect.ratio = 1) +
+  scale_color_viridis(option="D", breaks=seq(2,10,1)) +
+  geom_hline(yintercept = 1/48, linetype="dashed", color="grey") 
+
+# ggsave('figures/cor_by_category.pdf', width=3, height=3, units='in')
+```
+
+
+## Figure 2B: Changes in log-odds by age group for correctly classified drawings only
+```{r}
+lo_correct_category_by_age <- d %>%
+  filter(correct_or_not==1) %>%
+  mutate(category = str_replace(category,'ice.cream','ice cream')) %>%  # ice.cream -> ice_cream
+  mutate(age = cut(age_numeric, c(1.9, 5, 8,10.1), labels = c("2-4","5-7","8-10"))) %>%
+  group_by(session_id, age,category) %>%
+  summarize(avg_cor = mean(log_odds), num_drawings = n()) %>%
+  group_by(age, category) %>%
+  multi_boot_standard(col = 'avg_cor') %>%
+  ungroup () %>%
+  mutate(category = fct_reorder(category, mean)) 
+```
+
+```{r}
+num_classes=48
+chance = log(1/num_classes) - log ((num_classes - 1)/num_classes)
+base_size_chosen=10
+ggplot(lo_correct_category_by_age, aes(x = category, y = mean, col = age)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), alpha=.8, size=.2) +
+  coord_flip() +
+  theme_few(base_size = base_size_chosen) + 
+  labs(y = "Classifier evidence (log odds)", x = "") +
+  scale_color_viridis(discrete=TRUE, begin=0, end=.8, name = "Age group") +
+  theme(legend.position = c(.8,.25), axis.text.y = element_text(size=5), legend.text = element_text(size=8), legend.background =  element_rect(fill=alpha('white', 0)), aspect.ratio=1) 
+
+ggsave("figures/log_odds_by_category.pdf", units = 'in', height= 3)
+
+
+```
+
+```{r}
+lo_correct_category_by_each_age <- d %>%
+  filter(correct_or_not==1) %>%
+  mutate(category = str_replace(category,'ice.cream','ice cream')) %>%  # ice.cream -> ice_cream
+  group_by(session_id, age_numeric,category) %>%
+  summarize(avg_cor = mean(log_odds), num_drawings = n()) %>%
+  group_by(age_numeric, category) %>%
+  multi_boot_standard(col = 'avg_cor') %>%
+  ungroup () %>%
+  mutate(category = fct_reorder(category, -mean)) 
+```
+
+
+```{r}
+
+base_size_chosen=14
+ggplot(lo_correct_category_by_each_age, aes(x = category, y = mean, col = age_numeric)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), alpha=.6, size=.4, position=position_dodge(width=.2)) +
+  # coord_flip() +
+  theme_few(base_size = base_size_chosen) + 
+  labs(y = "Classifier evidence (log odds)", x = "") +
+  scale_color_viridis() +
+  theme()
+  theme(legend.position = c(.8,.25), axis.text.y = element_text(size=9), legend.text = element_text(size=8), legend.background =  element_rect(fill=alpha('white', 0)), aspect.ratio=.75) 
+
+ggsave("figures/log_odds_by_category.pdf", units = 'in', height= 3)
+```
+
+## Figure XX. Changes in part structure by age
+```{r}
+part_emphasis_all <- part_emphasis_all %>%
+  mutate(diag_feature = case_when(
+    category == 'bird' ~ 'beak',
+    category == 'fish' ~ 'fin',
+    category == 'rabbit' ~ 'ear',
+    category == 'dog' ~ 'tail',
+    category == 'sheep' ~ 'wool',
+    category == 'tiger' ~ 'tail',
+    category == 'camel' ~ 'hump',
+    category == 'bear' ~ 'nose',
+    category == 'cup' ~ 'handle',
+    category == 'lamp' ~ 'lampshade',
+    category == 'hat' ~ 'top',
+    category == 'bottle' ~ 'neck',
+    category == 'boat' ~ 'sail',
+    category == 'airplane' ~ 'wing',
+    category == 'train' ~ 'wheel', # not a great one...
+    category == 'car' ~ 'wheel'))
+```
+
+```{r}
+img_per_category_age <- d_agree_labels %>%
+  group_by(category, age_numeric) %>%
+  summarize(count_images = length(unique(filename)))  %>%
+  mutate(category = factor(category, levels = c("bird", "fish", "rabbit","dog" ,"sheep","tiger" ,"camel" , "bear", "cup","lamp", "hat","bottle", "car", "boat","airplane","train")))
+
+top_parts_emphasis <- part_emphasis_all %>%
+  group_by(category, roi_labelName) %>%
+  filter(!roi_labelName %in% c('body','head')) %>%
+  summarize(avg_emphasis = mean(emphasis), count_drawings = n()) %>%
+  group_by(category) %>%
+  slice_max(n=5, order_by=count_drawings)
+
+part_emphasis_top_4_plot <- part_emphasis_all %>%
+  mutate(diag_feature_annotation = (roi_labelName == diag_feature)) %>%
+  right_join(top_parts_emphasis %>% select(category, roi_labelName)) %>%
+  group_by(category, age_numeric, roi_labelName, diag_feature_annotation) %>%
+  dplyr::summarize(avg_emphasis = mean(emphasis), count_drawings_with_part = n()) %>%
+  left_join(img_per_category_age) %>%
+  mutate(prop_drawings = count_drawings_with_part / count_images)
+  
+
+```
+
+```{r}
+
+```
+
+
+```{r}
+
+ggplot(data = part_emphasis_top_4_plot, aes(x=age_numeric, y=prop_drawings, col=roi_labelName)) +
+  geom_point(aes(size = avg_emphasis, alpha=.2)) +
+  scale_size(range = c(0,4)) +
+  facet_wrap(~category, nrow=1) +
+  theme_few(base_size=12, base_family = "Helvetica") +
+  geom_line(stat='smooth',alpha=.2, span=10, aes(group=roi_labelName)) +
+  ylab('Proportion drawings with object part') +
+  xlab('Age of drawer') +
+  theme(legend.position = 'none', aspect.ratio = 1)  +
+  ylim(0,1) +
+  facet_wrap(~category, nrow=2, scales = 'free_x') +
+  ggrepel::geom_label_repel(data =part_emphasis_top_4_plot %>% filter(age_numeric==8), aes(label = roi_labelName), max.overlaps=10, size=2, label.size=.1, box.padding=.1)
+
+ggsave('part_emphasis_by_age.pdf',units = 'in', height = 4, width = 9)
+
+```
+
+
+## Appendix Figure: Changes in object part structure with 48-way classification
+```{r}
+part_emphasis_dnn_recognition <- part_emphasis_all %>%  
+  mutate(sketch_path = as.factor(str_split_fixed(filename,'.png',2)[,1])) %>%
+  left_join(d)  %>%
+  filter(!is.na(correct_or_not))
+```
+
+```{r}
+# A bunch of drawings were ecxluded from dnn classifications for balancing...annoying
+
+# what <- part_emphasis_all %>%  
+#   mutate(sketch_path = as.factor(str_split_fixed(filename,'.png',2)[,1])) %>%
+#   left_join(d)  %>%
+#   filter(is.na(correct_or_not)) %>%
+#   ungroup() %>%
+#   distinct(filename, category, age_numeric) %>%
+#   group_by(category, age_numeric) %>%
+#   summarize(num_excluded = n())
+
+```
+
+```{r}
+part_emphasis_recognition_binned <-  part_emphasis_dnn_recognition %>%
+  ungroup() %>%
+  group_by(category) %>% # construct bins WITHIN categories
+  mutate(model_correct_bin = ntile(log_odds,4))
+
+
+```
+
+
+```{r}
+binned_count_recognition_by_sketch <- part_emphasis_recognition_binned %>%
+  group_by(category, model_correct_bin) %>%
+  summarize(count_images_bin = length(unique(filename)))
+
+part_emphasis_recognition_binned <- part_emphasis_recognition_binned %>%
+  left_join(binned_count_recognition_by_sketch)
+```
+
+```{r}
+# get emphasized parts without recognition
+top_parts_emphasis <- part_emphasis_all %>%
+  group_by(category, roi_labelName) %>%
+  # filter(!roi_labelName %in% c('body','head')) %>%
+  summarize(avg_emphasis = mean(emphasis), count_drawings = n()) %>%
+  group_by(category) %>%
+  slice_max(n=5, order_by=count_drawings)
+#
+```
+
+```{r}
+part_emphasis_top_4_by_model_bin <- part_emphasis_recognition_binned %>%
+  right_join(top_parts_emphasis %>% select(category, roi_labelName)) %>%
+  group_by(category, model_correct_bin, roi_labelName,count_images_bin) %>%
+  dplyr::summarize(avg_emphasis = mean(emphasis), count_drawings_with_part = length(unique(filename))) %>%
+  mutate(prop_drawings = count_drawings_with_part / count_images_bin)
+```
+
+
+```{r}
+# part_names = unique(part_emphasis_top_4_by_model_bin$roi_labelName)
+part_emphasis_top_4_by_model_bin <- part_emphasis_top_4_by_model_bin %>%
+  # mutate(label = as.factor(roi_labelName), levels =  unique(roi_labelName)) %>%
+  mutate(category = factor(category, levels = c("bird", "fish", "rabbit","dog" ,"sheep","tiger" ,"camel" , "bear", "cup","lamp", "hat","bottle", "car", "boat","airplane","train")))
+```
+
+```{r}
+ggplot(data = part_emphasis_top_4_by_model_bin, aes(x=model_correct_bin, y=prop_drawings, col=roi_labelName)) +
+  geom_point(aes(size = avg_emphasis, alpha=.2)) +
+  # geom_linerange(aes(ymin = ci_lower, ymax = ci_upper), alpha=.5) +
+  facet_wrap(~category, nrow=1) +
+  theme_few(base_size=8) +
+  # geom_line() +
+  geom_line(stat='smooth',alpha=.2, span=10) +
+  # stat_smooth(geom="line", alpha=0.3, size=.5, span=10) +
+  # geom_smooth(aes(group=roi_labelName), span=10, alpha=.01) +
+  # scale_color_viridis(option = 'F', discrete=TRUE) +
+  ylab('Proportion drawings with object part') +
+  xlab('Binned classifier evidence (VGG-19 classifications)') +
+  theme(legend.position = 'none', aspect.ratio = 1)  +
+  ylim(0,1) +
+  facet_wrap(~category, nrow=2, scales = 'free_x') +
+  scale_x_continuous(
+    limits=c(.5,4.5),
+    breaks=c(1,4),
+    labels=c(' Low ',' High ')
+        ) +
+  ggrepel::geom_label_repel(data =part_emphasis_top_4_by_model_bin %>% filter(model_correct_bin==1), aes(label = roi_labelName), max.overlaps=10, size=2, box.padding=.1, label.padding=.1)
+
+ggsave('part_emphasis_by_model_bin.pdf',units = 'in', height = 3, width = 8)
+```
+
+
+# Run inferential statisitics and output
+```{r}
+# set seed for reproducibility
+set.seed(123)
+```
+
+
+## Full model predicting accuracy for all drawings
+```{R}
+all_covariates_accuracy <- glmer(correct_or_not ~ scale(age_numeric)*scale(drawing_frequency)+scale(avg_tracing_rating) + scale(draw_duration) +
+                          scale(mean_intensity) +
+                          scale(num_strokes) +
+                        (1|session_id) +
+                        (1|category),
+      data = d, family="binomial",control=glmerControl(optimizer="bobyqa",optCtrl=list(maxfun=2e4)))
+```
+
+```{R}
+no_tracing <- glmer(correct_or_not ~ scale(age_numeric)*scale(drawing_frequency)+ scale(draw_duration) +
+                          scale(mean_intensity) +
+                          scale(num_strokes) +
+                        (1|session_id) +
+                        (1|category),
+      data = d, family="binomial",control=glmerControl(optimizer="bobyqa",optCtrl=list(maxfun=2e4)))
+```
+
+```{r}
+no_tracing_compare <- glmer(correct_or_not ~ scale(age_numeric)*scale(drawing_frequency)+ scale(draw_duration) +
+                          scale(mean_intensity) +
+                          scale(num_strokes) +
+                        (1|session_id) +
+                        (1|category),
+      data = d %>% filter(!is.na(avg_tracing_rating)), family="binomial",control=glmerControl(optimizer="bobyqa",optCtrl=list(maxfun=2e4)))
+
+
+tracing_compare <- glmer(correct_or_not ~ scale(age_numeric)*scale(drawing_frequency)+ scale(avg_tracing_rating) + scale(draw_duration) +
+                          scale(mean_intensity) +
+                          scale(num_strokes) +
+                        (1|session_id) +
+                        (1|category),
+      data = d %>% filter(!is.na(avg_tracing_rating)), family="binomial",control=glmerControl(optimizer="bobyqa",optCtrl=list(maxfun=2e4)))
+```
+
+```{r}
+anova(tracing_compare, no_tracing_compare)
+```
+
+# Check multicolinearity
+```{r}
+# https://easystats.github.io/blog/posts/performance_check_collinearity/#:~:text=Multicollinearity%20%E2%80%9Cis%20a%20phenomenon%20in,as%20non%2Dindependent%20covariates).
+library(performance)
+check_collinearity(all_covariates_accuracy)
+```
+
+### Table 1
+```{R}
+xtable::xtable(summary(all_covariates_accuracy)$coef, digits=3, caption = "Model coefficients of a GLMM predicting the recognizability of each drawing (i.e. binary classification scores), including randomintercepts for each category and participant.")
+
+```
+
+# Full model predicting log odds for correctly classified drawings
+```{r}
+correct_subset <- d %>% 
+  filter(correct_or_not==1)
+
+all_covariates_log_odds_corr_only <- lmer(log_odds ~ scale(age_numeric)*scale(drawing_frequency) + scale(avg_tracing_rating) + scale(draw_duration) +
+                          scale(mean_intensity) +
+                          scale(num_strokes) +
+                        (1|session_id) +
+                        (1|category),
+      data = correct_subset, control=lmerControl(optimizer="bobyqa",optCtrl=list(maxfun=2e4)))
+
+log_odds_out = summary(all_covariates_log_odds_corr_only)$coef
+
+```
+
+Even for drawings that were correctly classified (near 33\% of the balanced subset of drawings, $N$=`r length(unique(correct_subset$filename))`) there was still a reliable increase in the amount of diagnostic information they contained across age, as measured by the log-odds probability assigned by the logistic-regression classifier to the target category (see \textit{Methods}, \textit{B} = `r round(log_odds_out[2,1],3)` , \textit{SE} = `r round(log_odds_out[2,2],3)`, \textit{df} =  `r round(log_odds_out[2,3],3)`, \textit{t} = `r round(log_odds_out[2,4],3)`, \textit{P} < `r round(log_odds_out[2,5],3)`). Thus, this secondary analysis provides additional support for the account that the age-related improvements reflect gradual changes in children's ability to include diagnostic visual features in their drawings (see Figure \ref{fig:drawing_production}B).  
+
+
+
+
+# Appendix Figures
+
+### CLIP Classifications x Age
+### Devphotodraw US dataset (semantic)
+### Drawing frequency x recognition (two panels, CLIP vs VGG)
+### Drawing frequency x recognition (two panels,  Human data from devphotodraw) (see Appendix, Table XX).
+### Increased in variance explained when including tracing in models
+### Individual variance predicted by tracing accuracy
+### Effort covariates across age
+### (CLIP Misclassifications?)
+
+Main text figures:
+–Production/recognition replace Figure 6D (item level correlations)
+
+–
+
+
+

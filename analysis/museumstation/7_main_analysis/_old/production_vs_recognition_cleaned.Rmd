@@ -1,0 +1,480 @@
+---
+title: "Production_vs_recognition"
+author: "Bria Long"
+date: "6/20/2022"
+output: html_document
+---
+
+# Libraries and data
+```{r setup, include=FALSE}
+library(tidyverse)
+library(here)
+library(assertthat)
+library(ggthemes)
+library(egg)
+library(viridis)
+library(lme4)
+library(lmerTest)
+library(MuMIn)
+library(langcog)
+```
+
+## Load metadata
+```{r}
+all_meta <- read_csv(file = here::here('data/drawings/stringent_cleaned_dataset_meta/all_object_metadata_cleaned.csv')) %>%
+  as_tibble() %>%
+  mutate(category = str_split_fixed(category,' ',2)[,2]) %>%
+  mutate(category = str_replace(category,' ','.'))  # ice cream
+```
+
+
+
+## Load clip classification data
+```{r}
+load(file=here::here('data/clip_outputs/fullset/clip_by_image.RData'))
+clip_by_image <-  clip_by_image %>%
+  mutate(sketch_path = paste0(category, '_sketch_','age', kid_age, '_cdm_', session_id)) %>%
+  rename(intended_category = category) %>%
+  rename(producer_age_numeric = kid_age) %>%
+  rename(clip_correct_or_not = correct_or_not) %>%
+  rename(clip_prob = max_prob) %>%
+  ungroup() %>%
+  select(sketch_path, intended_category, producer_age_numeric,  clip_correct_or_not, clip_prob)
+
+```
+
+## Load recognition data (already joined with vgg classificationw)
+```{r}
+load(here::here('data/recognition_data/all_recognition_data_preprocessed.RData'))
+recog_data = all_joined
+rm(all_joined)
+```
+
+## Merge
+```{r}
+recog_data_by_both <- recog_data %>%
+  mutate(producer_age_numeric = as.numeric(str_split_fixed(producer_age,'age',2)[,2])) %>%
+  rename(vgg_correct_or_not = model_correct_or_not) %>%
+  rename(vgg_log_odds = log_odds) %>%
+  rename(vgg_distinct_index = distinct_index) %>%
+  left_join(clip_by_image, by=c('sketch_path','intended_category', 'producer_age_numeric')) %>%
+  filter(!is.na(clip_correct_or_not)) # don't have clip/vgg for every sketch -- some were filtered after inclusion in recoggames, 271 sketches
+
+# mismatch <- recog_data_by_both %>%
+  # filter(is.na(clip_correct_or_not))
+  
+  
+```
+
+# Choose which model
+
+## Does clip or vgg do a better job of predicting kid recognition?
+```{r}
+by_image <- recog_data_by_both %>%
+  group_by(sketch_path) %>%
+  summarize(avg_kid_correct = mean(correct_or_not), clip_correct_or_not = mean(clip_correct_or_not), vgg_correct_or_not = mean(vgg_correct_or_not))
+
+
+cor.test(by_image$avg_kid_correct, by_image$clip_correct_or_not)
+cor.test(by_image$avg_kid_correct, by_image$vgg_correct_or_not)
+
+diff = lm(data = by_image, avg_kid_correct ~ clip_correct_or_not*vgg_correct_or_not )
+summary(diff)
+
+```
+
+```{r}
+by_image_long <- by_image %>%
+  pivot_longer(cols = clip_correct_or_not:vgg_correct_or_not, names_to='model', values_to = 'prop_recognized') %>%
+  mutate(category = str_split_fixed(sketch_path,'_',2)[,1])
+
+```
+
+## Model vs. kid recognition by sketch
+```{r}
+ggplot(data = by_image_long, aes(x=prop_recognized, y=avg_kid_correct, color=model)) +
+  geom_jitter(height=.1, alpha=.2) +
+  geom_smooth(method='lm') + 
+  facet_wrap(~category, nrow=4) +
+  theme_few() +
+  xlab('model recognition by sketch') +
+  ylab('kid avg recognition by sketch')
+```
+
+
+## Create data structues
+
+
+### By recognizer age
+
+#### Compute recognititon x age x category  for top 30%
+```{r}
+recognizer_by_age_by_category <- recog_data_by_both %>%
+  mutate(distinct_index_clip = ntile(clip_prob,10)) %>%
+  filter(distinct_index_clip>7) %>%
+  group_by(intended_category, recognizer_age_numeric) %>%
+  summarize(avg_recognized = mean(correct_or_not), count = length(unique(sketch_path)))
+
+# how well 3-year-olds recognized drawings of e.g., airplanes OF ALL AGES
+```
+
+## By producer age
+###Compute averaged recognition x category/age by model
+```{r}
+clip_producer_age_by_category <- clip_by_image %>%
+ filter(!sketch_path %in% unique(recog_data_by_both$sketch_path)) %>%
+  filter(intended_category %in% unique(recog_data_by_both$intended_category)) %>%
+  group_by(intended_category, producer_age_numeric) %>%
+  summarize(avg_recognized = mean(clip_correct_or_not), count = length(unique(sketch_path)))  %>%
+  mutate(mode = 'clip_recognition')
+```
+
+
+### Merge producer & recognizer age
+```{r}
+both_clip_long <- recognizer_by_age_by_category %>%
+  rename(age_numeric = recognizer_age_numeric) %>%
+  mutate(mode = 'kid_recognition') %>%
+  full_join(clip_producer_age_by_category %>% rename(age_numeric = producer_age_numeric)) %>%
+  filter(!is.na(avg_recognized))
+  
+both_clip <- both_clip_long %>%
+  pivot_wider(values_from = c(count, avg_recognized), names_from = c('mode')) %>%
+  mutate(category = fct_drop(intended_category)) %>%
+  rename(kid = avg_recognized_kid_recognition, model = avg_recognized_clip_recognition ) %>%
+  filter(!is.na(kid)) %>%
+  mutate(drawings_total = count_kid_recognition + count_clip_recognition)
+
+
+```
+
+```{r}
+
+## kid recognition: if a kid is 3-years-old, how many "airplane" drawings does he recognized on average
+## kid production: if a kid is 3-year-old, how many "recognizable" airplanes drawings can he produce (on average)
+# 
+# both_clip_long <- recognizer_by_age_by_category %>%
+#   mutate(mode = 'kid_recognition') %>%
+#   full_join(clip_producer_age_by_category %>% rename(age_numeric = producer_age_numeric)) %>%
+#   filter(!is.na(avg_recognized))
+```
+
+```{r}
+both_clip_longer <- recognizer_by_age_by_category %>%
+  rename(kid_recognition = avg_recognized) %>%
+  right_join(clip_producer_age_by_category %>% rename(model_recognition = avg_recognized) %>% select(-count, -mode)) %>%
+  filter(producer_age_numeric > 2)
+  
+```
+
+
+# Plot it
+## Main plot: recognition by producton
+
+```{r}
+ggplot(both_clip, aes(x=kid, y=model, color=category)) +
+  geom_point(alpha=.4)  +
+  theme_few(base_size=10) +
+  theme(aspect.ratio=1, legend.position = 'none')  +
+  ylab('Production (CLIP recognition accuracy)') +
+  xlab('Recognition (Children\'s recognition accuracy)')  +
+  scale_y_continuous(breaks=c(0,.2,.4,.6,.8, 1), limits=c(0,1)) +
+  scale_x_continuous(breaks=c(0,.2,.4,.6,.8, 1), limits=c(0,1))   +
+  geom_smooth(method='lm',alpha=0, size=.5, aes(weight=count_clip_recognition, group=age_numeric), color="#555555") +
+  ggrepel::geom_label_repel(aes(label = category), size=1.5, max.overlaps = 30, force_pull=3,  label.padding = .1, box.padding = .1, label.size = .1,  alpha=.8, segment.color = NA)  +
+  facet_wrap(~age_numeric, nrow=2)
+
+ggsave('figures/production_vs_recognition_v2.pdf', width=7.5, height=3, units='in')
+
+```
+
+```{r}
+## Entire age matrix
+
+# ggplot(both_clip_longer, aes(x=kid_recognition, y=model_recognition, col=intended_category)) +
+#   geom_point(alpha=.8)  +
+#   # scale_color_viridis_c() +
+#   theme_few() +
+#   theme(aspect.ratio=1, legend.position = 'none')  +
+#   ylab('Production (Clip recognition)') +
+#   xlab('Recognition (Kid recognition)')  +
+#   scale_y_continuous(breaks=c(0,.2,.4,.6,.8, 1), limits=c(0,1)) +
+#   scale_x_continuous(breaks=c(0,.2,.4,.6,.8, 1), limits=c(0,1))   +
+#   geom_smooth(method='lm',alpha=.1, color='grey') +
+#   ggrepel::geom_label_repel(aes(label = intended_category), max.overlaps = 100, label.padding = .2, box.padding = .2, label.size = 0,  alpha=.3,) +
+#   facet_grid(recognizer_age_numeric~producer_age_numeric)
+
+  
+```
+
+
+
+## Category heatmaps for producer by recognizer age
+
+```{R}
+producer_by_recognizer_age <- recog_data_by_both %>%
+  group_by(producer_age_numeric, recognizer_age_numeric, intended_category) %>%
+  summarize(avg_correct = mean(correct_or_not)) %>%
+  group_by(intended_category) %>%
+  mutate(avg_cat_correct = mean(avg_correct)) %>%
+  ungroup() %>%
+  mutate(intended_category = fct_reorder(intended_category,-avg_cat_correct, .desc=TRUE))
+  
+```
+
+```{r}
+ggplot(producer_by_recognizer_age, aes(x=intended_category, y=avg_correct, color=intended_category)) +
+  geom_point(alpha=.5) +
+  theme_few() +
+  
+  facet_grid(producer_age_numeric~recognizer_age_numeric) +
+  geom_smooth(method='lm', alpha=.01)
+  
+```
+
+```{r}
+ggplot(data = producer_by_recognizer_age, aes(x=producer_age_numeric, y=recognizer_age_numeric,fill=avg_correct)) + 
+  geom_tile() + 
+  theme_few(base_size = 12) +
+  theme(legend.position = 'bottom', axis.text.x = element_text(angle = 0,  
+  size = 6, vjust=.5, hjust = 1), axis.text.y = element_text(angle = 0,
+  size = 6, hjust = 1)) + 
+  coord_fixed() + 
+  scale_fill_viridis(option="A", name = 'Percent recognized')  +
+  ylab('Recognizer age') +
+  xlab('Producer age') +
+  facet_wrap(~intended_category)
+```
+
+
+## Without age data, not really enoguh points to show?
+```{r}
+# no_age_clip <- both_clip %>%
+#   group_by(category) %>%
+#   summarize(avg_model = mean(model), avg_kid = mean(kid), count_kid_recognition = count_kid_recognition[1])
+```
+
+```{r}
+# ggplot(no_age_clip, aes(x=avg_model, y=avg_kid, col=category)) +
+#   geom_point(alpha=.8)  +
+#   theme_few() +
+#   theme(aspect.ratio=1, legend.position = 'none')  +
+#   ylab('Production (CLIP recognition)') +
+#   xlab('Recognition (Kid recognition)')  +
+#   scale_y_continuous(breaks=c(0,.2,.4,.6,.8, 1), limits=c(0,1)) +
+#   scale_x_continuous(breaks=c(0,.2,.4,.6,.8, 1), limits=c(0,1))   +
+#   geom_smooth(method='lm',alpha=.8) +
+#   ggrepel::geom_label_repel(aes(label=category), max.overlaps=20, size=2)
+```
+
+
+# Appendix
+
+
+## Get drawing recognition x category from devphotodraw dataset. 
+### Load human classification data
+```{r}
+humans <- read.csv(here::here('data/devphotodraw_recognition_ratings/compiled_human_recognition.csv')) 
+  
+devphotodraw_recog <- humans %>%
+  mutate(condition = str_split_fixed(image_name_short,'_',2)[,1]) %>%
+  filter(condition == 'S') %>%
+  mutate(age = replace(age,age==10, 9)) %>%
+  group_by(unique_ids, category, age, image_name_short) %>% # group by each drawing of each category
+  summarize(prop_correct_indiv = mean(correct_or_not))  %>%
+  group_by(category, age) %>%
+  summarize(prop_correct =  mean(prop_correct_indiv))
+```
+
+```{r}
+devphotodraw_recog_by_age <- humans %>%
+  mutate(condition = str_split_fixed(image_name_short,'_',2)[,1]) %>%
+  filter(condition == 'S') %>%
+  mutate(age = replace(age,age==10, 9)) %>%
+  group_by(unique_ids, category, age, image_name_short) %>% # group by each drawing of each category
+  summarize(prop_correct_indiv = mean(correct_or_not))  %>%
+  group_by(age) %>%
+  multi_boot_standard(col = 'prop_correct_indiv')
+```
+
+```{r}
+ggplot(data=devphotodraw_recog, aes(x=age, y=prop_correct, color=age)) +
+  geom_point(alpha=.3) +
+  geom_line(aes(group=category), alpha=.05) +
+  geom_pointrange(data = devphotodraw_recog_by_age, aes(ymin = ci_lower, ymax = ci_upper, y=mean, x=age))  +
+  scale_color_viridis_c() +
+  ylim(0,1) +
+  # geom_smooth(span=5, color='grey') +
+  theme_few() + 
+  xlab('Producer age (years)') +
+  ylab('Proportion recognized') +
+  theme(legend.position='none')
+
+ggsave('figures/devphotodraw_subset.pdf', units='in', width=4, height=3)
+```
+
+
+# Not included
+# VGG
+## Load vgg classification data
+```{r}
+load(file=here::here('data/compiled_classifications/vgg_outputs.RData'))
+
+```
+
+```{r}
+producer_age_by_category <- all_layer_class %>%
+  mutate(correct_or_not = as.numeric(as.logical(correct_or_not))) %>%
+  filter(layer=='FC6') %>%
+  mutate(sketch_path = as.factor(str_split_fixed(image_name,'.png',2)[,1])) %>%
+  filter(!sketch_path %in% unique(recog_data$sketch_path)) %>%
+  filter(category %in% unique(recognizer_by_age_by_category$intended_category)) %>%
+  group_by(category, age_numeric) %>%
+  summarize(avg_recognized = mean(correct_or_not), count = length(unique(sketch_path))) %>%
+  mutate(mode = 'vgg_recognition')
+```
+
+### vgg averaged recognition x category by kids
+```{r}
+recognizer_by_age_by_category <- recog_data_by_both %>%
+  filter(vgg_distinct_index>7) %>%
+  group_by(intended_category, recognizer_age_numeric) %>%
+  summarize(avg_recognized = mean(correct_or_not), count = length(unique(sketch_path)))
+
+both <- recognizer_by_age_by_category %>%
+  rename(category = intended_category, age_numeric = recognizer_age_numeric) %>%
+  mutate(mode = 'kid_recognition') %>%
+  full_join(producer_age_by_category) %>%
+  filter(!is.na(avg_recognized)) %>%
+  pivot_wider(values_from = c(count, avg_recognized), names_from = c('mode')) %>%
+  mutate(category = fct_drop(category)) %>%
+  rename(kid = avg_recognized_kid_recognition, model = avg_recognized_vgg_recognition ) %>%
+  filter(!is.na(kid))
+```
+
+
+## VGG vs. kid recognition
+```{r}
+ggplot(both, aes(x=kid, y=model, col=category)) +
+  geom_point(alpha=.8, aes(size=count_vgg_recognition))  +
+  # scale_color_viridis_c() +
+  theme_few() +
+  theme(aspect.ratio=1, legend.position = 'none')  +
+  ylab('Production (VGG recognition)') +
+  xlab('Recognition (Kid recognition)')  +
+  scale_y_continuous(breaks=c(0,.2,.4,.6,.8, 1), limits=c(0,1)) +
+  scale_x_continuous(breaks=c(0,.2,.4,.6,.8, 1), limits=c(0,1))   +
+  geom_smooth(method='lm',alpha=.1, aes(weight=count_vgg_recognition, group=age_numeric), color='grey') +
+  ggrepel::geom_label_repel(aes(label = category), max.overlaps = 20, label.padding = .1, box.padding = .1, label.size = .5, alpha=.3) +
+  facet_wrap(~age_numeric, nrow=2)
+
+```
+
+
+
+```{r}
+# ggplot(both_clip, aes(x=kid, y=model, col=age_numeric)) +
+#   geom_point(alpha=.8, aes(size=count_clip_recognition))  +
+#   scale_color_viridis_c() +
+#   theme_few() +
+#   theme(aspect.ratio=1, legend.position = 'none')  +
+#   ylab('Production (CLIP recognition)') +
+#   xlab('Recognition (Kid recognition)')  +
+#   scale_y_continuous(breaks=c(0,.2,.4,.6,.8, 1), limits=c(0,1)) +
+#   scale_x_continuous(breaks=c(0,.2,.4,.6,.8, 1), limits=c(0,1))   +
+#   geom_smooth(method='lm',alpha=.1, aes(weight=count_clip_recognition, group=age_numeric)) 
+```
+
+
+
+
+
+
+
+
+### age x category x dataset
+```{R}
+# devphotodraw_vs_recoggames <- devphotodraw_recog %>%
+#   left_join(recognizer_by_age_by_category, by=c('category' = 'intended_category', 'age' = 'recognizer_age_numeric')) %>%
+#   rename(recognition = avg_recognized, production = prop_correct) %>%
+#   filter(!is.na(recognition))
+```
+
+```{r}
+# ggplot(devphotodraw_vs_recoggames, aes(x=production, y=recognition, color=category)) +
+#   geom_point() +
+#   theme_few() +
+#   # scale_color_viridis_c() +
+#   # geom_smooth(method='lm', color='grey') +
+#   ylab('Avg category recognition (recoggames)') +
+#   xlab('Avg category production by age of producer (humans, devphotodraw)') +
+#   facet_wrap(~age, nrow=2)
+
+```
+
+
+```{r}
+# devphotodraw_vs_recoggames_by_category <- devphotodraw_vs_recoggames %>%
+#   group_by(category) %>%
+#   summarize(production = mean(production), recognition = mean(recognition))
+```
+
+``
+
+
+```{r}
+# both_clip_long <- both_clip %>%
+#   pivot_longer(cols = c(kid,model), names_to='mode',values_to="prop_correct")
+
+```
+
+```{r}
+# ggplot(both_clip_long, aes(x=age_numeric, y=prop_correct, col=mode)) +
+#   geom_point(alpha=.8)  +
+#   # scale_color_viridis_c() +
+#   theme_few() +
+#   theme(aspect.ratio=1, legend.position = 'none')  +
+#   # ylab('Production (Clip recognition)') +
+#   # xlab('Recognition (Kid recognition)')  +
+#   scale_y_continuous(breaks=c(0,.2,.4,.6,.8, 1), limits=c(0,1)) +
+#   # scale_x_continuous(breaks=c(0,.2,.4,.6,.8, 1), limits=c(0,1))  +
+#   # geom_smooth(method='lm',alpha=.1, color='grey') +
+#   # ggrepel::geom_label_repel(aes(label = category), max.overlaps = 20, label.padding = .1, box.padding = .1, label.size = .5, alpha=.3) +
+#   facet_wrap(~category)
+  
+```
+
+
+
+```{r}
+# permuted <- mtcars %>%
+#   mutate(am = factor(am)) %>% # factor am
+#   modelr::permute(n, am) %>% # permute the am column `n` times
+#   mutate(models = map(perm, ~ cor(wt ~ am, data=.)))
+```
+
+
+```{r}
+# for (iter in c(1:100)){
+#   perm =  cor.test(both$kid, both$model[sample(length(both$kid))])
+#   if (iter==1){
+#     vals = perm$estimate
+#   }
+#   vals = append(vals, perm$estimate)
+# }
+```
+
+```{r}
+# both_shuffled <- both %>%
+#   select(category, kid, model) %>%
+#   modelr::permute(100, category, kid) %>%
+#   mutate(models = map(perm, ~ cor(kid ~ model, data = .)))
+#   # mutate(tidy = map(models, broom::glance)) %>% #
+#   # unnest(tidy) # unnest the tidy column
+
+```
+
+
+
+
+

@@ -1,0 +1,442 @@
+---
+title: "clip_classifications"
+author: "Bria Long"
+date: '2022-05-13'
+output: html_document
+---
+
+`# Libraries and data
+```{r setup, include=FALSE}
+library(tidyverse)
+library(here)
+library(assertthat)
+library(ggthemes)
+library(egg)
+library(viridis)
+library(lme4)
+library(lmerTest)
+library(MuMIn)
+library(langcog)
+library(magick)
+```
+
+## Load metadata
+```{r}
+all_meta <- read_csv(file = here::here('data/drawings/stringent_cleaned_dataset_meta/all_object_metadata_cleaned.csv')) %>%
+  as_tibble() %>%
+  mutate(category = str_split_fixed(category,' ',2)[,2]) %>%
+  mutate(category = str_replace(category,' ','.'))  # ice cream
+```
+
+
+```{r}
+clip_features <- read_csv(file = here::here('data/clip_outputs/fullset/CLIP_FEATURES_museumstation.csv')) %>%
+  as_tibble()  %>%
+  select(-'...1')
+
+clip_features <- tibble::rowid_to_column(clip_features, "index")
+```
+
+```{r}
+clip_meta <- read_csv(file = here::here('data/clip_outputs/fullset/CLIP_METADATA_kid.csv')) %>%
+  as_tibble() %>%
+  rename(category = label, session_id = session, index = '...1')  %>%
+  mutate(index = index + 1)
+
+# clip_meta <- read_csv('data/clip_outputs/animalgame/CLIP_METADATA_test_kid.csv') %>%
+#   as_tibble() %>%
+#   rename(category = label, session_id = session, index = '...1')  %>%
+#   mutate(index = index + 1)
+
+```
+
+```{r}
+all_clip = clip_features %>%
+  right_join(clip_meta) 
+```
+
+
+```{r}
+clip_long <- all_clip %>%
+  select(-index) %>%
+  rename(kid_age = age) %>%
+  pivot_longer(cols = bear:octopus, names_to  = "guessed_category", values_to ="prob")
+```
+
+```{r}
+save(file=here::here('data/clip_outputs/fullset/clip_long.RData'), clip_long)
+```
+
+```{r}
+clip_by_image <- clip_long %>%
+  group_by(kid_age, session_id, category) %>%
+  summarize(max_prob = max(prob), clip_category = guessed_category[prob == max_prob]) %>%
+  mutate(correct_or_not = (category == clip_category))
+```
+
+```{r}
+save(file=here::here('data/clip_outputs/fullset/clip_by_image.RData'), clip_by_image)
+```
+
+
+## Load AoA, CHILDES frequency, etc.
+```{r}
+categories = unique(clip_by_image$category)
+```
+
+```{r}
+# Montag corpus
+dd <- ch_freq_smooth %>% filter(on_cdi==1) %>% 
+  select(-ch_book_vs_speech) 
+
+# Charlesworth (FB children's books)
+dd_novels <- ch_freq_smooth_charles %>% filter(on_cdi==1) %>% 
+  select(-ch_book_vs_speech) 
+
+ddd <- dd %>% select(-prop_booky) %>%
+  left_join(dd_novels %>% select(-prop_booky)) %>%
+  mutate(Nletters = ifelse(is.na(Nletters), nchar(word), Nletters)) %>%
+  left_join(aoas %>% select(-measure))
+
+
+dddc <- ddd %>% mutate(adult_books = ifelse(is.na(adult_books), 0.07322, adult_books),
+                       speech = ifelse(is.na(speech), 10, speech),
+                       books = ifelse(is.na(books), 10, books),
+                       tv = ifelse(is.na(tv), 10, tv)) %>% 
+  distinct()
+
+```
+
+````{r}
+aoas <- readRDS(file=here::here('data/category_features/english_(american)_aoa_bydefinition.rds')) %>%
+  filter(measure=="produces") %>%
+  filter(definition %in% categories)
+
+category_by_word_freq <- ch_freq_smooth %>%
+  filter(word %in% categories) %>%
+  filter(lexical_class == 'nouns')
+  
+```
+
+   
+
+```{r}
+clip_correct_by_category <- clip_by_image %>%
+  group_by(category) %>%
+  summarize(prop_correct = mean(correct_or_not)) %>%
+  left_join(category_by_word_freq, by=c('category' = 'word')) %>%
+  left_join(aoas) %>%
+  mutate(aoa = replace_na(aoa, 48))
+
+```
+
+```{r}
+# frequency in childes
+cor.test(clip_correct_by_category$prop_correct, clip_correct_by_category$CHILDES)
+
+# frequency in adult books (google ngrams)
+cor.test(clip_correct_by_category$prop_correct, clip_correct_by_category$adult_books)
+
+# average age of acquisition (for the 31 categories on CDI)
+cor.test(clip_correct_by_category$prop_correct, clip_correct_by_category$aoa)
+
+```
+
+
+```{r}
+
+clip_target_category_prob_by_age_by_category <- clip_long %>%
+  filter(category == guessed_category) %>%
+  group_by(category, kid_age) %>%
+  multi_boot_standard(col = 'prob')
+
+target_category_prob_by_age <- clip_target_category_prob_by_age_by_category %>%
+  group_by(kid_age) %>%
+  multi_boot_standard(col = 'mean')
+```
+
+```{r}
+# sanity check # of images per categry
+count_clip_correct_category_by_age <- clip_by_image %>%
+  group_by(category, kid_age) %>%
+  summarize(count_images = n())
+```
+
+```{r}
+clip_correct_category_by_age <- clip_by_image %>%
+  group_by(category, kid_age) %>%
+  multi_boot_standard(col = 'correct_or_not') %>%
+  left_join(count_clip_correct_category_by_age)
+```
+
+```{r}
+ggplot(clip_correct_category_by_age, aes(x=kid_age, y=mean, col=kid_age)) +
+  # geom_pointrange(aes(y=mean, ymin = ci_lower, ymax = ci_upper), alpha=.3)+
+  geom_point(aes(size=count_images, alpha=.2)) +
+  geom_line(data = clip_correct_category_by_age, alpha=.4, aes(group=category))+
+  geom_smooth(alpha=.01, color='grey', span=2) +
+  labs(x='Age of child drawing (yrs)', y='CLIP classification accuracy') +
+  theme_few() + 
+  scale_x_continuous(breaks = seq(2,10,1)) + 
+  scale_color_viridis(option="D", breaks=seq(2,10,1)) +
+  theme(legend.position= 'none')
+```
+
+```{r}
+# ggplot(overall_by_age, aes(x=kid_age, y=mean, col=kid_age)) +
+#   geom_pointrange(aes(y=mean, ymin = ci_lower, ymax = ci_upper))+
+#   geom_point(data = clip_category_by_age, alpha=.2) + 
+#   geom_line(data = clip_category_by_age, alpha=.1, aes(group=category))+
+#   geom_smooth(alpha=.01, color='grey', span=2) +
+#   labs(x='Age of child drawing (yrs)', y='CLIP classification probability') +
+#   theme_few() + 
+#   scale_x_continuous(breaks = seq(2,10,1)) + 
+#   scale_color_viridis(option="D", breaks=seq(2,10,1)) +
+#   theme(legend.position= 'none')
+
+
+
+
+# 
+# 
+# base_size_chosen=10
+# smooth_alpha=.01
+# ggplot(cor_by_age, aes(age_numeric,mean*100, col=age_numeric)) +  
+#   geom_jitter(data=cor_by_category, width=.1, height=0, alpha=.2) +
+#   geom_pointrange(aes(y=mean*100, ymin = ci_lower*100, ymax = ci_upper*100)) +
+#   geom_smooth(alpha=smooth_alpha, color='grey', span=10) +
+#   theme_few(base_size = base_size_chosen) + 
+#   
+#   labs(x='Age of child drawing (yrs)', y='Drawing classification accuracy') +
+#   scale_x_continuous(breaks = seq(2,10,1)) + 
+#   theme(legend.position = "none", aspect.ratio = 1) +
+#   scale_color_viridis(option="D", breaks=seq(2,10,1)) +
+#   geom_hline(yintercept = 1/48, linetype="dashed", color="grey") 
+# 
+```
+
+
+# Compare to VGG 19 classifications
+```{r}
+load(file=here::here('data/compiled_classifications/vgg_outputs.RData'))
+```
+
+### Merge VGG classifications
+```{r}
+clip_by_image_merge <- clip_by_image %>%
+  rename(age = kid_age, clip_prob = max_prob, clip_correct_or_not = correct_or_not) %>%
+  mutate(session_id = paste0("cdm_", session_id)) %>%
+  mutate(category = str_replace(category,' ','.')) # ice cream = ice.cream 
+
+both_models <- all_layer_class %>%
+  rename(age = age_numeric) %>%
+  left_join(clip_by_image_merge, by=c('age','session_id','category')) %>%
+  mutate(correct_or_not = as.logical(correct_or_not))
+```
+
+### VGG by layer vs CLIP by sketcher age
+```{r}
+layers_ordered = c('P1','P2','P3','P4','P5','FC6','FC7')
+
+acc_by_model <- both_models %>%
+  group_by(age, layer, category) %>%
+  summarize(clip_correct = mean(clip_correct_or_not), vgg_correct = mean(correct_or_not)) %>%
+  mutate(layer = factor(layer, levels = layers_ordered))
+
+```
+
+#### Category accuracy by model
+```{r}
+category_acc_by_model <- both_models %>%  group_by(layer, category) %>%
+  summarize(clip_correct = mean(clip_correct_or_not), vgg_correct = mean(correct_or_not)) %>%
+  mutate(layer = factor(layer, levels = layers_ordered))
+```
+
+#### Age accuracy by model
+```{r}
+age_acc_by_model <- both_models %>%
+  group_by(age, layer) %>%
+  summarize(clip_correct = mean(clip_correct_or_not), vgg_correct = mean(correct_or_not)) %>%
+  mutate(layer = factor(layer, levels = layers_ordered))
+```
+
+### Plots: Age acc x model
+```{r}
+ggplot(age_acc_by_model, aes(x=clip_correct, y=vgg_correct, color=age)) +
+  geom_point(alpha=.2) +
+  theme_few() +
+  ylim(0,1)+
+  xlim(0,1) +
+  scale_color_viridis() +
+  theme(aspect.ratio = 1) +
+  # geom_smooth(method = 'lm', color = 'black') +
+  geom_abline(intercept=0, color='grey')  +
+  facet_grid(~layer) +
+  theme(legend.position='none') +
+  ylab('VGG classification') +
+  xlab('Clip classification')
+```
+
+```{R}
+vgg_vs_clip <- long_acc_by_model_by_clip_diff %>%
+  filter(layer == 'FC6') %>%
+  group_by(model,age) %>%
+  multi_boot_standard(col = 'prop_correct')
+```
+
+```{r}
+ggplot(data=vgg_vs_clip, aes(x=age, y=mean, color=model)) +
+  geom_pointrange(aes(y=mean, ymin = ci_lower, ymax = ci_upper), alpha=.3)+
+  theme_few() +
+  ylab('Drawings recognized')
+ xlab('Sketcher age') 
+  # ylim(0,1)
+```
+
+### Item effects for clip vs vgg
+```{r}
+clip_diff_by_category <- acc_by_model %>%
+  filter(layer=='FC6') %>%
+  group_by(category) %>%
+  summarize(clip_diff = clip_correct - vgg_correct) 
+
+long_acc_by_model_by_clip_diff <- acc_by_model %>%
+  filter(layer=='FC6') %>%
+  pivot_longer(cols = ends_with('correct'), names_to='model',values_to='prop_correct') %>%
+  left_join(clip_diff_by_category) %>%
+  mutate(category = fct_reorder(category, -clip_diff))
+```
+
+### Plot effects for clip vs vgg
+```{r}
+ggplot(long_acc_by_model_by_clip_diff, aes(x=age, y=prop_correct, col=model)) +
+  geom_point()+
+  facet_wrap(~category, nrow=6) +
+  theme_few() +
+  geom_smooth(span=10)
+
+```
+
+#### Load frequency ratings to merge with item effects
+```{r}
+frequency = read_csv(file = here::here('data/surveys/drawing_experience/preprocessed/Category_frequency_survey.csv')) 
+```
+
+```{r}
+freq_by_category <- frequency %>%
+  mutate(category = str_split_fixed(category,' ',2)[,2]) %>%
+  mutate(category = str_replace(category,' ','.')) %>%
+  filter(category %in% all_meta$category) %>%
+  group_by(category) %>%
+  summarize(drawing_frequency = mean(often_drawn_rating)) 
+
+```
+
+### Join item effects with freq ratings
+```{r}
+long_acc_by_model_by_freq <- long_acc_by_model_by_clip_diff %>%
+  left_join(freq_by_category) %>%
+  mutate(category = fct_reorder(category, -drawing_frequency))
+
+```
+
+### Order panels by frequency
+```{r}
+ggplot(long_acc_by_model_by_freq, aes(x=age, y=prop_correct, col=model)) +
+  geom_point()+
+  facet_wrap(~category, nrow=6) +
+  theme_few() +
+  geom_smooth(span=10)
+
+```
+
+```{r}
+category_acc_by_model <- category_acc_by_model %>%
+  mutate(diff = abs(clip_correct - vgg_correct))
+
+ggplot(category_acc_by_model, aes(x=clip_correct, y=vgg_correct, color=category)) +
+  geom_point(alpha=.2) +
+  theme_few() +
+  ylim(0,1)+
+  xlim(0,1) +
+  # scale_color_viridis() +
+  theme(aspect.ratio = 1) +
+  # geom_smooth(method = 'lm', color = 'black') +
+  geom_abline(intercept=0, color='grey')  +
+  facet_grid(~layer) +
+  theme(legend.position='none') +
+  # ggrepel::geom_label_repel(data = category_acc_by_model %>% filter(diff>.2), aes(label=category), size=.2, label.padding = .01, max.overlaps=30) +
+  ylab('VGG classification') +
+  xlab('Clip classification')
+```
+
+```{r}
+fc6_by_clip <- category_acc_by_model %>%
+  filter(layer == 'FC6')
+
+ggplot(fc6_by_clip, aes(x=clip_correct, y=vgg_correct, color=category)) +
+  geom_point(alpha=.2) +
+  theme_few() +
+  ylim(0,1)+
+  xlim(0,1) +
+  # scale_color_viridis() +
+  theme(aspect.ratio = 1) +
+  # geom_smooth(method = 'lm', color = 'black') +
+  geom_abline(intercept=0, color='grey')  +
+  theme(legend.position='none') +
+  ggrepel::geom_label_repel(data = fc6_by_clip, aes(label=category), label.size=.05, box.padding=.2, label.padding = .1, max.overlaps=30) +
+  ylab('VGG classification (FC6)') +
+  xlab('CLIP classification')
+
+ggsave('figures/clip_comparison.pdf',units='in',height=6, width=6)
+```
+
+```{r}
+ggplot(fc6_by_clip, aes(x=clip_correct, y=vgg_correct, color=category)) +
+  geom_point(alpha=.2) +
+  theme_few() +
+  ylim(0,1)+
+  xlim(0,1) +
+  # scale_color_viridis() +
+  theme(aspect.ratio = 1) +
+  # geom_smooth(method = 'lm', color = 'black') +
+  geom_abline(intercept=0, color='grey')  +
+  theme(legend.position='none') +
+  ggrepel::geom_label_repel(data = fc6_by_clip, aes(label=category), label.size=.05, box.padding=.2, label.padding = .1, max.overlaps=30) +
+  ylab('VGG classification (FC6)') +
+  xlab('CLIP classification')
+```
+
+# Spot check 2-year-old high-acc clip drawings
+```{r}
+dir_name = 'models_agree'
+dir.create(dir_name)
+
+spot_check <- both_models %>%
+  filter(age==2 & clip_correct_or_not==1 & correct_or_not==1 & layer=='FC6' & clip_prob>.9) %>%
+  mutate(image_path = here::here('data/drawings/stringent_cleaned_dataset', image_name)) %>%
+  mutate(new_image_path = paste0(dir_name,'/',image_name))
+
+file.copy(spot_check$image_path, spot_check$new_image_path)
+                                    
+```
+
+```{r}
+ image_read(dir(paste(dir_name, "/",this_category,sep=""), full.names = TRUE)) %>%
+  image_append(stack = FALSE) %>%
+    image_write(file.path(paste0(dir_name,"/montages/", this_category,".png")))
+```
+
+```{r}
+# test <- clip_by_image_merge %>%
+#   filter(session_id == 'cdm_run_v61565200106001')
+```
+
+
+```{r}
+age <- glmer(correct_or_not ~ scale(kid_age) +
+                        (1|session_id) + 
+                        (1|category),
+      data = clip_by_image %>% filter(kid_age>7), family="binomial",control=glmerControl(optimizer="bobyqa",optCtrl=list(maxfun=2e4)))
+```
+
